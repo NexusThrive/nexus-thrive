@@ -91,37 +91,37 @@ export function ReceiptPrinter({
 
   return (
     <div className={`relative mx-auto flex w-full max-w-[340px] flex-col items-center ${className ?? ""}`}>
-      <div className="relative z-[2] w-full rounded-lg border border-[#2A2A2E] bg-black px-3 pb-7 pt-3 text-[#F7F6F3]">
-        <p role="status" className="flex h-[22px] items-center gap-2 text-xs text-[#A1A1A8]">
-          <NMark size={18} state={done ? "done" : "loop"} className="text-[#F7F6F3]" />
+      <div className="relative z-[2] w-full rounded-lg border border-doc-edge bg-black px-3 pb-7 pt-3 text-doc-bg">
+        <p role="status" className="flex h-[22px] items-center gap-2 text-xs text-doc-rule">
+          <NMark size={18} state={done ? "done" : "loop"} className="text-doc-bg" />
           {done ? "Pago registrado" : "Imprimiendo comprobante"}
         </p>
-        <div className="mt-2 flex items-end justify-between gap-2.5 rounded-md border border-[#2A2A2E] bg-[#0A0A0B] p-3">
-          <div className="min-w-0 text-xs text-[#A1A1A8]">
+        <div className="mt-2 flex items-end justify-between gap-2.5 rounded-md border border-doc-edge bg-doc-ink p-3">
+          <div className="min-w-0 text-xs text-doc-rule">
             <p className="truncate">{data.client}</p>
             <p className="truncate">{data.concept}</p>
           </div>
           <b className="font-display text-xl font-bold tabular-nums">{data.total}</b>
         </div>
-        <i aria-hidden="true" className="absolute inset-x-[22px] bottom-2.5 h-[7px] rounded-[2px] border border-[#3A3A40] bg-black" />
+        <i aria-hidden="true" className="absolute inset-x-[22px] bottom-2.5 h-[7px] rounded-[2px] border border-doc-edge-strong bg-black" />
       </div>
       <div ref={outRef} className="relative z-[3] -mt-3.5 h-0 w-[calc(100%-36px)] overflow-hidden">
         <div
           ref={paperRef}
           style={{ clipPath: SAWTOOTH }}
-          className="relative bg-white px-4 pb-6 pt-5 font-mono text-[11.5px] leading-[1.55] text-[#0A0A0B]"
+          className="relative bg-white px-4 pb-6 pt-5 font-mono text-[11.5px] leading-[1.55] text-doc-ink"
         >
-          <i aria-hidden="true" className="absolute inset-x-0 top-0 h-[3px] bg-[#D4AF37]" />
+          <i aria-hidden="true" className="absolute inset-x-0 top-0 h-[3px] bg-doc-gold" />
           <span aria-hidden="true" className="absolute left-1/2 top-[10px] size-[11px] -translate-x-1/2 rounded-full border border-dashed border-[#C9C7C1]" />
           <div className="pt-3 text-center">
-            <BrandLogo variant="lockup" size={44} className="mx-auto text-[#0A0A0B]" />
-            <p className="mt-2 font-display text-[13px] font-semibold leading-tight">{data.business}</p>
-            {data.subtitle ? <p className="text-[#6B6B73]">{data.subtitle}</p> : null}
-            <span className="mt-1.5 inline-block rounded-full border border-[#0A0A0B]/15 px-2 py-[2px] text-[9.5px] font-semibold uppercase tracking-[0.16em] text-[#6B6B73]">
+            <BrandLogo variant="lockup" size={44} className="mx-auto text-doc-ink" />
+            <p className="mt-2 font-display text-ui font-semibold leading-tight">{data.business}</p>
+            {data.subtitle ? <p className="text-doc-soft">{data.subtitle}</p> : null}
+            <span className="mt-1.5 inline-block rounded-full border border-doc-ink/15 px-2 py-[2px] text-[9.5px] font-semibold uppercase tracking-[0.16em] text-doc-soft">
               Comprobante de pago
             </span>
           </div>
-          <hr className="my-2.5 border-0 border-t border-dashed border-[#A1A1A8]" />
+          <hr className="my-2.5 border-0 border-t border-dashed border-doc-rule" />
           {(data.lines ?? [{ label: data.concept, value: data.total }]).map((line) => (
             <p key={line.label} className="flex justify-between gap-2.5 tabular-nums">
               <span className="min-w-0 truncate">{line.label}</span>
@@ -130,12 +130,12 @@ export function ReceiptPrinter({
           ))}
           <p className="mt-1.5 flex items-center justify-between font-display text-[17px] font-bold">
             <span className="flex items-center gap-[7px]">
-              <i aria-hidden="true" className="inline-block h-[13px] w-[3px] -skew-x-[24deg] bg-[#D4AF37]" />
+              <i aria-hidden="true" className="inline-block h-[13px] w-[3px] -skew-x-[24deg] bg-doc-gold" />
               Total
             </span>
             <span className="tabular-nums">{data.total}</span>
           </p>
-          <hr className="my-2.5 border-0 border-t border-dashed border-[#A1A1A8]" />
+          <hr className="my-2.5 border-0 border-t border-dashed border-doc-rule" />
           {data.meta.map((line) => (
             <p key={line.label} className="flex justify-between gap-2.5 tabular-nums">
               <span>{line.label}</span>
@@ -144,18 +144,18 @@ export function ReceiptPrinter({
           ))}
           {data.qr ? (
             <>
-              <hr className="my-2.5 border-0 border-t border-dashed border-[#A1A1A8]" />
+              <hr className="my-2.5 border-0 border-t border-dashed border-doc-rule" />
               <div className="grid justify-items-center gap-1.5">
-                <div className="rounded-md border border-[#0A0A0B]/12 bg-white p-1.5">
+                <div className="rounded-md border border-doc-ink/12 bg-white p-1.5">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={data.qr} alt="QR para verificar el recibo" width={116} height={116} className="size-[116px]" />
                 </div>
-                <p className="text-[9.5px] uppercase tracking-[0.14em] text-[#6B6B73]">Escanea para verificar</p>
+                <p className="text-[9.5px] uppercase tracking-[0.14em] text-doc-soft">Escanea para verificar</p>
               </div>
             </>
           ) : null}
-          <hr className="my-2.5 border-0 border-t border-dashed border-[#A1A1A8]" />
-          <p className="text-center text-[#6B6B73]">Gracias por tu pago</p>
+          <hr className="my-2.5 border-0 border-t border-dashed border-doc-rule" />
+          <p className="text-center text-doc-soft">Gracias por tu pago</p>
         </div>
       </div>
     </div>

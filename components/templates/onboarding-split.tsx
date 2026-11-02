@@ -73,17 +73,22 @@ export function OnboardingSplit({
             <Wordmark size={22} className="lg:hidden" />
           )}
           {showProgress ? (
-            <ol aria-hidden="true" className="flex flex-1 gap-1.5 lg:hidden">
-              {steps.map((label, i) => (
-                <li
-                  key={label}
-                  className={cn(
-                    "h-1 flex-1 rounded-full transition-colors duration-500",
-                    i + 1 <= current ? "bg-accent" : "bg-border",
-                  )}
-                />
-              ))}
-            </ol>
+            <div className="flex min-w-0 flex-1 flex-col gap-1.5 lg:hidden">
+              <p className="truncate text-xs font-semibold text-foreground">
+                Paso {current} de {steps.length} · <span className="text-accent-text">{steps[current - 1]}</span>
+              </p>
+              <ol aria-hidden="true" className="flex gap-1.5">
+                {steps.map((label, i) => (
+                  <li
+                    key={label}
+                    className={cn(
+                      "h-1.5 flex-1 rounded-full transition-colors duration-500",
+                      i + 1 <= current ? "bg-accent" : "bg-border-strong",
+                    )}
+                  />
+                ))}
+              </ol>
+            </div>
           ) : (
             <span className="flex-1" />
           )}

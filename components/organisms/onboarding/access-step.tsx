@@ -1,14 +1,17 @@
 "use client";
 
-import { useState, useTransition, type FormEvent, type ReactNode } from "react";
+import { useState, useTransition, type ReactNode } from "react";
 import { Gift, KeyRound, Loader2, MessageCircle, X } from "lucide-react";
 import { claimAccessCodeAction, clearAccessCodeAction } from "@/app/onboarding/actions";
 import type { OnboardingBenefit } from "@/lib/core/tenancy/onboarding/types";
+import { Field } from "@/components/molecules/field";
+import { FormDialog } from "@/components/organisms/form-sheet";
+import { inputClasses } from "@/components/atoms/input";
 import { cn } from "@/lib/utils";
 import { accessRequestMessage, whatsappLink } from "@/lib/foundation/contact";
 import { BenefitCard } from "./benefit-card";
 
-type Mode = "code" | "paid" | "free";
+type Mode = "free" | "paid";
 
 export type AccessPlan = {
   key: string;
@@ -17,19 +20,18 @@ export type AccessPlan = {
 };
 
 /**
- * Paso "Elige cómo empezar" del piloto: sin precios a la vista y tres caminos.
+ * Paso "Elige cómo empezar" del piloto: sin precios a la vista y tres opciones.
  *
- * 1. Código de acceso (promocional o pagado) → lo reconoce el sistema.
- * 2. Quiero un plan → se coordina el pago por WhatsApp con NEXUS (aquí no
+ * 1. Probar 15 días gratis (por defecto) → sin tarjeta; la prueba se activa al crear el negocio.
+ * 2. Código de acceso (promocional o pagado) → se escribe en un diálogo y lo reconoce el sistema.
+ * 3. Quiero un plan → se coordina el pago por WhatsApp con NEXUS (aquí no
  *    hay cobro automático) y NEXUS entrega un código con los días pagados.
- * 3. Probar gratis → el plan Essential, sin costo.
  *
  * El código tecleado solo se valida y deja la cookie `nx_benefit`; el canje y
  * el plan definitivo los decide el servidor al crear el negocio.
  */
 export function AccessStep({
   planName,
-  freePlanName,
   plans,
   businessName,
   city,
@@ -37,40 +39,17 @@ export function AccessStep({
   onBenefit,
 }: {
   planName: string;
-  freePlanName: string;
   plans: AccessPlan[];
   businessName?: string;
   city?: string;
   benefit: OnboardingBenefit | null;
   onBenefit: (benefit: OnboardingBenefit | null) => void;
 }) {
-  const [mode, setMode] = useState<Mode>("code");
-  const [raw, setRaw] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [mode, setMode] = useState<Mode>("free");
+  const [codeOpen, setCodeOpen] = useState(false);
   const [busy, startTransition] = useTransition();
 
-  function validate(event: FormEvent) {
-    event.preventDefault();
-    if (busy || !raw.trim()) return;
-    setError(null);
-    startTransition(async () => {
-      const result = await claimAccessCodeAction(raw);
-      if (result.ok) {
-        onBenefit({
-          code: result.code,
-          plan: result.plan,
-          kind: result.kind,
-          durationDays: result.durationDays,
-        });
-        setRaw("");
-        return;
-      }
-      setError(result.message);
-    });
-  }
-
   function dropCode() {
-    setError(null);
     startTransition(async () => {
       await clearAccessCodeAction();
       onBenefit(null);
@@ -97,7 +76,7 @@ export function AccessStep({
           ) : (
             <X aria-hidden="true" className="size-3.5" />
           )}
-          Quitar el código y empezar gratis
+          Quitar el código y probar 15 días gratis
         </button>
       </div>
     );
@@ -106,8 +85,16 @@ export function AccessStep({
   return (
     <div className="grid gap-3">
       <OptionCard
-        active={mode === "code"}
-        onSelect={() => setMode("code")}
+        active={mode === "free"}
+        onSelect={() => setMode("free")}
+        icon={<Gift aria-hidden="true" className="size-4" />}
+        title="Quiero probar 15 días gratis"
+        detail="Sin tarjeta y sin compromiso. Puedes usar un código o activar un plan cuando quieras."
+      />
+      <OptionCard
+        active={false}
+        popup
+        onSelect={() => setCodeOpen(true)}
         icon={<KeyRound aria-hidden="true" className="size-4" />}
         title="Tengo un código de acceso"
         detail="Te lo entrega NEXUS con la tarjeta o al confirmar tu pago."
@@ -119,51 +106,40 @@ export function AccessStep({
         title="Quiero activar un plan"
         detail="Coordinamos el pago por WhatsApp y te damos un código con los días."
       />
-      <OptionCard
-        active={mode === "free"}
-        onSelect={() => setMode("free")}
-        icon={<Gift aria-hidden="true" className="size-4" />}
-        title="Quiero probar gratis"
-        detail={`Empiezas con Thrive ${freePlanName}, sin límite de tiempo y sin tarjeta.`}
-      />
 
-      {mode === "code" ? (
-        <form onSubmit={validate} className="grid gap-2">
-          <label
-            htmlFor="nx-access-code"
-            className="font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
-          >
-            Código de acceso
-          </label>
-          <input
-            id="nx-access-code"
-            value={raw}
-            onChange={(event) => {
-              setRaw(event.target.value.toUpperCase());
-              if (error) setError(null);
-            }}
-            autoComplete="off"
-            spellCheck={false}
-            placeholder="ELITE30"
-            aria-invalid={Boolean(error)}
-            aria-describedby={error ? "nx-access-code-error" : undefined}
-            className="w-full rounded-sm border border-border bg-surface px-3 py-2.5 font-mono text-[16px] font-semibold uppercase tracking-[0.14em] placeholder:font-normal placeholder:tracking-normal placeholder:text-muted-foreground/70 focus:border-accent focus:outline-none"
-          />
-          {error ? (
-            <p id="nx-access-code-error" className="text-[13px] text-destructive">
-              {error}
-            </p>
-          ) : null}
-          <button
-            type="submit"
-            disabled={busy || !raw.trim()}
-            className="inline-flex items-center justify-center gap-2 rounded-sm bg-primary px-4 py-2.5 text-[14px] font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
-          >
-            {busy ? <Loader2 aria-hidden="true" className="size-4 animate-spin" /> : null}
-            {busy ? "Validando…" : "Validar código"}
-          </button>
-        </form>
-      ) : mode === "paid" ? (
+      <FormDialog
+        open={codeOpen}
+        onOpenChange={setCodeOpen}
+        title="Código de acceso"
+        description="Escríbelo tal como te lo entregó NEXUS."
+        submitLabel="Validar código"
+        pendingLabel="Validando…"
+        size="sm"
+        onSubmit={async (formData) => {
+          const result = await claimAccessCodeAction(String(formData.get("code") ?? ""));
+          if (!result.ok) return { ok: false, message: result.message, fieldErrors: { code: result.message } };
+          onBenefit({ code: result.code, plan: result.plan, kind: result.kind, durationDays: result.durationDays });
+          return { ok: true };
+        }}
+      >
+        {({ fieldErrors }) => (
+          <Field label="Código" required error={fieldErrors.code}>
+            {(control) => (
+              <input
+                {...control}
+                name="code"
+                required
+                autoComplete="off"
+                spellCheck={false}
+                placeholder="Código"
+                className={cn(inputClasses, "font-mono font-semibold uppercase tracking-[0.14em] placeholder:font-normal placeholder:normal-case placeholder:tracking-normal")}
+              />
+            )}
+          </Field>
+        )}
+      </FormDialog>
+
+      {mode === "paid" ? (
         <div className="grid gap-2">
           <p className="text-[13px] text-muted-foreground">
             Todavía no hay pago en línea: escríbenos, confirmamos el pago y te entregamos un
@@ -195,12 +171,7 @@ export function AccessStep({
             ))}
           </ul>
         </div>
-      ) : (
-        <p className="rounded-sm border border-dashed border-border bg-surface-muted px-3.5 py-3 text-[13px] text-muted-foreground">
-          Perfecto: eliges el rubro, los módulos y terminas con Thrive {freePlanName}. NEXUS
-          administra los planes por ti; no se cobra nada.
-        </p>
-      )}
+      ) : null}
     </div>
   );
 }
@@ -211,8 +182,11 @@ function OptionCard({
   icon,
   title,
   detail,
+  popup = false,
 }: {
   active: boolean;
+  /** Abre un diálogo: sin estado «activo», para que el diálogo nazca del color neutro de la tarjeta. */
+  popup?: boolean;
   onSelect: () => void;
   icon: ReactNode;
   title: string;
@@ -222,9 +196,10 @@ function OptionCard({
     <button
       type="button"
       onClick={onSelect}
-      aria-pressed={active}
+      aria-pressed={popup ? undefined : active}
+      aria-haspopup={popup ? "dialog" : undefined}
       className={cn(
-        "flex gap-3 rounded-lg border p-4 text-left transition-colors",
+        "flex items-center gap-3 rounded-lg border px-4 py-6 text-left transition-colors",
         active ? "border-accent bg-accent-subtle/50" : "border-border bg-surface hover:border-muted-foreground/40",
       )}
     >

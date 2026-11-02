@@ -2,7 +2,6 @@
 
 import { Building2, FileSpreadsheet, MapPin, MessageCircleWarning, NotebookPen, Receipt, StickyNote, User } from "lucide-react";
 import { NMark } from "@/components/atoms/n-mark";
-import { Odometer } from "@/components/atoms/odometer";
 import { getVerticalIcon } from "@/lib/experience/vertical-icons";
 import { VERTICAL_LABELS, type VerticalValue } from "@/lib/core/sectors/verticals";
 import { MODULE_LABELS, type ModuleValue } from "@/lib/core/capabilities/modules";
@@ -180,20 +179,6 @@ function BusinessPreview({ preview }: { preview: ScenePreview }) {
           </div>
         </div>
 
-        {preview.planName ? (
-          <div className="flex items-end justify-between gap-3 border-t border-white/8 bg-white/[.03] px-5 py-4">
-            <div>
-              <p className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-white/45">Plan</p>
-              <p className="font-display text-[15px] font-bold text-white">
-                Thrive <span className="text-accent">{preview.planName}</span>
-              </p>
-            </div>
-            <p className="flex items-baseline gap-1 text-white">
-              <Odometer value={preview.price ?? "0"} prefix="$" className="font-display text-[30px] font-bold leading-none" />
-              <span className="text-[12px] text-white/50">USD/mes</span>
-            </p>
-          </div>
-        ) : null}
       </div>
     </div>
   );

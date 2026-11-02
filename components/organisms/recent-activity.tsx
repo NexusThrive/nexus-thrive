@@ -100,7 +100,7 @@ export default function RecentActivity({ items, filters = [], registry = {} }: R
           <h2 id="recent-activity-title" className="font-display text-[15px] font-semibold text-foreground">
             Actividad reciente
           </h2>
-          <label htmlFor={liveId} className="flex items-center gap-2 text-[13px] text-muted-foreground">
+          <label htmlFor={liveId} className="flex items-center gap-2 text-ui text-muted-foreground">
             <span className="flex items-center gap-1.5">
               {live ? <i aria-hidden="true" className="size-1.5 bg-success motion-safe:animate-[nx-pulse_1.6s_ease-in-out_infinite]" /> : null}
               En vivo
@@ -165,7 +165,7 @@ export default function RecentActivity({ items, filters = [], registry = {} }: R
 
       {full ? (
         <footer className="border-t border-border px-[18px] py-2.5">
-          <Link href={full.href} className="inline-flex items-center gap-1 text-[13px] font-semibold text-accent-text hover:underline focus-visible:outline-2 focus-visible:outline-ring">
+          <Link href={full.href} className="inline-flex items-center gap-1 pointer-coarse:min-h-11 text-ui font-semibold text-accent-text hover:underline focus-visible:outline-2 focus-visible:outline-ring">
             {full.label} <ArrowUpRight aria-hidden="true" className="size-3.5" />
           </Link>
         </footer>

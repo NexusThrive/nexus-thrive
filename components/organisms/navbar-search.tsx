@@ -48,7 +48,7 @@ export function NavbarSearch({ className }: { className?: string }) {
       data-open={panelOpen ? "" : undefined}
       // Al enfocar se ensancha hacia los dos lados dentro del espacio libre de la navbar (de 380 a 600 px como máximo); 320 ms.
       className={cn(
-        "relative hidden min-w-0 max-w-[380px] flex-1 transition-[max-width] duration-[var(--d3)] ease-[var(--nx-ease-out)] data-[open]:max-w-[600px] md:block",
+        "relative mx-auto hidden min-w-0 max-w-[460px] flex-1 transition-[max-width] duration-[var(--d3)] ease-[var(--nx-ease-out)] data-[open]:max-w-[560px] md:block",
         className,
       )}
       onBlur={(event) => {
@@ -75,11 +75,11 @@ export function NavbarSearch({ className }: { className?: string }) {
             onValueChange={search.setQuery}
             onFocus={() => setOpen(true)}
             placeholder="Buscar clientes, pagos, gastos o acciones…"
-            className="h-10 w-full rounded-md border border-border bg-surface-muted pl-10 pr-16 text-[13px] outline-none transition-[border-color,background-color] duration-200 placeholder:text-muted-foreground hover:border-border-input focus:border-border-input focus:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            className="h-10 pointer-coarse:h-11 w-full rounded-md border border-border bg-surface-muted pl-10 pr-16 text-ui outline-none transition-[border-color,background-color] duration-200 placeholder:text-muted-foreground hover:border-border-input focus:border-border-input focus:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           />
           <Kbd
             aria-hidden="true"
-            className={cn("pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 transition-opacity duration-200", panelOpen && "opacity-0")}
+            className={cn("pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 transition-opacity duration-200 pointer-coarse:hidden", panelOpen && "opacity-0")}
           >
             Ctrl K
           </Kbd>
@@ -91,7 +91,7 @@ export function NavbarSearch({ className }: { className?: string }) {
             onMouseDown={(event) => event.preventDefault()}
             className="nx-drop-down absolute inset-x-0 top-[calc(100%+6px)] min-w-[320px] z-(--z-popover) overflow-hidden rounded-lg border border-border bg-surface shadow-[var(--shadow-popover)]"
           >
-            <PaletteList hits={search.hits} status={search.status} run={run} className="max-h-[min(420px,calc(100vh-var(--topbar-height)-48px))]" />
+            <PaletteList query={search.query} hits={search.hits} status={search.status} run={run} className="max-h-[min(420px,calc(100vh-var(--topbar-height)-48px))]" />
           </div>
         ) : null}
       </Command>

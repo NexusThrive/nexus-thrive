@@ -27,5 +27,5 @@ export function RouteBreadcrumbs() {
     { label: item.label, href: hrefFor(item.href) },
     ...(deeper ? [{ label: "Detalle" }] : []),
   ];
-  return <Breadcrumbs items={crumbs} />;
+  return <Breadcrumbs items={crumbs} className="max-md:hidden" />;
 }

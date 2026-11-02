@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ChevronDown, PanelLeft } from "lucide-react";
 import { usePreferences } from "@/components/providers/preferences";
 import { useShell } from "@/components/providers/shell-context";
+import { shortLabel } from "@/lib/experience/navigation/short-label";
 import styles from "./app-sidebar.module.css";
 
 const CLOSED_KEY = "nx-nav-closed";
@@ -49,8 +50,9 @@ function writeClosed(next: Record<string, boolean>) {
  * Arranca debajo de la navbar global, que lleva el logo, la búsqueda, «Crear» y
  * el selector de negocio:
  *
- * - Tablet o contraída: riel de 76 px solo con iconos y tooltip al pasar.
- * - PC ≥ 1200 px: 248 px con el logo completo, el negocio y los grupos.
+ * - Tablet (768–1023 px): riel de 88 px con icono y etiqueta abreviada visible (DR-14).
+ * - Contraída por el usuario (≥ 1024 px): riel de 76 px solo con iconos y tooltip al pasar.
+ * - PC ≥ 1024 px: 248 px con el logo completo, el negocio y los grupos (DR-13).
  *
  * Blanca en claro e Ink en oscuro. El fondo del ítem activo se desliza entre
  * enlaces con un corte oro a la izquierda; contraer la barra se recuerda.
@@ -70,7 +72,7 @@ export function AppSidebar() {
   const closed = useSyncExternalStore(subscribeClosed, readClosed, () => EMPTY);
   const mainGroups = groups.filter((group) => !group.pinned);
   const pinnedGroups = groups.filter((group) => group.pinned);
-  const toggle = (label: string) => writeClosed({ ...closed, [label]: !closed[label] });
+  const toggle = (label: string, collapsed: boolean) => writeClosed({ ...closed, [label]: !collapsed });
 
   useLayoutEffect(() => {
     const pairs = [
@@ -112,6 +114,7 @@ export function AppSidebar() {
   return (
     <aside
       ref={sideRef}
+      data-tour="nav"
       className={styles.side}
       aria-label="Navegación principal"
       data-peek={peek ? "" : undefined}
@@ -140,20 +143,33 @@ export function AppSidebar() {
         {mainGroups.map((group, g) => {
           // El riel (solo iconos) no oculta nada; el grupo con la página activa tampoco se esconde.
           const hasActive = group.items.some((item) => item.key === activeKey);
-          const collapsed = Boolean(group.collapsible && closed[group.label] && !rail && !hasActive);
+          // Un grupo con icono es una opción desplegable: abierto si lo eligió la persona o, sin elección, si tiene la página activa.
+          const asOption = Boolean(group.icon);
+          const collapsed = asOption ? !rail && (closed[group.label] ?? !hasActive) : Boolean(group.collapsible && closed[group.label] && !rail && !hasActive);
+          const GroupIcon = group.icon;
           const panel = `nav-group-${g}`;
           return (
             <Fragment key={group.label}>
-              {g > 0 ? <div className={styles.sep} aria-hidden="true" /> : null}
-              {group.collapsible ? (
-                <button type="button" className={`${styles.groupLabel} ${styles.groupToggle}`} aria-expanded={!collapsed} aria-controls={panel} onClick={() => toggle(group.label)}>
-                  <span>{group.label}</span>
+              {asOption && GroupIcon ? (
+                <button type="button" className={styles.groupRow} aria-expanded={!collapsed} aria-controls={panel} onClick={() => toggle(group.label, collapsed)}>
+                  <GroupIcon aria-hidden="true" strokeWidth={1.6} />
+                  <span className={styles.label}>{group.label}</span>
                   <ChevronDown aria-hidden="true" className={styles.chevron} data-open={collapsed ? undefined : ""} />
                 </button>
               ) : (
-                <div className={styles.groupLabel}>{group.label}</div>
+                <>
+                  {g > 0 ? <div className={styles.sep} aria-hidden="true" /> : null}
+                  {group.collapsible ? (
+                    <button type="button" className={`${styles.groupLabel} ${styles.groupToggle}`} aria-expanded={!collapsed} aria-controls={panel} onClick={() => toggle(group.label, collapsed)}>
+                      <span>{group.label}</span>
+                      <ChevronDown aria-hidden="true" className={styles.chevron} data-open={collapsed ? undefined : ""} />
+                    </button>
+                  ) : (
+                    group.label === "General" ? null : <div className={styles.groupLabel}>{group.label}</div>
+                  )}
+                </>
               )}
-              <div id={panel} className={styles.groupItems} hidden={collapsed}>
+              <div id={panel} className={styles.groupItems} data-nested={asOption ? "" : undefined} hidden={collapsed}>
                 {group.items.map((item) => {
                   const Icon = item.icon;
                   const active = item.key === activeKey;
@@ -170,6 +186,7 @@ export function AppSidebar() {
                     >
                       <Icon aria-hidden="true" strokeWidth={1.6} />
                       <span className={styles.label}>{item.label}</span>
+                      <span className={styles.short} aria-hidden="true">{shortLabel(item.label)}</span>
                     </Link>
                   );
                 })}
@@ -199,6 +216,7 @@ export function AppSidebar() {
                 >
                   <Icon aria-hidden="true" strokeWidth={1.6} />
                   <span className={styles.label}>{item.label}</span>
+                      <span className={styles.short} aria-hidden="true">{shortLabel(item.label)}</span>
                 </Link>
               );
             })}

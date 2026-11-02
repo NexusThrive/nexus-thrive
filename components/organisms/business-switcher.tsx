@@ -54,18 +54,18 @@ export function BusinessSwitcher({
           type="button"
           data-press=""
           className={cn(
-            "group hidden h-10 max-w-[220px] min-w-0 items-center gap-2.5 rounded-md border border-border bg-surface-muted py-0 pl-1.5 pr-2.5 text-left transition-[border-color,background-color] duration-200 outline-none hover:border-border-input hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring data-[state=open]:border-border-input data-[state=open]:bg-surface md:flex",
+            "group hidden h-10 pointer-coarse:h-11 max-w-[220px] min-w-0 items-center gap-2.5 rounded-md border border-border bg-surface-muted py-0 pl-1.5 pr-2.5 text-left transition-[border-color,background-color] duration-200 outline-none hover:border-border-input hover:bg-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring data-[state=open]:border-border-input data-[state=open]:bg-surface md:flex",
             className,
           )}
         >
           {/* La inicial va por CSS (attr): decora, no es parte del nombre accesible. */}
-          <span aria-hidden="true" data-initial={initialOf(currentName)} className="grid size-7 shrink-0 place-items-center rounded-[4px] bg-primary font-display text-[13px] font-bold text-primary-foreground before:content-[attr(data-initial)]" />
-          <span className="min-w-0 flex-1 truncate text-[13px] font-semibold">{currentName}</span>
+          <span aria-hidden="true" data-initial={initialOf(currentName)} className="grid size-7 shrink-0 place-items-center rounded-[4px] bg-primary font-display text-ui font-bold text-primary-foreground before:content-[attr(data-initial)]" />
+          <span className="min-w-0 flex-1 truncate text-ui font-semibold">{currentName}</span>
           <ChevronDown aria-hidden="true" className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" sideOffset={8} className="w-[min(300px,calc(100vw-24px))] p-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <DropdownMenuLabel className="px-2.5 pb-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+        <DropdownMenuLabel className="px-2.5 pb-1.5 text-2xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
           Tus negocios
         </DropdownMenuLabel>
         {list.map((business) => {
@@ -86,7 +86,7 @@ export function BusinessSwitcher({
               </span>
               <span className="flex min-w-0 flex-1 flex-col leading-tight">
                 <span className="truncate text-sm font-medium text-foreground">{business.name}</span>
-                <span className="truncate font-mono text-[11px] text-muted-foreground">{business.slug}</span>
+                <span className="truncate font-mono text-2xs text-muted-foreground">{business.slug}</span>
               </span>
               {current ? <Check aria-hidden="true" className="size-4 shrink-0 text-accent-text" /> : null}
             </DropdownMenuItem>

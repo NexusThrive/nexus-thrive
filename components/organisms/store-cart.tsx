@@ -62,7 +62,7 @@ export function AddToCart({ slug, product, accent, onAccent }: { slug: string; p
         window.setTimeout(() => setAdded(false), 1400);
       }}
       style={{ background: accent, color: onAccent }}
-      className="mt-2 inline-flex h-10 items-center justify-center rounded-md px-4 text-[13px] font-semibold"
+      className="mt-2 inline-flex h-10 items-center justify-center rounded-md px-4 text-ui font-semibold"
       aria-label={`Agregar ${product.name} al carrito`}
     >
       {added ? "Agregado ✓" : items.some((i) => i.productId === product.id) ? "Agregar otro" : "Agregar al carrito"}
@@ -96,24 +96,24 @@ export function CartDock({ slug, accent, onAccent }: { slug: string; accent: str
   return (
     <>
       {count > 0 || done ? (
-        <button type="button" onClick={() => setOpen(true)} style={{ background: accent, color: onAccent }} className="fixed bottom-4 left-4 inline-flex h-12 items-center gap-2 rounded-full px-5 text-[14px] font-semibold shadow-lg">
+        <button type="button" onClick={() => setOpen(true)} style={{ background: accent, color: onAccent }} className="fixed bottom-4 left-4 inline-flex h-12 items-center gap-2 rounded-full px-5 text-sm font-semibold shadow-lg">
           <ShoppingBag aria-hidden="true" className="size-5" /> Ver carrito{count ? ` (${count})` : ""}
         </button>
       ) : null}
       <ResponsiveSheet open={open} onOpenChange={setOpen} size="md" title={done ? `Pedido ${done.code} recibido` : "Tu carrito"} description={done ? "Falta el pago para confirmarlo." : undefined}>
         {done ? (
-          <div className="grid gap-3 text-[14px]">
+          <div className="grid gap-3 text-sm">
             <p>Total <b className="font-mono">{peso(done.total)}</b>. Paga con el enlace seguro; en cuanto se confirme el pago, <b>{done.business}</b> prepara tu pedido.</p>
             <a href={`/pay/${done.reference}`} style={{ background: accent, color: onAccent }} className="inline-flex h-12 items-center justify-center rounded-md font-semibold">Pagar ahora</a>
             {done.whatsapp ? <a href={`https://wa.me/${done.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(done.whatsappText)}`} target="_blank" rel="noopener noreferrer" className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-[#C9C6BE] font-medium"><MessageCircle aria-hidden="true" className="size-4" /> Enviar mi pedido por WhatsApp</a> : null}
           </div>
         ) : items.length === 0 ? (
-          <p className="text-[14px]">Tu carrito está vacío.</p>
+          <p className="text-sm">Tu carrito está vacío.</p>
         ) : (
           <div className="grid gap-4">
             <ul className="grid gap-2" aria-label="Productos del carrito">
               {items.map((i) => (
-                <li key={i.productId} className="flex items-center gap-2 text-[14px]">
+                <li key={i.productId} className="flex items-center gap-2 text-sm">
                   <span className="min-w-0 flex-1 truncate">{i.name}</span>
                   <button type="button" aria-label={`Menos ${i.name}`} onClick={() => qty(i.productId, -1)} className="size-8 rounded-md border border-[#C9C6BE]">−</button>
                   <b className="w-6 text-center font-mono">{i.quantity}</b>
@@ -126,14 +126,14 @@ export function CartDock({ slug, accent, onAccent }: { slug: string; accent: str
             <p className="text-xs text-[#5E5D63]">El total final (con impuestos) lo confirma el servidor al hacer el pedido.</p>
             <form onSubmit={(e) => { e.preventDefault(); void send(); }} className="grid gap-3" noValidate>
               {([["name", "Nombre completo", "name"], ["phone", "Celular", "tel"], ["email", "Correo (opcional)", "email"], ["address", "Dirección de entrega", "street-address"], ["city", "Ciudad", "address-level2"]] as const).map(([k, label, ac]) => (
-                <label key={k} className="grid gap-1 text-[13px] font-medium">
+                <label key={k} className="grid gap-1 text-ui font-medium">
                   {label}
                   <input value={c[k]} onChange={set(k)} autoComplete={ac} aria-invalid={Boolean(errors[k])} aria-describedby={errors[k] ? `err-${k}` : undefined} className={FIELD} />
                   {errors[k] ? <span id={`err-${k}`} role="alert" className="text-xs font-normal text-[#9B2C2C]">{errors[k]}</span> : null}
                 </label>
               ))}
-              <label className="grid gap-1 text-[13px] font-medium">Notas (opcional)<textarea value={c.notes} onChange={set("notes")} rows={2} className={`${FIELD} h-auto py-2`} /></label>
-              {result && !result.ok && !result.fields ? <p role="alert" className="text-[13px] text-[#9B2C2C]">{result.message}</p> : null}
+              <label className="grid gap-1 text-ui font-medium">Notas (opcional)<textarea value={c.notes} onChange={set("notes")} rows={2} className={`${FIELD} h-auto py-2`} /></label>
+              {result && !result.ok && !result.fields ? <p role="alert" className="text-ui text-[#9B2C2C]">{result.message}</p> : null}
               <button type="submit" disabled={busy} style={{ background: accent, color: onAccent }} className="h-12 rounded-md text-[15px] font-semibold disabled:opacity-60">{busy ? "Enviando…" : "Hacer el pedido"}</button>
             </form>
           </div>

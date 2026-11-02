@@ -19,7 +19,7 @@ export function SiteView({ site, preview = false, store = false }: { site: SiteD
     <div style={{ background: t.bg, color: t.fg }} className="min-h-full">
       <header style={{ borderColor: `${t.muted}33` }} className="mx-auto flex max-w-3xl items-center justify-between gap-3 border-b px-4 py-4">
         <b className="font-display text-lg">{site.business.name}</b>
-        {wa ? <a href={wa} style={{ background: site.accent, color: accentText }} className="rounded-md px-3 py-1.5 text-[13px] font-semibold">Escríbenos</a> : null}
+        {wa ? <a href={wa} style={{ background: site.accent, color: accentText }} className="rounded-md px-3 py-1.5 text-ui font-semibold">Escríbenos</a> : null}
       </header>
       <main className="mx-auto grid max-w-3xl gap-10 px-4 py-10">
         <section aria-labelledby="hero" className="grid gap-3">
@@ -41,7 +41,7 @@ export function SiteView({ site, preview = false, store = false }: { site: SiteD
                 <li key={p.id} style={{ background: t.card, borderColor: `${t.muted}33` }} className="grid gap-1 rounded-lg border p-4">
                   <a href={preview ? "#catalog" : `/s/${site.slug}/p/${p.id}`} className="font-semibold underline-offset-2 hover:underline">{p.name}</a>
                   {p.category ? <small style={{ color: t.muted }}>{p.category}</small> : null}
-                  {p.description ? <p style={{ color: t.muted }} className="line-clamp-2 text-[14px]">{p.description}</p> : null}
+                  {p.description ? <p style={{ color: t.muted }} className="line-clamp-2 text-sm">{p.description}</p> : null}
                   <b className="mt-1 font-mono">{peso(p.price)}</b>
                   {store ? <AddToCart slug={site.slug} product={p} accent={site.accent} onAccent={accentText} /> : null}
                 </li>

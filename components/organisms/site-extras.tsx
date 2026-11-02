@@ -43,7 +43,7 @@ export function ContactForm({ slug, accent, onAccent }: { slug: string; accent: 
   const [v, setV] = useState({ name: "", phone: "", email: "", message: "" });
   const [state, setState] = useState<{ status: "idle" | "busy" | "ok" | "error"; message?: string; fields?: Record<string, string> }>({ status: "idle" });
   const set = (k: keyof typeof v) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setV((p) => ({ ...p, [k]: e.target.value }));
-  if (state.status === "ok") return <p role="status" className="rounded-md border border-[#C9C6BE] p-4 text-[14px]">¡Gracias! Recibimos tu mensaje y te escribimos pronto.</p>;
+  if (state.status === "ok") return <p role="status" className="rounded-md border border-[#C9C6BE] p-4 text-sm">¡Gracias! Recibimos tu mensaje y te escribimos pronto.</p>;
   return (
     <form
       noValidate
@@ -56,14 +56,14 @@ export function ContactForm({ slug, accent, onAccent }: { slug: string; accent: 
       className="grid gap-3"
     >
       {([["name", "Nombre", "name"], ["phone", "Celular", "tel"], ["email", "Correo (opcional)", "email"]] as const).map(([k, label, ac]) => (
-        <label key={k} className="grid gap-1 text-[13px] font-medium">
+        <label key={k} className="grid gap-1 text-ui font-medium">
           {label}
           <input value={v[k]} onChange={set(k)} autoComplete={ac} aria-invalid={Boolean(state.fields?.[k])} aria-describedby={state.fields?.[k] ? `lead-${k}` : undefined} className={FIELD} />
           {state.fields?.[k] ? <span id={`lead-${k}`} role="alert" className="text-xs font-normal text-[#9B2C2C]">{state.fields[k]}</span> : null}
         </label>
       ))}
-      <label className="grid gap-1 text-[13px] font-medium">Mensaje (opcional)<textarea value={v.message} onChange={set("message")} rows={3} maxLength={500} className={`${FIELD} h-auto py-2`} /></label>
-      {state.status === "error" && !state.fields ? <p role="alert" className="text-[13px] text-[#9B2C2C]">{state.message}</p> : null}
+      <label className="grid gap-1 text-ui font-medium">Mensaje (opcional)<textarea value={v.message} onChange={set("message")} rows={3} maxLength={500} className={`${FIELD} h-auto py-2`} /></label>
+      {state.status === "error" && !state.fields ? <p role="alert" className="text-ui text-[#9B2C2C]">{state.message}</p> : null}
       <button type="submit" disabled={state.status === "busy"} style={{ background: accent, color: onAccent }} className="h-12 rounded-md text-[15px] font-semibold disabled:opacity-60">{state.status === "busy" ? "Enviando…" : "Enviar mensaje"}</button>
     </form>
   );

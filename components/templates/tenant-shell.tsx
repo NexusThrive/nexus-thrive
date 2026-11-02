@@ -8,6 +8,7 @@ import { CommandPalette } from "@/components/organisms/command-palette";
 import { BusinessSwitcher } from "@/components/organisms/business-switcher";
 import { NavbarSearch } from "@/components/organisms/navbar-search";
 import { MobileTabBar } from "@/components/organisms/mobile-tab-bar";
+import { NavTransitions } from "@/components/organisms/nav-transitions";
 import { NetworkBanner } from "@/components/molecules/network-banner";
 import { QuickCreateProvider } from "@/components/organisms/quick-create-host";
 import { RouteBreadcrumbs } from "@/components/organisms/route-breadcrumbs";
@@ -31,6 +32,7 @@ export function TenantShell({
   businesses,
   onSwitchBusiness,
   topbarActions,
+  accountExtra,
   children,
 }: {
   tenantSlug: string;
@@ -46,6 +48,8 @@ export function TenantShell({
   onSwitchBusiness?: (slug: string) => void | Promise<void>;
   /** Botones extra de la barra superior (p. ej. la campana de notificaciones). */
   topbarActions?: ReactNode;
+  /** Fila extra en la tarjeta de la cuenta de «Más» (móvil), p. ej. los días de prueba. */
+  accountExtra?: ReactNode;
   children: ReactNode;
 }) {
   return (
@@ -66,13 +70,14 @@ export function TenantShell({
               search={<NavbarSearch />}
               switcher={<BusinessSwitcher currentSlug={tenantSlug} currentName={tenantName} businesses={businesses ?? []} onSwitch={onSwitchBusiness} />}
             />
+            <NavTransitions />
             <main id="contenido" tabIndex={-1} className={styles.view}>
               <RouteBreadcrumbs />
               {children}
             </main>
           </div>
-          <MobileTabBar />
-          <CommandPalette inlineOnDesktop />
+          <MobileTabBar accountExtra={accountExtra} />
+          <CommandPalette inline />
           <NetworkBanner />
         </div>
         </QuickCreateProvider>

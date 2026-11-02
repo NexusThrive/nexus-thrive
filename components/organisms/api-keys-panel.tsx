@@ -105,7 +105,7 @@ export function ApiKeysPanel({
           <h2 id="api-keys-title" className="font-display text-base font-semibold">
             Llaves de API
           </h2>
-          <p className="mt-0.5 text-[13px] text-muted-foreground">
+          <p className="mt-0.5 text-ui text-muted-foreground">
             Conectan n8n, otros sistemas y agentes de IA a tu negocio. Cada llave ve solo tu negocio, con el permiso de quien la creó.{" "}
             <a href="/api/v1/openapi.json" target="_blank" rel="noopener noreferrer" className="font-medium text-accent-text underline-offset-4 hover:underline">
               Ver documentación (OpenAPI)
@@ -194,7 +194,7 @@ export function ApiKeysPanel({
         {({ fieldErrors }) => (
           <>
             <Field label="Nombre" required error={fieldErrors.name} hint="Para reconocerla: «n8n en casa», «Agente de ventas».">
-              {(p) => <Input {...p} name="name" autoComplete="off" placeholder="n8n en casa" />}
+              {(p) => <Input {...p} name="name" autoComplete="off" placeholder="Nombre de la clave" />}
             </Field>
             <Field label="Entorno" hint="Producción usa datos reales; prueba es para ensayar sin riesgo.">
               {(p) => (
@@ -244,7 +244,7 @@ export function ApiKeysPanel({
         {created ? (
           <div className="grid gap-3">
             <div className="flex items-center gap-2 rounded-md border border-border bg-surface-muted p-2.5">
-              <code data-testid="api-secret" className="min-w-0 flex-1 break-all font-mono text-[13px]">
+              <code data-testid="api-secret" className="min-w-0 flex-1 break-all font-mono text-ui">
                 {created.secret}
               </code>
               <Button variant="outline" size="sm" onClick={() => copy(created.secret)} aria-label="Copiar la llave">
@@ -255,8 +255,8 @@ export function ApiKeysPanel({
             <Alert tone="warning" title="Trátala como una contraseña">
               Quien la tenga puede leer los datos que permite. Si se filtra, revócala desde esta lista.
             </Alert>
-            <p className="text-[13px] text-muted-foreground">Para probarla:</p>
-            <pre className="overflow-x-auto rounded-md border border-border bg-surface-muted p-2.5 font-mono text-[12px] leading-relaxed">{`curl ${base}/api/v1/me \\\n  -H "Authorization: Bearer ${created.secret.slice(0, 12)}…"`}</pre>
+            <p className="text-ui text-muted-foreground">Para probarla:</p>
+            <pre className="overflow-x-auto rounded-md border border-border bg-surface-muted p-2.5 font-mono text-xs leading-relaxed">{`curl ${base}/api/v1/me \\\n  -H "Authorization: Bearer ${created.secret.slice(0, 12)}…"`}</pre>
           </div>
         ) : null}
       </ResponsiveSheet>

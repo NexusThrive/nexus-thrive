@@ -16,7 +16,7 @@ export function PublicLayout({ children, footerNote }: { children: ReactNode; fo
             <Wordmark />
           </Link>
           <span className="flex-1" />
-          <Link href="/sign-in" className="px-1 text-[13px] font-medium text-muted-foreground hover:text-foreground">
+          <Link href="/sign-in" className="px-1 text-ui font-medium text-muted-foreground hover:text-foreground">
             Iniciar sesión
           </Link>
           <ThemeToggle className="border border-border" />

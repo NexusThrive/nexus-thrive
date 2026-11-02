@@ -1,0 +1,57 @@
+/* Resaltado: un recorte en la pantalla atenuada que viaja de una pieza a la siguiente. Solo visual (no bloquea clics). */
+.spot {
+  position: fixed;
+  z-index: var(--z-modal);
+  border-radius: 12px;
+  pointer-events: none;
+  box-shadow:
+    0 0 0 2px var(--accent),
+    0 0 0 9999px color-mix(in oklab, var(--nx-ink) 52%, transparent);
+  transition:
+    top 560ms var(--nx-ease-in-out),
+    left 560ms var(--nx-ease-in-out),
+    width 560ms var(--nx-ease-in-out),
+    height 560ms var(--nx-ease-in-out);
+  animation: spot-in 420ms var(--nx-ease-out);
+}
+@keyframes spot-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* El contenido de cada paso entra con un leve ascenso. */
+.card {
+  animation: card-in 380ms var(--nx-ease-out);
+}
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0);
+  }
+}
+
+.dot {
+  height: 3px;
+  width: 10px;
+  border-radius: 2px;
+  background: var(--border);
+  transition:
+    width 320ms var(--nx-ease-out),
+    background-color 320ms var(--nx-ease-out);
+}
+.dotOn {
+  width: 22px;
+  background: var(--accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spot,
+  .card {
+    animation: none;
+    transition: none;
+  }
+  .dot {
+    transition: none;
+  }
+}

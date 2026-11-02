@@ -67,21 +67,29 @@ export function usePaletteSearch() {
 /** Sin barra de scroll visible (la lista sigue desplazándose con rueda, teclado y toque). */
 export const NO_SCROLLBAR = "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
 
+/** Resultado que se está quitando: se mantiene un momento para animar su salida (200 ms, ver `.nx-hit-out`). */
+type ShownHit = { hit: SearchHit; leaving: boolean };
+const HIT_OUT_MS = 200;
+const hitKey = (hit: SearchHit) => `${hit.kind}-${hit.id}`;
+
 const itemClass =
   "relative flex min-h-[42px] cursor-pointer items-center gap-3 rounded-md px-2.5 text-sm outline-none data-[selected=true]:bg-surface-muted data-[selected=true]:before:-ml-2 data-[selected=true]:before:mr-[-5px] data-[selected=true]:before:h-[18px] data-[selected=true]:before:w-[3px] data-[selected=true]:before:-skew-x-[24deg] data-[selected=true]:before:bg-accent data-[selected=true]:before:content-[''] [&_svg]:size-4 [&_svg]:shrink-0";
 const groupClass =
-  "[&_[cmdk-group-heading]]:px-2.5 [&_[cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:pt-2 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-[0.08em] [&_[cmdk-group-heading]]:text-muted-foreground";
+  "[&_[cmdk-group-heading]]:px-2.5 [&_[cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:pt-2 [&_[cmdk-group-heading]]:text-2xs [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-[0.08em] [&_[cmdk-group-heading]]:text-muted-foreground";
 
 /**
  * Lista de la paleta (va dentro de un `<Command>`): resultados, secciones y
  * acciones. `run` cierra la superficie que la contiene y ejecuta la acción.
  */
 export function PaletteList({
+  query,
   hits,
   status,
   run,
   className,
 }: {
+  /** Texto escrito: mientras esté vacío no se vuelca todo, solo se invita a buscar. */
+  query: string;
   hits: SearchHit[];
   status: "idle" | "loading" | "error";
   run: (action: () => void) => void;
@@ -95,21 +103,62 @@ export function PaletteList({
   // Lo que el negocio aún no usa también se encuentra: lleva a Funciones para encenderlo.
   const off = activeModules ? CAPABILITIES.filter((c) => c.status !== "PLANNED" && c.id !== "dashboard" && !activeModules.includes(c.id)) : [];
 
+  const idle = query.trim() === "";
+
+  // Los resultados entran escalonados y, al cambiar la búsqueda, los que sobran se recogen en vez de desaparecer de golpe.
+  const [shownHits, setShownHits] = useState<ShownHit[]>([]);
+  const [hitsKey, setHitsKey] = useState("");
+  const nextKey = hits.map(hitKey).join("|");
+  if (nextKey !== hitsKey) {
+    setHitsKey(nextKey);
+    const keep = new Set(hits.map(hitKey));
+    const merged: ShownHit[] = hits.map((hit) => ({ hit, leaving: false }));
+    shownHits.forEach((old, index) => {
+      if (!keep.has(hitKey(old.hit))) merged.splice(Math.min(index, merged.length), 0, { hit: old.hit, leaving: true });
+    });
+    setShownHits(merged);
+  }
+  const anyLeaving = shownHits.some((h) => h.leaving);
+  useEffect(() => {
+    if (!anyLeaving) return;
+    const timer = window.setTimeout(() => setShownHits((list) => list.filter((h) => !h.leaving)), HIT_OUT_MS);
+    return () => window.clearTimeout(timer);
+  }, [anyLeaving, hitsKey]);
+
   return (
     <>
+      {idle ? (
+        <>
+        {/* La lista sigue en el documento (el campo la referencia con aria-controls) aunque no haya nada que mostrar. */}
+        <Command.List hidden />
+        <div className="grid flex-1 content-center justify-items-center gap-3 px-6 py-10 text-center">
+          <span aria-hidden="true" className="grid size-14 place-items-center rounded-full bg-surface-muted ring-1 ring-border">
+            <Search className="size-6 text-muted-foreground" strokeWidth={1.6} />
+          </span>
+          <div className="grid gap-1">
+            <p className="font-display text-sm font-semibold text-foreground">Encuentra lo que necesitas</p>
+            <p className="max-w-[34ch] text-ui text-muted-foreground">
+              Escribe un nombre, un pago, un gasto o una sección y verás los resultados aquí.
+            </p>
+          </div>
+        </div>
+        </>
+      ) : (
       <Command.List className={cn("overflow-y-auto p-1.5", NO_SCROLLBAR, className)}>
-        <Command.Empty className="px-4 py-6 text-center text-sm text-muted-foreground">
+        <Command.Empty className="nx-search-note px-4 py-6 text-center text-sm text-muted-foreground">
           {status === "loading" ? "Buscando…" : "Sin resultados."}
         </Command.Empty>
-        {hits.length > 0 ? (
+        {shownHits.length > 0 ? (
           <Command.Group forceMount heading="Resultados" className={groupClass}>
-            {hits.map((hit) => (
+            {shownHits.map(({ hit, leaving }, index) => (
               <Command.Item
-                key={`${hit.kind}-${hit.id}`}
+                key={hitKey(hit)}
                 forceMount
+                disabled={leaving}
                 value={`resultado ${hit.kind} ${hit.id}`}
                 onSelect={() => run(() => router.push(hrefFor(hit.href)))}
-                className={itemClass}
+                style={leaving ? undefined : { animationDelay: `${Math.min(index, 5) * 25}ms` }}
+                className={cn(itemClass, leaving ? "nx-hit-out" : "nx-hit-in")}
               >
                 {hit.kind === "customer" ? <User aria-hidden="true" /> : hit.kind === "payment" ? <HandCoins aria-hidden="true" /> : hit.kind === "expense" ? <Receipt aria-hidden="true" /> : <Package aria-hidden="true" />}
                 <span className="truncate">{hit.title}</span>
@@ -178,13 +227,14 @@ export function PaletteList({
           ) : null}
         </Command.Group>
       </Command.List>
+      )}
       <p role="status" className="sr-only">
         {status === "loading" ? "Buscando" : status === "error" ? "No se pudo buscar" : hits.length ? `${hits.length} resultados` : ""}
       </p>
       {status === "error" ? (
         <p className="border-t border-border px-3.5 py-2 text-xs text-danger">No se pudo buscar ahora. Las secciones siguen disponibles.</p>
       ) : null}
-      <div className="flex gap-3.5 border-t border-border px-3.5 py-2.5 text-[11.5px] text-muted-foreground">
+      <div className="flex gap-3.5 border-t border-border px-3.5 py-2.5 text-[11.5px] text-muted-foreground pointer-coarse:hidden">
         <span><Kbd>↑</Kbd> <Kbd>↓</Kbd> mover</span>
         <span><Kbd>Enter</Kbd> abrir</span>
         <span><Kbd>Esc</Kbd> cerrar</span>
@@ -203,7 +253,7 @@ export function PaletteList({
  * búsqueda es el panel que cuelga del buscador de la navbar (`NavbarSearch`).
  * Ctrl K se atiende aquí en ambos casos.
  */
-export function CommandPalette({ inlineOnDesktop = false }: { inlineOnDesktop?: boolean }) {
+export function CommandPalette({ inlineOnDesktop = false, inline = false }: { inlineOnDesktop?: boolean; /** La búsqueda vive en la barra (PC: `NavbarSearch`, móvil: `MobileTopbarSearch`): la hoja modal no se abre. */ inline?: boolean }) {
   const { open: paletteOpen, setOpen: setPaletteOpen } = usePalette();
   const search = usePaletteSearch();
   const desktop = useIsDesktop();
@@ -234,7 +284,7 @@ export function CommandPalette({ inlineOnDesktop = false }: { inlineOnDesktop?: 
   }
 
   return (
-    <DialogPrimitive.Root open={paletteOpen && !(inlineOnDesktop && desktop)} onOpenChange={changeOpen}>
+    <DialogPrimitive.Root open={paletteOpen && !inline && !(inlineOnDesktop && desktop)} onOpenChange={changeOpen}>
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className="fixed inset-0 z-(--z-takeover) bg-overlay data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0" />
         <DialogPrimitive.Content
@@ -253,7 +303,7 @@ export function CommandPalette({ inlineOnDesktop = false }: { inlineOnDesktop?: 
                 className="h-[54px] w-full bg-transparent pl-[46px] pr-4 text-[15px] outline-none placeholder:text-muted-foreground"
               />
             </div>
-            <PaletteList hits={search.hits} status={search.status} run={run} className="max-h-[min(380px,56vh)]" />
+            <PaletteList query={search.query} hits={search.hits} status={search.status} run={run} className="max-h-[min(380px,56vh)]" />
           </Command>
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>

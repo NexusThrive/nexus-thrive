@@ -35,19 +35,21 @@ function Row({ icon: Icon, label, value }: { icon: typeof Store; label: string; 
   );
 }
 
-function Card({ title, onEdit, children }: { title: string; onEdit: () => void; children: ReactNode }) {
+function Card({ title, onEdit, children }: { title: string; onEdit?: () => void; children: ReactNode }) {
   return (
     <section className="rounded-lg border border-border bg-surface">
       <header className="flex items-center justify-between border-b border-border px-4 py-3">
         <h2 className="font-display text-[14.5px] font-semibold">{title}</h2>
-        <button
-          type="button"
-          onClick={onEdit}
-          data-press=""
-          className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[12.5px] font-medium text-accent-text transition-colors hover:bg-surface-muted"
-        >
-          <Pencil aria-hidden="true" className="size-3.5" /> Editar
-        </button>
+        {onEdit ? (
+          <button
+            type="button"
+            onClick={onEdit}
+            data-press=""
+            className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[12.5px] font-medium text-accent-text transition-colors hover:bg-surface-muted"
+          >
+            <Pencil aria-hidden="true" className="size-3.5" /> Editar
+          </button>
+        ) : null}
       </header>
       <div className="px-4 py-1.5">{children}</div>
     </section>
@@ -91,7 +93,7 @@ export function OnboardingReview({
         </dl>
       </Card>
 
-      <Card title="Tu plan" onEdit={() => onEdit("plan")}>
+      <Card title="Tu plan">
         <div className="flex items-end justify-between gap-3 py-3">
           <div>
             <p className="font-display text-[17px] font-bold">

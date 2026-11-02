@@ -20,7 +20,7 @@ export function PublicPricing({ config }: { config: PricingConfig }) {
 
   return (
     <div className="grid gap-5">
-      <label className="grid max-w-sm gap-1.5 text-[13px] font-medium">
+      <label className="grid max-w-sm gap-1.5 text-ui font-medium">
         Tu rubro
         <Select
           value={vertical}

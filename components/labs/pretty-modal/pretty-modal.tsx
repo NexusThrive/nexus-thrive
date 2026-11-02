@@ -434,7 +434,7 @@ export function PrettyModal({
                   {title}
                 </DialogPrimitive.Title>
                 {description ? (
-                  <DialogPrimitive.Description className="mt-0.5 text-[13px] text-muted-foreground">
+                  <DialogPrimitive.Description className="mt-0.5 text-ui text-muted-foreground">
                     {description}
                   </DialogPrimitive.Description>
                 ) : null}
