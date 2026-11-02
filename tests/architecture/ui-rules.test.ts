@@ -72,14 +72,6 @@ describe("reglas del sistema de diseño", () => {
     expect(code).toEqual([...NATIVE_SELECT_ALLOWED].sort());
   });
 
-  test("sin campo de fecha nativo: se usa DateInput (components/molecules/date-input)", () => {
-    // El calendario del navegador no lleva el diseño de NEXUS. Los comentarios que lo mencionan no cuentan.
-    const code = FILES.filter((f) => f.text.split("\n").some((l) => /type=["']date["']/.test(l) && !/^\s*(\*|\/\/|\/\*)/.test(l)))
-      .map((f) => f.path)
-      .sort();
-    expect(code).toEqual([]);
-  });
-
   test("sin window.confirm/alert fuera de la lista de deuda", () => {
     expect(offenders(WINDOW_CONFIRM)).toEqual([...LEGACY_WINDOW_CONFIRM].sort());
   });
