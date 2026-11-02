@@ -2,7 +2,7 @@
  * Menú lateral del negocio: arma los grupos de navegación según el rubro y los módulos activos, resuelve la ruta
  * relativa al negocio, el elemento activo y la categoría de una ruta.
  */
-import { Blocks, FileSpreadsheet, Globe, HardHat, MessageCircle, Package, Plug, Receipt, Settings, ShoppingCart, Truck, Users, Wallet, type LucideIcon } from "lucide-react";
+import { Blocks, FileSpreadsheet, Receipt, Settings } from "lucide-react";
 import { type VerticalValue } from "@/lib/core/sectors/verticals";
 import { MODULES, type ModuleValue } from "@/lib/core/capabilities/modules";
 import { CAPABILITIES, CAPABILITY_CATEGORIES, type CapabilityCategory } from "@/lib/core/capabilities/registry";
@@ -31,15 +31,6 @@ export const DATA_ITEM: NavItem = {
   icon: FileSpreadsheet,
 };
 
-/** Herramientas externas del negocio y su estado (DR-18): vive en «Sistema» y puede crecer a un centro propio. */
-export const INTEGRATIONS_ITEM: NavItem = {
-  key: "integrations",
-  module: "settings",
-  label: "Integraciones",
-  href: "/integrations",
-  icon: Plug,
-};
-
 export const SETTINGS_ITEM: NavItem = {
   key: "settings",
   module: "settings",
@@ -57,17 +48,7 @@ export const SETTINGS_ITEM: NavItem = {
  */
 const GROUPS = CAPABILITY_CATEGORIES;
 type GroupName = CapabilityCategory;
-/** Icono de cada categoría: el grupo se muestra como una opción que despliega sus ítems. */
-const GROUP_ICONS: Record<GroupName, LucideIcon> = {
-  "Clientes y agenda": Users,
-  "Productos y pedidos": Package,
-  "Obras y proyectos": HardHat,
-  "Ventas y cobros": ShoppingCart,
-  "Compras y gastos": Truck,
-  "Finanzas y contabilidad": Wallet,
-  "Presencia en línea": Globe,
-  Canales: MessageCircle,
-};
+const COLLAPSIBLE: readonly GroupName[] = ["Ventas y cobros", "Compras y gastos"];
 /** Grupo de cada función: su categoría en el registro (la misma que ve en «Funciones»). */
 const MODULE_GROUP: Partial<Record<string, GroupName>> = Object.fromEntries(CAPABILITIES.map((c) => [c.id, c.category]));
 
@@ -101,10 +82,9 @@ export function buildTenantNav(vertical: VerticalValue, activeModules: readonly 
     ...GROUPS.map((label) => ({
       label,
       items: label === "Compras y gastos" ? [...expenses, ...forGroup(label)] : forGroup(label),
-      collapsible: true,
-      icon: GROUP_ICONS[label],
+      ...(COLLAPSIBLE.includes(label) ? { collapsible: true } : {}),
     })),
-    { label: "Sistema", items: [FUNCTIONS_ITEM, DATA_ITEM, INTEGRATIONS_ITEM, SETTINGS_ITEM], pinned: true },
+    { label: "Sistema", items: [FUNCTIONS_ITEM, DATA_ITEM, SETTINGS_ITEM], pinned: true },
   ].filter((group) => group.items.length > 0);
 }
 
