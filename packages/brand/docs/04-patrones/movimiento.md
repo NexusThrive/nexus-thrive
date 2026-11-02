@@ -25,11 +25,13 @@ catálogo vivo en Storybook (*Fundamentos → Movimiento*).
 | Superficie | Dueño | Dónde |
 |---|---|---|
 | Entrada de una vista al navegar | CSS `nx-view-in` | `app/[tenant]/(app)/template.tsx` |
+| Cambio de sección en móvil: empuje tipo iOS, la nueva entra desde la derecha sobre la anterior; atrás, la actual sale hacia la derecha | Web Animations (`#contenido` y su copia) | `components/organisms/nav-transitions.tsx` |
 | Modal flotante que abre un botón (PC): entrada y salida | GSAP (viaje desde el botón y su reversa) | `responsive-sheet.tsx` → `armModalMorph` (`lib/motion/modal-morph.ts`) |
 | Panel lateral: entra y sale deslizándose por la derecha (misma duración, en espejo) | CSS `drawer-in` / `drawer-out` | `responsive-sheet.module.css` |
 | Sostén de la salida del modal (para que Radix espere) y fallbacks sin botón | CSS | `responsive-sheet.module.css` |
 | Hoja inferior móvil | CSS (sube y baja; se arrastra) | `responsive-sheet.module.css` |
-| **Menús** (`DropdownMenu`), campana de avisos y **lista del `Select`**: entrada y salida | GSAP (viaje desde su control y su reversa, con `transform`) | `dropdown-menu.tsx`, `select.tsx`, `notification-center.tsx` → `armPopoverMorph` (`lib/motion/popover-morph.ts`) |
+| **Menús** (`DropdownMenu`) y campana de avisos: entrada y salida | GSAP (viaje desde su control y su reversa, con `transform`) | `dropdown-menu.tsx`, `notification-center.tsx` → `armPopoverMorph` (`lib/motion/popover-morph.ts`) |
+| **Lista del `Select`**: sin animación (aparece y desaparece al instante) | — | `select.tsx` |
 | Popovers, ayuda, tooltips | CSS (`tw-animate-css` de Radix) | `components/molecules/*` |
 | Buscador de la navbar: el campo se ensancha al enfocar (`max-width`, 320 ms) y el panel crece desde su borde inferior, del mismo ancho (`nx-drop-down`: clip-path + opacidad) | CSS | `navbar-search.tsx`, `app/styles/motion.css` |
 | Tarjeta elevable | CSS `nx-lift` | `Card interactive`, `KpiCard` con enlace |

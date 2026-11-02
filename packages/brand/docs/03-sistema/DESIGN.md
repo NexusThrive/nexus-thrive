@@ -94,7 +94,9 @@ interruptor de la barra). Densidad compacta con `data-density="compact"`
 |---|---|
 | Espacio (base 4 px) | `--space-1`…`--space-20` (4–80 px) |
 | Radios | `--radius-sm` 2 · `md` 4 · `lg` 6 · `xl` 8 px |
-| Controles | `--control-h` 40 px · `--row-h` 56 px |
+| Texto de interfaz (DR-02) | `text-2xs` 11 px (solo metadatos) · `text-xs` 12 · `text-ui` 13 (texto operativo: tablas, listas, menús) · `text-sm` 14 · `text-base` 16 · `text-lg` 18. Sin `text-[Npx]` nuevos (lo vigila `type-scale-freeze.test.ts`). `cn()` conoce `2xs` y `ui` como tamaños |
+| Controles | `--control-h` 40 px (34 compacta, **44 px con puntero táctil**, DR-15) · `--row-h` 56 px |
+| Documento e impresión (DR-05) | `--doc-ink` · `--doc-muted` · `--doc-soft` · `--doc-faint` · `--doc-rule` · `--doc-line` · `--doc-bg` · `--doc-gold` · `--doc-edge` · `--doc-edge-strong` (clases `text-doc-*`, `bg-doc-*`, `border-doc-*`): recibos, facturas y comprobantes se ven igual en cualquier tema |
 | Layout | `--sidebar-width` 248 · colapsada 76 · `--topbar-height` 60 (72 desde 768 px) · `--content-max` 1280 (1480 desde 1536 px) · `--content-prose` 72 ch |
 | Superficies | `--dialog-w-sm` 440 · `md` 520 · `lg` 640 · `xl` 768 · `--drawer-w` 440 · `--drawer-w-lg` 560 · `--popover-w` 320 |
 
@@ -167,11 +169,17 @@ Storybook con sus estados.
 | Campo con etiqueta, descripción y error | `Field` (+ `FieldError`, `FieldDescription`, `focusFirstInvalid`) | `components/molecules/field.tsx` |
 | Resultado de una acción | `useToast()` | `components/molecules/toast.tsx` |
 | Error o aviso dentro del formulario | `Alert` | `components/molecules/alert.tsx` |
-| Nada que mostrar | `EmptyState` | `components/molecules/empty-state.tsx` |
+| Nada que mostrar | `EmptyState` (texto a la izquierda, N en contorno recortada en la esquina inferior derecha; en una tabla o lista vacía, `action` lleva el botón de crear el primero) | `components/molecules/empty-state.tsx` |
+| Una pantalla o un bloque no se pudo cargar (`error.tsx`) | `ErrorState` (`page` o `block`; reintentar + salida + referencia) | `components/molecules/error-state.tsx` |
+| El rol no puede usar una función | `PermissionNotice` (texto derivado de la matriz de permisos, DR-34) | `components/molecules/permission-notice.tsx` |
+| Listado de registros (tabla en ancho, lista en angosto, DR-08) | `AdaptiveTable` (columnas con rol `primary` · `secondary` · `detail` · `figure` · `status` · `action`; `footer` de totales; una sola representación en el DOM; componente de cliente) | `components/organisms/adaptive-table.tsx` |
+| Estado de una herramienta externa (DR-47) | `ConnectionCard` (estado real de la conexión, entorno, madurez, quién la gestiona) | `components/molecules/connection-card.tsx` |
+| Estado de un registro | `Badge` + `StatusDot` (glifo ✓ × ! ● – y texto: el estado no depende del color, DR-27) | `components/atoms/badge.tsx` |
 | Esperando una sección (sin forma conocida / en línea) | `LoadingState` (la N) | `components/molecules/loading-state.tsx` |
 | Esperando contenido dentro de un panel, ficha o lista | `SkeletonRows` (esqueleto con la forma de lo que viene) | `components/molecules/skeleton-rows.tsx` |
 | Esperando la página | `PageSkeleton` (en `loading.tsx`) | `components/organisms/page-skeleton.tsx` |
 | Elegir una opción de una lista | `Select` propio (mismos props que `<select>`; **no** usar `<select>` nativo) | `components/atoms/select.tsx` |
+| Elegir una fecha | `DateInput` (calendario propio; **no** usar `<input type="date">`) | `components/molecules/date-input.tsx` |
 | Menú de acciones | `DropdownMenu` (el panel viaja desde su botón y vuelve a él; ver `packages/brand/docs/04-patrones/movimiento.md`) | `components/molecules/dropdown-menu.tsx` |
 | Inicio que cada persona ordena | `CustomizableDashboard` (12 columnas; se edita manteniendo presionado un bloque, sin botón «Personalizar»; arrastrar, ancho y alto por las esquinas, ocultar y «Agregar» gráficos del catálogo `lib/dashboard/chart-catalog.ts`; cada tarjeta es su propio bloque `widgets` con `id`, `label`, `span` y `half`; preferencia versionada en `localStorage`) | `components/organisms/customizable-dashboard.tsx`, lógica en `lib/dashboard/layout.ts` |
 | Crear sin salir de la pantalla (pago, gasto, socio) | **Mini-modal de creación**: `QuickCreateProvider` + `useQuickCreate().open(key)` abren una hoja encima de la pantalla actual desde «Crear», «Acciones rápidas» y la paleta (`QuickActionLink` conserva el `href`: Ctrl/⌘-clic o sin JS navegan). Cada hoja lleva `FullPanelLink` («Abrir en el panel completo →» a la sección). Una operación nueva declara su acción una vez en `lib/navigation/quick-create.ts` (`quickSheetFor`) y reutiliza el formulario del módulo | `components/organisms/quick-create-host.tsx`, `quick-action-link.tsx`, `components/molecules/full-panel-link.tsx`; hojas: `finance-sheets.tsx`, `customer-sheet.tsx` |
@@ -250,6 +258,7 @@ Reglas:
    | Superficie | Dueño |
    |---|---|
    | Entrada de una vista al navegar | CSS: `nx-view-in` en `template.tsx` |
+   | Cambio de sección en móvil, empuje tipo iOS (la nueva entra desde la derecha sobre la anterior; atrás, la actual sale hacia la derecha y deja ver la anterior) | Web Animations sobre `#contenido` y su copia: `NavTransitions` (solo < 768 px) |
    | Diálogo, panel, hoja | CSS (módulo de `ResponsiveSheet`) + origen contextual |
    | Menús, popovers, ayuda, buscador | CSS (`tw-animate-css` de Radix / `nx-drop`) |
    | Cifras, barras, gráficos | Web Animations (`lib/motion`) |
@@ -269,13 +278,12 @@ Reglas:
 ## 5. Layout y responsive
 
 - **Shell de la app** (`TenantShell`, y el mismo para el panel CEO): barra
-  lateral fija desde 768 px (completa o riel), barra superior con desenfoque,
-  barra inferior con "Crear" en el celular.
+  inferior con "Crear" bajo 768 px; **riel de 88 px con etiqueta abreviada de 768 a 1023 px**; **barra lateral expandida (248 px) desde 1024 px** (DR-13, DR-14); barra superior con desenfoque. Las etiquetas abreviadas salen de `short-label.ts`.
 - **Página:** `PageHeader` (eyebrow, título, descripción, acción principal a
   la derecha) → filtros → contenido. Ancho máximo `--content-max`.
 - **Puntos de quiebre:** `sm` 640 · `md` 768 (modal centrado y panel lateral;
   barra lateral) · `lg` 1024 · `xl` 1280.
-- **Móvil:** diálogos y paneles son hojas inferiores; tablas pasan a lista;
+- **Móvil:** diálogos y paneles son hojas inferiores; tablas pasan a lista (`AdaptiveTable`); todo control táctil mide 44 px (DR-15);
   nada de scroll horizontal accidental (`overflow-x: clip` en `html`).
 - **Impresión:** recibos y cuentas de cobro imprimen solo el documento.
 

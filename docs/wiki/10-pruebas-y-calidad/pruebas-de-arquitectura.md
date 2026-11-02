@@ -7,6 +7,7 @@ Esta lista se generó a partir del comentario inicial de cada archivo (30 archiv
 | Archivo | Qué vigila |
 |---|---|
 | `brand-docs.test.ts` | Todo el diseño operativo vive en `packages/brand/`. Evita que los documentos de diseño vuelvan a repartirse por el repositorio y comprueba que el índice del paquete, Storybook y los enlaces de su documentación siguen al día. |
+| `type-scale-freeze.test.ts` | Congela la deuda de la escala tipográfica (DR-02): ningún archivo puede tener más usos de `text-[Npx]` que su línea base (`type-scale-baseline.json`); un archivo nuevo no puede traerlos. La línea base solo baja (`node scripts/type-scale-baseline.mjs`). |
 | `check-prod-sql.test.ts` | Guardián de SQL de producción (scripts/check-prod-sql.sh). |
 | `data-access.test.ts` | ARCH-04 (bloque A.1–A.2): `app/` no consulta la base. La deuda llegó a cero el 2026-10-23; esta prueba evita que vuelva, además de la regla de ESLint. |
 | `e1-core-industria.test.ts` | E1 · Core no conoce las industrias. |
