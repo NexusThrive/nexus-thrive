@@ -8,6 +8,8 @@ import { defineConfig, devices } from "@playwright/test";
  * Storybook y lo sirve en 6007.
  */
 const PORT = 6007;
+/** Pruebas responsive (principio 08): solo corren en el proyecto `responsive`. */
+const RESPONSIVE = /responsive\.spec\.ts/;
 
 export default defineConfig({
   testDir: "./e2e",
@@ -20,8 +22,10 @@ export default defineConfig({
     trace: "retain-on-failure",
   },
   projects: [
-    { name: "escritorio", use: { ...devices["Desktop Chrome"], viewport: { width: 1280, height: 800 } } },
-    { name: "movil", use: { ...devices["Pixel 7"] } },
+    { name: "escritorio", testIgnore: RESPONSIVE, use: { ...devices["Desktop Chrome"], viewport: { width: 1280, height: 800 } } },
+    { name: "movil", testIgnore: RESPONSIVE, use: { ...devices["Pixel 7"] } },
+    // Rejilla de viewports de referencia (e2e/viewports.ts): cada prueba fija su propio viewport y su modo táctil.
+    { name: "responsive", testMatch: RESPONSIVE, use: { ...devices["Desktop Chrome"] } },
   ],
   webServer: {
     command: `pnpm exec vite preview --outDir storybook-static --port ${PORT} --strictPort --host 127.0.0.1`,

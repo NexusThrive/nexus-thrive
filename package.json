@@ -12,6 +12,7 @@
     "test": "vitest run",
     "test:integration": "bash ./test-integration.sh",
     "test:e2e": "storybook build --quiet -o storybook-static && playwright test",
+    "test:responsive": "storybook build --quiet -o storybook-static && playwright test --project=responsive",
     "verify": "bash ./scripts/verify.sh",
     "release": "bash ./scripts/release.sh",
     "storybook": "storybook dev -p 6006",
