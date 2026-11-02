@@ -107,7 +107,7 @@ export function computePresence(input: PresenceInput): PresenceResult {
     {
       key: "identity",
       label: "Identidad",
-      hint: address ? "Nombre y dirección completos." : "Agrega tu dirección en Ajustes.",
+      hint: address ? "Nombre y dirección completos." : "Agrega tu dirección en Configuración.",
       weight: PRESENCE_WEIGHTS.identity,
       earned: identityEarned,
       verified: false,

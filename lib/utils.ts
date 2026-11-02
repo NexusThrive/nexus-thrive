@@ -1,5 +1,8 @@
 import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { extendTailwindMerge } from "tailwind-merge";
+
+/** `text-2xs` y `text-ui` son tamaños de la escala (DR-02), no colores: sin esto `twMerge` los confundiría con `text-<color>`. */
+const twMerge = extendTailwindMerge({ extend: { classGroups: { "font-size": [{ text: ["2xs", "ui"] }] } } });
 
 /**
  * Une clases de Tailwind resolviendo conflictos con `tailwind-merge`.

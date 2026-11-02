@@ -2,6 +2,7 @@ import { and } from "@prisma/orm-postgres/orm-client";
 import { db } from "@/prisma/db";
 import { bogotaDayKey } from "@/lib/foundation/kernel/finance-series";
 import { buildNotifications, type AppNotification } from "@/lib/experience/dashboard/notifications";
+import { can } from "@/lib/core/auth/permissions";
 import { createTenantDb } from "@/lib/core/tenancy/db";
 import { activeModuleNames } from "@/lib/core/tenancy/settings-db";
 
@@ -12,13 +13,14 @@ import { createMembershipsDb } from "@/lib/industry/gym/memberships-repo";
  * módulos activos, sin las que esa persona ya descartó. Todo por `tenantId`;
  * `memberId` es el integrante (`User`) de ese negocio.
  */
-export async function loadNotifications(tenantId: string, memberId: string): Promise<AppNotification[]> {
+export async function loadNotifications(tenantId: string, memberId: string, role?: string): Promise<AppNotification[]> {
   const tenantDb = createTenantDb(tenantId);
   // Las descartadas se piden desde ya, en paralelo con los módulos (antes iban al final, una tras otra).
   const dismissedRows = db.orm.public.DismissedNotification.where({ userId: memberId }).select("key").all();
   const active = new Set(await activeModuleNames(tenantId));
   const modules = {
-    finance: active.has("finance") || active.has("payments"),
+    // Cobros y gastos solo para quien maneja dinero (P5, D3); con rol desconocido se conserva el comportamiento anterior.
+    finance: (active.has("finance") || active.has("payments")) && (role == null || can(role, "money.handle")),
     bookings: active.has("bookings"),
     memberships: active.has("memberships"),
   };

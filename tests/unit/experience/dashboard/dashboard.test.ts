@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { greetingFor, percentChange, previousBogotaMonth } from "@/lib/experience/dashboard";
+import { greetingFor, greetingName, nameFromEmail, percentChange, previousBogotaMonth } from "@/lib/experience/dashboard";
 
 describe("previousBogotaMonth", () => {
   it("enero vuelve a diciembre del año anterior", () => {
@@ -58,5 +58,28 @@ describe("daysUntil", () => {
     expect(daysUntil("2026-10-18T10:00:00Z", now)).toBe(2);
     expect(daysUntil("2026-10-16T18:00:00Z", now)).toBe(1);
     expect(daysUntil("2026-10-10T00:00:00Z", now)).toBe(0);
+  });
+});
+
+describe("greetingName", () => {
+  it("prefiere el nombre de la cuenta", () => {
+    expect(greetingName({ accountFirstName: "Camila", teamName: "Camila Ruiz", email: "x@y.co" })).toBe("Camila");
+  });
+  it("ignora el nombre de relleno «Usuario» y usa el del correo", () => {
+    expect(greetingName({ accountFirstName: "", teamName: "Usuario", email: "juan.perez@correo.com" })).toBe("Juan");
+  });
+  it("usa el nombre del equipo si la cuenta no trae uno", () => {
+    expect(greetingName({ teamName: "Ana María Gómez", email: "a@b.co" })).toBe("Ana");
+  });
+  it("sin nada, saluda sin nombre", () => {
+    expect(greetingName({})).toBe("Hola");
+  });
+});
+
+describe("nameFromEmail", () => {
+  it("toma la primera parte, con inicial en mayúscula", () => {
+    expect(nameFromEmail("santy401@gmail.com")).toBe("Santy");
+    expect(nameFromEmail("MARIA_LOPEZ@x.co")).toBe("Maria");
+    expect(nameFromEmail("")).toBeNull();
   });
 });

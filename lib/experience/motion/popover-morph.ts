@@ -56,6 +56,9 @@ export function armPopoverMorph(
   if (rect.width === 0 || rect.height === 0) return null;
 
   node.setAttribute("data-morph", "");
+  // Mientras el menú se abre no se puede elegir nada (un escudo invisible absorbe los clics; ver `globals.css`): así no se
+  // seleccionan ni abren opciones antes de que el menú termine de aparecer.
+  node.setAttribute("data-settling", "");
   gsap.set(node, { opacity: 0 }); // no se ve en su sitio final antes de arrancar
   const items = () => Array.from(node.children) as HTMLElement[];
 
@@ -73,6 +76,7 @@ export function armPopoverMorph(
   watcher?.observe(node, { attributes: true, attributeFilter: ["data-state"] });
 
   function exit(): Promise<void> {
+    node.removeAttribute("data-settling");
     if (leaving) return leaving;
     open?.kill();
     if (!started) {
@@ -108,7 +112,8 @@ export function armPopoverMorph(
         })
         .to(items(), { opacity: 0, y: 6, duration: 0.12, stagger: { each: 0.015, from: "end" }, ease: "power2.in" }, 0)
         .to(node, { x: dx, y: dy, scaleX: from.w / restW, scaleY: from.h / restH, borderRadius: from.radius, backgroundColor: solid(from.bg, now.bg), duration: travel, ease: "expo.inOut" }, 0.1)
-        .to(node, { opacity: 0, duration: travel * 0.35, ease: "power1.in" }, 0.1 + travel * 0.65);
+        // La tarjeta se disuelve desde el 35 % del viaje: llega al botón casi transparente, no como un recuadro vacío.
+        .to(node, { opacity: 0, duration: travel * 0.65, ease: "power1.in" }, 0.1 + travel * 0.35);
       // El control reaparece con un fundido cruzado (si se había ocultado).
       if (hideOrigin) tl.fromTo(anchor, { opacity: 0 }, { opacity: 1, duration: travel * 0.4, ease: "power1.out", immediateRender: false }, 0.1 + travel * 0.6);
     });
@@ -116,6 +121,7 @@ export function armPopoverMorph(
   }
 
   function cancel() {
+    node.removeAttribute("data-settling");
     cancelAnimationFrame(raf);
     watcher?.disconnect();
     open?.kill();
@@ -142,6 +148,7 @@ export function armPopoverMorph(
     void node.offsetWidth;
     open = gsap.timeline({
       onComplete: () => {
+        node.removeAttribute("data-settling");
         gsap.set(node, { clearProps: CLEAR });
         gsap.set(items(), { clearProps: "opacity,y" });
       },

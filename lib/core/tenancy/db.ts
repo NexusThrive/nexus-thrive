@@ -1138,7 +1138,7 @@ export function createTenantDb(tenantId: string) {
           ...payments.map((payment) => ({
             id: `payment-${payment.id}`,
             type: "payment" as const,
-            title: "Pago recibido",
+            title: "Cobro registrado",
             description:
               (payment.customerId
                 ? customerById.get(payment.customerId)?.name ?? "Cliente eliminado"

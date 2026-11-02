@@ -24,7 +24,7 @@ const PROFILES: Record<string, VerticalProfile> = {
       { key: "weightKg", label: "Peso", type: "number", unit: "kg", min: 20, max: 350 },
       { key: "heightCm", label: "Estatura", type: "number", unit: "cm", min: 90, max: 250 },
       { key: "goal", label: "Objetivo", type: "select", options: ["Bajar de peso", "Ganar masa muscular", "Tonificar", "Salud y bienestar", "Rendimiento deportivo", "Rehabilitación"] },
-      { key: "health", label: "Condiciones de salud o lesiones", type: "textarea", placeholder: "Hipertensión, lesión de rodilla…" },
+      { key: "health", label: "Condiciones de salud o lesiones", type: "textarea", placeholder: "Condiciones o lesiones relevantes" },
       { key: "emergencyName", label: "Contacto de emergencia", type: "text" },
       { key: "emergencyPhone", label: "Teléfono de emergencia", type: "text" },
     ],
@@ -35,9 +35,9 @@ const PROFILES: Record<string, VerticalProfile> = {
     photo: false,
     planOnCreate: false,
     fields: [
-      { key: "nationality", label: "Nacionalidad", type: "text", placeholder: "Colombiana" },
+      { key: "nationality", label: "Nacionalidad", type: "text", placeholder: "Nacionalidad" },
       { key: "documentType", label: "Tipo de documento", type: "select", options: ["Cédula", "Pasaporte", "Cédula de extranjería", "Tarjeta de identidad"] },
-      { key: "diet", label: "Alimentación o salud", type: "textarea", placeholder: "Vegetariano, alergia a mariscos…" },
+      { key: "diet", label: "Alimentación o salud", type: "textarea", placeholder: "Alimentación o salud" },
       { key: "emergencyName", label: "Contacto de emergencia", type: "text" },
       { key: "emergencyPhone", label: "Teléfono de emergencia", type: "text" },
     ],
@@ -49,7 +49,7 @@ const PROFILES: Record<string, VerticalProfile> = {
     planOnCreate: false,
     fields: [
       { key: "visitorType", label: "Tipo de visitante", type: "select", options: ["Individual", "Familia", "Colegio", "Universidad", "Empresa", "Turista extranjero"] },
-      { key: "institution", label: "Institución", type: "text", placeholder: "Colegio San José" },
+      { key: "institution", label: "Institución", type: "text", placeholder: "Institución" },
       { key: "groupSize", label: "Tamaño del grupo", type: "number", unit: "personas", min: 1, max: 500 },
     ],
   },
@@ -60,7 +60,7 @@ const PROFILES: Record<string, VerticalProfile> = {
     planOnCreate: false,
     fields: [
       { key: "company", label: "Empresa", type: "text" },
-      { key: "contactRole", label: "Cargo del contacto", type: "text", placeholder: "Gerente de proyectos" },
+      { key: "contactRole", label: "Cargo del contacto", type: "text", placeholder: "Cargo" },
       { key: "address", label: "Dirección", type: "text" },
     ],
   },

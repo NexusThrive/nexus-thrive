@@ -22,6 +22,8 @@ export type NavGroup = {
   label: string;
   items: NavItem[];
   collapsible?: boolean;
+  /** Si lo tiene, el grupo se pinta como una opción más (icono, nombre y flecha) que despliega sus ítems, sin título aparte. */
+  icon?: LucideIcon;
   /** Se ancla al pie de la barra lateral, fuera del desplazamiento (Sistema: configuración). */
   pinned?: boolean;
 };

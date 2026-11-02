@@ -175,3 +175,30 @@ export function redemptionTerms(terms: ContractTerms, planModules: readonly stri
     maxCustomers: terms.maxCustomers,
   };
 }
+
+/**
+ * Prueba de autoservicio (`15-flujo-de-adquisicion-y-activacion.md`): una cuenta creada sin asistencia ni código recibe
+ * 15 días del plan de mayor nivel, sin tarjeta. Al vencer, el vencimiento perezoso existente (`expireBenefitTrial`) la
+ * devuelve al plan gratuito: decisión provisional hasta que la dirección fije qué ocurre el día 16.
+ */
+export const SELF_SERVICE_TRIAL_DAYS = 15;
+export const SELF_SERVICE_TRIAL_PLAN = "SIGNATURE" as const;
+
+/** Días de aviso antes de que termine la prueba. */
+export const TRIAL_WARNING_DAYS = 3;
+
+export type TrialSummary = {
+  /** Días completos que quedan (0 el último día; nunca negativo). */
+  daysLeft: number;
+  endsAt: string;
+  /** `ok`: con margen · `soon`: faltan `TRIAL_WARNING_DAYS` o menos · `ended`: ya pasó. */
+  level: "ok" | "soon" | "ended";
+};
+
+/** Resume el estado de una prueba a partir de su fecha de fin (pura: sirve en servidor y en cliente). */
+export function trialSummary(endMs: number, nowMs: number): TrialSummary {
+  const left = endMs - nowMs;
+  const daysLeft = Math.max(0, Math.ceil(left / 86_400_000));
+  const level = left <= 0 ? "ended" : daysLeft <= TRIAL_WARNING_DAYS ? "soon" : "ok";
+  return { daysLeft, endsAt: new Date(endMs).toISOString(), level };
+}

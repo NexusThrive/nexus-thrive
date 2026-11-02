@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { COLS, addWidget, defaultLayout, isCustomized, moveWidget, normalizeLayout, placeWidget, removeWidget, setHeight, setSpan, spanFromWidth, stepSpan, toggleWidget } from "@/lib/experience/dashboard/layout";
+import { COLS, addWidget, defaultLayout, fillRows, setCols, isCustomized, moveWidget, normalizeLayout, placeWidget, removeWidget, setHeight, setSpan, spanFromWidth, stepSpan, toggleWidget } from "@/lib/experience/dashboard/layout";
 
 const IDS = ["kpis", "chart", "activity"] as const;
 
@@ -112,5 +112,51 @@ describe("gráficos agregados y redimensionado por esquinas", () => {
   });
   it("agregar un gráfico cuenta como personalizado", () => {
     expect(isCustomized(addWidget(defaultLayout(IDS), "line", 6, 8).layout, IDS)).toBe(true);
+  });
+});
+
+describe("fillRows", () => {
+  it("deja igual una fila que ya suma todo el ancho", () => {
+    expect(fillRows([24, 24, 24, 24])).toEqual([24, 24, 24, 24]);
+    expect(fillRows([64, 32, 96])).toEqual([64, 32, 96]);
+  });
+
+  it("el último bloque de una fila con hueco se extiende hasta el borde", () => {
+    // Se quitó el cuarto indicador: el tercero ocupa lo que sobraba.
+    expect(fillRows([24, 24, 24])).toEqual([24, 24, 48]);
+    // Un bloque solo en su fila ocupa todo el ancho.
+    expect(fillRows([96, 32])).toEqual([96, 96]);
+  });
+
+  it("cierra cada fila por separado", () => {
+    // 64+24 llena 88: el segundo se extiende 8; el resto (24+24) cierra su fila sola.
+    expect(fillRows([64, 24, 24, 24])).toEqual([64, 32, 24, 72]);
+  });
+
+  it("no extiende el bloque que se está redimensionando", () => {
+    expect(fillRows([24, 24, 24], 2)).toEqual([24, 24, 24]);
+  });
+
+  it("no cambia los anchos que recibe", () => {
+    const spans = [24, 24];
+    fillRows(spans);
+    expect(spans).toEqual([24, 24]);
+  });
+});
+
+describe("ancho en móvil (cols)", () => {
+  it("se guarda por bloque y distingue 1 (media fila) de 2 (completa)", () => {
+    const l = setCols(setCols(defaultLayout(IDS), "kpis", 1), "chart", 2);
+    expect(l.cols).toEqual({ kpis: 1, chart: 2 });
+    expect(isCustomized(l, IDS)).toBe(true);
+  });
+  it("al leer descarta ids desconocidos y valores que no son 1 o 2", () => {
+    const l = normalizeLayout({ v: 4, cols: { kpis: 1, chart: 3, viejo: 2, activity: "2" } }, IDS);
+    expect(l.cols).toEqual({ kpis: 1 });
+  });
+  it("quitar un gráfico agregado también borra su ancho en móvil", () => {
+    const { layout } = addWidget(defaultLayout(IDS), "bars", 48, 300);
+    const id = layout.added[0]!.id;
+    expect(removeWidget(setCols(layout, id, 1), id).cols).toEqual({});
   });
 });
