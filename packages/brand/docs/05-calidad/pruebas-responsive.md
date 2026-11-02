@@ -12,9 +12,11 @@ Una sola fuente: [`e2e/viewports.ts`](../../../../e2e/viewports.ts). Storybook l
 | Móvil | 360 × 740 | Referencia | Referencia principal de diseño móvil |
 | Móvil 375 | 375 × 812 | Regresión | Se conserva para detectar regresiones |
 | Móvil grande | 412 × 915 | Referencia | Referencia de pruebas automáticas |
+| iPad mini | 744 × 1133 | Referencia | iPad mini vertical: antes caía en el diseño de teléfono (DR-20) |
 | Tablet 768 | 768 × 1024 | Límite | Umbral entre móvil y tablet |
 | Tablet vertical | 820 × 1180 | Referencia | Tablet vertical |
-| Tablet 1023 | 1023 × 768 | Límite | Último ancho antes de la navegación expandida |
+| Tablet 1023 | 1023 × 768 | Límite | Último ancho del riel de tablet (la navegación expandida empieza en 1024 px) |
+| Tablet 1024 | 1024 × 768 | Límite | Primer ancho con la barra lateral expandida (DR-13) |
 | Tablet horizontal | 1180 × 820 | Referencia | Tablet horizontal |
 | Escritorio | 1280 × 800 | Referencia | Escritorio |
 
@@ -40,15 +42,18 @@ Las pruebas viven en [`e2e/responsive.spec.ts`](../../../../e2e/responsive.spec.
 
 ## Hallazgos conocidos: `test.fail`
 
-Los hallazgos de la auditoría que aún no se corrigen se marcan con `test.fail(condición, "P?-n: motivo · paso")`. La prueba **pasa mientras el hallazgo exista y falla cuando se corrige**, y entonces hay que **quitar la marca en el mismo PR**. Así ningún criterio se da por cumplido sin una prueba que pase sin marca.
+Los hallazgos de la auditoría que aún no se corrigen se marcan con `test.fail(condición, "P?-n: motivo · paso")`. La prueba **pasa mientras el hallazgo exista y falla cuando se corrige**, y entonces se quita la marca. **Hoy no queda ninguno abierto.**
 
-| Marca | Hallazgo | Se resuelve en |
+**Corregidos (marca retirada):**
+
+| Marca | Hallazgo | Corrección |
 |---|---|---|
-| `P2-3` | Objetivos táctiles de 40–42 px | Paso 4 |
-| `P2-4` | Riel de tablet sin etiquetas y texto de 10 px (también los títulos de grupo de la barra expandida) | Paso 5 |
-| `P2-5` | Controles de contenido por debajo de 44 px (selectores de periodo, filtros, ayudas, enlaces) | Paso 4 |
+| `P1-1`, `P1-2`, `P1-3` | Importes recortados y barra superior superpuesta | #143 |
+| `P2-3` | Objetivos táctiles de 40–42 px en cabecera y riel | DR-15: `--control-h` de 44 px con puntero táctil y variantes `pointer-coarse:` en los controles de la barra |
+| `P2-4` | Riel de tablet sin etiquetas y texto de 10 px | DR-13/DR-14: barra expandida desde 1024 px, riel de 88 px con etiqueta abreviada y grupos a 11 px |
+| `P2-5` | Controles de contenido por debajo de 44 px (selectores de periodo, filtros, ayudas, enlaces) | DR-15: variantes táctiles en `SegmentedControl`, `Chip`, `ContextHelp`, `Switch`, botones `sm` y enlaces |
 
-**Corregidos (marca retirada):** `P1-1`, `P1-2` y `P1-3` (importes recortados y barra superior superpuesta) en el paso 3; ver [`correcciones-p1-2026-11`](../06-auditorias/correcciones-p1-2026-11/informe.md).
+Ver [`correcciones-p1-2026-11`](../06-auditorias/correcciones-p1-2026-11/informe.md) y el [registro de implementación](../08-blueprint-ux/14-registro-de-implementacion.md).
 
 ## Alcance y límites
 

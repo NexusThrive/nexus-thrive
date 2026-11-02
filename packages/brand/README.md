@@ -18,6 +18,7 @@ Los **componentes** (código con 372 consumidores) siguen en `components/` y se 
 | [`05-calidad/`](docs/05-calidad/quality-checklist.md) | Lista de calidad de interfaz (se copia en cada PR); [pruebas responsive](docs/05-calidad/pruebas-responsive.md) |
 | [`06-auditorias/`](docs/06-auditorias/REDISENO-NEXUS.md) | Rediseño de NEXUS, auditorías de diseño y UX y sus capturas; [auditoría responsive del dashboard](docs/06-auditorias/responsive-dashboard-2026-11/informe.md) (piloto del principio 08) |
 | [`07-marketing/`](docs/07-marketing/estrategia-contenidos.md) | Estrategia de contenidos, SEO técnico, ventas, medición y experimentos |
+| [`08-blueprint-ux/`](docs/08-blueprint-ux/README.md) | Blueprint de experiencia UI/UX: filosofía, registro de decisiones, glosario, navegación, patrones, hoja de ruta y validación |
 | [`storybook/`](docs/storybook/introduccion.mdx) | Las páginas de documentación que muestra Storybook (`.storybook/main.ts` apunta aquí) |
 
 ### Dónde está el código del sistema de diseño
