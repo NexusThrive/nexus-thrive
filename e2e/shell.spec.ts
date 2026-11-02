@@ -46,7 +46,7 @@ test.describe("Buscador de la navbar (PC)", () => {
     await openStory(page, "organismos-navbarsearch--default");
     const input = page.getByRole("combobox");
     await input.click();
-    await expect(page.getByRole("listbox")).toBeVisible();
+    await expect(page.getByText("Encuentra lo que necesitas")).toBeVisible();
     await expect(page.getByRole("dialog")).toHaveCount(0);
 
     await input.fill("mar");
@@ -64,8 +64,7 @@ test.describe("Buscador de la navbar (PC)", () => {
     const input = page.getByRole("combobox");
     const before = (await input.boundingBox())!;
     await input.click();
-    const panel = page.getByRole("listbox");
-    await panel.waitFor();
+    await page.getByText("Encuentra lo que necesitas").waitFor();
     await page.waitForTimeout(500); // termina el ensanche (320 ms)
     const after = (await input.boundingBox())!;
     expect(after.width, "se ensancha al enfocar").toBeGreaterThan(before.width + 80);
@@ -191,23 +190,23 @@ test.describe("Centro de ayuda", () => {
 
 test.describe("Selector de fecha", () => {
   test("abre el calendario de NEXUS, elige un día y respeta el rango", async ({ page }) => {
-    await openStory(page, "moleculas-dateinput--with-range");
+    await openStory(page, "moléculas-dateinput--with-range");
     const trigger = page.getByRole("button", { name: /Entrega/ });
     await trigger.click();
     // Fuera del rango, el día no se puede elegir.
-    await expect(page.getByRole("button", { name: /5 nov 2026/ })).toBeDisabled();
-    await page.getByRole("button", { name: /18 nov 2026/ }).click();
-    await expect(trigger).toContainText("18 nov 2026");
+    await expect(page.getByRole("button", { name: /^5 de nov de 2026/ })).toBeDisabled();
+    await page.getByRole("button", { name: /^18 de nov de 2026/ }).click();
+    await expect(trigger).toContainText("18 de nov de 2026");
     await expectNoAxeViolations(page);
   });
 
   test("salta de año sin retroceder de uno en uno: título → año → mes", async ({ page }) => {
-    await openStory(page, "moleculas-dateinput--with-value");
+    await openStory(page, "moléculas-dateinput--with-value");
     await page.getByRole("button", { name: /Inicio/ }).click();
     await page.getByRole("button", { name: /Elegir mes y año/ }).click();
     await page.getByRole("button", { name: /Elegir año/ }).click();
     await page.getByRole("button", { name: "2019" }).click();
     await page.getByRole("button", { name: "mar", exact: true }).click();
-    await expect(page.getByText("Marzo 2019")).toBeVisible();
+    await expect(page.getByText("Marzo de 2019")).toBeVisible();
   });
 });

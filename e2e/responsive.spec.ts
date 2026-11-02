@@ -158,14 +158,14 @@ for (const vp of VIEWPORTS) {
       expect(await medirTopbarFuera(page), "controles fuera de la pantalla").toEqual([]);
     });
 
-    // P1-2: con un nombre de negocio muy largo la marca cede ancho y las acciones (búsqueda, notificaciones, tema) siguen a la vista.
+    // P1-2: con un nombre de negocio muy largo la marca cede ancho y las acciones (búsqueda y notificaciones) siguen a la vista; el tema vive en la barra inferior.
     test("Inicio fiel con nombre largo: la barra superior no se superpone y conserva sus acciones", async ({ page }) => {
       await openStory(page, FIEL_NOMBRE_LARGO);
       await page.waitForTimeout(800);
       expect(await medirSolapes(page)).toEqual([]);
       expect(await medirTopbarFuera(page), "controles fuera de la pantalla").toEqual([]);
       if (vp.ancho < TABLET_MIN) {
-        for (const nombre of ["Buscar", /Notificaciones/, "Cambiar a modo oscuro"]) await expect(page.getByRole("banner").getByRole("button", { name: nombre })).toBeVisible();
+        for (const nombre of ["Buscar", /Notificaciones/]) await expect(page.getByRole("banner").getByRole("button", { name: nombre })).toBeVisible();
       }
     });
 
@@ -195,9 +195,10 @@ for (const vp of VIEWPORTS) {
       expect((await medirTexto(page)).recortados).toEqual([]);
     });
 
-    test("Cuenta nueva: muestra los primeros pasos y la actividad vacía", async ({ page }) => {
+    // Los primeros pasos viven ahora en el layout (indicador de la barra superior), no en el dashboard: aquí se comprueba el estado vacío.
+    test("Cuenta nueva: muestra la actividad vacía sin cobros", async ({ page }) => {
       await openStory(page, FIEL_NUEVA);
-      await expect(page.getByText("Registra tu primer socio").first()).toBeVisible();
+      await expect(page.getByText(/Sin cobros registrados/).first()).toBeVisible();
     });
 
     test("Cargando: el esqueleto de la ruta está dentro del shell", async ({ page }) => {

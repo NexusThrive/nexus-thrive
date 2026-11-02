@@ -98,7 +98,10 @@ test.describe("Contabilidad", () => {
   test("informes: fechas al revés se explican", async ({ page }) => {
     await openStory(page, "páginas-finanzas-contabilidad--default");
     await page.getByRole("button", { name: "Informes" }).click();
-    await page.getByLabel("Desde").fill("2026-10-30");
+    // «Hasta» queda en un día del mes anterior, antes de «Desde» (el 1.º de este mes).
+    await page.getByLabel("Hasta").click();
+    await page.getByRole("button", { name: "Mes anterior" }).click();
+    await page.getByRole("button", { name: /^15 / }).click();
     await page.getByRole("button", { name: "Ver informe" }).click();
     await expect(page.getByText(/no puede ser posterior/)).toBeVisible();
   });
