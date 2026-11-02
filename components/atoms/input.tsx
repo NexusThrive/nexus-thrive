@@ -22,7 +22,7 @@ export const textareaClasses = `${fieldClasses} field-sizing-content min-h-[84px
 export const selectClasses = `${inputClasses} cursor-pointer appearance-none bg-[linear-gradient(45deg,transparent_50%,var(--foreground-muted)_50%),linear-gradient(135deg,var(--foreground-muted)_50%,transparent_50%)] bg-[length:5px_5px] bg-[position:calc(100%-18px)_50%,calc(100%-13px)_50%] bg-no-repeat pr-[34px]`;
 
 /** Etiqueta de campo (Inter 500 13 px) para formularios sin `Field`. */
-export const labelClasses = "mb-2 block text-[13px] font-medium text-foreground";
+export const labelClasses = "mb-2 block text-ui font-medium text-foreground";
 
 /** Campo de texto. Para etiqueta, ayuda y error, envolverlo en `Field`. */
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {

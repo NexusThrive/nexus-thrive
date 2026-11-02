@@ -109,7 +109,7 @@ export function UpdateNotice({ onUpdate, onDismiss }: { onUpdate: () => void; on
   return (
     <div
       role="status"
-      className="fixed inset-x-3 bottom-[calc(76px+env(safe-area-inset-bottom,0px))] z-(--z-banner) mx-auto flex max-w-md items-center gap-3 rounded-md border border-border bg-surface px-3.5 py-3 text-[13px] shadow-[var(--nx-shadow-overlay)] md:bottom-5 md:left-auto md:right-5 md:mx-0"
+      className="fixed inset-x-3 bottom-[calc(76px+env(safe-area-inset-bottom,0px))] z-(--z-banner) mx-auto flex max-w-md items-center gap-3 rounded-md border border-border bg-surface px-3.5 py-3 text-ui shadow-[var(--nx-shadow-overlay)] md:bottom-5 md:left-auto md:right-5 md:mx-0"
     >
       <RefreshCw aria-hidden="true" className="size-4 shrink-0 text-accent-text" />
       <span className="flex-1">Hay una versión nueva de NEXUS.</span>

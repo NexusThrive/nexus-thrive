@@ -197,7 +197,7 @@ function Toast({ item, onGone }: { item: ToastItem; onGone: (id: number) => void
   return (
     <div
       ref={ref}
-      className="pointer-events-auto relative flex touch-pan-y items-center gap-2.5 overflow-hidden rounded-lg border border-border bg-surface py-3 pl-3.5 pr-3 text-[13.5px] shadow-[var(--nx-shadow-overlay)]"
+      className="pointer-events-auto relative flex touch-pan-y items-center gap-2.5 overflow-hidden rounded-lg border border-border bg-surface py-3 pl-3.5 pr-3 text-ui shadow-[var(--nx-shadow-overlay)]"
     >
       <IconTile tone={tone} className="size-[26px] [&_svg]:size-4">
         <Icon />
@@ -213,7 +213,7 @@ function Toast({ item, onGone }: { item: ToastItem; onGone: (id: number) => void
             item.undo?.();
             dismiss();
           }}
-          className="p-1.5 text-[13px] font-semibold text-accent-text"
+          className="p-1.5 text-ui font-semibold text-accent-text"
         >
           Deshacer
         </button>

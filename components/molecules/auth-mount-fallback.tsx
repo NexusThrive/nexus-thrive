@@ -131,7 +131,7 @@ export function AuthMountFallback({ children }: { children: React.ReactNode }) {
           <Skeleton className="h-11 w-full" />
         </div>
         <Skeleton className="h-11 w-full" />
-        <p className="text-center text-[13px] text-muted-foreground">{wasReady ? "Entrando…" : "Cargando acceso…"}</p>
+        <p className="text-center text-ui text-muted-foreground">{wasReady ? "Entrando…" : "Cargando acceso…"}</p>
       </div>
     </div>
   );
@@ -146,7 +146,7 @@ function Failed() {
       </span>
       <div className="grid gap-1.5">
         <p className="font-display text-[15px] font-bold">No pudimos cargar el acceso</p>
-        <p className="text-[13px] text-muted-foreground">
+        <p className="text-ui text-muted-foreground">
           El formulario de inicio de sesión no se pudo cargar. Puede ser un problema de conexión o
           que el dominio no esté habilitado todavía.
         </p>
@@ -155,14 +155,14 @@ function Failed() {
         <button
           type="button"
           onClick={() => window.location.reload()}
-          className="inline-flex items-center gap-1.5 rounded-sm bg-ink px-3.5 py-2 text-[13px] font-semibold text-white transition hover:bg-black"
+          className="inline-flex items-center gap-1.5 rounded-sm bg-ink px-3.5 py-2 text-ui font-semibold text-white transition hover:bg-black"
         >
           <RefreshCw aria-hidden="true" className="size-3.5" />
           Reintentar
         </button>
         <a
           href="mailto:soporte@nexusthrive.com.co"
-          className="inline-flex items-center gap-1.5 rounded-sm border border-border px-3.5 py-2 text-[13px] font-semibold transition hover:bg-surface-muted"
+          className="inline-flex items-center gap-1.5 rounded-sm border border-border px-3.5 py-2 text-ui font-semibold transition hover:bg-surface-muted"
         >
           <LifeBuoy aria-hidden="true" className="size-3.5" />
           Escríbenos

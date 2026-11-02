@@ -100,7 +100,7 @@ export function WeekStrip({
                 on ? "text-primary-foreground" : "text-muted-foreground",
               )}
             >
-              <small className="text-[11px] font-medium uppercase tracking-[0.06em]">{weekdayLabel(day)}</small>
+              <small className="text-2xs font-medium uppercase tracking-[0.06em]">{weekdayLabel(day)}</small>
               <b
                 className={cn(
                   "font-display text-lg font-semibold tabular-nums",

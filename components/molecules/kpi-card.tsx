@@ -32,6 +32,7 @@ export function KpiCard({
   info,
   action,
   index = 0,
+  inverse = false,
   className,
   children,
 }: {
@@ -54,17 +55,19 @@ export function KpiCard({
   action?: { label: string; href?: string };
   /** Posición en la fila: escalona la entrada y el trazo. */
   index?: number;
+  /** Tarjeta destacada: tinta con cifras en oro (usa los tokens del tema oscuro). Una por pantalla. */
+  inverse?: boolean;
   className?: string;
   /** Detalle al pie, separado por una línea (p. ej. desglose por método). */
   children?: ReactNode;
 }) {
   const body = (
     <>
-      <div className="flex items-center justify-between gap-3 text-[12.5px] text-muted-foreground">
+      <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
         <span className="flex min-w-0 items-center gap-2">
           {alert && <span aria-hidden="true" className="block size-1.5 shrink-0 bg-danger" />}
           <span className="truncate">{label}</span>
-          {info ? <span className="relative">
+          {info ? <span className="relative max-sm:hidden">
             <ContextHelp topic={label.toLowerCase()}>{info}</ContextHelp>
           </span> : null}
         </span>
@@ -74,17 +77,17 @@ export function KpiCard({
         {delta || hint ? (
           <div className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
             {delta}
-            {hint ? <span>{hint}</span> : null}
+            {hint ? <span className="max-sm:hidden">{hint}</span> : null}
           </div>
         ) : null}
       </KpiTrendBody>
       {action ? (
         action.href && !href ? (
-          <Link href={action.href} className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-accent-text hover:underline focus-visible:outline-2 focus-visible:outline-ring">
+          <Link href={action.href} className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-accent-text max-sm:hidden hover:underline focus-visible:outline-2 focus-visible:outline-ring">
             {action.label} <ArrowUpRight aria-hidden="true" className="size-3.5" />
           </Link>
         ) : (
-          <span className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-accent-text">
+          <span className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-accent-text max-sm:hidden">
             {action.label} <ArrowUpRight aria-hidden="true" className="size-3.5" />
           </span>
         )
@@ -94,9 +97,10 @@ export function KpiCard({
   );
 
   const classes = cn(
-    "group/kpi nx-rise nx-spot relative flex h-full flex-col gap-0.5 overflow-hidden rounded-lg border border-border bg-card p-4",
-    trend && "min-h-[148px]",
+    "group/kpi nx-rise nx-spot relative flex h-full flex-col gap-0.5 overflow-hidden rounded-lg border border-border bg-card p-3 sm:p-4",
+    trend && "min-h-[116px] sm:min-h-[148px]",
     href && "nx-lift has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-ring",
+    inverse && "dark border-transparent",
     className,
   );
   const style = { ["--i" as string]: index };

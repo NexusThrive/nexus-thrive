@@ -9,6 +9,21 @@ import { motionOff } from "@/lib/experience/motion/index";
 /** Arrastre necesario para actualizar (px). */
 const THRESHOLD = 170;
 
+/** Paneles encima de la página: dentro de ellos (o con uno abierto) deslizar hacia abajo no actualiza el inicio. */
+const OVERLAY = '[role="dialog"], [role="alertdialog"], [role="menu"], [role="listbox"], [data-radix-popper-content-wrapper]';
+const OPEN_OVERLAY = '[role="dialog"][data-state="open"], [role="alertdialog"][data-state="open"]';
+
+/** ¿El gesto empezó donde no debe actualizarse? Un panel, un menú o algo con scroll propio que no está arriba. */
+function startsInsideOther(target: EventTarget | null): boolean {
+  if (!(target instanceof Element)) return false;
+  if (target.closest(OVERLAY) || document.querySelector(OPEN_OVERLAY)) return true;
+  for (let el: Element | null = target; el && el !== document.documentElement; el = el.parentElement) {
+    const overflowY = getComputedStyle(el).overflowY;
+    if ((overflowY === "auto" || overflowY === "scroll") && el.scrollTop > 0) return true;
+  }
+  return false;
+}
+
 /**
  * Deslizar para actualizar (CAR·09), solo táctil y con la página arriba del
  * todo: la N se dibuja según la distancia (resistencia 0,45) y, al soltar
@@ -34,7 +49,7 @@ export function PullToRefresh({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const onStart = (e: TouchEvent) => {
-      if (waiting || window.scrollY > 0 || e.touches.length > 1) return;
+      if (waiting || window.scrollY > 0 || e.touches.length > 1 || startsInsideOther(e.target)) return;
       startY.current = e.touches[0].clientY;
     };
     const onMove = (e: TouchEvent) => {
@@ -92,7 +107,7 @@ export function PullToRefresh({ children }: { children: ReactNode }) {
     <>
       <div
         aria-hidden={!waiting}
-        className="flex items-center justify-center gap-2.5 overflow-hidden text-[12.5px] text-muted-foreground md:hidden"
+        className="flex items-center justify-center gap-2.5 overflow-hidden text-xs text-muted-foreground md:hidden"
         style={{
           height: `${height}px`,
           transition: !ready || pull || motionOff() ? "none" : "height .3s var(--nx-ease-out)",

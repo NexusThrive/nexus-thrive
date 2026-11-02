@@ -55,7 +55,7 @@ export function SwipeCard({ actions, children, className }: { actions: SwipeActi
             </>
           );
           const cls = cn(
-            "flex flex-col items-center justify-center gap-1 text-[11px] font-semibold",
+            "flex flex-col items-center justify-center gap-1 text-2xs font-semibold",
             TONES[tone],
             disabled && "pointer-events-none opacity-50",
           );

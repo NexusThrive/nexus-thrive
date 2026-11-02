@@ -24,7 +24,7 @@ export function LoadingState({
       role="status"
       aria-live="polite"
       className={cn(
-        "flex items-center gap-2.5 text-[13px] text-muted-foreground",
+        "flex items-center gap-2.5 text-ui text-muted-foreground",
         inline ? "inline-flex" : "justify-center px-6 py-12",
         className,
       )}

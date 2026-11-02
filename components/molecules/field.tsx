@@ -53,7 +53,7 @@ export function Field({
     <div className={cn("flex flex-col gap-2", className)} data-invalid={error ? "" : undefined}>
       <div className="flex min-h-6 items-center justify-between gap-2.5">
         <span className="flex items-center gap-1">
-          <label htmlFor={id} className="text-[13px] font-medium text-foreground">
+          <label htmlFor={id} className="text-ui font-medium text-foreground">
             {label}
             {required ? (
               <>

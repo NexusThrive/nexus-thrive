@@ -17,14 +17,14 @@ function Switch({
     <SwitchPrimitive.Root
       data-slot="switch"
       className={cn(
-        "peer group relative inline-flex h-6 w-[42px] shrink-0 items-center rounded-sm bg-border-strong outline-none transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary",
+        "peer group relative inline-flex h-6 pointer-coarse:h-11 pointer-coarse:bg-clip-content pointer-coarse:py-[10px] pointer-coarse:px-px pointer-coarse:w-11 w-[42px] shrink-0 items-center rounded-sm bg-border-strong outline-none transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary",
         className,
       )}
       {...props}
     >
       <SwitchPrimitive.Thumb
         data-slot="switch-thumb"
-        className="pointer-events-none absolute left-[3px] top-[3px] block h-[18px] w-[18px] rounded-[1px] bg-white transition-[translate,width,background-color] duration-[380ms] ease-[var(--nx-ease-bounce)] group-active:w-[22px] data-[state=checked]:translate-x-[18px] data-[state=checked]:bg-primary-foreground group-active:data-[state=checked]:translate-x-[14px]"
+        className="pointer-events-none absolute left-[3px] top-[3px] pointer-coarse:left-[4px] pointer-coarse:top-[13px] block h-[18px] w-[18px] rounded-[1px] bg-white transition-[translate,width,background-color] duration-[380ms] ease-[var(--nx-ease-bounce)] group-active:w-[22px] data-[state=checked]:translate-x-[18px] data-[state=checked]:bg-primary-foreground group-active:data-[state=checked]:translate-x-[14px]"
       />
     </SwitchPrimitive.Root>
   );

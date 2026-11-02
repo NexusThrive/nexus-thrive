@@ -8,7 +8,7 @@ import { describe, expect, test } from "vitest";
 
 const ROOT = join(import.meta.dirname, "..", "..");
 const DOCS = "packages/brand/docs";
-const SECCIONES = ["01-marca", "02-producto", "03-sistema", "04-patrones", "05-calidad", "06-auditorias", "07-marketing", "storybook"];
+const SECCIONES = ["01-marca", "02-producto", "03-sistema", "04-patrones", "05-calidad", "06-auditorias", "07-marketing", "08-blueprint-ux", "storybook"];
 
 const archivos = (dir: string): string[] =>
   readdirSync(join(ROOT, dir)).flatMap((n) => {

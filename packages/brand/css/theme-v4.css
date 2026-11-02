@@ -45,9 +45,25 @@
   --color-sidebar-hover: var(--sidebar-hover);
   --color-sidebar-active: var(--sidebar-active);
   --color-sidebar-accent: var(--sidebar-accent);
+  --color-doc-muted: var(--doc-muted);
+  --color-doc-rule: var(--doc-rule);
+  --color-doc-bg: var(--doc-bg);
+  --color-doc-line: var(--doc-line);
+  --color-doc-ink: var(--doc-ink);
+  --color-doc-gold: var(--doc-gold);
+  --color-doc-soft: var(--doc-soft);
+  --color-doc-edge-strong: var(--doc-edge-strong);
+  --color-doc-faint: var(--doc-faint);
+  --color-doc-edge: var(--doc-edge);
   --font-display: var(--font-montserrat), "Segoe UI", system-ui, sans-serif;
   --font-sans: var(--font-inter), "Segoe UI", system-ui, sans-serif;
   --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+  /* Escala de interfaz (DR-02): 11 · 12 · 13 · 14 · 16 · 18. `text-xs/sm/base/lg` son los de Tailwind;
+     estos dos nombran los tamaños que la app ya usaba suelto (`text-[11px]`, `text-[13px]`). */
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+  --text-ui: 0.8125rem;
+  --text-ui--line-height: 1.25rem;
   --radius-sm: 2px;
   --radius-md: 4px;
   --radius-lg: 6px;
