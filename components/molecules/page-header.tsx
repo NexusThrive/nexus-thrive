@@ -11,7 +11,7 @@ export function Eyebrow({ children, className }: { children: ReactNode; classNam
   return (
     <div
       className={cn(
-        "mb-1.5 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground",
+        "mb-1.5 flex items-center gap-2 text-2xs font-semibold uppercase tracking-[0.1em] text-muted-foreground",
         className,
       )}
     >
@@ -22,7 +22,7 @@ export function Eyebrow({ children, className }: { children: ReactNode; classNam
 }
 
 /**
- * Encabezado de página: antetítulo, título Montserrat 700 (24→34 px según
+ * Encabezado de página: antetítulo, título Montserrat 700 (22→28 px según
  * ancho), descripción y acciones alineadas abajo a la derecha (debajo en
  * móvil). `title` admite un RevealText para la entrada letra por letra.
  */
@@ -32,21 +32,24 @@ export function PageHeader({
   description,
   actions,
   className,
+  descriptionClassName,
 }: {
   eyebrow?: ReactNode;
   title: ReactNode;
   description?: ReactNode;
   actions?: ReactNode;
   className?: string;
+  /** Para esconder o acortar la descripción en pantallas chicas (`max-sm:hidden`). */
+  descriptionClassName?: string;
 }) {
   return (
-    <header className={cn("mb-5 flex flex-wrap items-end justify-between gap-4", className)}>
+    <header className={cn("mb-3 flex flex-wrap sm:mb-4 items-end justify-between gap-x-4 gap-y-3", className)}>
       <div className="nx-rise min-w-0">
         {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
-        <h1 className="font-display text-[clamp(24px,4.4vw,34px)] font-bold leading-[1.12] tracking-[-0.02em] text-foreground">
+        <h1 className="font-display text-[clamp(22px,3.4vw,28px)] font-bold leading-[1.15] tracking-[-0.02em] text-foreground">
           {title}
         </h1>
-        {description ? <p className="mt-1.5 max-w-[62ch] text-muted-foreground">{description}</p> : null}
+        {description ? <p className={cn("mt-1 max-w-[62ch] text-sm text-muted-foreground", descriptionClassName)}>{description}</p> : null}
       </div>
       {actions ? (
         <div

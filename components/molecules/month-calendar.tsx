@@ -40,7 +40,7 @@ export function MonthCalendar({
       </div>
       <div className="grid grid-cols-7 gap-0.5 text-center">
         {WEEKDAYS.map((d) => (
-          <span key={d} className="h-[26px] text-[11px] font-medium leading-[26px] text-muted-foreground">
+          <span key={d} className="h-[26px] text-2xs font-medium leading-[26px] text-muted-foreground">
             {d}
           </span>
         ))}
@@ -54,7 +54,7 @@ export function MonthCalendar({
               aria-label={day}
               onClick={() => onChange(day)}
               className={cn(
-                "relative aspect-square rounded-[3px] text-[13px] tabular-nums transition-colors duration-200",
+                "relative aspect-square rounded-[3px] text-ui tabular-nums transition-colors duration-200",
                 selected ? "bg-primary text-primary-foreground" : "hover:bg-surface-muted",
                 !sameMonth(day, value) && !selected && "text-muted-foreground opacity-45",
                 day === today && !selected && "shadow-[inset_0_0_0_1px_var(--nx-gold-600)]",

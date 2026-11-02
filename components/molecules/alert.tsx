@@ -29,7 +29,7 @@ export function Alert({
   return (
     <div
       role={tone === "danger" ? "alert" : "status"}
-      className={cn("flex items-start gap-2.5 rounded-md border-l-[3px] px-3 py-2.5 text-[13px]", classes, className)}
+      className={cn("flex items-start gap-2.5 rounded-md border-l-[3px] px-3 py-2.5 text-ui", classes, className)}
     >
       <Icon aria-hidden="true" className="mt-px size-4 shrink-0" />
       <div className="min-w-0">

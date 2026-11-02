@@ -65,7 +65,7 @@ export function ContextHelp({
         aria-label={`Ayuda sobre ${topic}`}
         className={cn(
           // 24 × 24 px: el mínimo de WCAG 2.5.8 para un control pequeño junto a texto.
-          "inline-grid size-6 shrink-0 place-items-center rounded-full align-middle text-muted-foreground transition-colors duration-(--motion-hover) hover:text-foreground data-[state=open]:text-foreground",
+          "inline-grid size-6 pointer-coarse:size-11 pointer-coarse:-m-2.5 shrink-0 place-items-center rounded-full align-middle text-muted-foreground transition-colors duration-(--motion-hover) hover:text-foreground data-[state=open]:text-foreground",
           className,
         )}
         onClick={(event) => {

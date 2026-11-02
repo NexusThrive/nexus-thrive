@@ -25,10 +25,10 @@ export const buttonVariants = cva(
       },
       size: {
         default: "h-[var(--control-h)] px-[18px]",
-        sm: "h-8 px-3 text-[12.5px]",
+        sm: "h-8 px-3 text-[12.5px] pointer-coarse:h-11",
         lg: "h-12 px-[22px] text-sm",
         icon: "size-[var(--control-h)] p-0",
-        "icon-sm": "size-8 p-0",
+        "icon-sm": "size-8 p-0 pointer-coarse:size-11",
       },
     },
     defaultVariants: {

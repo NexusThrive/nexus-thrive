@@ -118,7 +118,7 @@ export function SeriesChart({
             {ticks.map((v, i) => (
               <g key={i}>
                 <line x1={PAD.left} x2={w - PAD.right} y1={y(v)} y2={y(v)} className="stroke-border" strokeWidth={1} />
-                <text x={PAD.left - 8} y={y(v) + 4} textAnchor="end" className="fill-muted-foreground text-[11px] font-medium">
+                <text x={PAD.left - 8} y={y(v) + 4} textAnchor="end" className="fill-muted-foreground text-2xs font-medium">
                   {v === 0 ? "0" : compact.format(v)}
                 </text>
               </g>
@@ -134,7 +134,7 @@ export function SeriesChart({
             })}
             {labels.map((label, i) =>
               i % Math.max(1, Math.ceil(n / Math.max(2, Math.floor(innerW / 48)))) === 0 || i === n - 1 ? (
-                <text key={i} x={x(i)} y={h - 6} textAnchor="middle" className="fill-muted-foreground text-[11px] font-medium">
+                <text key={i} x={x(i)} y={h - 6} textAnchor="middle" className="fill-muted-foreground text-2xs font-medium">
                   {label}
                 </text>
               ) : null,

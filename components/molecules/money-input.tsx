@@ -31,7 +31,7 @@ export const MoneyInput = forwardRef<
 
   return (
     <div className="relative">
-      <span aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[13px] text-muted-foreground">
+      <span aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ui text-muted-foreground">
         {currency}
       </span>
       <input

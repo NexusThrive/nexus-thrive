@@ -3,7 +3,6 @@
 import * as React from "react";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
 import { Check, ChevronDown } from "lucide-react";
-import { armPopoverMorph, SELECT_MORPH_SECONDS, type PopoverMorph } from "@/lib/experience/motion/index";
 import { cn } from "@/lib/utils";
 import { fieldClasses } from "./input";
 
@@ -65,13 +64,7 @@ function Select({
   void rest;
   const options = React.useMemo(() => parseOptions(children), [children]);
   const nativeRef = React.useRef<HTMLSelectElement>(null);
-  // La lista crece desde la caja del campo y vuelve a ella; la caja se queda a la vista (solo se anima la lista).
   const triggerRef = React.useRef<HTMLButtonElement>(null);
-  const morph = React.useRef<PopoverMorph | null>(null);
-  const listBoxRef = React.useCallback((node: HTMLDivElement | null) => {
-    morph.current?.cancel();
-    morph.current = node ? armPopoverMorph(node, triggerRef.current, { watchClose: true, hideOrigin: false, seconds: SELECT_MORPH_SECONDS }) : null;
-  }, []);
   const listRef = React.useRef<HTMLDivElement>(null);
   const uid = React.useId();
   const listId = `${uid}-list`;
@@ -200,7 +193,6 @@ function Select({
 
       <PopoverPrimitive.Portal>
         <PopoverPrimitive.Content
-          ref={listBoxRef}
           role="presentation" /* Radix lo pone como role=dialog; aquí el rol útil es el del listbox interior */
           align="start"
           sideOffset={6}
@@ -211,12 +203,12 @@ function Select({
           onMouseDown={(event) => event.preventDefault()}
           // Dentro de un diálogo modal el <body> queda con pointer-events:none; la lista flota fuera y debe seguir recibiendo clics.
           style={{ pointerEvents: "auto" }}
-          className="nx-select-list z-(--z-popover) w-[max(var(--radix-popover-trigger-width),180px)] max-w-[calc(100vw-24px)] origin-(--radix-popover-content-transform-origin) rounded-md border border-border bg-popover p-1 text-sm text-popover-foreground shadow-(--shadow-popover) outline-none data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 duration-(--motion-popover)"
+          className="nx-select-list z-(--z-popover) w-[max(var(--radix-popover-trigger-width),180px)] max-w-[calc(100vw-24px)] origin-(--radix-popover-content-transform-origin) rounded-md border border-border bg-popover p-1 text-sm text-popover-foreground shadow-(--shadow-popover) outline-none"
         >
           <div ref={listRef} id={listId} role="listbox" aria-label={ariaLabel} className="max-h-[min(280px,var(--radix-popover-content-available-height))] overflow-y-auto">
             {groups.map((group) => (
               <div key={group ?? "_"} role={group ? "group" : "presentation"} aria-label={group}>
-                {group ? <div className="px-2.5 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground" aria-hidden="true">{group}</div> : null}
+                {group ? <div className="px-2.5 pb-1 pt-2 text-2xs font-semibold uppercase tracking-[0.08em] text-muted-foreground" aria-hidden="true">{group}</div> : null}
                 {options.map((option, index) =>
                   option.group !== group ? null : (
                     <div

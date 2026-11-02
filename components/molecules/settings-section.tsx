@@ -6,8 +6,8 @@ import { buttonVariants } from "@/components/atoms/button-variants";
 export function SettingsRow({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div className="grid gap-0.5 py-3 sm:grid-cols-[200px_1fr] sm:gap-4">
-      <dt className="text-[13px] text-muted-foreground">{label}</dt>
-      <dd className="min-w-0 break-words text-[14px] text-foreground">{value || <span className="text-muted-foreground">Sin completar</span>}</dd>
+      <dt className="text-ui text-muted-foreground">{label}</dt>
+      <dd className="min-w-0 break-words text-sm text-foreground">{value || <span className="text-muted-foreground">Sin completar</span>}</dd>
     </div>
   );
 }
@@ -22,7 +22,7 @@ export function SettingsSection({ id, title, description, canManage = false, onE
       <header className="flex items-start justify-between gap-3">
         <div>
           <h2 id={id} className="font-display text-[15px] font-semibold text-foreground">{title}</h2>
-          <p className="mt-0.5 text-[13px] text-muted-foreground">{description}</p>
+          <p className="mt-0.5 text-ui text-muted-foreground">{description}</p>
         </div>
         {canManage && onEdit ? (
           <button type="button" onClick={onEdit} aria-label={`Modificar ${title.toLowerCase()}`} className={buttonVariants({ variant: "outline", size: "sm", className: "shrink-0" })}>

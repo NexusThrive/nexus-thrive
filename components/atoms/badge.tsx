@@ -32,14 +32,26 @@ const badgeVariants = cva(
 export type StatusTone = "success" | "danger" | "warning" | "neutral" | "muted";
 
 const DOT_TONES: Record<StatusTone, string> = {
-  success: "bg-success",
-  danger: "bg-danger",
-  warning: "bg-gold-600",
-  neutral: "bg-foreground",
-  muted: "bg-muted-foreground",
+  success: "text-success",
+  danger: "text-danger",
+  warning: "text-gold-600",
+  neutral: "text-foreground",
+  muted: "text-muted-foreground",
 };
 
-/** Punto cuadrado de 6 px para estados (funcional, no decorativo). */
+/** Glifo de cada estado (DR-27): el estado se distingue por forma y por el texto del badge, no solo por color. */
+const DOT_GLYPHS: Record<StatusTone, React.ReactNode> = {
+  success: <path d="M2.5 6.5 5 9l4.5-5.5" />,
+  danger: <path d="M3 3l6 6M9 3l-6 6" />,
+  warning: <path d="M6 2.5v4.2M6 9.3v.01" />,
+  neutral: <circle cx="6" cy="6" r="2" fill="currentColor" stroke="none" />,
+  muted: <path d="M3 6h6" />,
+};
+
+/**
+ * Indicador de estado: un glifo de 10 px (✓ éxito, × peligro, ! aviso, ● neutro, – inactivo) en el color del estado.
+ * Va siempre junto al texto del estado; la forma permite distinguirlo sin color (D7).
+ */
 export function StatusDot({
   className,
   tone = "success",
@@ -51,15 +63,23 @@ export function StatusDot({
   pulse?: boolean;
 }) {
   return (
-    <span
+    <svg
+      viewBox="0 0 12 12"
       aria-hidden="true"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.8}
+      strokeLinecap="round"
+      strokeLinejoin="round"
       className={cn(
-        "block size-1.5 shrink-0",
+        "block size-2.5 shrink-0",
         DOT_TONES[tone],
         pulse && "animate-[nx-pulse_1.6s_ease-in-out_infinite] motion-reduce:animate-none",
         className,
       )}
-    />
+    >
+      {DOT_GLYPHS[tone]}
+    </svg>
   );
 }
 

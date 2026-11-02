@@ -33,7 +33,7 @@ export function Chip({
         onClick?.(event);
       }}
       className={cn(
-        "inline-flex h-8 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-sm border px-[13px] text-[13px] font-medium transition-[background-color,color,border-color] duration-200 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-45",
+        "inline-flex h-8 pointer-coarse:h-11 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-sm border px-[13px] text-ui font-medium transition-[background-color,color,border-color] duration-200 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-45",
         selected
           ? "border-primary bg-primary text-primary-foreground"
           : "border-border-input bg-transparent text-foreground hover:border-border-input-hover",
@@ -43,7 +43,7 @@ export function Chip({
     >
       {children}
       {count != null ? (
-        <span className={cn("font-mono text-[11px]", selected ? "opacity-70" : "text-muted-foreground")}>
+        <span className={cn("font-mono text-2xs", selected ? "opacity-70" : "text-muted-foreground")}>
           {count}
         </span>
       ) : null}

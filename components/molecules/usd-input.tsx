@@ -30,7 +30,7 @@ export function UsdInput({
   const shown = focused ? text : toText(value);
   return (
     <div className={cn("relative", className)}>
-      <span aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[13px] text-muted-foreground">
+      <span aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ui text-muted-foreground">
         $
       </span>
       <input
@@ -52,7 +52,7 @@ export function UsdInput({
         }}
         className={cn(inputClasses, "pl-6 pr-12 font-mono tabular-nums")}
       />
-      <span aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-muted-foreground">
+      <span aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-2xs text-muted-foreground">
         USD
       </span>
     </div>

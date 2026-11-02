@@ -10,7 +10,7 @@ export function Wordmark({ size = 28, className }: { size?: number; className?: 
   return (
     <span className={cn("inline-flex items-center gap-2.5 text-foreground", className)}>
       <BrandLogo variant="mark" size={size} className="shrink-0 text-primary" />
-      <span className="font-display text-[12.5px] font-bold uppercase tracking-[0.32em]">Nexus Thrive</span>
+      <span className="font-display text-xs font-bold uppercase tracking-[0.32em]">Nexus Thrive</span>
     </span>
   );
 }

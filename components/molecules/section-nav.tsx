@@ -53,7 +53,7 @@ export function SectionNav<T extends string>({
             data-press=""
             onClick={() => onChange(item.id)}
             className={cn(
-              "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-sm border px-3 text-[13px] font-medium transition-colors",
+              "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-sm border px-3 text-ui font-medium transition-colors",
               item.id === value ? "border-primary bg-primary text-primary-foreground" : "border-border-input text-muted-foreground",
             )}
           >
@@ -71,7 +71,7 @@ export function SectionNav<T extends string>({
           />
           {items.map((item, i) => (
             <Fragment key={item.id}>
-              {item.group && item.group !== items[i - 1]?.group ? <p className={cn("relative z-10 px-3.5 pb-1 font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground", i > 0 && "mt-3")}>{item.group}</p> : null}
+              {item.group && item.group !== items[i - 1]?.group ? <p className={cn("relative z-10 px-3.5 pb-1 font-mono text-2xs font-semibold uppercase tracking-[0.08em] text-muted-foreground", i > 0 && "mt-3")}>{item.group}</p> : null}
             <button
               type="button"
               aria-current={item.id === value ? "page" : undefined}
@@ -83,7 +83,7 @@ export function SectionNav<T extends string>({
             >
               <item.icon aria-hidden="true" className="size-[18px] shrink-0" strokeWidth={1.6} />
               <span className="min-w-0">
-                <b className="block text-[13.5px] font-medium">{item.label}</b>
+                <b className="block text-ui font-medium">{item.label}</b>
                 {item.hint ? <small className="block truncate text-xs text-muted-foreground">{item.hint}</small> : null}
               </span>
             </button>

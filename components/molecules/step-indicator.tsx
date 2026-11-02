@@ -36,7 +36,7 @@ export function StepIndicator({
                 active ? "text-foreground" : done ? "text-muted-foreground" : "text-muted-foreground/70",
               )}
             >
-              <b className="font-mono text-[11px] font-semibold text-accent-text">{String(step).padStart(2, "0")}</b>
+              <b className="font-mono text-2xs font-semibold text-accent-text">{String(step).padStart(2, "0")}</b>
               <span className="truncate max-sm:hidden">{label}</span>
             </span>
           </li>

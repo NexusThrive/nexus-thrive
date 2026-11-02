@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 const avatarVariants = cva("relative flex shrink-0 overflow-hidden rounded-md", {
   variants: {
     size: {
-      sm: "size-7 text-[11px]",
+      sm: "size-7 text-2xs",
       md: "size-[34px] text-xs",
       lg: "size-[52px] text-[17px]",
     },

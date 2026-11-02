@@ -75,12 +75,12 @@ export function DonutChart({ parts, ariaLabel }: { parts: { label: string; total
           })}
         </svg>
         <div className="pointer-events-none absolute inset-0 grid place-content-center text-center leading-tight">
-          <span className="text-[11px] text-muted-foreground">{focus ? focus.label : "Total del mes"}</span>
+          <span className="text-2xs text-muted-foreground">{focus ? focus.label : "Total del mes"}</span>
           <b className="font-display text-[clamp(14px,2.4vw,20px)] font-semibold tabular-nums">{cop(focus ? focus.total : total)}</b>
-          {focus ? <span className="text-[11px] text-muted-foreground">{Math.round((focus.total / total) * 100)} %</span> : null}
+          {focus ? <span className="text-2xs text-muted-foreground">{Math.round((focus.total / total) * 100)} %</span> : null}
         </div>
       </div>
-      <ul className={cn("grid min-w-0 gap-1 text-[12.5px]", wide ? "flex-1" : "w-full")}>
+      <ul className={cn("grid min-w-0 gap-1 text-xs", wide ? "flex-1" : "w-full")}>
         {items.map((p, i) => (
           <li
             key={p.label}

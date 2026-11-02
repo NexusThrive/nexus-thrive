@@ -38,7 +38,9 @@
   --font-sans: var(--font-inter, "Inter"), "Segoe UI", system-ui, sans-serif;
   --font-mono: var(--font-jetbrains, "JetBrains Mono"), ui-monospace, "SFMono-Regular", monospace;
 
+  --text-2xs: 0.6875rem; --lh-2xs: 1rem;      /* 11 px: solo metadatos (DR-02) */
   --text-xs: 0.75rem;   --lh-xs: 1rem;
+  --text-ui: 0.8125rem; --lh-ui: 1.25rem;    /* 13 px: texto operativo de la interfaz densa (DR-02) */
   --text-sm: 0.875rem;  --lh-sm: 1.25rem;
   --text-base: 1rem;    --lh-base: 1.5rem;
   --text-lg: 1.125rem;  --lh-lg: 1.75rem;
@@ -78,6 +80,19 @@
   /* El ángulo de la N: cortes, barras de progreso y destellos. */
   --nx-angle: -24deg;
 
+
+  /* --- Documento e impresión (DR-05): recibos, facturas y comprobantes se ven igual en cualquier tema --- */
+  --doc-ink: #0a0a0b;
+  --doc-muted: #5e5d63;
+  --doc-soft: #6b6b73;
+  --doc-faint: #8a8990;
+  --doc-rule: #a1a1a8;
+  --doc-line: #e4e1da;
+  --doc-bg: #f7f6f3;
+  --doc-gold: #d4af37;
+  --doc-edge: #2a2a2e;
+  --doc-edge-strong: #3a3a40;
+
   /* --- Densidad (data-density="compact" en <html>) --- */
   --control-h: 40px;
   --row-h: 56px;
@@ -106,6 +121,8 @@
   --z-tabbar: 45;     /* barra inferior móvil */
   --z-sidebar: 50;    /* barra lateral (cajón en móvil) */
   --z-topbar: 55;     /* navbar global: por encima de la barra lateral */
+  --z-ghost-overlay: 68; /* fondo de la copia que se cierra (animación de salida): siempre debajo de lo que se abre */
+  --z-ghost: 69;      /* copia del modal o panel que se cierra: debajo del siguiente panel lateral o diálogo */
   --z-overlay: 70;    /* fondo de diálogos y paneles */
   --z-modal: 71;      /* diálogo, panel lateral, hoja inferior */
   --z-alert-overlay: 72; /* fondo del aviso que va ENCIMA de un panel (¿guardar cambios?) */
@@ -238,6 +255,14 @@
 [data-density="compact"] {
   --control-h: 34px;
   --row-h: 46px;
+}
+
+/* Táctil (DR-15): todo control estándar mide 44 px, también en densidad compacta. El puntero fino conserva 40/34 px. */
+@media (pointer: coarse) {
+  :root,
+  [data-density="compact"] {
+    --control-h: 44px;
+  }
 }
 
 /* En pantallas muy anchas el contenido crece para no dejar el centro angosto. */

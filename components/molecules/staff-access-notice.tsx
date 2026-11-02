@@ -121,19 +121,19 @@ export function StaffAccessNotice({
             <LifeBuoy aria-hidden="true" className="size-3.5" /> Escríbenos
           </a>
         </div>
-        {error ? <p className="mt-2 text-[13px] text-destructive">{error}</p> : null}
+        {error ? <p className="mt-2 text-ui text-destructive">{error}</p> : null}
         {paused ? (
-          <p className="mt-3 text-[12px] text-muted-foreground">
+          <p className="mt-3 text-xs text-muted-foreground">
             Si tu equipo ya te reactivó, vuelve a cargar la página.
           </p>
         ) : (
-          <p className="mt-3 text-[12px] text-muted-foreground">
+          <p className="mt-3 text-xs text-muted-foreground">
             <b>Usar esta cuenta</b> deja tu plaza del equipo ligada a la cuenta con la que estás
             entrando ahora. Si prefieres la otra, entra con esa (o pídele al equipo que use{" "}
             <b>Desvincular cuenta</b> en Equipo).
           </p>
         )}
-        <p className="mt-3 text-[12px] text-muted-foreground">
+        <p className="mt-3 text-xs text-muted-foreground">
           <Link href="/" className="underline underline-offset-4 hover:text-foreground">
             Volver al inicio
           </Link>

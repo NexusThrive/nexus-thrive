@@ -85,13 +85,13 @@ export function SegmentedControl<T extends string>({
             className={cn(
               "relative z-10 inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-sm font-medium transition-colors duration-200 outline-none focus-visible:outline-2 focus-visible:outline-ring [&_svg]:size-4",
               block && "flex-1",
-              size === "sm" ? "h-[22px] px-2.5 text-xs" : "h-[30px] px-[13px] text-[13px]",
+              size === "sm" ? "h-[22px] px-2.5 text-xs pointer-coarse:h-11" : "h-[30px] px-[13px] text-ui pointer-coarse:h-11",
               active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
             )}
           >
             {option.label}
             {option.count != null ? (
-              <span className="font-mono text-[11px] tabular-nums">{option.count}</span>
+              <span className="font-mono text-2xs tabular-nums">{option.count}</span>
             ) : null}
           </button>
         );

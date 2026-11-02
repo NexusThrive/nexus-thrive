@@ -42,7 +42,7 @@ export function PhoneInput({ id, value, onChange, name, placeholder = "300 123 4
         aria-expanded={open}
         aria-label={`Indicativo: ${country.name} +${country.dial}`}
         onClick={() => setOpen(!open)}
-        className={cn(inputClasses, "flex w-auto shrink-0 items-center gap-1 rounded-r-none border-r-0 px-2.5 font-mono text-[13px]")}
+        className={cn(inputClasses, "flex w-auto shrink-0 items-center gap-1 rounded-r-none border-r-0 px-2.5 font-mono text-ui")}
       >
         <span aria-hidden="true">{country.flag}</span>+{country.dial}
         <ChevronDown aria-hidden="true" className="size-3.5 text-muted-foreground" />
@@ -67,19 +67,19 @@ export function PhoneInput({ id, value, onChange, name, placeholder = "300 123 4
         <div className="absolute left-0 top-full z-(--z-popover) mt-1 w-72 overflow-hidden rounded-md border border-border bg-surface shadow-lg">
           <label className="flex items-center gap-2 border-b border-border px-2.5">
             <Search aria-hidden="true" className="size-4 text-muted-foreground" />
-            <input autoFocus aria-label="Buscar país" value={q} onChange={(e) => setQ(e.target.value)} placeholder="País o indicativo" className="h-9 min-w-0 flex-1 bg-transparent text-[13px] outline-none" />
+            <input autoFocus aria-label="Buscar país" value={q} onChange={(e) => setQ(e.target.value)} placeholder="País o indicativo" className="h-9 min-w-0 flex-1 bg-transparent text-ui outline-none" />
           </label>
           <ul role="listbox" aria-label="Países" className="max-h-64 overflow-y-auto py-1">
             {list.map((c) => (
               <li key={c.iso}>
-                <button type="button" role="option" aria-selected={c.iso === country.iso} onClick={() => pick(c)} className={cn("flex w-full items-center gap-2 px-3 py-1.5 text-left text-[13px] hover:bg-surface-muted", c.iso === country.iso && "bg-surface-muted font-medium")}>
+                <button type="button" role="option" aria-selected={c.iso === country.iso} onClick={() => pick(c)} className={cn("flex w-full items-center gap-2 px-3 py-1.5 text-left text-ui hover:bg-surface-muted", c.iso === country.iso && "bg-surface-muted font-medium")}>
                   <span aria-hidden="true">{c.flag}</span>
                   <span className="min-w-0 flex-1 truncate">{c.name}</span>
                   <span className="font-mono text-xs text-muted-foreground">+{c.dial}</span>
                 </button>
               </li>
             ))}
-            {list.length === 0 ? <li className="px-3 py-2 text-[13px] text-muted-foreground">Sin resultados.</li> : null}
+            {list.length === 0 ? <li className="px-3 py-2 text-ui text-muted-foreground">Sin resultados.</li> : null}
           </ul>
         </div>
       ) : null}

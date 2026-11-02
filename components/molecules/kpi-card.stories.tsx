@@ -60,7 +60,7 @@ export const ConContexto: Story = {
     icon: TrendingUp,
     delta: <Delta value={12} />,
     hint: "6 cobros registrados · vs. periodo anterior",
-    info: "Suma de los pagos aprobados del periodo. La variación compara con el periodo anterior del mismo largo.",
+    info: "Suma de los cobros confirmados del periodo. La variación compara con el periodo anterior del mismo largo.",
     action: { label: "Ver cobros" },
     trend: [3, 5, 4, 7, 6, 9, 8, 11],
     href: "#",

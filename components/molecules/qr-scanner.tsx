@@ -127,7 +127,7 @@ export function QrScanner({
       <div className="grid w-full max-w-md gap-3 rounded-xl border border-border bg-surface p-4">
         <div className="flex items-center justify-between">
           <p className="font-display text-[15px] font-semibold">Apunta al código QR</p>
-          <button type="button" onClick={onClose} className="rounded-sm px-2 py-1 text-[13px] text-muted-foreground hover:text-foreground">
+          <button type="button" onClick={onClose} className="rounded-sm px-2 py-1 text-ui text-muted-foreground hover:text-foreground">
             Cerrar
           </button>
         </div>
@@ -141,8 +141,8 @@ export function QrScanner({
           ) : null}
           <span aria-hidden="true" className="pointer-events-none absolute inset-[18%] rounded-lg border-2 border-[#D4AF37]" />
         </div>
-        {error ? <p className="text-[13px] text-destructive">{error}</p> : null}
-        <p className="text-[12px] text-muted-foreground">
+        {error ? <p className="text-ui text-destructive">{error}</p> : null}
+        <p className="text-xs text-muted-foreground">
           También puedes escribir el código a mano en la casilla de arriba.
         </p>
       </div>
