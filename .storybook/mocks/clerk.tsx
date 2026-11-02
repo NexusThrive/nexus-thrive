@@ -40,3 +40,8 @@ export function SignIn() {
 export function SignUp() {
   return <MockAuthForm title="Crea tu cuenta" subtitle="Empieza a ordenar tu negocio hoy." cta="Crear cuenta" />;
 }
+
+/** Sesión simulada: usuario con nombre e imagen vacía, suficiente para las historias. */
+export function useUser() {
+  return { isLoaded: true, isSignedIn: true, user: { id: "user_storybook", firstName: "Sofía", fullName: "Sofía Nexus", imageUrl: "" } };
+}
