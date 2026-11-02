@@ -16,7 +16,7 @@ Los **componentes** (código con 372 consumidores) siguen en `components/` y se 
 | [`03-sistema/`](docs/03-sistema/DESIGN.md) | `DESIGN.md` (tokens, componentes, movimiento, layout vigentes), el borrador del [System Design](docs/03-sistema/SYSTEM-DESIGN.md) el [inventario de patrones](docs/03-sistema/inventario-patrones.md) medido (`pnpm design:inventory`) y las [decisiones del Design System](docs/03-sistema/decisiones-nexus-design-system.md) (resoluciones registradas, la comparación visual del botón y el principio transversal *Mobile as a First-Class Experience*) |
 | [`04-patrones/`](docs/04-patrones/interaction-patterns.md) | Patrones de interacción, [accesibilidad](docs/04-patrones/accessibility.md), [movimiento](docs/04-patrones/movimiento.md) y [PWA](docs/04-patrones/pwa.md) |
 | [`05-calidad/`](docs/05-calidad/quality-checklist.md) | Lista de calidad de interfaz (se copia en cada PR); [pruebas responsive](docs/05-calidad/pruebas-responsive.md) |
-| [`06-auditorias/`](docs/06-auditorias/REDISENO-NEXUS.md) | Rediseño de NEXUS, auditorías de diseño y UX y sus capturas |
+| [`06-auditorias/`](docs/06-auditorias/REDISENO-NEXUS.md) | Rediseño de NEXUS, auditorías de diseño y UX y sus capturas; [auditoría responsive del dashboard](docs/06-auditorias/responsive-dashboard-2026-11/informe.md) (piloto del principio 08) |
 | [`07-marketing/`](docs/07-marketing/estrategia-contenidos.md) | Estrategia de contenidos, SEO técnico, ventas, medición y experimentos |
 | [`storybook/`](docs/storybook/introduccion.mdx) | Las páginas de documentación que muestra Storybook (`.storybook/main.ts` apunta aquí) |
 
