@@ -185,12 +185,19 @@ export function armModalMorph(node: HTMLElement): () => void {
     exiting.add(el);
     open.kill();
 
+    // La copia que se cierra va siempre por debajo de lo que se abre (otro diálogo o panel lateral).
+    if (el.hasAttribute("data-ghost")) el.style.zIndex = "var(--z-ghost)";
+
     const originNow = originEl.isConnected ? originEl : null;
-    if (!originNow) {
-      // El control desapareció: se apaga en el sitio, sin viaje roto.
+    // Si ya hay otro panel abierto (p. ej. un formulario lateral que se abre al elegir algo), no se viaja al botón:
+    // la tarjeta se desvanece en el sitio y no cruza la pantalla por encima de lo nuevo.
+    const another = Array.from(document.querySelectorAll<HTMLElement>('[role="dialog"][data-state="open"]')).some((d) => d !== el && d !== node && !d.hasAttribute("data-ghost"));
+    if (!originNow || another) {
+      // El control desapareció u hay otro panel abierto: se apaga en el sitio, sin viaje roto.
+      if (originNow) gsap.set(originNow, { clearProps: "opacity" });
       gsap.to(el, {
         opacity: 0,
-        duration: MORPH_SECONDS,
+        duration: another ? 0.18 : MORPH_SECONDS,
         ease: "power2.in",
         onComplete: () => {
           gsap.set(el, { opacity: 0 });
@@ -260,12 +267,13 @@ export function armModalMorph(node: HTMLElement): () => void {
       .to(el, { y: from.cy - vh / 2, duration: travel * 0.95, ease: "power3.inOut" }, delay)
       // Fundido cruzado al llegar: la tarjeta se disuelve y el contenido del
       // botón (texto, icono) aparece con un fade, sin quedarse el color del modal.
-      .to(el, { opacity: 0, duration: travel * 0.35, ease: "power1.in" }, delay + travel * 0.65)
+      // Desde el 35 % del viaje la tarjeta ya se disuelve: llega al botón casi transparente, no como un recuadro vacío.
+      .to(el, { opacity: 0, duration: travel * 0.65, ease: "power1.in" }, delay + travel * 0.35)
       .fromTo(
         originNow,
         { opacity: 0 },
         { opacity: 1, duration: travel * 0.4, ease: "power1.out", immediateRender: false },
-        delay + travel * 0.6,
+        delay + travel * 0.5,
       );
   };
   players.set(node, playExit);

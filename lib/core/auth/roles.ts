@@ -1,4 +1,4 @@
-import { can } from "./permissions";
+import { can, type BusinessPermission } from "./permissions";
 
 /**
  * Roles dentro de un negocio (puro). El dueño decide todo; administración
@@ -28,3 +28,28 @@ export const canManage = (r: string) => can(r, "business.manage");
 export const canHandleCash = (r: string) => can(r, "money.handle");
 /** Invitar y retirar personas, plan y facturación de NEXUS. */
 export const canManageTeam = (r: string) => can(r, "team.manage");
+
+/**
+ * Roles del negocio (los que se ofrecen al invitar) que tienen un permiso, en el orden de `BUSINESS_ROLES`.
+ * Es la fuente del texto de «sin permiso» (DR-34): el mensaje se deriva de la matriz, no se escribe a mano, así que
+ * no puede quedar desactualizado si el permiso cambia.
+ */
+export function rolesThatCan(permission: BusinessPermission): string[] {
+  return BUSINESS_ROLES.filter((r) => can(r.value, permission)).map((r) => r.label);
+}
+
+/** «Dueño», «Dueño o Administración», «Dueño, Administración o Recepción». */
+export function joinRoles(labels: string[]): string {
+  if (labels.length <= 1) return labels[0] ?? "El dueño";
+  return `${labels.slice(0, -1).join(", ")} o ${labels[labels.length - 1]}`;
+}
+
+/** Texto de «sin permiso» (`06` §7): qué no puede hacer, quién sí y cómo pedirlo. */
+export function accessMessage(permission: BusinessPermission, action: string): { title: string; detail: string } {
+  const labels = rolesThatCan(permission);
+  const verb = labels.length > 1 ? "pueden" : "puede";
+  return {
+    title: `No puedes ${action}.`,
+    detail: `${joinRoles(labels)} ${verb} hacerlo. Pídeselo a quien administre tu negocio.`,
+  };
+}

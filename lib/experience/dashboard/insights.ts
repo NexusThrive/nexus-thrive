@@ -31,7 +31,7 @@ const updatedFormat = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogo
 
 /** «Actualizado a las 3:42 p. m.» (hora de Bogotá), para que se sepa qué tan fresco es el dato. */
 export function updatedLabel(at: Date = new Date()): string {
-  return `Actualizado a las ${updatedFormat.format(at).replace(/\s/g, " ")}`;
+  return `Actualizado a las ${updatedFormat.format(at).replace(/\s/g, "\u00a0")}`;
 }
 
 /** Días que faltan para una fecha (0 = hoy o ya pasó; redondea hacia arriba). */

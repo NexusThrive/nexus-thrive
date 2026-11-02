@@ -6,9 +6,19 @@
 
 export type NotificationKind = "payment" | "expense" | "booking" | "membership";
 
+/**
+ * Qué se espera de la persona (DR-40): `info` solo informa; `action` pide atención (algo por resolver pronto);
+ * `urgent` pone en riesgo dinero o continuidad. Se muestra con texto, no solo con color.
+ */
+export type NotificationSeverity = "info" | "action" | "urgent";
+
+export const SEVERITY_LABEL: Record<Exclude<NotificationSeverity, "info">, string> = { action: "Requiere atención", urgent: "Urgente" };
+
 export type AppNotification = {
   id: string;
   kind: NotificationKind;
+  /** Por omisión `info`. */
+  severity?: NotificationSeverity;
   title: string;
   detail: string;
   /** ISO: ordena la lista y decide si es nueva (posterior a la última vista). */
@@ -37,7 +47,7 @@ export function buildNotifications(input: {
       out.push({
         id: m.id,
         kind: m.type === "in" ? "payment" : "expense",
-        title: m.type === "in" ? `Pago recibido · ${cop(m.amount)}` : `Gasto · ${cop(m.amount)}`,
+        title: m.type === "in" ? `Cobro registrado · ${cop(m.amount)}` : `Gasto · ${cop(m.amount)}`,
         detail: m.type === "in" ? `${m.title} · ${m.subtitle}` : m.title,
         at: m.at,
         href: "/finance",
@@ -54,6 +64,7 @@ export function buildNotifications(input: {
       out.push({
         id: `expiring-${input.todayStart.slice(0, 10)}-${input.expiring}`,
         kind: "membership",
+        severity: "action",
         title: input.expiring === 1 ? "1 membresía vence esta semana" : `${input.expiring} membresías vencen esta semana`,
         detail: "Recuérdales renovar por WhatsApp",
         at: input.todayStart,
@@ -64,6 +75,7 @@ export function buildNotifications(input: {
       out.push({
         id: `expired-${input.todayStart.slice(0, 10)}-${input.expired}`,
         kind: "membership",
+        severity: "urgent",
         title: input.expired === 1 ? "1 membresía vencida" : `${input.expired} membresías vencidas`,
         detail: "Pendientes de renovación",
         at: input.todayStart,

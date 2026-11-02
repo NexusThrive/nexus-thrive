@@ -23,7 +23,7 @@ export const FLOW_META: Record<FlowStep, { label: string; title: string; descrip
   plan: {
     label: "Acceso",
     title: "Elige cómo empezar",
-    description: "Solo ves los módulos que sirven a tu rubro. Empieza gratis o entra con tu código de acceso; aún no se cobra nada.",
+    description: "Solo ves los módulos que sirven a tu rubro. Prueba 15 días gratis sin tarjeta, entra con tu código de acceso o activa un plan.",
   },
   confirm: {
     label: "Confirmación",

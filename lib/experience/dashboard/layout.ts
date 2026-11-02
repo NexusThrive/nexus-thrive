@@ -35,6 +35,8 @@ export const spanLabel = (span: number): string => SPAN_LABEL[span] ?? `${Math.r
 /** Los bloques declaran su ancho en 12 columnas (3, 4, 6, 8, 12): se pasa a la cuadrícula de 96. */
 export const fromTwelfths = (span: number): Span => span * (COLS / 12);
 
+export type MobileCols = 1 | 2;
+
 export type DashboardLayout = {
   v: typeof LAYOUT_VERSION;
   /** Orden de los bloques. */
@@ -43,6 +45,8 @@ export type DashboardLayout = {
   hidden: string[];
   /** Ancho elegido por bloque (los que no aparecen usan el de por defecto). */
   spans: Record<string, Span>;
+  /** Ancho elegido en móvil: 1 = media fila (dos por fila), 2 = fila completa. Sin elegir, usa el de por defecto del bloque. */
+  cols: Record<string, MobileCols>;
   /** Alto elegido por bloque de gráfico (px). */
   heights: Record<string, number>;
   /** Gráficos que la persona agregó desde «Agregar» (el id lleva el tipo y un número). */
@@ -53,7 +57,7 @@ export type DashboardLayout = {
 export const isSpan = (value: unknown): value is Span => Number.isInteger(value) && (value as number) >= MIN_SPAN && (value as number) <= COLS;
 
 /** Distribución de partida del inicio: los bloques en el orden dado, ninguno oculto y con su tamaño por defecto. */
-export const defaultLayout = (ids: readonly string[]): DashboardLayout => ({ v: LAYOUT_VERSION, order: [...ids], hidden: [], spans: {}, heights: {}, added: [] });
+export const defaultLayout = (ids: readonly string[]): DashboardLayout => ({ v: LAYOUT_VERSION, order: [...ids], hidden: [], spans: {}, cols: {}, heights: {}, added: [] });
 
 /**
  * Reconcilia lo guardado con los bloques que existen hoy: descarta ids que ya
@@ -93,13 +97,19 @@ export function normalizeLayout(stored: unknown, ids: readonly string[]): Dashbo
       if (known.has(id) && isSpan(value)) spans[id] = value;
     }
   }
+  const cols: Record<string, MobileCols> = {};
+  if (raw.cols && typeof raw.cols === "object") {
+    for (const [id, value] of Object.entries(raw.cols)) {
+      if (known.has(id) && (value === 1 || value === 2)) cols[id] = value;
+    }
+  }
   const heights: Record<string, number> = {};
   if (raw.heights && typeof raw.heights === "object") {
     for (const [id, h] of Object.entries(raw.heights)) {
       if (known.has(id) && Number.isFinite(h)) heights[id] = clampHeight(legacy ? (h as number) * 40 : (h as number));
     }
   }
-  return { v: LAYOUT_VERSION, order, hidden, spans, heights, added };
+  return { v: LAYOUT_VERSION, order, hidden, spans, cols, heights, added };
 }
 
 /** Limita una altura en píxeles al rango permitido y la redondea. */
@@ -129,14 +139,44 @@ export function toggleWidget(layout: DashboardLayout, id: string): DashboardLayo
   return { ...layout, hidden };
 }
 
+/**
+ * Anchos efectivos en pantalla ancha: los bloques se acomodan en filas de `COLS` columnas en orden; si a una fila le
+ * sobran columnas (se quitó o se ocultó el vecino, o los anchos no suman la fila), el último bloque de la fila se
+ * extiende hasta el borde para que no quede un hueco. No toca los anchos guardados: si el vecino vuelve, el bloque
+ * recupera el suyo. `keep` es el índice de un bloque que se está redimensionando (conserva su ancho).
+ */
+export function fillRows(spans: readonly number[], keep: number | null = null): number[] {
+  const out = [...spans];
+  let used = 0;
+  let last = -1;
+  const close = () => {
+    if (last >= 0 && used < COLS && last !== keep) out[last] = spans[last] + (COLS - used);
+  };
+  spans.forEach((span, i) => {
+    if (used > 0 && used + span > COLS) {
+      close();
+      used = 0;
+    }
+    used += span;
+    last = i;
+  });
+  close();
+  return out;
+}
+
 /** Cambia el ancho (en columnas) de un bloque. */
 export function setSpan(layout: DashboardLayout, id: string, span: Span): DashboardLayout {
   return { ...layout, spans: { ...layout.spans, [id]: span } };
 }
 
+/** Cambia el ancho de un bloque en móvil (media fila o fila completa). */
+export function setCols(layout: DashboardLayout, id: string, cols: MobileCols): DashboardLayout {
+  return { ...layout, cols: { ...layout.cols, [id]: cols } };
+}
+
 /** ¿Difiere del diseño por defecto? (habilita «Restablecer»). */
 export function isCustomized(layout: DashboardLayout, ids: readonly string[]): boolean {
-  return layout.added.length > 0 || layout.hidden.length > 0 || Object.keys(layout.spans).length > 0 || Object.keys(layout.heights).length > 0 || layout.order.some((id, i) => id !== ids[i]);
+  return layout.added.length > 0 || layout.hidden.length > 0 || Object.keys(layout.spans).length > 0 || Object.keys(layout.cols).length > 0 || Object.keys(layout.heights).length > 0 || layout.order.some((id, i) => id !== ids[i]);
 }
 
 /** Cambia la altura de un bloque, limitada al rango permitido. */
@@ -176,14 +216,17 @@ export function removeWidget(layout: DashboardLayout, id: string): DashboardLayo
   if (!layout.added.some((a) => a.id === id)) return layout;
   const { [id]: _span, ...spans } = layout.spans;
   const { [id]: _rows, ...heights } = layout.heights;
+  const { [id]: _cols, ...cols } = layout.cols;
   void _span;
   void _rows;
+  void _cols;
   return {
     ...layout,
     order: layout.order.filter((o) => o !== id),
     hidden: layout.hidden.filter((h) => h !== id),
     added: layout.added.filter((a) => a.id !== id),
     spans,
+    cols,
     heights,
   };
 }

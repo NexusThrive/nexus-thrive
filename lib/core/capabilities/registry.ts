@@ -149,7 +149,7 @@ export const CAPABILITIES = [
     priceUsd: 0,
     general: true,
     nav: [
-      { href: "/finance?tab=cobros", icon: Banknote, label: () => "Pagos" },
+      { href: "/finance?tab=cobros", icon: Banknote, label: () => "Cobros" },
     ],
   },
   {

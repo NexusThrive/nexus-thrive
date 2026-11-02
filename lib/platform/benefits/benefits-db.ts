@@ -23,7 +23,11 @@ import {
   normalizeBenefitCode,
   normalizeBenefitKind,
   redemptionTerms,
+  SELF_SERVICE_TRIAL_DAYS,
+  SELF_SERVICE_TRIAL_PLAN,
+  trialSummary,
   type ContractTerms,
+  type TrialSummary,
 } from "@/lib/platform/benefits/benefits";
 
 export const BENEFIT_COOKIE = "nx_benefit";
@@ -630,4 +634,66 @@ export async function getTenantAccess(tenantId: string): Promise<TenantAccess | 
     endsAt,
     expired: Date.parse(endsAt) <= Date.now(),
   };
+}
+
+
+/**
+ * Prueba de autoservicio: 15 días del plan de mayor nivel, sin tarjeta, para una cuenta creada sin asistencia ni código.
+ * Reutiliza el modelo existente del acceso por código (negocio en el plan, módulos del plan y `Subscription` en `TRIAL`
+ * con su fecha de fin); el vencimiento perezoso (`expireBenefitTrial`) la devuelve al plan gratuito. No crea cobros ni
+ * pide medio de pago. Nunca lanza: la prueba es un extra y no debe romper la creación del negocio.
+ */
+export async function startSelfServiceTrial(params: { tenantId: string; tenantName: string; clerkUserId?: string | null; email?: string | null }): Promise<{ ok: true; endsAt: string } | { ok: false }> {
+  try {
+    const tenant = (await db.orm.public.Tenant.where({ id: params.tenantId }).select("id", "vertical").first()) as { id: string; vertical: VerticalValue } | null;
+    if (!tenant) return { ok: false };
+    const config = await loadPricingConfig();
+    const modules = resolveModules(config, SELF_SERVICE_TRIAL_PLAN, tenant.vertical, []) as ModuleValue[];
+    const startMs = Date.now();
+    const endMs = benefitEndMs(startMs, SELF_SERVICE_TRIAL_DAYS);
+    const start = Temporal.Instant.fromEpochMilliseconds(startMs);
+    const end = Temporal.Instant.fromEpochMilliseconds(endMs);
+    const note = `Prueba de autoservicio (${SELF_SERVICE_TRIAL_DAYS} días)`;
+    await db.transaction(async (tx) => {
+      await tx.orm.public.Tenant.where({ id: params.tenantId }).update({
+        plan: SELF_SERVICE_TRIAL_PLAN,
+        billingCycle: "MONTHLY",
+        planMonthlyUsdCents: 0,
+        planSelectedAt: start,
+        contractedModules: modules,
+        maxUsers: null,
+        maxCustomers: null,
+      });
+      const selected = new Set<string>(modules);
+      const existing = await tx.orm.public.TenantModule.where({ tenantId: params.tenantId }).all();
+      for (const row of existing) {
+        if (!selected.has(row.moduleName)) await tx.orm.public.TenantModule.where({ tenantId: params.tenantId, id: row.id }).update({ active: false });
+      }
+      for (const moduleName of modules) {
+        await tx.orm.public.TenantModule.upsert({ create: { tenantId: params.tenantId, moduleName }, update: { active: true }, conflictOn: { tenantId: params.tenantId, moduleName } });
+      }
+      await tx.orm.public.Subscription.upsert({
+        create: { tenantId: params.tenantId, plan: SELF_SERVICE_TRIAL_PLAN, billingCycle: "MONTHLY", priceUsdCents: 0, status: "TRIAL", currentPeriodStart: start, currentPeriodEnd: end, notes: note },
+        update: { plan: SELF_SERVICE_TRIAL_PLAN, billingCycle: "MONTHLY", priceUsdCents: 0, status: "TRIAL", currentPeriodStart: start, currentPeriodEnd: end, notes: note, cancelledAt: null, cancelReason: null },
+        conflictOn: { tenantId: params.tenantId },
+      });
+    });
+    try {
+      await createAdminDb().logAudit({ actorId: params.clerkUserId ?? "system", actorEmail: params.email ?? null, action: "BENEFIT_REDEEM", targetTenantId: params.tenantId, targetTenantName: params.tenantName, metadata: { code: "AUTOSERVICIO", plan: SELF_SERVICE_TRIAL_PLAN, kind: "TRIAL", durationDays: SELF_SERVICE_TRIAL_DAYS } });
+    } catch {
+      // La auditoría nunca rompe la prueba.
+    }
+    return { ok: true, endsAt: end.toString() };
+  } catch {
+    return { ok: false };
+  }
+}
+
+/** Estado de la prueba o del acceso temporal del negocio (`Subscription` en `TRIAL`); `null` si no hay ninguno. */
+export async function getTrialState(tenantId: string): Promise<(TrialSummary & { plan: string }) | null> {
+  const sub = await db.orm.public.Subscription.where({ tenantId }).first();
+  if (!sub || sub.status !== "TRIAL" || !sub.currentPeriodEnd) return null;
+  const endMs = Date.parse(String(sub.currentPeriodEnd));
+  if (!Number.isFinite(endMs)) return null;
+  return { ...trialSummary(endMs, Date.now()), plan: String(sub.plan) };
 }

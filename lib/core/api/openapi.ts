@@ -71,7 +71,7 @@ export function buildOpenApi(operations: readonly OperationDefinition[], serverU
       title: "API de NEXUS THRIVE",
       version: "1.0.0",
       description:
-        "API por negocio. Se autentica con una llave (`Authorization: Bearer nx_live_…`) creada en Ajustes → Integraciones. El negocio sale de la llave, nunca de la ruta. Errores en `application/problem+json` (RFC 9457). Límite de 120 peticiones por minuto por llave (`RateLimit-*`).",
+        "API por negocio. Se autentica con una llave (`Authorization: Bearer nx_live_…`) creada en Configuración → Integraciones. El negocio sale de la llave, nunca de la ruta. Errores en `application/problem+json` (RFC 9457). Límite de 120 peticiones por minuto por llave (`RateLimit-*`).",
     },
     servers: [{ url: serverUrl }],
     security: [{ bearer: [] }],
