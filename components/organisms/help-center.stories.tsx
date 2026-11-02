@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { ToastProvider } from "@/components/molecules/toast";
 import { HelpCenter } from "./help-center";
 
 const meta = {
@@ -14,7 +15,13 @@ const meta = {
       },
     },
   },
-  decorators: [(Story) => <div className="min-h-[480px] p-6 text-sm text-muted-foreground">Contenido de la página.<Story /></div>],
+  decorators: [
+    (Story) => (
+      <ToastProvider>
+        <div className="min-h-[480px] p-6 text-sm text-muted-foreground">Contenido de la página.<Story /></div>
+      </ToastProvider>
+    ),
+  ],
 } satisfies Meta<typeof HelpCenter>;
 
 export default meta;

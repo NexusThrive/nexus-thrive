@@ -32,7 +32,8 @@ type DateInputProps = Omit<ComponentProps<"input">, "type" | "value" | "defaultV
  * input: recibe `id` y `aria-*`, y manda su valor `AAAA-MM-DD` en el formulario (`name`) y en `onChange`
  * (`event.target.value`). `min` y `max` desactivan los días fuera de rango; sin `required` se puede borrar.
  */
-export function DateInput({ value, defaultValue = "", onChange, name = "", min, max, required, disabled, placeholder = "Elegir fecha", className, id, ...rest }: DateInputProps) {
+export function DateInput({ value, defaultValue = "", onChange, name = "", min, max, required, disabled, placeholder = "Elegir fecha", className, id, "aria-invalid": _invalid, "aria-required": _required, ...rest }: DateInputProps) {
+  // `aria-invalid` y `aria-required` no son válidos en un botón (axe: aria-allowed-attr): el error llega por `aria-describedby` y lo obligatorio por el input oculto.
   const [inner, setInner] = useState(defaultValue);
   const current = value ?? inner;
   const today = todayKey();
