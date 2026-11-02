@@ -4,7 +4,7 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { organizationLimitProblem } from "@/lib/platform/admin/users-db";
 import { completeExistingTenant, createTenantWithOwner, onboardingMembership, onboardingTenant, slugInUse } from "@/lib/experience/onboarding/onboarding-db";
 import { validateAdaptiveOnboarding } from "@/lib/core/tenancy/onboarding/validation";
-import { suggestSlug } from "@/lib/core/tenancy/onboarding/slug";
+import { normalizeAndValidateSlug, suggestSlug } from "@/lib/core/tenancy/onboarding/slug";
 import { quote as quotePlan } from "@/lib/core/entitlements/pricing";
 import { loadPricingConfig } from "@/lib/core/entitlements/settings";
 import {
@@ -12,9 +12,10 @@ import {
   clearBenefitCookie,
   setBenefitCookie,
 } from "@/lib/platform/benefits/benefit-cookie";
-import { getBenefitByCode } from "@/lib/platform/benefits/benefits-db";
-import { normalizeBenefitCode, type BenefitKind } from "@/lib/platform/benefits/benefits";
+import { getBenefitByCode, startSelfServiceTrial } from "@/lib/platform/benefits/benefits-db";
+import { normalizeBenefitCode, SELF_SERVICE_TRIAL_PLAN, type BenefitKind } from "@/lib/platform/benefits/benefits";
 import { SHOW_PRICING } from "@/lib/experience/onboarding/flags";
+import { nameFromEmail } from "@/lib/experience/dashboard/index";
 import { allowAttempt, recordAttempt } from "@/lib/foundation/rate-limit";
 import type { PlanKey, Billing } from "@/lib/core/entitlements/catalog";
 import { resolveModules } from "@/lib/core/entitlements/pricing";
@@ -113,6 +114,29 @@ export async function claimAccessCodeAction(
 }
 
 /** Descarta el código pendiente (p. ej. si el usuario prefiere probar gratis). */
+export type SlugAvailability = { available: boolean; suggestion?: string };
+
+/**
+ * Disponibilidad del enlace mientras se escribe (el nombre alimenta el enlace). Si está ocupado, ofrece el primer
+ * enlace libre con sufijo numérico. `tenantId` = alta de un negocio que ya existía: su propio enlace cuenta como libre.
+ */
+export async function checkSlugAvailabilityAction(rawSlug: string, tenantId?: string): Promise<SlugAvailability> {
+  const { userId } = await auth();
+  if (!userId) return { available: true };
+  const check = normalizeAndValidateSlug(String(rawSlug ?? ""));
+  if (!check.ok) return { available: true };
+  if (tenantId) {
+    const own = await onboardingTenant(tenantId);
+    if (own?.slug === check.slug) return { available: true };
+  }
+  if (!(await slugInUse(check.slug))) return { available: true };
+  for (let n = 2; n <= 9; n++) {
+    const candidate = `${check.slug}-${n}`;
+    if (normalizeAndValidateSlug(candidate).ok && !(await slugInUse(candidate))) return { available: false, suggestion: candidate };
+  }
+  return { available: false };
+}
+
 export async function clearAccessCodeAction(): Promise<void> {
   const { userId } = await auth();
   if (!userId) return;
@@ -135,6 +159,7 @@ export async function completeAdaptiveOnboardingAction(
   const pricing = await loadPricingConfig();
   const result = validateAdaptiveOnboarding(input, pricing);
   if (!result.ok) {
+    console.error("[onboarding] validación rechazada", result.errors);
     return {
       status: "error",
       message: "Revisa los campos marcados e inténtalo de nuevo.",
@@ -261,11 +286,15 @@ export async function completeAdaptiveOnboardingAction(
     "";
   const displayName =
     `${clerkUser?.firstName ?? ""} ${clerkUser?.lastName ?? ""}`.trim() ||
+    nameFromEmail(primaryEmail) ||
     "Usuario";
 
   // Límite de negocios por persona fijado desde el Operations Center (sin fila = sin límite).
   const limitMessage = primaryEmail ? await organizationLimitProblem(primaryEmail) : null;
-  if (limitMessage) return { status: "error", message: limitMessage };
+  if (limitMessage) {
+    console.error("[onboarding] límite de negocios", limitMessage);
+    return { status: "error", message: limitMessage };
+  }
 
   // Disponibilidad del slug (carrera posible: el @unique del contract
   // es la última barrera; el catch convierte la colisión en mensaje).
@@ -289,7 +318,8 @@ export async function completeAdaptiveOnboardingAction(
       { clerkUserId: userId, email: primaryEmail, name: displayName },
       selectedModules,
     );
-  } catch {
+  } catch (error) {
+    console.error("[onboarding] no se pudo crear el negocio", error);
     return {
       status: "error",
       message: "No se pudo crear tu espacio. Inténtalo de nuevo en un momento.",
@@ -302,10 +332,12 @@ export async function completeAdaptiveOnboardingAction(
     clerkUserId: userId,
     email: primaryEmail,
   });
+  // Sin código ni asistencia: prueba de autoservicio (15 días del plan de mayor nivel, sin tarjeta).
+  const trial = benefit.benefit ? null : await startSelfServiceTrial({ tenantId: createdTenantId, tenantName: values.name, clerkUserId: userId, email: primaryEmail });
   return {
     status: "ok",
     slug: values.slug,
-    plan: (benefit.benefit?.plan as PlanKey | undefined) ?? plan,
+    plan: trial?.ok ? SELF_SERVICE_TRIAL_PLAN : ((benefit.benefit?.plan as PlanKey | undefined) ?? plan),
     ...benefit,
   };
 }

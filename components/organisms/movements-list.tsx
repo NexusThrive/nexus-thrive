@@ -79,7 +79,7 @@ export function MovementsList({ items, title = "Movimientos" }: { items: Movemen
         ) : (
           groups.map((g) => (
             <div key={g.day}>
-              <h3 className="border-b border-border bg-surface-muted px-[18px] pb-1.5 pt-2.5 font-sans text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+              <h3 className="border-b border-border bg-surface-muted px-[18px] pb-1.5 pt-2.5 font-sans text-2xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
                 {g.day}
               </h3>
               {g.rows.map((m) => {

@@ -44,7 +44,7 @@ export function AgendaTimeline({
       <div className="flex flex-col items-center gap-2 rounded-lg border border-border bg-surface px-[18px] py-9 text-center">
         <NMark size={48} state="done" className="text-foreground opacity-30 motion-safe:animate-[nx-float_4s_ease-in-out_infinite]" />
         <h3 className="mt-1.5 font-display text-base font-semibold">Día libre</h3>
-        <p className="max-w-[36ch] text-[13px] text-muted-foreground">No hay citas para este día. Agenda una para empezar.</p>
+        <p className="max-w-[36ch] text-ui text-muted-foreground">No hay citas para este día. Agenda una para empezar.</p>
         {emptyAction}
       </div>
     );
@@ -58,13 +58,13 @@ export function AgendaTimeline({
     <div className="grid gap-2.5">
       {rows.map((row) =>
         row === "now" ? (
-          <div key="now" className="grid grid-cols-[58px_minmax(0,1fr)] items-center gap-3 font-mono text-[11px] font-semibold text-danger">
+          <div key="now" className="grid grid-cols-[58px_minmax(0,1fr)] items-center gap-3 font-mono text-2xs font-semibold text-danger">
             <span className="text-right">{now}</span>
             <i aria-hidden="true" className="relative h-px bg-danger before:absolute before:-left-px before:-top-[3px] before:size-[7px] before:-skew-x-[24deg] before:bg-danger" />
           </div>
         ) : (
           <div key={row.id} className="nx-rise grid grid-cols-[58px_minmax(0,1fr)] items-stretch gap-3">
-            <div className="pt-3.5 text-right font-display text-[13px] font-semibold tabular-nums text-muted-foreground">{row.time}</div>
+            <div className="pt-3.5 text-right font-display text-ui font-semibold tabular-nums text-muted-foreground">{row.time}</div>
             <div
               className={cn(
                 "flex items-center gap-3 rounded-md border border-l-[3px] border-border bg-surface px-3.5 py-3 transition-[opacity,border-color] duration-300",
@@ -73,7 +73,7 @@ export function AgendaTimeline({
             >
               <span
                 className={cn(
-                  "grid size-7 shrink-0 place-items-center rounded-md font-display text-[11px] font-bold",
+                  "grid size-7 shrink-0 place-items-center rounded-md font-display text-2xs font-bold",
                   row.done || row.cancelled ? "bg-surface-muted text-foreground" : "bg-primary text-primary-foreground",
                 )}
               >

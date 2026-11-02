@@ -117,12 +117,12 @@ export function ConfirmDialog({
                 <TriangleAlert />
               </IconTile>
             ) : null}
-            {children ? <div className="min-w-0 text-[13px] text-muted-foreground">{children}</div> : null}
+            {children ? <div className="min-w-0 text-ui text-muted-foreground">{children}</div> : null}
           </div>
         ) : null}
         {confirmText ? (
           <label className="grid gap-1.5">
-            <span className="text-[13px] font-medium text-foreground">
+            <span className="text-ui font-medium text-foreground">
               Escribe <b className="font-mono">{confirmText}</b> para confirmar
             </span>
             <input

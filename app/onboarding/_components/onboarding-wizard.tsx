@@ -82,6 +82,7 @@ export default function OnboardingWizard({
     return pendingBenefit ? { ...base, plan: pendingBenefit.plan, billing: "MONTHLY" } : base;
   });
   const [showErrors, setShowErrors] = useState(false);
+  const [slugTaken, setSlugTaken] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [cinematic, setCinematic] = useState<CinematicStatus | null>(null);
   const [slug, setSlug] = useState<string | null>(null);
@@ -116,7 +117,6 @@ export default function OnboardingWizard({
     ? quotePlan(config, { plan: draft.plan, vertical: draft.vertical, billing: draft.billing, selected: draft.selectedModules, tierId: draft.customerTierId })
     : null;
   const planName = planOf(config, draft.plan)?.name ?? draft.plan;
-  const freePlanName = planOf(config, "ESSENTIAL")?.name ?? "Essential";
   /** Planes que se pueden contratar (sin precio: se coordina el pago). */
   const accessPlans = useMemo(
     () =>
@@ -170,7 +170,7 @@ export default function OnboardingWizard({
     }
     if (step === "business") {
       setShowErrors(true);
-      if (!validation.ok) return;
+      if (!validation.ok || slugTaken) return;
       setShowErrors(false);
     }
     go(nextStep(step));
@@ -188,7 +188,7 @@ export default function OnboardingWizard({
   };
 
   const submit = () => {
-    if (!validation.ok) {
+    if (!validation.ok || slugTaken) {
       setShowErrors(true);
       go("business");
       return;
@@ -342,6 +342,8 @@ export default function OnboardingWizard({
             onPatch={patch}
             errors={validation.ok ? {} : validation.errors}
             showErrors={showErrors}
+            tenantId={prefill.tenantId}
+            onSlugTaken={setSlugTaken}
           />
         ) : null}
 
@@ -360,7 +362,6 @@ export default function OnboardingWizard({
           ) : (
             <AccessStep
               planName={planName}
-              freePlanName={freePlanName}
               plans={accessPlans}
               businessName={draft.name.trim() || undefined}
               city={draft.city || undefined}

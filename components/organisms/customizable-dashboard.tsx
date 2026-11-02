@@ -2,7 +2,7 @@
 
 /* eslint-disable react-hooks/refs -- useDraggable/useDroppable de dnd-kit devuelven refs de callback y listeners, no valores de ref; el lint los confunde. */
 
-import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
 import {
   DndContext,
   DragOverlay,
@@ -22,13 +22,13 @@ import {
   type DragStartEvent,
   type KeyboardCoordinateGetter,
 } from "@dnd-kit/core";
-import { ArrowDown, ArrowUp, Check, Eye, GripVertical, LayoutDashboard, MoreHorizontal, Pencil, Plus, RotateCcw, Trash2, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, Columns2, GripVertical, LayoutDashboard, MoreHorizontal, Pencil, Plus, RectangleHorizontal, RotateCcw, Trash2, X } from "lucide-react";
 import { Button } from "@/components/atoms/button";
 import { Select } from "@/components/atoms/select";
 import { Switch } from "@/components/atoms/switch";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/molecules/dropdown-menu";
 import { ChartWidget } from "@/components/molecules/charts/chart-widget";
-import { AddWidgetPanel } from "@/components/organisms/add-widget-panel";
+import { AddWidgetPanel, type BlockOption } from "@/components/organisms/add-widget-panel";
 import { entryOf, type ChartData, type ChartEntry, type ChartType } from "@/lib/experience/dashboard/chart-catalog";
 import {
   MIN_SPAN,
@@ -38,6 +38,7 @@ import {
   COLS,
   clampHeight,
   defaultLayout,
+  fillRows,
   isCustomized,
   fromTwelfths,
   isSpan,
@@ -45,12 +46,14 @@ import {
   normalizeLayout,
   placeWidget,
   removeWidget,
+  setCols,
   setHeight,
   setSpan,
   spanFromWidth,
   stepSpan,
   toggleWidget,
   type DashboardLayout,
+  type MobileCols,
   type Span,
 } from "@/lib/experience/dashboard/layout";
 import { EASE_OUT, motionOff } from "@/lib/experience/motion/index";
@@ -69,6 +72,17 @@ export type DashboardWidget = {
 };
 
 const storageKey = (scope: string) => `nx:dashboard:${scope}`;
+
+/** Pantalla ancha (>= 1024 px): ahí se arrastra y se redimensiona; en móvil se edita con botones. */
+const LG_QUERY = "(min-width: 1024px)";
+function subscribeLg(onChange: () => void) {
+  const media = window.matchMedia(LG_QUERY);
+  media.addEventListener("change", onChange);
+  return () => media.removeEventListener("change", onChange);
+}
+function useIsLg() {
+  return useSyncExternalStore(subscribeLg, () => window.matchMedia(LG_QUERY).matches, () => true);
+}
 
 function readLayout(scope: string, ids: string[]): DashboardLayout {
   try {
@@ -124,6 +138,7 @@ const CORNERS: { id: Corner; className: string; label: string }[] = [
 function Item({
   widget,
   span,
+  cols,
   height,
   removable,
   hidden,
@@ -132,15 +147,20 @@ function Item({
   count,
   fresh,
   selected,
+  mobile,
   onSelect,
   onMove,
   onToggle,
   onSpan,
+  onCols,
   onHeight,
+  onResizing,
   onRemove,
 }: {
   widget: DashboardWidget;
   span: Span;
+  /** Ancho en móvil: 1 = media fila, 2 = fila completa. */
+  cols: MobileCols;
   /** Alto en px si el bloque lo admite (gráficos agregados); `null` = alto natural. */
   height: number | null;
   removable: boolean;
@@ -150,11 +170,16 @@ function Item({
   count: number;
   fresh: boolean;
   selected: boolean;
+  /** Edición en móvil: sin arrastrar; los controles van bajo la tarjeta, grandes, y se ordena con subir/bajar. */
+  mobile: boolean;
   onSelect: () => void;
   onMove: (delta: -1 | 1) => void;
   onToggle: () => void;
   onSpan: (span: Span) => void;
+  onCols: (cols: MobileCols) => void;
   onHeight: (px: number) => void;
+  /** Avisa cuando empieza o termina un ajuste de tamaño con el puntero. */
+  onResizing: (active: boolean) => void;
   onRemove: () => void;
 }) {
   const drag = useDraggable({ id: widget.id });
@@ -174,6 +199,7 @@ function Item({
     event.preventDefault();
     event.stopPropagation();
     const pointerId = event.pointerId;
+    onResizing(true);
     // Sin huecos entre columnas (96 huecos de 14 px no caben): cada celda lleva medio hueco de relleno.
     const unit = grid.clientWidth / COLS;
     const startX = event.clientX;
@@ -210,6 +236,7 @@ function Item({
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerup", end);
       window.removeEventListener("pointercancel", end);
+      onResizing(false);
       // Al soltar se asienta en la columna más cercana, con un deslizamiento corto en vez de un salto.
       const snapped = spanFromWidth(livePx, unit);
       if (snapped !== lastSpan) onSpan(snapped);
@@ -242,7 +269,7 @@ function Item({
       style={{ ["--span" as string]: span }}
       className={cn(
         "min-w-0 has-[[data-widget]:empty]:hidden lg:px-[7px]",
-        widget.half ? "col-span-1" : "col-span-2",
+        cols === 1 ? "col-span-1" : "col-span-2",
         "lg:[grid-column:span_var(--span)]",
       )}
     >
@@ -261,10 +288,12 @@ function Item({
       }}
       className={cn(
         "group/widget relative h-full min-w-0 transition-[opacity,outline-color] duration-200",
+        editing && mobile && "flex flex-col",
         !editing && "nx-rise empty:hidden",
         // El marco abraza al componente (no a su hueco): se toma desde cualquier punto.
-        editing && "cursor-grab rounded-lg outline-2 outline-offset-2 outline-dashed outline-border-strong hover:z-(--z-sticky) hover:outline-border-input active:cursor-grabbing",
-        editing && selected && "z-(--z-sticky) outline-solid outline-accent",
+        editing && "rounded-lg outline-2 outline-offset-2 outline-dashed outline-border-strong",
+        editing && !mobile && "cursor-grab hover:z-(--z-raised) hover:outline-border-input active:cursor-grabbing",
+        editing && selected && "z-(--z-raised) outline-solid outline-accent",
         fresh && "outline-solid outline-accent",
         // Tomado: su sitio queda vacío (hueco punteado) y los demás se acomodan alrededor.
         drag.isDragging && "bg-accent-subtle/40 outline-solid outline-accent",
@@ -274,14 +303,44 @@ function Item({
         <div
           inert={editing || undefined}
           style={height != null ? { height } : undefined}
-          className={cn("h-full [&>*]:h-full", editing && "pointer-events-none select-none", drag.isDragging && "invisible")}
+          className={cn(editing && mobile ? "min-h-0 flex-1 [&>*]:h-full" : "h-full [&>*]:h-full", editing && "pointer-events-none select-none", drag.isDragging && "invisible")}
         >
           {widget.node}
         </div>
       )}
 
       {/* Después del contenido: los bloques con posición propia (tarjetas) pintarían encima si fuera antes. */}
-      {editing ? (
+      {editing && mobile ? (
+        <div className="mt-2.5 flex items-center gap-1 rounded-lg border border-border bg-surface p-1">
+          <span className="min-w-0 flex-1 truncate px-2.5 text-ui font-semibold">{label}</span>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-11"
+            aria-label={`Ancho de ${label}: ${cols === 1 ? "media fila" : "fila completa"}. Cambiar`}
+            onClick={() => onCols(cols === 1 ? 2 : 1)}
+          >
+            {cols === 1 ? <Columns2 aria-hidden="true" className="size-5" /> : <RectangleHorizontal aria-hidden="true" className="size-5" />}
+          </Button>
+          <Button variant="ghost" size="icon" className="size-11" aria-label={`Subir ${label}`} disabled={index === 0} onClick={() => onMove(-1)}>
+            <ArrowUp aria-hidden="true" className="size-5" />
+          </Button>
+          <Button variant="ghost" size="icon" className="size-11" aria-label={`Bajar ${label}`} disabled={index === count - 1} onClick={() => onMove(1)}>
+            <ArrowDown aria-hidden="true" className="size-5" />
+          </Button>
+          {removable ? (
+            <Button variant="ghost" size="icon" className="size-11" aria-label={`Quitar ${label}`} onClick={onRemove}>
+              <Trash2 aria-hidden="true" className="size-5" />
+            </Button>
+          ) : (
+            <span className="grid h-11 place-items-center px-2">
+              <Switch checked={!hidden} onCheckedChange={onToggle} aria-label={`Mostrar ${label}`} />
+            </span>
+          )}
+        </div>
+      ) : null}
+
+      {editing && !mobile ? (
         <div
           className={cn(
             "absolute right-2 top-2 flex w-max max-w-[calc(100%-1rem)] cursor-default items-center gap-0.5 rounded-md border border-border bg-surface/95 px-1 py-0.5 shadow-(--shadow-popover) backdrop-blur-sm transition-opacity duration-150",
@@ -303,13 +362,13 @@ function Item({
           >
             <GripVertical aria-hidden="true" className="size-4" />
           </button>
-          <span className={cn("max-w-40 truncate px-1 text-[13px] font-semibold", span <= 4 && "sr-only")}>{label}</span>
+          <span className={cn("max-w-40 truncate px-1 text-ui font-semibold", span <= 4 && "sr-only")}>{label}</span>
           {span >= 48 ? (
             <Select
               aria-label={`Ancho de ${label}`}
               value={String(span)}
               onChange={(e) => isSpan(Number(e.target.value)) && onSpan(Number(e.target.value))}
-              className="hidden h-8 w-36 text-[12.5px] lg:flex"
+              className="hidden h-8 w-36 text-xs lg:flex"
             >
               {(SPANS.includes(span as (typeof SPANS)[number]) ? SPANS : [...SPANS, span].sort((a, b) => a - b)).map((s) => (
                 <option key={s} value={s}>{spanLabel(s)}</option>
@@ -386,7 +445,7 @@ export function DashboardMenu({ className }: { className?: string }) {
       <DropdownMenuContent align="end" sideOffset={8} className="w-56 p-1.5">
         {actions.canAdd ? (
           <DropdownMenuItem onSelect={actions.onAdd} className="min-h-10 gap-2.5">
-            <Plus aria-hidden="true" className="size-4" /> Agregar gráfico
+            <Plus aria-hidden="true" className="size-4" /> Agregar elementos
           </DropdownMenuItem>
         ) : null}
         <DropdownMenuItem onSelect={actions.onEdit} disabled={actions.editing} className="min-h-10 gap-2.5">
@@ -435,6 +494,7 @@ export function CustomizableDashboard({
   const [draft, setDraft] = useState<DashboardLayout | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [freshId, setFreshId] = useState<string | null>(null);
+  const [resizingId, setResizingId] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [activeBox, setActiveBox] = useState<{ width: number; height: number } | null>(null);
   const [adding, setAdding] = useState(false);
@@ -464,12 +524,15 @@ export function CustomizableDashboard({
     return () => window.clearTimeout(timer);
   }, [freshId]);
 
-  const sensors = useSensors(
-    // Mantener presionado: 350 ms quieto (6 px de tolerancia) toma el bloque; un clic o un desplazamiento no.
-    useSensor(PointerSensor, { activationConstraint: { delay: 350, tolerance: 6 } }),
-    useSensor(TouchSensor, { activationConstraint: { delay: 220, tolerance: 8 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: verticalCoordinates }),
-  );
+  // Móvil: sin arrastre (el dedo desplazaba la página y el arrastre la movía sola en los bordes); se ordena con subir/bajar.
+  const lg = useIsLg();
+  const mobile = !lg;
+  // Mantener presionado: 350 ms quieto (6 px de tolerancia) toma el bloque; un clic o un desplazamiento no.
+  const pointerSensor = useSensor(PointerSensor, { activationConstraint: { delay: 350, tolerance: 6 } });
+  const touchSensor = useSensor(TouchSensor, { activationConstraint: { delay: 220, tolerance: 8 } });
+  const keyboardSensor = useSensor(KeyboardSensor, { coordinateGetter: verticalCoordinates });
+  // Siempre tres argumentos (React exige que no cambie el tamaño de las dependencias); en móvil, los de arrastre van vacíos.
+  const sensors = useSensors(lg ? pointerSensor : undefined, lg ? touchSensor : undefined, keyboardSensor);
 
   // Bloques del sistema (servidor) y gráficos agregados por la persona (cliente).
   const addedWidgets: DashboardWidget[] = layout.added.map((a) => ({
@@ -504,6 +567,12 @@ export function CustomizableDashboard({
     setDraft(null);
     setAnnounce("Diseño guardado");
   }
+  function showBlock(id: string) {
+    setDraft((d) => toggleWidget(d ?? saved, id));
+    setAdding(false);
+    setFreshId(id);
+    setAnnounce(`${byId.get(id)?.label ?? "Bloque"} vuelve a mostrarse. Pulsa Guardar para conservarlo.`);
+  }
   function add(type: ChartType) {
     const entry = entryOf(type);
     const { layout: next, id } = addWidget(layout, type, entry.span, entry.height);
@@ -511,6 +580,19 @@ export function CustomizableDashboard({
     setAdding(false);
     setFreshId(id);
     setAnnounce(`${entry.label} agregado al final de tu inicio. Pulsa Guardar para conservarlo.`);
+  }
+
+  /** En móvil, tras subir o bajar un bloque la vista lo sigue si se salió de la pantalla (una vez que termina su deslizamiento). */
+  function follow(id: string) {
+    if (!mobile) return;
+    window.setTimeout(() => {
+      const el = gridRef.current?.querySelector<HTMLElement>(`[data-widget="${id}"]`);
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const top = 120; // bajo la barra superior y la de edición
+      const bottom = window.innerHeight - 90; // sobre la barra inferior
+      if (r.top < top || r.bottom > bottom) el.scrollIntoView({ block: "center", behavior: motionOff() ? "auto" : "smooth" });
+    }, 300);
   }
 
   function onDragStart(event: DragStartEvent) {
@@ -601,33 +683,35 @@ export function CustomizableDashboard({
     onDragCancel: ({ active }) => `Cancelaste el movimiento de ${labelOf(active.id)}.`,
   };
 
-  const hiddenWidgets = layout.order.filter((id) => layout.hidden.includes(id) && byId.has(id)).map((id) => byId.get(id)!);
+  // Los bloques del sistema (ocultos y visibles) para el panel «Elementos del inicio», y los gráficos ya puestos.
+  const blockOptions: BlockOption[] = widgets.map((w) => ({ id: w.id, label: w.label, hidden: layout.hidden.includes(w.id) }));
+  const presentCharts = new Set(layout.added.map((a) => a.type));
   const visibleCount = layout.order.filter((id) => !layout.hidden.includes(id) && byId.has(id)).length;
-  const addButton = charts ? (
+  const addButton = (
     <Button variant={editing ? "outline" : "accent"} size="sm" onClick={() => setAdding(true)} data-press="">
       <Plus aria-hidden="true" className="size-3.5" />
-      Agregar
+      <span className="max-sm:sr-only">Agregar</span>
     </Button>
-  ) : null;
+  );
 
   return (
-    <DashboardActionsContext.Provider value={{ editing, canAdd: Boolean(charts), onAdd: () => setAdding(true), onEdit: start }}>
+    <DashboardActionsContext.Provider value={{ editing, canAdd: true, onAdd: () => setAdding(true), onEdit: start }}>
     <div className="flex flex-col">
       {header}
 
       {editing ? (
         <section
           aria-label="Modo de edición del inicio"
-          className="sticky top-[calc(var(--topbar-height)+env(safe-area-inset-top,0px)+8px)] z-(--z-sticky) mb-3.5 flex flex-wrap items-center gap-2 rounded-lg border border-accent bg-surface px-3.5 py-2.5 shadow-(--shadow-popover)"
+          className="sticky top-[calc(var(--topbar-height)+env(safe-area-inset-top,0px)+8px)] z-(--z-sticky) mb-3 flex flex-wrap items-center gap-1.5 rounded-lg border border-accent bg-surface px-3 py-2 shadow-(--shadow-popover) sm:gap-2 sm:px-3.5 sm:py-2.5"
         >
-          <LayoutDashboard aria-hidden="true" className="size-4 shrink-0 text-accent-text" />
-          <p className="min-w-0 flex-1 text-[13px]">
-            <b className="font-semibold">Editando tu inicio.</b>{" "}
-            <span className="text-muted-foreground">Arrastra los bloques, cambia su tamaño por las esquinas u ocúltalos. Se ve en vivo; nada se guarda hasta que pulses «Guardar».</span>
+          <LayoutDashboard aria-hidden="true" className="size-4 shrink-0 text-accent-text max-sm:hidden" />
+          <p className="min-w-0 flex-1 text-ui">
+            <b className="font-semibold">Editando<span className="max-sm:hidden"> tu inicio</span>.</b>{" "}
+            <span className="text-muted-foreground max-lg:hidden">Arrastra los bloques, cambia su tamaño por las esquinas u ocúltalos. Se ve en vivo; nada se guarda hasta que pulses «Guardar».</span>
           </p>
           {addButton}
           <Button variant="ghost" size="sm" disabled={!isCustomized(layout, ids)} onClick={() => edit(() => defaultLayout(ids), "Diseño por defecto restaurado (sin guardar)")}>
-            <RotateCcw aria-hidden="true" className="size-3.5" /> Restablecer
+            <RotateCcw aria-hidden="true" className="size-3.5" /> <span className="max-sm:sr-only">Restablecer</span>
           </Button>
           <Button variant="outline" size="sm" onClick={cancel}>
             <X aria-hidden="true" className="size-3.5" /> Cancelar
@@ -635,16 +719,7 @@ export function CustomizableDashboard({
           <Button variant="accent" size="sm" onClick={save}>
             <Check aria-hidden="true" className="size-3.5" /> Guardar
           </Button>
-          {hiddenWidgets.length > 0 ? (
-            <div className="flex basis-full flex-wrap items-center gap-1.5 border-t border-border pt-2 text-[12.5px]">
-              <span className="text-muted-foreground">Ocultos, para volver a mostrar:</span>
-              {hiddenWidgets.map((w) => (
-                <Button key={w.id} variant="outline" size="sm" onClick={() => edit((l) => toggleWidget(l, w.id), `${w.label}: visible`)}>
-                  <Eye aria-hidden="true" className="size-3.5" /> {w.label}
-                </Button>
-              ))}
-            </div>
-          ) : null}
+          <p className="basis-full text-xs text-muted-foreground lg:hidden">Ordena cada tarjeta con ↑ ↓, elige su ancho (media fila o completa) y oculta lo que no uses con el interruptor. Nada se guarda hasta que pulses «Guardar».</p>
         </section>
       ) : null}
 
@@ -668,7 +743,7 @@ export function CustomizableDashboard({
           <div
             ref={gridRef}
             // `dense`: un bloque más pequeño sube a rellenar el hueco que dejó otro (sin espacios en blanco).
-            className="grid grid-cols-2 gap-3.5 lg:gap-y-5 [grid-auto-flow:dense] lg:-mx-[7px] lg:gap-x-0 lg:[grid-template-columns:repeat(96,minmax(0,1fr))]"
+            className="grid grid-cols-2 gap-2.5 sm:gap-3.5 lg:gap-y-5 [grid-auto-flow:dense] lg:-mx-[7px] lg:gap-x-0 lg:[grid-template-columns:repeat(96,minmax(0,1fr))]"
             onPointerDown={(e) => e.target === e.currentTarget && setSelectedId(null)}
             onClickCapture={(e) => {
               if (!suppressClick.current) return;
@@ -676,9 +751,14 @@ export function CustomizableDashboard({
               e.stopPropagation();
             }}
           >
-            {layout.order
-              .filter((id) => byId.has(id) && !layout.hidden.includes(id))
-              .map((id, index, all) => {
+            {(() => {
+              const shown = layout.order.filter((id) => byId.has(id) && !layout.hidden.includes(id));
+              // Lo que sobra en una fila (por un bloque quitado u oculto) se lo queda el último bloque de esa fila.
+              const filled = fillRows(
+                shown.map((id) => layout.spans[id] ?? fromTwelfths(byId.get(id)!.span ?? 12)),
+                resizingId ? shown.indexOf(resizingId) : null,
+              );
+              return shown.map((id, index, all) => {
                 const widget = byId.get(id)!;
                 const removable = layout.added.some((a) => a.id === id);
                 const addedType = layout.added.find((a) => a.id === id)?.type;
@@ -686,7 +766,8 @@ export function CustomizableDashboard({
                   <Item
                     key={id}
                     widget={widget}
-                    span={layout.spans[id] ?? fromTwelfths(widget.span ?? 12)}
+                    span={filled[index]}
+                    cols={layout.cols[id] ?? (widget.half ? 1 : 2)}
                     height={addedType ? (layout.heights[id] ?? entryOf(addedType).height) : null}
                     removable={removable}
                     hidden={layout.hidden.includes(id)}
@@ -695,15 +776,22 @@ export function CustomizableDashboard({
                     count={all.length}
                     fresh={freshId === id}
                     selected={selectedId === id}
+                    mobile={mobile}
                     onSelect={() => setSelectedId(id)}
-                    onMove={(delta) => edit((l) => moveWidget(l, id, delta), `${widget.label}: posición ${index + 1 + delta} de ${all.length}`)}
+                    onMove={(delta) => {
+                      edit((l) => moveWidget(l, id, delta), `${widget.label}: posición ${index + 1 + delta} de ${all.length}`);
+                      follow(id);
+                    }}
                     onToggle={() => edit((l) => toggleWidget(l, id), `${widget.label}: ${layout.hidden.includes(id) ? "visible" : "oculto"}`)}
                     onSpan={(s) => edit((l) => setSpan(l, id, s), `${widget.label}: ${spanLabel(s)}`)}
+                    onCols={(c) => edit((l) => setCols(l, id, c), `${widget.label}: ${c === 1 ? "media fila" : "fila completa"}`)}
                     onHeight={(h) => edit((l) => setHeight(l, id, h))}
+                    onResizing={(active) => setResizingId(active ? id : null)}
                     onRemove={() => edit((l) => removeWidget(l, id), `${widget.label} quitado`)}
                   />
                 );
-              })}
+              });
+            })()}
           </div>
           <DragOverlay dropAnimation={{ duration: 200, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }}>
             {activeId && byId.get(activeId) ? (
@@ -720,7 +808,15 @@ export function CustomizableDashboard({
         </DndContext>
       )}
 
-      {charts ? <AddWidgetPanel open={adding} onOpenChange={setAdding} entries={charts.entries} onAdd={add} /> : null}
+      <AddWidgetPanel
+        open={adding}
+        onOpenChange={setAdding}
+        entries={charts?.entries ?? []}
+        blocks={blockOptions}
+        presentCharts={presentCharts}
+        onAdd={add}
+        onShowBlock={showBlock}
+      />
 
       <p role="status" className="sr-only">{announce}</p>
     </div>

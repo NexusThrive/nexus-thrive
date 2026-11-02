@@ -132,3 +132,12 @@ function NoFormSheet() {
 
 /** Edición con estado propio y sin `<form>`: igual pregunta antes de cerrar con cambios; «Guardar» pulsa el botón principal del pie. */
 export const EditWithoutForm: Story = { render: () => <NoFormSheet /> };
+
+/** Panel lateral que flota despegado de los bordes en PC (centro de ayuda); en móvil es la hoja de siempre. */
+export const FloatingDrawer: Story = {
+  render: () => (
+    <ResponsiveSheet drawer floating title="Panel flotante" description="Despegado de las esquinas." trigger={<Button>Abrir panel flotante</Button>} footer={footer}>
+      {form}
+    </ResponsiveSheet>
+  ),
+};

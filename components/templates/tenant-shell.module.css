@@ -1,6 +1,6 @@
-/* Layout del negocio: ancho de la barra lateral por tamaño de pantalla.
-   Móvil = barra inferior (sin lateral); tablet = riel de iconos (76 px);
-   PC ≥ 1200 = barra completa (248 px) salvo que el usuario la contraiga. */
+/* Layout del negocio: ancho de la barra lateral por tamaño de pantalla (DR-13, DR-14).
+   Móvil (< 768) = barra inferior (sin lateral); tablet (768–1023) = riel de 88 px con icono y
+   etiqueta abreviada; ≥ 1024 = barra completa (248 px) salvo que el usuario la contraiga (riel de 76 px, solo iconos). */
 .root {
   --sw: 0px;
   min-height: 100vh;
@@ -9,10 +9,10 @@
 }
 @media (min-width: 768px) {
   .root {
-    --sw: 76px;
+    --sw: 88px;
   }
 }
-@media (min-width: 1200px) {
+@media (min-width: 1024px) {
   .root {
     --sw: 248px;
   }
@@ -42,7 +42,7 @@
     padding: 24px 24px 64px;
   }
 }
-@media (min-width: 1200px) {
+@media (min-width: 1024px) {
   .view {
     padding-inline: 32px;
   }

@@ -124,7 +124,7 @@ export function WhatsAppComposer({
               </li>
             );
           })}
-          {list.length === 0 ? <li className="p-6 text-center text-[13px] text-muted-foreground">Ningún cliente coincide.</li> : null}
+          {list.length === 0 ? <li className="p-6 text-center text-ui text-muted-foreground">Ningún cliente coincide.</li> : null}
         </ul>
       </div>
 
@@ -144,18 +144,18 @@ export function WhatsAppComposer({
             </div>
             <div ref={boxRef} className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto bg-background p-4" aria-live="polite">
               {sent.length === 0 && !draft ? (
-                <p className="m-auto max-w-[36ch] text-center text-[13px] text-muted-foreground">Elige una plantilla o escribe un mensaje para {first}. Se abre WhatsApp con el texto listo.</p>
+                <p className="m-auto max-w-[36ch] text-center text-ui text-muted-foreground">Elige una plantilla o escribe un mensaje para {first}. Se abre WhatsApp con el texto listo.</p>
               ) : null}
               {sent.map((m, i) => (
                 <div key={`${m.at}-${i}`} className="max-w-[min(78%,440px)] self-end rounded-md bg-primary px-3 py-2 text-sm leading-snug text-primary-foreground">
                   {m.text}
-                  <small className="mt-0.5 block text-right text-[10.5px] opacity-65">Enviado · {time.format(new Date(m.at))}</small>
+                  <small className="mt-0.5 block text-right text-2xs opacity-65">Enviado · {time.format(new Date(m.at))}</small>
                 </div>
               ))}
               {draft.trim() ? (
                 <div className="max-w-[min(78%,440px)] self-end rounded-md border border-dashed border-border-strong bg-surface px-3 py-2 text-sm leading-snug">
                   {draft}
-                  <small className="mt-0.5 block text-right text-[10.5px] text-muted-foreground">Vista previa</small>
+                  <small className="mt-0.5 block text-right text-2xs text-muted-foreground">Vista previa</small>
                 </div>
               ) : null}
             </div>

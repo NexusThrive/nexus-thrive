@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import { Wrench } from "lucide-react";
+import { Badge } from "@/components/atoms/badge";
 
 type ModulePlaceholderProps = {
   title: string;
@@ -24,7 +25,8 @@ export default function ModulePlaceholder({
       >
         <Icon className="h-6 w-6" />
       </span>
-      <h1 className="mt-4 font-display text-lg font-semibold tracking-tight text-foreground">
+      <Badge variant="outline" className="mt-4">En plan: aún no está disponible</Badge>
+      <h1 className="mt-3 font-display text-lg font-semibold tracking-tight text-foreground">
         {title}
       </h1>
       <p className="mt-1 max-w-md text-sm text-muted-foreground">{description}</p>

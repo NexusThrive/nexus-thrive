@@ -113,6 +113,7 @@ export function ResponsiveSheet({
   footer,
   trigger,
   drawer = false,
+  floating = false,
   size,
   wide = false,
   extraWide = false,
@@ -132,6 +133,8 @@ export function ResponsiveSheet({
   trigger?: ReactNode;
   /** Panel lateral derecho en PC (en móvil, hoja inferior casi a pantalla completa). */
   drawer?: boolean;
+  /** Con `drawer`: en PC el panel flota despegado de los bordes (margen y esquinas redondeadas), como un centro de ayuda. */
+  floating?: boolean;
   /** Ancho en PC. `full` = modal AVANZADO a pantalla completa (documentos). Modal: sm 440 · md 520 (por defecto) · lg 640 · xl 768. Panel: md 440 · lg 560. */
   size?: "sm" | "md" | "lg" | "xl" | "full";
   /** @deprecated usar `size="lg"`. */
@@ -331,6 +334,7 @@ export function ResponsiveSheet({
             styles.sheet,
             alert && styles.alert,
             drawer && styles.drawer,
+            drawer && floating && styles.floating,
             !drawer && resolvedSize === "sm" && styles.narrow,
             !drawer && resolvedSize === "lg" && styles.wide,
             !drawer && resolvedSize === "xl" && styles.extraWide,
@@ -348,7 +352,7 @@ export function ResponsiveSheet({
                 {title}
               </DialogPrimitive.Title>
               {description ? (
-                <DialogPrimitive.Description className="mt-0.5 text-[13px] text-muted-foreground">
+                <DialogPrimitive.Description className="mt-0.5 text-ui text-muted-foreground">
                   {description}
                 </DialogPrimitive.Description>
               ) : null}

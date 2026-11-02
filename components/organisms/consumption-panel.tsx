@@ -12,7 +12,7 @@ export function ConsumptionPanel({ rows }: { rows: ConsumptionRow[] }) {
     <section aria-labelledby="plan-usage" className="rounded-lg border border-border bg-surface">
       <div className="border-b border-border px-[18px] py-4">
         <h2 id="plan-usage" className="font-display text-[15px] font-semibold">Consumo</h2>
-        <p className="mt-0.5 text-[13px] text-muted-foreground">Tu plan limita cuánto usas, no qué funciones tienes: todas están disponibles.</p>
+        <p className="mt-0.5 text-ui text-muted-foreground">Tu plan limita cuánto usas, no qué funciones tienes: todas están disponibles.</p>
       </div>
       <div className="grid gap-3 p-[18px]">
         {attention.length ? (
@@ -23,7 +23,7 @@ export function ConsumptionPanel({ rows }: { rows: ConsumptionRow[] }) {
         <ul className="grid gap-4">
           {rows.map((r) => (
             <li key={r.key} className="grid gap-1.5">
-              <div className="flex flex-wrap items-baseline justify-between gap-2 text-[13px]">
+              <div className="flex flex-wrap items-baseline justify-between gap-2 text-ui">
                 <span className="font-medium">{r.label}{r.period ? <span className="font-normal text-muted-foreground"> · este mes</span> : null}</span>
                 <span className="font-mono tabular-nums text-muted-foreground">
                   {nf.format(r.used)}

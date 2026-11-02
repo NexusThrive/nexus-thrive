@@ -152,7 +152,7 @@ export function ExpenseSheet({
           )}
         </Field>
         <div>
-          <p className="mb-2 text-[13px] font-medium">Categoría</p>
+          <p className="mb-2 text-ui font-medium">Categoría</p>
           <ChipRow role="group" aria-label="Categoría" className="flex-wrap">
             {categories.map((c) => (
               <Chip key={c} selected={c === category} onClick={() => setCategory(c)}>
@@ -169,13 +169,13 @@ export function ExpenseSheet({
               value={description}
               onChange={(event) => setDescription(event.target.value)}
               maxLength={300}
-              placeholder="Ej. Compra de cuchillas y toallas"
+              placeholder="Descripción del gasto"
               className={textareaClasses}
             />
           )}
         </Field>
         <div>
-          <p className="mb-2 text-[13px] font-medium">Se pagó con</p>
+          <p className="mb-2 text-ui font-medium">Se pagó con</p>
           <ChipRow role="group" aria-label="Se pagó con">
             {[
               ["CASH", "Caja menor"],
@@ -189,11 +189,11 @@ export function ExpenseSheet({
           </ChipRow>
         </div>
         <Field label="Proveedor">
-          {(control) => <input {...control} value={supplier} onChange={(e) => setSupplier(e.target.value)} maxLength={120} placeholder="Ej. Distribuidora El Sol" className={inputClasses} />}
+          {(control) => <input {...control} value={supplier} onChange={(e) => setSupplier(e.target.value)} maxLength={120} placeholder="Proveedor" className={inputClasses} />}
         </Field>
         <Field label="Foto de la factura" hint="Opcional · JPG, PNG o PDF hasta 8 MB. Queda guardada en NEXUS.">
           {(control) => (
-            <label htmlFor={control.id} className="flex cursor-pointer items-center gap-2 rounded-md border border-dashed border-border-input bg-surface px-3 py-3 text-[13px] hover:border-border-input-hover">
+            <label htmlFor={control.id} className="flex cursor-pointer items-center gap-2 rounded-md border border-dashed border-border-input bg-surface px-3 py-3 text-ui hover:border-border-input-hover">
               <Paperclip aria-hidden="true" className="size-4 text-muted-foreground" />
               <span className="min-w-0 flex-1 truncate">{file ? file.name : "Elegir o tomar foto…"}</span>
               <input id={control.id} type="file" accept="image/*,application/pdf" capture="environment" className="sr-only" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />

@@ -35,8 +35,9 @@
   z-index: var(--z-modal);
   left: 0;
   right: 0;
-  bottom: 0;
-  max-height: min(88vh, 760px);
+  /* Teclado en pantalla: la hoja sube sobre él (`--kb` lo publica KeyboardInset) y se encoge para caber arriba. */
+  bottom: var(--kb, 0px);
+  max-height: min(88vh, 760px, calc(100dvh - var(--kb, 0px) - 12px));
   display: flex;
   flex-direction: column;
   background: var(--surface);
@@ -46,6 +47,10 @@
   padding-bottom: env(safe-area-inset-bottom, 0px);
   outline: none;
   will-change: transform;
+}
+/* Con el teclado abierto ya no hay barra de inicio debajo: sin relleno de zona segura. */
+:global(html[data-keyboard]) .sheet {
+  padding-bottom: 0;
 }
 .full {
   /* Modal avanzado: ocupa toda la pantalla (documentos, fichas largas). */
@@ -179,6 +184,18 @@
   .drawerWide {
     width: min(var(--drawer-w-lg), 100vw);
   }
+  /* Panel flotante: despegado de los bordes, con las cuatro esquinas redondeadas. */
+  .drawer.floating {
+    top: 12px;
+    right: 12px;
+    bottom: 12px;
+    width: min(var(--drawer-w), calc(100vw - 24px));
+    border-width: 1px;
+    border-radius: 16px;
+  }
+  .drawer.floating .head {
+    padding-top: 20px;
+  }
   .drawer[data-state="open"] {
     animation: drawer-in var(--motion-overlay-in) var(--nx-ease-out);
   }
@@ -280,4 +297,14 @@
 /* El aviso va por encima del panel que lo origina (y de su fondo). */
 .sheet.alert {
   z-index: var(--z-alert);
+}
+
+/* Animación de cierre (copia que viaja de vuelta al botón o se desliza): va por debajo de cualquier panel o diálogo que se
+   abra a la vez, para que no se monte sobre el formulario lateral cuando el botón está muy a la derecha. El aviso
+   (`alert`) conserva su capa: debe seguir encima del panel que lo originó. */
+.scrim[data-ghost]:not(.scrimAlert) {
+  z-index: var(--z-ghost-overlay);
+}
+.sheet[data-ghost]:not(.alert) {
+  z-index: var(--z-ghost);
 }

@@ -59,41 +59,41 @@ function Paper({ doc, onOpenDocument }: { doc: DocumentView; onOpenDocument?: (i
   const party = doc.kind === "RECEIPT" ? "Recibimos de" : "Adquirente";
   return (
     <article aria-label={`${DOCUMENT_LABELS[doc.kind]} ${doc.code}`} className="mx-auto w-full max-w-4xl rounded-lg border border-border bg-white p-6 text-[#0B0B0C] shadow-sm sm:p-12 print:max-w-none print:border-0 print:p-0 print:shadow-none">
-      <header className="flex flex-wrap items-start justify-between gap-4 border-b border-[#E4E1DA] pb-6">
+      <header className="flex flex-wrap items-start justify-between gap-4 border-b border-doc-line pb-6">
         <div>
           <p className="font-display text-xl font-bold">{doc.issuer.legalName || doc.issuer.name}</p>
-          <p className="max-w-sm text-[13px] text-[#5E5D63]">{[doc.issuer.taxId ? `NIT ${doc.issuer.taxId}` : null, doc.issuer.address, doc.issuer.city, doc.issuer.phone].filter(Boolean).join(" · ")}</p>
+          <p className="max-w-sm text-ui text-doc-muted">{[doc.issuer.taxId ? `NIT ${doc.issuer.taxId}` : null, doc.issuer.address, doc.issuer.city, doc.issuer.phone].filter(Boolean).join(" · ")}</p>
         </div>
         <div className="text-right">
-          <p className={`font-mono text-[11px] uppercase tracking-[0.14em] ${TONE[doc.kind] || "text-[#5E5D63]"}`}>{DOCUMENT_LABELS[doc.kind]}</p>
+          <p className={`font-mono text-2xs uppercase tracking-[0.14em] ${TONE[doc.kind] || "text-doc-muted"}`}>{DOCUMENT_LABELS[doc.kind]}</p>
           <p className="font-display text-3xl font-bold">{doc.code}</p>
           <Badge tone={st.tone}>{st.label}</Badge>
         </div>
       </header>
 
-      <section className="grid gap-4 py-6 text-[14px] sm:grid-cols-3">
+      <section className="grid gap-4 py-6 text-sm sm:grid-cols-3">
         <div>
-          <p className="text-[12px] uppercase tracking-wide text-[#5E5D63]">{party}</p>
+          <p className="text-xs uppercase tracking-wide text-doc-muted">{party}</p>
           <p className="font-semibold">{doc.customer.name}</p>
-          {doc.customer.doc ? <p className="text-[#5E5D63]">Documento {doc.customer.doc}</p> : null}
+          {doc.customer.doc ? <p className="text-doc-muted">Documento {doc.customer.doc}</p> : null}
         </div>
         <div>
-          <p className="text-[12px] uppercase tracking-wide text-[#5E5D63]">Fechas</p>
+          <p className="text-xs uppercase tracking-wide text-doc-muted">Fechas</p>
           <p>Emitido {doc.issueDate}</p>
-          {doc.dueDate ? <p className="text-[#5E5D63]">Vence {doc.dueDate}</p> : null}
+          {doc.dueDate ? <p className="text-doc-muted">Vence {doc.dueDate}</p> : null}
         </div>
         {doc.source ? (
           <div>
-            <p className="text-[12px] uppercase tracking-wide text-[#5E5D63]">{isNote ? "Afecta al documento" : "Viene de"}</p>
+            <p className="text-xs uppercase tracking-wide text-doc-muted">{isNote ? "Afecta al documento" : "Viene de"}</p>
             <button type="button" onClick={() => onOpenDocument?.(doc.source!.id)} className="font-mono font-semibold underline underline-offset-2">{doc.source.code}</button>
           </div>
         ) : null}
       </section>
 
       <div role="region" aria-label="Detalle del documento" tabIndex={0} className="overflow-x-auto">
-        <table className="w-full min-w-[560px] text-[13.5px]">
+        <table className="w-full min-w-[560px] text-ui">
           <caption className="sr-only">Líneas del documento</caption>
-          <thead className="border-y border-[#E4E1DA] text-left text-[12px] uppercase tracking-wide text-[#5E5D63]">
+          <thead className="border-y border-doc-line text-left text-xs uppercase tracking-wide text-doc-muted">
             <tr>
               <th scope="col" className="py-2 pr-2 font-medium">Concepto</th>
               <th scope="col" className="px-2 py-2 text-right font-medium">Cant.</th>
@@ -118,27 +118,27 @@ function Paper({ doc, onOpenDocument }: { doc: DocumentView; onOpenDocument?: (i
         </table>
       </div>
 
-      <dl className="ml-auto mt-6 grid w-full max-w-sm gap-1.5 text-[14px]">
+      <dl className="ml-auto mt-6 grid w-full max-w-sm gap-1.5 text-sm">
         <Total label="Subtotal" value={doc.subtotal} />
         {doc.discountTotal ? <Total label="Descuentos" value={-doc.discountTotal} /> : null}
         {doc.taxTotal ? <Total label="Impuestos" value={doc.taxTotal} /> : null}
-        <div className="flex justify-between border-t border-[#E4E1DA] pt-2 text-[17px] font-bold"><dt>{doc.kind === "CREDIT_NOTE" ? "Total a favor" : "Total"}</dt><dd className="font-mono tabular-nums">{formatCurrency(doc.total)}</dd></div>
+        <div className="flex justify-between border-t border-doc-line pt-2 text-[17px] font-bold"><dt>{doc.kind === "CREDIT_NOTE" ? "Total a favor" : "Total"}</dt><dd className="font-mono tabular-nums">{formatCurrency(doc.total)}</dd></div>
         {doc.withholdings.map((w) => <Total key={w.name} label={`Retención · ${w.name}`} value={-w.amount} />)}
         {doc.kind === "BILL" ? <Total label="Abonado" value={doc.status === "PAID" ? doc.total : doc.paid} /> : null}
         {doc.kind === "BILL" && doc.status === "ISSUED" ? <div className="flex justify-between font-semibold"><dt>Saldo por cobrar</dt><dd className="font-mono tabular-nums">{formatCurrency(doc.balance)}</dd></div> : null}
       </dl>
 
-      {doc.notes ? <p className="mt-6 text-[13px] text-[#5E5D63]"><b className="text-[#0B0B0C]">{isNote ? "Motivo: " : "Notas: "}</b>{doc.notes}</p> : null}
-      {doc.voidReason ? <p className="mt-2 text-[13px] text-[#9B2C2C]"><b>Anulado:</b> {doc.voidReason}</p> : null}
+      {doc.notes ? <p className="mt-6 text-ui text-doc-muted"><b className="text-[#0B0B0C]">{isNote ? "Motivo: " : "Notas: "}</b>{doc.notes}</p> : null}
+      {doc.voidReason ? <p className="mt-2 text-ui text-[#9B2C2C]"><b>Anulado:</b> {doc.voidReason}</p> : null}
 
       {doc.related.length ? (
-        <section aria-label="Documentos relacionados" className="mt-8 border-t border-[#E4E1DA] pt-4 print:hidden">
-          <h3 className="mb-2 text-[12px] font-semibold uppercase tracking-wide text-[#5E5D63]">Notas y documentos relacionados</h3>
-          <ul className="grid gap-1.5 text-[13.5px]">
+        <section aria-label="Documentos relacionados" className="mt-8 border-t border-doc-line pt-4 print:hidden">
+          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-doc-muted">Notas y documentos relacionados</h3>
+          <ul className="grid gap-1.5 text-ui">
             {doc.related.map((r) => (
               <li key={r.id} className="flex items-center gap-3">
                 <button type="button" onClick={() => onOpenDocument?.(r.id)} className="font-mono font-semibold underline underline-offset-2">{r.code}</button>
-                <span className="text-[#5E5D63]">{DOCUMENT_LABELS[r.kind]}</span>
+                <span className="text-doc-muted">{DOCUMENT_LABELS[r.kind]}</span>
                 <span className="ml-auto font-mono tabular-nums">{formatCurrency(r.total)}</span>
               </li>
             ))}
@@ -152,7 +152,7 @@ function Paper({ doc, onOpenDocument }: { doc: DocumentView; onOpenDocument?: (i
 function Total({ label, value }: { label: string; value: number }) {
   return (
     <div className="flex justify-between">
-      <dt className="text-[#5E5D63]">{label}</dt>
+      <dt className="text-doc-muted">{label}</dt>
       <dd className="font-mono tabular-nums">{formatCurrency(value)}</dd>
     </div>
   );

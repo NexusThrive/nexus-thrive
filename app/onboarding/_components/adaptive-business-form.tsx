@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { Check, Link2, MapPin, Receipt } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Check, Link2, Loader2, MapPin, Receipt } from "lucide-react";
+import { checkSlugAvailabilityAction, type SlugAvailability } from "../actions";
 import type { VerticalValue } from "@/lib/core/sectors/verticals";
 import { getVerticalIcon } from "@/lib/experience/vertical-icons";
 import { normalizeSlug, normalizeAndValidateSlug } from "@/lib/core/tenancy/onboarding/slug";
@@ -25,6 +26,10 @@ type FieldProps = {
   onPatch: (partial: Partial<OnboardingDraft>) => void;
   errors: OnboardingFieldErrors;
   showErrors: boolean;
+  /** Negocio que se está completando (su propio enlace cuenta como libre). */
+  tenantId?: string;
+  /** Avisa si el enlace escrito ya lo usa otro negocio (bloquea continuar). */
+  onSlugTaken?: (taken: boolean) => void;
 };
 
 /** Campo con icono a la izquierda. */
@@ -42,21 +47,39 @@ function IconInput({ icon: Icon, className, ...props }: React.ComponentProps<"in
  * enlace se arma solo desde el nombre hasta que el usuario lo edita, y la
  * vista previa del panel de marca refleja cada cambio en vivo.
  */
-export default function AdaptiveBusinessForm({ verticals, draft, onPatch: patch, errors, showErrors }: FieldProps) {
+export default function AdaptiveBusinessForm({ verticals, draft, onPatch: patch, errors, showErrors, tenantId, onSlugTaken }: FieldProps) {
   const [slugTouched, setSlugTouched] = useState(() => draft.slugRaw.length > 0);
   const isCompany = draft.tenantType === "COMPANY";
   const slugCheck = normalizeAndValidateSlug(draft.slugRaw);
+  // Disponibilidad en vivo: se consulta 400 ms después de la última tecla y solo si el enlace ya es válido.
+  const [availability, setAvailability] = useState<(SlugAvailability & { slug: string }) | null>(null);
+  const slugValue = slugCheck.ok ? slugCheck.slug : null;
+  useEffect(() => {
+    if (!slugValue) return;
+    let cancelled = false;
+    const timer = window.setTimeout(() => {
+      checkSlugAvailabilityAction(slugValue, tenantId)
+        .then((result) => { if (!cancelled) setAvailability({ ...result, slug: slugValue }); })
+        .catch(() => { if (!cancelled) setAvailability(null); });
+    }, 400);
+    return () => { cancelled = true; window.clearTimeout(timer); };
+  }, [slugValue, tenantId]);
+  const checking = Boolean(slugValue) && availability?.slug !== slugValue;
+  const taken = Boolean(slugValue) && availability?.slug === slugValue && !availability.available;
+  const suggestion = taken ? availability?.suggestion : undefined;
+  useEffect(() => { onSlugTaken?.(taken); }, [taken, onSlugTaken]);
   const err = (key: keyof OnboardingFieldErrors) => (showErrors ? errors[key] : undefined);
 
-  const slugError =
-    showErrors && (errors.slug || (!slugCheck.ok && draft.slugRaw.length > 0))
+  const slugError = taken
+    ? "Ese enlace ya está en uso por otro negocio."
+    : showErrors && (errors.slug || (!slugCheck.ok && draft.slugRaw.length > 0))
       ? (errors.slug ?? (!slugCheck.ok ? slugCheck.error : undefined))
       : undefined;
 
   return (
     <div className="grid grid-cols-1 gap-5">
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-        <Field label="Nombre comercial" required error={err("name")} className={isCompany ? undefined : "sm:col-span-2"}>
+        <Field label="Nombre comercial" required error={err("name") ?? (taken && !slugTouched ? "Ya existe un negocio con ese nombre. Cambia el nombre o elige otro enlace." : undefined)} className={isCompany ? undefined : "sm:col-span-2"}>
           {(control) => (
             <input
               {...control}
@@ -67,7 +90,7 @@ export default function AdaptiveBusinessForm({ verticals, draft, onPatch: patch,
                 const name = event.target.value;
                 patch(slugTouched ? { name } : { name, slugRaw: normalizeSlug(name) });
               }}
-              placeholder={isCompany ? "Ej. Constructora Castellar" : "Ej. Barbería El Caballero"}
+              placeholder="Nombre de tu negocio"
               maxLength={80}
               autoComplete="organization"
             />
@@ -81,7 +104,7 @@ export default function AdaptiveBusinessForm({ verticals, draft, onPatch: patch,
                 className={inputClasses}
                 value={draft.legalName}
                 onChange={(event) => patch({ legalName: event.target.value })}
-                placeholder="Ej. Castellar Construcciones S.A.S."
+                placeholder="Razón social"
                 maxLength={120}
               />
             )}
@@ -106,15 +129,25 @@ export default function AdaptiveBusinessForm({ verticals, draft, onPatch: patch,
                 setSlugTouched(true);
                 patch({ slugRaw: event.target.value });
               }}
-              placeholder="mi-marca"
+              placeholder="mi-negocio"
               className="h-full w-full min-w-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
               maxLength={48}
               autoComplete="off"
             />
-            {slugCheck.ok ? <Check aria-label="Enlace válido" className="size-4 shrink-0 text-success" /> : null}
+            {checking ? <Loader2 aria-label="Comprobando disponibilidad" className="size-4 shrink-0 animate-spin text-muted-foreground" /> : slugCheck.ok && !taken ? <Check aria-label="Enlace disponible" className="size-4 shrink-0 text-success" /> : null}
           </div>
         )}
       </Field>
+
+      {suggestion ? (
+        <button
+          type="button"
+          onClick={() => { setSlugTouched(true); patch({ slugRaw: suggestion }); }}
+          className="-mt-3 justify-self-start rounded-sm text-ui font-medium text-accent-text underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        >
+          Usar «{suggestion}»
+        </button>
+      ) : null}
 
       <fieldset className="min-w-0">
         <legend className="mb-2 text-[13px] font-medium">
@@ -186,7 +219,7 @@ export default function AdaptiveBusinessForm({ verticals, draft, onPatch: patch,
               icon={Receipt}
               value={draft.taxId}
               onChange={(event) => patch({ taxId: event.target.value })}
-              placeholder="Ej. 901.234.567-9"
+              placeholder="Número de NIT"
               maxLength={20}
               inputMode="numeric"
               autoComplete="off"
@@ -220,7 +253,7 @@ export default function AdaptiveBusinessForm({ verticals, draft, onPatch: patch,
                   ...(change.city ? { city: change.city } : {}),
                 })
               }
-              placeholder="Ej. Cra 7 # 72-41"
+              placeholder="Calle y número"
             />
           )}
         </Field>

@@ -144,7 +144,7 @@ export function IncomeChart({
           return (
             <g key={i}>
               <line x1={PAD_LEFT} x2={width - 6} y1={yy} y2={yy} className="stroke-border" strokeWidth={1} />
-              <text x={PAD_LEFT - 8} y={yy + 4} textAnchor="end" className="fill-muted-foreground text-[11px] font-medium">
+              <text x={PAD_LEFT - 8} y={yy + 4} textAnchor="end" className="fill-muted-foreground text-2xs font-medium">
                 {i ? compact.format(v) : "0"}
               </text>
             </g>
@@ -181,7 +181,7 @@ export function IncomeChart({
                 className={cn("fill-border-strong", d.state === "nodata" && "hidden")}
               />
               {showLabel ? (
-                <text x={cx} y={H - 6} textAnchor="middle" className="fill-muted-foreground text-[11px] font-medium">
+                <text x={cx} y={H - 6} textAnchor="middle" className="fill-muted-foreground text-2xs font-medium">
                   {d.label}
                 </text>
               ) : null}
@@ -210,9 +210,9 @@ export function IncomeChart({
               <span className="block opacity-75">Sin movimientos</span>
             ) : (
               <>
-                <b className="block font-display text-[13px] font-semibold tabular-nums">{cop(point.income)}</b>
+                <b className="block font-display text-ui font-semibold tabular-nums">{cop(point.income)}</b>
                 <span className="opacity-75">Gastos {cop(point.expenses)}</span>
-                {onSelect && selectable(point) ? <span className="mt-0.5 block text-[11px] opacity-75">Clic para ver los movimientos</span> : null}
+                {onSelect && selectable(point) ? <span className="mt-0.5 block text-2xs opacity-75">Clic para ver los movimientos</span> : null}
               </>
             )}
           </>

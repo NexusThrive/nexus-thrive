@@ -1,9 +1,8 @@
 "use client";
 
-import { useSyncExternalStore, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { UserButton } from "@clerk/nextjs";
 import { Plus, Search } from "lucide-react";
 import { N_PATH, THRIVE_LETTERS } from "@nexus/brand/BrandLogo";
 import { Button } from "@/components/atoms/button";
@@ -16,24 +15,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/molecules/dropdown-menu";
+import { MobileTopbarSearch } from "@/components/organisms/mobile-topbar-search";
+import { AccountButton } from "@/components/molecules/account-button";
 import { RouteBar } from "@/components/molecules/route-bar";
 import { useQuickCreate } from "@/components/organisms/quick-create-host";
 import { useShell } from "@/components/providers/shell-context";
 import { cn } from "@/lib/utils";
 import styles from "./app-topbar.module.css";
-
-const noop = () => () => undefined;
-
-/**
- * Menú de la cuenta de Clerk. Clerk lo monta solo en el navegador, así que el HTML
- * del servidor no lo trae y React avisaba de «hydration mismatch». Se pinta tras
- * hidratar y, mientras tanto, un hueco del mismo tamaño evita el salto de diseño.
- */
-function AccountButton() {
-  const mounted = useSyncExternalStore(noop, () => true, () => false);
-  if (!mounted) return <span aria-hidden="true" className="inline-block size-[34px] rounded-[4px] bg-surface-muted" />;
-  return <UserButton appearance={{ elements: { userButtonAvatarBox: "size-[34px] rounded-[4px]" } }} />;
-}
 
 /**
  * Navbar global: fija, a todo el ancho, con fondo sólido y por encima de la
@@ -71,31 +59,30 @@ export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; 
         </span>
         <span className={cn(styles.ident, "flex min-w-0 flex-col leading-tight")}>
           <b className="truncate font-display text-sm font-semibold">{brandName}</b>
-          <small className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+          <small className="flex items-center gap-1.5 text-2xs text-muted-foreground">
             <i aria-hidden="true" className="inline-block size-1.5 -skew-x-[24deg] bg-accent" />
             {title}
           </small>
         </span>
       </Link>
 
-      <div className="relative flex min-w-fit flex-1 md:min-w-0 items-center justify-end gap-2 border-b border-[var(--sidebar-border)] bg-[var(--sidebar-bg)] px-3 text-[var(--sidebar-fg)] md:gap-4 md:px-6 xl:px-8">
+      <div className="relative flex min-w-fit flex-1 items-center justify-end gap-2 md:min-w-0 lg:grid lg:grid-cols-[minmax(max-content,1fr)_minmax(0,440px)_minmax(max-content,1fr)] border-b border-[var(--sidebar-border)] bg-[var(--sidebar-bg)] px-3 text-[var(--sidebar-fg)] md:gap-4 md:px-6 xl:px-8">
         {/* Izquierda: contexto (negocio) y búsqueda. `suppressHydrationWarning`:
             Proton Pass marca con `data-protonpass-form` los contenedores con
             botones/inputs antes de que React hidrate y dispara el aviso de
             "hydration mismatch"; no es nuestro HTML (ver `CheckinStation`). */}
-        <div className="flex min-w-0 flex-1 items-center justify-end gap-3 md:justify-start" suppressHydrationWarning>
-          {switcher ? <div className="hidden shrink-0 md:block" suppressHydrationWarning>{switcher}</div> : null}
-          {switcher ? <span aria-hidden="true" className="hidden h-6 w-px shrink-0 bg-[var(--sidebar-border)] md:block" /> : null}
-          <div className="min-w-0 md:w-full md:max-w-[520px]" suppressHydrationWarning>
+        <div className="flex min-w-0 flex-1 items-center justify-end gap-4 lg:contents" suppressHydrationWarning>
+          {switcher ? <div className="hidden shrink-0 md:block lg:col-start-1 lg:row-start-1 lg:justify-self-start" suppressHydrationWarning>{switcher}</div> : null}
+                    <div data-tour="search" className="min-w-0 md:w-full md:max-w-[520px] lg:col-start-2 lg:row-start-1 lg:max-w-none" suppressHydrationWarning>
             {search ?? (
               <button
                 type="button"
                 onClick={openSearch}
-                className="group hidden h-10 w-full items-center gap-2.5 rounded-md border border-border bg-surface-muted pl-3.5 pr-2.5 text-[13px] text-muted-foreground transition-[border-color,color,background-color] duration-200 hover:border-border-input hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:flex"
+                className="group hidden h-10 pointer-coarse:h-11 w-full items-center gap-2.5 rounded-md border border-border bg-surface-muted pl-3.5 pr-2.5 text-ui text-muted-foreground transition-[border-color,color,background-color] duration-200 hover:border-border-input hover:bg-surface hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:flex"
               >
                 <Search aria-hidden="true" className="size-4 shrink-0 transition-transform duration-200 group-hover:scale-110" />
                 <span className="truncate">Buscar clientes, pagos, gastos o secciones…</span>
-                <Kbd className="ml-auto shrink-0">Ctrl K</Kbd>
+                <Kbd className="ml-auto shrink-0 pointer-coarse:hidden">Ctrl K</Kbd>
               </button>
             )}
             <button
@@ -103,7 +90,7 @@ export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; 
               onClick={openSearch}
               aria-label="Buscar"
               data-press=""
-              className="grid size-10 place-items-center rounded-md hover:bg-surface-muted md:hidden"
+              className="grid size-10 pointer-coarse:size-11 place-items-center rounded-md hover:bg-surface-muted md:hidden"
             >
               <Search aria-hidden="true" className="size-[18px]" />
             </button>
@@ -111,17 +98,17 @@ export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; 
         </div>
 
         {/* Derecha: acción principal, avisos y preferencias, y la cuenta al final. */}
-        <div className="flex shrink-0 items-center justify-end gap-2">
+        <div className="flex shrink-0 items-center justify-end gap-2 md:gap-3 lg:col-start-3 lg:row-start-1 lg:justify-self-end">
           {createActions.length > 0 ? (
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
-                <Button variant="accent" className="hidden md:inline-flex" data-press="">
+                <Button variant="accent" className="hidden md:inline-flex" data-press="" data-tour="create">
                   <Plus aria-hidden="true" className="size-4" />
                   Crear
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" sideOffset={8} className="w-[min(340px,calc(100vw-24px))] p-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                <DropdownMenuLabel className="px-2.5 pb-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+              <DropdownMenuContent align="end" sideOffset={8} data-nx-create-menu="" className="w-[min(340px,calc(100vw-24px))] p-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <DropdownMenuLabel className="px-2.5 pb-1.5 text-2xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
                   Crear nuevo
                 </DropdownMenuLabel>
                 {createActions.map((action) => (
@@ -144,16 +131,21 @@ export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; 
               </DropdownMenuContent>
             </DropdownMenu>
           ) : null}
+          {/* Móvil: lupa, lo que falta por completar y las notificaciones; el tema y la cuenta viven en «Más». */}
+          <div className="flex items-center gap-1 md:gap-0.5">
+            {actions}
+            <ThemeToggle className="max-md:hidden" />
+          </div>
           <span aria-hidden="true" className="mx-1 hidden h-6 w-px bg-[var(--sidebar-border)] md:block" />
-          {actions}
-          <ThemeToggle />
-          <span aria-hidden="true" className="mx-1 hidden h-6 w-px bg-[var(--sidebar-border)] md:block" />
-          <AccountButton />
+          {/* En móvil la cuenta vive en «Más» (barra inferior). */}
+          <span className="max-md:hidden"><AccountButton /></span>
         </div>
 
       </div>
 
       {/* Debajo de la navbar, fuera de su fila y desde el borde de la barra lateral (`--sw`): no se mete en ella ni deforma la navbar. */}
+      <MobileTopbarSearch />
+
       <RouteBar className="absolute inset-x-auto left-[var(--sw)] right-0 top-full" />
     </header>
   );

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "
 import Link from "next/link";
 import { Banknote, Bell, CalendarClock, Clock, MinusCircle, X } from "lucide-react";
 import { EASE_IN_OUT, armPopoverMorph, flash, motionOff, spring, type PopoverMorph } from "@/lib/experience/motion/index";
-import { newArrivals, unreadCount, type AppNotification, type NotificationKind } from "@/lib/experience/dashboard/notifications";
+import { newArrivals, SEVERITY_LABEL, unreadCount, type AppNotification, type NotificationKind } from "@/lib/experience/dashboard/notifications";
 import { NOTIFICATIONS_REFRESH, type NotificationArrival } from "@/lib/experience/dashboard/notifications-client";
 import { cn } from "@/lib/utils";
 
@@ -255,13 +255,13 @@ export function NotificationCenter({
           setPanel(true);
           setOpen(true);
         }}
-        className="relative grid size-10 place-items-center rounded-md transition-colors hover:bg-surface-muted"
+        className="relative grid size-10 pointer-coarse:size-11 place-items-center rounded-md transition-colors hover:bg-surface-muted"
       >
         <Bell ref={bellRef} aria-hidden="true" className="size-[18px] origin-top" strokeWidth={1.6} />
         {unread ? (
           <i
             ref={countRef}
-            className="absolute right-1 top-1 grid h-[18px] min-w-[18px] place-items-center rounded-[2px] bg-accent px-1 text-[10.5px] font-semibold not-italic text-ink"
+            className="absolute right-1 top-1 grid h-[18px] min-w-[18px] place-items-center rounded-[2px] bg-accent px-1 text-2xs font-semibold not-italic text-ink"
           >
             {unread > 9 ? "9+" : unread}
           </i>
@@ -283,7 +283,7 @@ export function NotificationCenter({
             const n = incoming[0]!;
             const Icon = ICONS[n.kind];
             return (
-              <div className="flex items-center gap-2.5 py-2.5 pl-3.5 pr-1.5 text-[13px]">
+              <div className="flex items-center gap-2.5 py-2.5 pl-3.5 pr-1.5 text-ui">
                 <Link href={hrefFor(n.href)} onClick={() => setIncoming([])} className="flex min-w-0 flex-1 items-center gap-2.5 rounded-sm focus-visible:outline-2 focus-visible:outline-ring">
                   <span className={cn("grid size-[30px] shrink-0 place-items-center rounded-md", n.kind === "expense" || n.kind === "membership" ? "bg-accent-subtle text-accent-text" : "bg-surface-muted")}>
                     <Icon aria-hidden="true" className="size-4" strokeWidth={1.7} />
@@ -300,7 +300,7 @@ export function NotificationCenter({
                   type="button"
                   aria-label="Cerrar aviso"
                   onClick={hideIncoming}
-                  className="grid size-8 shrink-0 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-surface-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
+                  className="grid size-8 pointer-coarse:size-11 shrink-0 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-surface-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
                 >
                   <X aria-hidden="true" className="size-3.5" />
                 </button>
@@ -323,7 +323,7 @@ export function NotificationCenter({
               type="button"
               disabled={!unread}
               onClick={markRead}
-              className="rounded-md px-2 py-1 text-[12.5px] font-medium text-accent-text transition-colors hover:bg-surface-muted disabled:opacity-40"
+              className="rounded-md px-2 py-1 text-xs font-medium text-accent-text transition-colors hover:bg-surface-muted disabled:opacity-40"
             >
               Marcar leídas
             </button>
@@ -338,9 +338,9 @@ export function NotificationCenter({
                   role="tab"
                   aria-selected={view === id}
                   onClick={() => setTab(id)}
-                  className={cn("rounded-md px-2.5 py-1 text-[12.5px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-ring", view === id ? "bg-surface-muted text-foreground" : "text-muted-foreground hover:text-foreground")}
+                  className={cn("rounded-md px-2.5 py-1 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-ring", view === id ? "bg-surface-muted text-foreground" : "text-muted-foreground hover:text-foreground")}
                 >
-                  {id === "pending" ? "Pendientes" : "Leídas"} <span className="font-mono text-[11px] opacity-70">{count}</span>
+                  {id === "pending" ? "Pendientes" : "Leídas"} <span className="font-mono text-2xs opacity-70">{count}</span>
                 </button>
               );
             })}
@@ -356,7 +356,7 @@ export function NotificationCenter({
                       href={hrefFor(n.href)}
                       draggable={false}
                       onClick={closePanel}
-                      className="flex items-center gap-2.5 py-2.5 pl-3.5 pr-8 text-[13px] transition-colors hover:bg-surface-muted"
+                      className="flex items-center gap-2.5 py-2.5 pl-3.5 pr-8 text-ui transition-colors hover:bg-surface-muted"
                     >
                       <span className={cn("grid size-[30px] shrink-0 place-items-center rounded-md", n.kind === "expense" || n.kind === "membership" ? "bg-accent-subtle text-accent-text" : "bg-surface-muted")}>
                         <Icon aria-hidden="true" className="size-4" strokeWidth={1.7} />
@@ -364,6 +364,7 @@ export function NotificationCenter({
                       <span className="min-w-0 flex-1">
                         <b className="block truncate font-medium">{n.title}</b>
                         <small className="block truncate text-xs text-muted-foreground">
+                          {n.severity && n.severity !== "info" ? <span className={cn("font-semibold", n.severity === "urgent" ? "text-danger" : "text-accent-text")}>{SEVERITY_LABEL[n.severity]} · </span> : null}
                           {n.detail} · {when(n.at)}
                         </small>
                       </span>
@@ -374,7 +375,7 @@ export function NotificationCenter({
               })}
             </ul>
           ) : (
-            <p className="px-4 py-8 text-center text-[13px] text-muted-foreground">
+            <p className="px-4 py-8 text-center text-ui text-muted-foreground">
               {items.length === 0
                 ? "Nada nuevo hoy. Aquí verás cobros, citas y vencimientos."
                 : view === "pending"
@@ -415,7 +416,7 @@ function DismissRow({ children, unread, onDismiss }: { children: React.ReactNode
         }
       }}
     >
-      {onDismiss ? <span aria-hidden="true" className="absolute inset-0 grid place-items-center bg-danger/10 text-[12px] font-medium text-danger">Descartar</span> : null}
+      {onDismiss ? <span aria-hidden="true" className="absolute inset-0 grid place-items-center bg-danger/10 text-xs font-medium text-danger">Descartar</span> : null}
       <div
         className="relative bg-surface motion-safe:transition-transform motion-safe:duration-200"
         style={{ transform: leaving ? `translateX(${leaving * 110}%)` : dx ? `translateX(${dx}px)` : undefined, transitionDuration: dragging ? "0ms" : undefined, touchAction: "pan-y" }}

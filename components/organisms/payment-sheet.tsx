@@ -225,7 +225,7 @@ export function PaymentSheet({
         <div className="grid grid-cols-1 gap-4">
           <div>
             <AmountDisplay value={amount} />
-            <p className="mt-0.5 text-center text-[12.5px] text-muted-foreground">Escribe el valor con el teclado</p>
+            <p className="mt-0.5 text-center text-xs text-muted-foreground">Escribe el valor con el teclado</p>
           </div>
           <Keypad onKey={press} />
           <Field label="Cliente">
@@ -246,7 +246,7 @@ export function PaymentSheet({
             )}
           </Field>
           <div>
-            <p className="mb-2 text-[13px] font-medium">Medio de pago</p>
+            <p className="mb-2 text-ui font-medium">Medio de pago</p>
             <ChipRow role="group" aria-label="Medio de pago">
               {methods.map((m) => (
                 <Chip key={m.value} selected={m.value === method} onClick={() => setMethod(m.value)}>
@@ -262,7 +262,7 @@ export function PaymentSheet({
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
                 maxLength={300}
-                placeholder="Ej. Corte y barba"
+                placeholder="Concepto"
                 className={inputClasses}
               />
             )}

@@ -37,12 +37,18 @@
   min-width: 0;
   overflow: hidden;
 }
+/* Móvil: solo el logo. El negocio y la sección viven en la hoja «Más» de la barra inferior. */
+@media (max-width: 767px) {
+  .ident {
+    display: none;
+  }
+}
 @media (min-width: 768px) {
   .ident {
     display: none;
   }
 }
-@media (min-width: 1200px) {
+@media (min-width: 1024px) {
   :global(html:not([data-rail])) .ident {
     display: flex;
     padding-left: 4px;
@@ -103,7 +109,7 @@
     transition-delay: 0ms;
   }
 }
-@media (min-width: 1200px) {
+@media (min-width: 1024px) {
   :global(html:not([data-rail])) .brand {
     padding-left: 24px;
   }
