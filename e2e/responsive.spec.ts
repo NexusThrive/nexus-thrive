@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { openStory } from "./helpers";
-import { medirDesborde, medirNavegacion, medirObjetivos, medirSolapes, medirTextoMinimo, medirTexto } from "./responsive-helpers";
+import { medirCifras, medirDesborde, medirNavegacion, medirObjetivos, medirSolapes, medirTextoMinimo, medirTexto, medirTopbarFuera } from "./responsive-helpers";
 import { VIEWPORTS } from "./viewports";
 
 /**
@@ -9,7 +9,7 @@ import { VIEWPORTS } from "./viewports";
  *
  * Los hallazgos de la auditoría del dashboard que todavía no se corrigen se marcan con `test.fail(...)`:
  * la prueba pasa mientras el hallazgo exista y **falla en cuanto se corrija**, para obligar a quitar la marca.
- * Cada marca cita su hallazgo (`P1-1` …) y el paso de la propuesta que lo resuelve.
+ * Cada marca cita su hallazgo (`P2-3` …) y el paso de la propuesta que lo resuelve.
  * Una prueba nunca se da por cumplida por haber hecho el cambio: debe pasar sin marca.
  */
 const INICIO = "organismos-customizabledashboard--default";
@@ -19,6 +19,8 @@ const MODAL = "plantillas-tenantshell--with-modal";
 const FIEL = "páginas-inicio-dashboard-fiel--con-datos";
 const FIEL_NUEVA = "páginas-inicio-dashboard-fiel--cuenta-nueva";
 const FIEL_CARGANDO = "páginas-inicio-dashboard-fiel--cargando";
+const FIEL_NOMBRE_LARGO = "páginas-inicio-dashboard-fiel--nombre-largo";
+const FIEL_CIFRAS_GRANDES = "páginas-inicio-dashboard-fiel--cifras-grandes";
 const TABLET_MIN = 768;
 
 for (const vp of VIEWPORTS) {
@@ -40,14 +42,12 @@ for (const vp of VIEWPORTS) {
 
     // R4 · el contenido cabe en su tarjeta (el desborde de página no detecta el recorte).
     test("Inicio: los textos de las tarjetas no se recortan", async ({ page }) => {
-      test.fail(vp.ancho < 360, "P1-1: importes recortados a 320 px · paso 3");
       await openStory(page, INICIO);
       expect((await medirTexto(page)).recortados).toEqual([]);
     });
 
     // R2/R3 · la barra superior no se pisa a sí misma.
     test("Shell: los controles de la barra superior no se superponen", async ({ page }) => {
-      test.fail(vp.ancho < 375, "P1-2: botones superpuestos a 320 y 360 px · paso 3");
       await openStory(page, SHELL);
       expect(await medirSolapes(page)).toEqual([]);
     });
@@ -125,17 +125,47 @@ for (const vp of VIEWPORTS) {
     }
 
     test("Inicio fiel: los importes y textos de las tarjetas no se recortan", async ({ page }) => {
-      test.fail(vp.ancho <= 375, "P1-3: importes con datos reales recortados hasta 375 px («$ 2.340.000», 5 importes a 320 px) · paso 3");
       await openStory(page, FIEL);
       await page.waitForTimeout(800);
       expect((await medirTexto(page)).recortados).toEqual([]);
     });
 
     test("Inicio fiel: la barra superior con la campana no se superpone", async ({ page }) => {
-      test.fail(vp.ancho < 375, "P1-2: con la campana de producción la barra se pisa a 320 y 360 px aunque el nombre sea corto · paso 3");
       await openStory(page, FIEL);
       await page.waitForTimeout(800);
       expect(await medirSolapes(page)).toEqual([]);
+      expect(await medirTopbarFuera(page), "controles fuera de la pantalla").toEqual([]);
+    });
+
+    // P1-2: con un nombre de negocio muy largo la marca cede ancho y las acciones (búsqueda, notificaciones, tema) siguen a la vista.
+    test("Inicio fiel con nombre largo: la barra superior no se superpone y conserva sus acciones", async ({ page }) => {
+      await openStory(page, FIEL_NOMBRE_LARGO);
+      await page.waitForTimeout(800);
+      expect(await medirSolapes(page)).toEqual([]);
+      expect(await medirTopbarFuera(page), "controles fuera de la pantalla").toEqual([]);
+      if (vp.ancho < TABLET_MIN) {
+        for (const nombre of ["Buscar", /Notificaciones/, "Cambiar a modo oscuro"]) await expect(page.getByRole("banner").getByRole("button", { name: nombre })).toBeVisible();
+      }
+    });
+
+    // P1-3: cifras de decenas de millones; el ajuste al ancho de la tarjeta no las corta ni las reduce por debajo del suelo.
+    test("Cifras grandes: los importes no se recortan y conservan un tamaño legible", async ({ page }) => {
+      await openStory(page, FIEL_CIFRAS_GRANDES);
+      await page.waitForTimeout(800);
+      expect((await medirTexto(page)).recortados).toEqual([]);
+      const cifras = await medirCifras(page);
+      expect(cifras.length, "hay cifras medidas").toBeGreaterThan(0);
+      expect(cifras.filter((c) => c.px < 16), "cifras por debajo del suelo de 16 px").toEqual([]);
+    });
+
+    test("Inicio fiel: las cifras habituales conservan su tamaño de diseño", async ({ page }) => {
+      await openStory(page, FIEL);
+      await page.waitForTimeout(800);
+      const cifras = await medirCifras(page);
+      // Suelo de 16 px siempre; con cifras de un negocio mediano, 18 px o más desde 360 px (el diseño original era de 20 a 28 px).
+      // A 320 px la tarjeta de dos columnas mide 103 px útiles: ahí manda el suelo (ver el informe del paso 3).
+      const minimo = vp.ancho >= 360 ? 18 : 16;
+      expect(cifras.filter((c) => c.px < minimo), `cifras por debajo de ${minimo} px`).toEqual([]);
     });
 
     test("Cuenta nueva: los textos de las tarjetas no se recortan", async ({ page }) => {

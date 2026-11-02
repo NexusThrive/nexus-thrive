@@ -35,8 +35,10 @@ export const medirTexto = (page: Page, contenedor = "[data-widget]") =>
       const c = caja.getBoundingClientRect();
       if (t.width <= 0) continue;
       const texto = (el.textContent ?? "").trim().slice(0, 30);
-      if (el.scrollWidth > el.clientWidth + 1 && getComputedStyle(el).textOverflow === "ellipsis") truncados.push(texto);
-      else if (t.right > c.right + 0.5 || el.scrollWidth > el.clientWidth + 1) recortados.push({ texto, derechaTexto: Math.round(t.right), derechaContenedor: Math.round(c.right) });
+      const cs = getComputedStyle(el);
+      const corta = cs.overflowX !== "visible"; // solo recorta de verdad un elemento con overflow distinto de visible
+      if (el.scrollWidth > el.clientWidth + 1 && cs.textOverflow === "ellipsis") truncados.push(texto);
+      else if (t.right > c.right + 0.5 || (corta && el.scrollWidth > el.clientWidth + 1)) recortados.push({ texto, derechaTexto: Math.round(t.right), derechaContenedor: Math.round(c.right) });
     }
     return { recortados, truncados };
   }, contenedor);
@@ -56,6 +58,26 @@ export const medirSolapes = (page: Page, contenedor = "header") =>
         if (cajas[i].l < cajas[j].r - 1 && cajas[j].l < cajas[i].r - 1) solapes.push(`${cajas[i].nombre} ↔ ${cajas[j].nombre}`);
     return solapes;
   }, contenedor);
+
+/** Controles de la barra superior que quedan fuera de la pantalla (o sin tamaño visible). */
+export const medirTopbarFuera = (page: Page, contenedor = "header") =>
+  page.evaluate((sel) => {
+    const barra = document.querySelector(sel);
+    if (!barra) return ["sin barra superior"];
+    const vw = document.documentElement.clientWidth;
+    return [...barra.querySelectorAll<HTMLElement>("button, a, input")]
+      .map((e) => ({ nombre: (e.getAttribute("aria-label") ?? e.textContent ?? "").trim().slice(0, 30), r: e.getBoundingClientRect() }))
+      .filter(({ r }) => r.width > 0 && r.height > 0 && (r.left < -1 || r.right > vw + 1))
+      .map(({ nombre, r }) => `${nombre} [${Math.round(r.left)}–${Math.round(r.right)}] en ${vw} px`);
+  }, contenedor);
+
+/** Tamaños de fuente (px) de las cifras de las tarjetas de métricas (KpiCard y StatTile). */
+export const medirCifras = (page: Page) =>
+  page.evaluate(() =>
+    [...document.querySelectorAll<HTMLElement>("[data-widget] p[style*='--nx-chars']")]
+      .filter((e) => e.getBoundingClientRect().width > 0)
+      .map((e) => ({ texto: (e.textContent ?? "").trim().slice(0, 20), px: Math.round(parseFloat(getComputedStyle(e).fontSize) * 10) / 10 })),
+  );
 
 export type Objetivo = { nombre: string; ancho: number; alto: number };
 

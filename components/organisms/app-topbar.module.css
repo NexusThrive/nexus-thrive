@@ -2,7 +2,9 @@
    las dos se leen como una sola pieza. Ancho = ancho de la barra (--sw). */
 .brand {
   display: flex;
-  flex: none;
+  /* Cede ancho cuando la barra no alcanza (nombre largo, pantalla angosta): el nombre se corta con puntos suspensivos
+     antes de que las acciones se pisen. En PC el ancho es fijo (`--sw`). */
+  flex: 0 1 auto;
   align-items: center;
   gap: 10px;
   min-width: 0;
@@ -19,6 +21,7 @@
   /* Alineada a la izquierda, en la misma columna que los iconos de la barra:
      al contraer o expandir, el logo no salta de un lado a otro, solo crece. */
   .brand {
+    flex: none;
     width: var(--sw);
     justify-content: flex-start;
     padding-left: 22px;
@@ -31,6 +34,8 @@
    Entra con un fundido, sin mover el ancho de nada. */
 .ident {
   display: flex;
+  min-width: 0;
+  overflow: hidden;
 }
 @media (min-width: 768px) {
   .ident {

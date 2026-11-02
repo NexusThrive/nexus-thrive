@@ -52,6 +52,8 @@ const has = (m: (typeof ACTIVE)[number]) => ACTIVE.includes(m);
 const NOW = new Date("2026-10-25T15:30:00-05:00");
 
 type Estado = "completo" | "nueva";
+/** Cifras de un negocio grande (decenas de millones por semana): ponen a prueba el ajuste de los importes. */
+const ESCALA_GRANDE = 27;
 
 const DIAS = ["2026-10-19", "2026-10-20", "2026-10-21", "2026-10-22", "2026-10-23", "2026-10-24", "2026-10-25"];
 const CON_DATOS: SeriesDay[] = DIAS.map((day, i) => ({
@@ -62,11 +64,11 @@ const CON_DATOS: SeriesDay[] = DIAS.map((day, i) => ({
 }));
 const SIN_DATOS: SeriesDay[] = DIAS.map((day) => ({ day, income: 0, expenses: 0, count: 0 }));
 
-const datos = (estado: Estado) => {
-  const days = estado === "completo" ? CON_DATOS : SIN_DATOS;
+const datos = (estado: Estado, escala = 1) => {
+  const days = estado === "completo" ? CON_DATOS.map((d) => ({ ...d, income: d.income * escala, expenses: d.expenses * escala })) : SIN_DATOS;
   const sum = (k: "income" | "expenses" | "count") => days.reduce((a, d) => a + d[k], 0);
   const current = { income: sum("income"), expenses: sum("expenses"), balance: sum("income") - sum("expenses"), count: sum("count") };
-  const previous = estado === "completo" ? { income: 3_900_000, expenses: 1_250_000, balance: 2_650_000, count: 41 } : { income: 0, expenses: 0, balance: 0, count: 0 };
+  const previous = estado === "completo" ? { income: 3_900_000 * escala, expenses: 1_250_000 * escala, balance: 2_650_000 * escala, count: 41 } : { income: 0, expenses: 0, balance: 0, count: 0 };
   return { days, current, previous, growth: estado === "completo" ? { added: 9, series: [100, 104, 110, 118, 128] } : { added: 0, series: [0, 0, 0, 0, 0] } };
 };
 
@@ -96,8 +98,8 @@ const ACTIVIDAD: RecentActivityItem[] = [
   { id: "c1", type: "customer", title: "Andrés Pinzón", description: `Nuevo ${terms.customer.toLowerCase()}`, amount: "", time: "ayer", href: `${BASE}/crm/c1` },
 ];
 
-function Pagina({ estado }: { estado: Estado }) {
-  const { days, current, previous, growth } = datos(estado);
+function Pagina({ estado, escala = 1 }: { estado: Estado; escala?: number }) {
+  const { days, current, previous, growth } = datos(estado, escala);
   const completo = estado === "completo";
   const firstDay = "2026-01-05";
   const points = chartBuckets(days, "dia", firstDay, true);
@@ -111,7 +113,7 @@ function Pagina({ estado }: { estado: Estado }) {
     const change = percentChange(cur, before);
     return change == null ? undefined : <Delta value={change} inverse={inverse} />;
   };
-  const pending = completo ? { total: 1_150_000, count: 3, overdue: 2 } : null;
+  const pending = completo ? { total: 1_150_000 * escala, count: 3, overdue: 2 } : null;
   const quickActions = quickCreateActions(VERTICAL, ACTIVE, 4, "OWNER");
   const activityItems = completo ? ACTIVIDAD : [];
   const activityFilters = [
@@ -199,7 +201,7 @@ function Pagina({ estado }: { estado: Estado }) {
           { id: "mem-active", label: "Membresías activas", span: 3 as const, half: true, node: <StatTile index={0} label="Activas" value={completo ? 128 : 0} tone="success" note="con acceso hoy" /> },
           { id: "mem-expiring", label: "Membresías por vencer", span: 3 as const, half: true, node: <StatTile index={1} label="Por vencer" value={completo ? 7 : 0} tone="warning" note="en los próximos 7 días" /> },
           { id: "mem-expired", label: "Membresías vencidas", span: 3 as const, half: true, node: <StatTile index={2} label="Vencidas" value={completo ? 4 : 0} tone="danger" note="sin renovar" /> },
-          { id: "mem-renewals", label: "Renovaciones del mes", span: 3 as const, half: true, node: <StatTile index={3} label="Renovaciones" value={formatCurrency(completo ? 2_340_000 : 0)} tone="neutral" note="este mes" /> },
+          { id: "mem-renewals", label: "Renovaciones del mes", span: 3 as const, half: true, node: <StatTile index={3} label="Renovaciones" value={formatCurrency(completo ? 2_340_000 * escala : 0)} tone="neutral" note="este mes" /> },
         ]
       : []),
     { id: "activity", label: "Actividad reciente", node: <RecentActivity items={activityItems} filters={activityFilters} registry={activityRegistry} /> },
@@ -215,7 +217,7 @@ function Pagina({ estado }: { estado: Estado }) {
           subtitle: "Esta semana",
           data: {
             points: points.map(({ label, full, income, expenses }) => ({ label, full, income, expenses })),
-            methods: completo ? [{ method: "WOMPI" as const, total: 2_900_000 }, { method: "CASH" as const, total: 1_400_000 }, { method: "TRANSFER" as const, total: 1_030_000 }].map((m) => ({ label: paymentMethodLabel(m.method), total: m.total })) : [],
+            methods: completo ? [{ method: "WOMPI" as const, total: 2_900_000 * escala }, { method: "CASH" as const, total: 1_400_000 * escala }, { method: "TRANSFER" as const, total: 1_030_000 * escala }].map((m) => ({ label: paymentMethodLabel(m.method), total: m.total })) : [],
             customers: growth.series,
             income: current.income,
             expenses: current.expenses,
@@ -243,13 +245,13 @@ function Pagina({ estado }: { estado: Estado }) {
 }
 
 /** Mismo envoltorio que `app/[tenant]/(app)/layout.tsx`: vocabulario de la vertical + `TenantShell`. */
-function Inicio({ estado, cargando = false }: { estado: Estado; cargando?: boolean }) {
+function Inicio({ estado, cargando = false, nombre = "Simplapp Gym", escala = 1 }: { estado: Estado; cargando?: boolean; nombre?: string; escala?: number }) {
   return (
     <VerticalTermsProvider terms={terms}>
-      <TenantShell tenantSlug={TENANT} tenantName="Simplapp Gym" vertical={VERTICAL} activeModules={ACTIVE} role="OWNER"
-        businesses={[{ slug: TENANT, name: "Simplapp Gym" }, { slug: "norte", name: "Simplapp Norte" }]}
+      <TenantShell tenantSlug={TENANT} tenantName={nombre} vertical={VERTICAL} activeModules={ACTIVE} role="OWNER"
+        businesses={[{ slug: TENANT, name: nombre }, { slug: "norte", name: "Simplapp Norte" }]}
         topbarActions={<TenantNotifications tenantSlug={TENANT} />}>
-        {cargando ? <Loading /> : <Pagina estado={estado} />}
+        {cargando ? <Loading /> : <Pagina estado={estado} escala={escala} />}
       </TenantShell>
     </VerticalTermsProvider>
   );
@@ -279,3 +281,7 @@ export const ConDatos: Story = { args: { estado: "completo" } };
 export const CuentaNueva: Story = { args: { estado: "nueva" } };
 /** Precarga de la ruta (`loading.tsx` real) dentro del shell. */
 export const Cargando: Story = { args: { estado: "completo", cargando: true } };
+/** Negocio con nombre muy largo: la barra superior cede ancho a la marca (se corta con puntos suspensivos) y no pisa las acciones. */
+export const NombreLargo: Story = { args: { estado: "completo", nombre: "Constructora y Servicios Integrales del Norte de Colombia S.A.S." } };
+/** Cifras de decenas de millones: los importes se ajustan al ancho de su tarjeta sin cortarse. */
+export const CifrasGrandes: Story = { args: { estado: "completo", escala: ESCALA_GRANDE } };
