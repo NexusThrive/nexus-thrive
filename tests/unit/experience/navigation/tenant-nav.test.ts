@@ -15,10 +15,10 @@ describe("buildTenantNav", () => {
   it("solo muestra funciones activas y siempre Funciones y Configuración", () => {
     const groups = buildTenantNav("gym", ["dashboard", "crm"]);
     expect(groups.map((g) => g.label)).toEqual(["General", "Clientes y agenda", "Sistema"]);
-    expect(groups.flatMap((g) => g.items).map((i) => i.href)).toEqual(["", "/crm", "/functions", "/data", "/integrations", "/settings"]);
+    expect(groups.flatMap((g) => g.items).map((i) => i.href)).toEqual(["", "/crm", "/functions", "/data", "/settings"]);
   });
 
-  it("agrupa por trabajo, con todas las categorías desplegables, y omite los grupos vacíos", () => {
+  it("agrupa por trabajo, con Ingresos y Gastos desplegables, y omite los grupos vacíos", () => {
     const groups = buildTenantNav("gym", ["dashboard", "crm", "memberships", "finance", "payments", "pos", "online_payments", "billing", "einvoicing", "receivables", "accounting", "taxes", "whatsapp"]);
     expect(groups.map((g) => g.label)).toEqual(["General", "Clientes y agenda", "Ventas y cobros", "Compras y gastos", "Finanzas y contabilidad", "Canales", "Sistema"]);
     // Facturación, punto de venta y cobros van en Ingresos; Pagos vive dentro de Finanzas y no se repite.
@@ -30,10 +30,7 @@ describe("buildTenantNav", () => {
     expect(gastos.collapsible).toBe(true);
     expect(gastos.items.map((i) => i.label)).toEqual(["Gastos"]);
     expect(groups.find((g) => g.label === "Finanzas y contabilidad")?.items.map((i) => i.label)).toEqual(["Finanzas", "Cartera", "Contabilidad", "Impuestos y numeración"]);
-    // Toda categoría es una opción desplegable con su icono; Inicio (General) y Sistema no.
-    expect(groups.find((g) => g.label === "Clientes y agenda")?.collapsible).toBe(true);
-    expect(groups.find((g) => g.label === "Clientes y agenda")?.icon).toBeDefined();
-    expect(groups.find((g) => g.label === "General")?.icon).toBeUndefined();
+    expect(groups.find((g) => g.label === "Clientes y agenda")?.collapsible).toBeUndefined();
   });
 
   it("cada pantalla aparece solo si su función está encendida: Pagos no trae punto de venta ni Finanzas trae contabilidad", () => {
@@ -54,7 +51,7 @@ describe("buildTenantNav", () => {
     const labels = buildTenantNav("construction", ["construction"])
       .flatMap((g) => g.items)
       .map((i) => i.label);
-    expect(labels).toEqual(["Inicio", "Obras", "Cotizaciones", "Catálogo APU", "Funciones", "Importar y exportar", "Integraciones", "Configuración"]);
+    expect(labels).toEqual(["Inicio", "Obras", "Cotizaciones", "Catálogo APU", "Funciones", "Importar y exportar", "Configuración"]);
   });
 });
 
