@@ -23,12 +23,15 @@ test.describe("Contabilidad", () => {
   test("plan de cuentas con búsqueda, naturaleza y cuentas que agrupan", async ({ page }) => {
     await openStory(page, "páginas-finanzas-contabilidad--default");
     await page.getByRole("button", { name: "Plan de cuentas" }).click();
-    const table = page.getByRole("table", { name: "Plan de cuentas" });
-    await expect(table.getByRole("row", { name: /1105.*Caja.*Activo.*Débito/ })).toBeVisible();
-    await expect(table.getByRole("row", { name: /2408.*IVA.*Pasivo.*Crédito/ })).toBeVisible();
+    // Tabla en un contenedor ancho; lista en uno angosto (DR-08): se buscan las filas en cualquiera de las dos.
+    const cuentas = page.getByRole("table", { name: "Plan de cuentas" }).or(page.getByRole("list", { name: "Plan de cuentas" }));
+    const fila = (re: RegExp) => cuentas.getByRole("row", { name: re }).or(cuentas.getByRole("listitem").filter({ hasText: re }));
+    await expect(fila(/1105.*Caja/)).toBeVisible();
+    await expect(fila(/2408.*IVA/)).toBeVisible();
+    await expect(cuentas.getByText("Débito").first()).toBeVisible();
     await page.getByLabel("Buscar cuenta").fill("proveedores");
-    await expect(table.getByRole("row", { name: /2205/ })).toBeVisible();
-    await expect(table.getByRole("row", { name: /1105/ })).toHaveCount(0);
+    await expect(fila(/2205/)).toBeVisible();
+    await expect(fila(/1105/)).toHaveCount(0);
     await expectNoAxeViolations(page);
   });
 
@@ -81,7 +84,9 @@ test.describe("Contabilidad", () => {
     await expect(page.getByRole("link", { name: /Descargar CSV/ })).toHaveAttribute("href", /\/demo\/contabilidad\/export\/trial\?desde=2026-10-01&hasta=2026-10-24/);
     await page.getByRole("button", { name: "Ver informe" }).click();
     await expect(page.getByText("El balance de prueba cuadra")).toBeVisible();
-    await expect(page.getByRole("table", { name: "Balance de prueba" }).getByRole("row", { name: /Totales/ })).toBeVisible();
+    // Tabla en contenedor ancho; lista en angosto (DR-08): los totales están en cualquiera de las dos.
+    const prueba = page.getByRole("table", { name: "Balance de prueba" }).or(page.getByRole("list", { name: "Balance de prueba" }));
+    await expect(prueba.getByRole("row", { name: /Totales/ }).or(prueba.getByRole("listitem").filter({ hasText: "Totales" }))).toBeVisible();
     await expectNoAxeViolations(page);
     await page.getByRole("combobox", { name: "Informe" }).click();
     await page.getByRole("option", { name: "Estado de resultados" }).click();

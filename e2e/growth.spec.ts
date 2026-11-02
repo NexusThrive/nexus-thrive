@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { expectNoAxeViolations, openStory } from "./helpers";
+import { expectNoAxeViolations, openStory, datos, fila } from "./helpers";
 
 /** Campañas con UTM, reporte por origen y reseñas. */
 test.describe("Campañas y reseñas", () => {
@@ -19,9 +19,9 @@ test.describe("Campañas y reseñas", () => {
   test("reporte: inversión contra resultados", async ({ page }) => {
     await openStory(page, "páginas-visibilidad-campañas-y-reseñas--enlaces");
     await page.getByRole("button", { name: /De dónde vienen/ }).click();
-    const row = page.getByRole("row", { name: /instagram \/ social \/ octubre/ });
+    const row = fila(page, /instagram \/ social \/ octubre/);
     await expect(row).toContainText("5×");
-    await expect(page.getByRole("row", { name: /Directo/ })).toBeVisible();
+    await expect(fila(page, /Directo/)).toBeVisible();
     await expectNoAxeViolations(page);
   });
 

@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { expectNoAxeViolations, openStory } from "./helpers";
+import { expectNoAxeViolations, openStory, datos, fila } from "./helpers";
 
 /** Ficha de Google Business: conectar, sincronizar y comparar. */
 test.describe("Ficha de Google", () => {
@@ -7,9 +7,9 @@ test.describe("Ficha de Google", () => {
     await openStory(page, "páginas-visibilidad-ficha-de-google--sincronizada");
     await expect(page.getByText("4.6")).toBeVisible();
     await expect(page.getByText("128 reseñas en Google")).toBeVisible();
-    const t = page.getByRole("table", { name: /frente a lo que muestra Google/ });
-    await expect(t.getByRole("row", { name: /Teléfono.*Corrige uno de los dos/ })).toBeVisible();
-    await expect(t.getByRole("row", { name: /Nombre.*Coincide/ })).toBeVisible();
+    const t = datos(page, /frente a lo que muestra Google/);
+    await expect(fila(t, /Teléfono.*Corrige uno de los dos/)).toBeVisible();
+    await expect(fila(t, /Nombre.*Coincide/)).toBeVisible();
     await expect(page.getByText(/3 de 4/)).toBeVisible();
     await expectNoAxeViolations(page);
     await page.getByRole("button", { name: "Sincronizar ahora" }).click();

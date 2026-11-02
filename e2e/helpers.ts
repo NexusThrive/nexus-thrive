@@ -20,8 +20,9 @@ export async function expectNoAxeViolations(page: Page) {
     Promise.all(
       document
         .getAnimations()
-        .filter((a) => Number.isFinite(a.effect?.getComputedTiming().endTime as number))
-        .map((a) => a.finished.catch(() => undefined)),
+        // Una animación pausada (p. ej. la barra de cuenta atrás de un aviso) no termina: se ignora, y la espera a las demás tiene tope de 3 s para no colgar la prueba.
+        .filter((a) => a.playState === "running" && Number.isFinite(a.effect?.getComputedTiming().endTime as number))
+        .map((a) => Promise.race([a.finished.catch(() => undefined), new Promise((r) => setTimeout(r, 3000))])),
     ),
   );
   // El viaje de los modales y paneles anclados lo dibuja GSAP con estilos en línea (no aparece en `getAnimations`):
@@ -46,3 +47,10 @@ export async function expectNoAxeViolations(page: Page) {
   );
   expect(summary, "violaciones de accesibilidad").toEqual([]);
 }
+
+/** Un conjunto de datos de `AdaptiveTable`: tabla en un contenedor ancho, lista en uno angosto (DR-08). */
+export const datos = (page: Page, name: RegExp | string) => page.getByRole("table", { name }).or(page.getByRole("list", { name }));
+
+/** Una fila del conjunto: `row` en la tabla, `listitem` en la lista. */
+export const fila = (scope: Page | ReturnType<typeof datos>, name: RegExp) =>
+  scope.getByRole("row", { name }).or(scope.getByRole("listitem").filter({ hasText: name }));

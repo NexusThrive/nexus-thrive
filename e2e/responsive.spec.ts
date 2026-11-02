@@ -7,7 +7,8 @@ import { VIEWPORTS } from "./viewports";
  * Pruebas responsive (principio 08, R1–R5). Corren solo en el proyecto `responsive`: cada viewport de
  * `e2e/viewports.ts` se emula con su propio contexto (táctil o no).
  *
- * Los hallazgos de la auditoría del dashboard que todavía no se corrigen se marcan con `test.fail(...)`:
+ * Los hallazgos de la auditoría del dashboard que todavía no se corrigen se marcan con `test.fail(...)`
+ * (hoy ninguno: P2-3, P2-4 y P2-5 se corrigieron con DR-13, DR-14 y DR-15):
  * la prueba pasa mientras el hallazgo exista y **falla en cuanto se corrija**, para obligar a quitar la marca.
  * Cada marca cita su hallazgo (`P2-3` …) y el paso de la propuesta que lo resuelve.
  * Una prueba nunca se da por cumplida por haber hecho el cambio: debe pasar sin marca.
@@ -21,6 +22,7 @@ const FIEL_NUEVA = "páginas-inicio-dashboard-fiel--cuenta-nueva";
 const FIEL_CARGANDO = "páginas-inicio-dashboard-fiel--cargando";
 const FIEL_NOMBRE_LARGO = "páginas-inicio-dashboard-fiel--nombre-largo";
 const FIEL_CIFRAS_GRANDES = "páginas-inicio-dashboard-fiel--cifras-grandes";
+const TABLA = "organismos-adaptivetable--contenido-exigente";
 const TABLET_MIN = 768;
 
 for (const vp of VIEWPORTS) {
@@ -61,7 +63,6 @@ for (const vp of VIEWPORTS) {
           expect(chicos).toEqual([]);
         });
         test(`${nombre}: objetivos táctiles de 44 px`, async ({ page }) => {
-          test.fail(true, "P2-3: acciones de cabecera y riel de 40–42 px · paso 4");
           await openStory(page, id);
           const chicos = (await medirObjetivos(page)).filter((o) => o.ancho < 44 || o.alto < 44);
           expect(chicos, "controles táctiles por debajo de 44 px").toEqual([]);
@@ -82,18 +83,38 @@ for (const vp of VIEWPORTS) {
       }
     });
 
+    // DR-13/DR-14 · riel de 768 a 1023 px (icono + etiqueta abreviada); expandida desde 1024 px.
     if (vp.ancho >= TABLET_MIN) {
+      test("Shell: la barra lateral es riel hasta 1023 px y expandida desde 1024 px", async ({ page }) => {
+        await openStory(page, SHELL);
+        const caja = await page.locator('aside[aria-label="Navegación principal"]').boundingBox();
+        expect(caja, "barra lateral visible").not.toBeNull();
+        if (vp.ancho < 1024) expect(caja!.width, "riel").toBeLessThan(120);
+        else expect(caja!.width, "barra expandida").toBeGreaterThanOrEqual(240);
+      });
       test("Shell: toda la navegación lateral tiene etiqueta visible", async ({ page }) => {
-        test.fail(vp.ancho < 1280, "P2-4: riel de iconos sin etiquetas (768–1279 px) · paso 5");
         await openStory(page, SHELL);
         const n = await medirNavegacion(page);
         expect(n.sinEtiqueta, "enlaces sin texto visible").toEqual([]);
       });
     }
 
+    // DR-08 · tabla adaptable: lista en un contenedor angosto, tabla en uno ancho; nunca desborda ni recorta.
+    test("Tabla adaptable: lista en estrecho, tabla en ancho y sin desborde", async ({ page }) => {
+      await openStory(page, TABLA);
+      expect((await medirDesborde(page)).desborda, "desborde horizontal").toBe(false);
+      const tabla = await page.locator("#storybook-root table").first().isVisible();
+      const lista = await page.getByRole("list", { name: "Ventas recientes" }).isVisible();
+      // La historia deja 16 px a cada lado; la tabla cabe desde 800 px de contenedor.
+      expect(tabla, "tabla visible solo en contenedor ancho").toBe(vp.ancho - 32 >= 800);
+      expect(lista, "lista visible solo en contenedor angosto").toBe(vp.ancho - 32 < 800);
+      // El contenedor no esconde nada: ni la tabla ni la lista exceden su ancho (sin scroll propio).
+      const cabe = await page.locator("#storybook-root .\\@container").evaluate((el) => el.scrollWidth <= el.clientWidth + 1);
+      expect(cabe, "el contenido cabe en su contenedor").toBe(true);
+    });
+
     // R4 · suelo de texto de 11 px.
     test("Shell: ningún texto por debajo de 11 px", async ({ page }) => {
-      test.fail(vp.ancho >= TABLET_MIN, "P2-4: etiqueta de grupo a 10 px en el riel · paso 5");
       await openStory(page, SHELL);
       expect(await medirTextoMinimo(page)).toBeGreaterThanOrEqual(11);
     });
@@ -191,7 +212,6 @@ for (const vp of VIEWPORTS) {
         expect((await medirObjetivos(page)).filter((o) => o.ancho < 24 || o.alto < 24)).toEqual([]);
       });
       test("Inicio fiel: objetivos táctiles de 44 px", async ({ page }) => {
-        test.fail(true, "P2-5: selectores de periodo (30 px), filtros (32 px), ayudas (24 px) y enlaces de 24 px · paso 4");
         await openStory(page, FIEL);
         await page.waitForTimeout(800);
         expect((await medirObjetivos(page)).filter((o) => o.ancho < 44 || o.alto < 44), "controles por debajo de 44 px").toEqual([]);

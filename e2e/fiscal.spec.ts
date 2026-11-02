@@ -1,14 +1,14 @@
 import { expect, test } from "@playwright/test";
-import { expectNoAxeViolations, openStory } from "./helpers";
+import { expectNoAxeViolations, openStory, datos, fila } from "./helpers";
 
 /** Factura electrónica por puerto: cola, envío, rechazo legible y reintento. */
 test.describe("Factura electrónica", () => {
   test("lista con estados, causa del rechazo y CUFE", async ({ page }) => {
     await openStory(page, "páginas-finanzas-factura-electrónica--default");
-    const table = page.getByRole("table", { name: /Documentos fiscales con su estado/ });
-    await expect(table.getByRole("row", { name: /V-000042.*Aceptado/ })).toBeVisible();
-    await expect(table.getByRole("row", { name: /V-000043.*Rechazado.*número de documento/ })).toBeVisible();
-    await expect(table.getByRole("row", { name: /DS-CUENTA-55.*Documento soporte.*En cola/ })).toBeVisible();
+    const table = datos(page, /Documentos fiscales con su estado/);
+    await expect(fila(table, /V-000042.*Aceptado/)).toBeVisible();
+    await expect(fila(table, /V-000043.*Rechazado.*número de documento/)).toBeVisible();
+    await expect(fila(table, /DS-CUENTA-55.*Documento soporte.*En cola/)).toBeVisible();
     await expectNoAxeViolations(page);
   });
 
@@ -23,8 +23,8 @@ test.describe("Factura electrónica", () => {
   test("filtra por estado", async ({ page }) => {
     await openStory(page, "páginas-finanzas-factura-electrónica--default");
     await page.getByRole("button", { name: "Rechazado", exact: true }).click();
-    await expect(page.getByRole("row", { name: /V-000042/ })).toHaveCount(0);
-    await expect(page.getByRole("row", { name: /V-000043/ })).toBeVisible();
+    await expect(fila(page, /V-000042/)).toHaveCount(0);
+    await expect(fila(page, /V-000043/)).toBeVisible();
   });
 
   test("sin proveedor ofrece conectar el de prueba; desactivada explica qué hacer", async ({ page }) => {

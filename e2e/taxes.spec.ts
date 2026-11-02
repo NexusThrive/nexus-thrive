@@ -1,15 +1,15 @@
 import { expect, test } from "@playwright/test";
-import { expectNoAxeViolations, openStory } from "./helpers";
+import { expectNoAxeViolations, openStory, datos, fila } from "./helpers";
 
 /** Impuestos con vigencia y resoluciones de numeración. */
 test.describe("Impuestos y numeración", () => {
   test("tarifas con su vigencia y estado", async ({ page }) => {
     await openStory(page, "páginas-finanzas-impuestos-y-numeración--default");
-    const table = page.getByRole("table", { name: /Impuestos y retenciones con su vigencia/ });
+    const table = datos(page, /Impuestos y retenciones con su vigencia/);
     await expect(table).toBeVisible();
-    await expect(table.getByRole("row", { name: /IVA 19 %.*Vigente hoy/ })).toBeVisible();
-    await expect(table.getByRole("row", { name: /IVA 16 %.*Fuera de vigencia/ })).toBeVisible();
-    await expect(table.getByRole("row", { name: /Impoconsumo.*Desactivada/ })).toBeVisible();
+    await expect(fila(table, /IVA 19 %.*Vigente hoy/)).toBeVisible();
+    await expect(fila(table, /IVA 16 %.*Fuera de vigencia/)).toBeVisible();
+    await expect(fila(table, /Impoconsumo.*Desactivada/)).toBeVisible();
     await expectNoAxeViolations(page);
   });
 

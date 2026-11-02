@@ -126,8 +126,8 @@ test.describe("Dashboard personalizable", () => {
     await expect(page.getByRole("button", { name: "Personalizar" })).toHaveCount(0);
 
     await page.getByRole("button", { name: "Opciones del inicio" }).click();
-    await page.getByRole("menuitem", { name: "Agregar gráfico" }).click();
-    const panel = page.getByRole("dialog", { name: "Agregar al inicio" });
+    await page.getByRole("menuitem", { name: "Agregar elementos" }).click();
+    const panel = page.getByRole("dialog", { name: "Elementos del inicio" });
     await expect(panel).toBeVisible();
     await expect(panel.getByText("Lista de tareas")).toBeVisible();
     await expect(panel.getByText("Pronto")).toBeVisible();
@@ -138,6 +138,23 @@ test.describe("Dashboard personalizable", () => {
     await select(page, "donut-1");
     await page.getByRole("button", { name: "Quitar Ingresos por método de pago" }).click();
     await expect(page.getByRole("button", { name: "Quitar Ingresos por método de pago" })).toHaveCount(0);
+  });
+
+  test("un bloque oculto se vuelve a agregar desde «Elementos del inicio»; lo que ya está sale atenuado", async ({ page }) => {
+    await openStory(page, "organismos-customizabledashboard--default");
+    await page.evaluate((k) => window.localStorage.removeItem(k), KEY);
+    await page.reload();
+    await openEditor(page);
+    await select(page, "kpi-income");
+    await page.getByRole("switch", { name: "Mostrar Ingresos", exact: true }).click();
+
+    await page.getByRole("button", { name: "Agregar", exact: true }).click();
+    const panel = page.getByRole("dialog", { name: "Elementos del inicio" });
+    // Lo oculto se agrega con un toque; lo que ya está en el inicio no se puede elegir.
+    await expect(panel.getByRole("button", { name: /Ingresos.*Agregar/ })).toBeEnabled();
+    await expect(panel.getByRole("button", { name: /Gastos.*En tu inicio/ })).toBeDisabled();
+    await panel.getByRole("button", { name: /Ingresos.*Agregar/ }).click();
+    await expect(page.getByRole("switch", { name: "Mostrar Ingresos", exact: true })).toBeVisible();
   });
 
   test("sin violaciones axe en modo de edición", async ({ page }) => {
@@ -151,30 +168,23 @@ test.describe("Dashboard personalizable", () => {
 });
 
 test.describe("Primeros pasos (cuenta nueva)", () => {
-  test("muestra el avance, cambia de paso, enlaza y se oculta para siempre", async ({ page }) => {
-    await openStory(page, "organismos-welcomechecklist--new-account");
-    await page.evaluate(() => window.localStorage.removeItem("nx:welcome:storybook-welcome"));
-    await page.reload();
-
-    await expect(page.getByText("0 de 4 pasos completados")).toBeVisible();
+  test("el círculo muestra el avance, abre la lista en orden y enlaza al siguiente paso", async ({ page }) => {
+    await openStory(page, "organismos-firststepsindicator--new-account");
+    const circle = page.getByRole("button", { name: /Primeros pasos: 0 de 4 completados/ });
+    await expect(circle).toBeVisible();
+    await circle.click();
+    await expect(page.getByRole("heading", { name: "Primeros pasos" })).toBeVisible();
     await expect(page.getByRole("link", { name: /Nuevo socio/ })).toHaveAttribute("href", "/gym-norte/crm");
-
-    await page.getByRole("button", { name: "Agrega tus gastos" }).click();
-    await expect(page.getByRole("heading", { name: "Agrega tus gastos" })).toBeVisible();
-    await expect(page.getByRole("link", { name: /Registrar gasto/ })).toBeVisible();
-
-    await page.getByRole("button", { name: "Ocultar primeros pasos" }).click();
-    await expect(page.getByRole("heading", { name: "Primeros pasos" })).toHaveCount(0);
-    await page.reload();
-    await expect(page.getByRole("heading", { name: "Primeros pasos" })).toHaveCount(0);
+    await expect(page.getByRole("listitem")).toHaveCount(4);
+    await page.keyboard.press("Escape");
+    await expect(circle).toBeFocused();
   });
 
   test("los pasos hechos cuentan en el avance y pasan axe", async ({ page }) => {
-    await openStory(page, "organismos-welcomechecklist--in-progress");
-    await page.evaluate(() => window.localStorage.removeItem("nx:welcome:storybook-welcome"));
-    await page.reload();
-    await expect(page.getByText("2 de 4 pasos completados")).toBeVisible();
-    await expect(page.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "50");
+    await openStory(page, "organismos-firststepsindicator--in-progress");
+    const circle = page.getByRole("button", { name: /Primeros pasos: 2 de 4 completados/ });
+    await circle.click();
+    await expect(page.getByText(/\(completado\)/)).toHaveCount(2);
     await expectNoAxeViolations(page);
     await page.evaluate(() => document.documentElement.classList.add("dark"));
     await expectNoAxeViolations(page);
