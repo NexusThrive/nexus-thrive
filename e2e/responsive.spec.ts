@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { openStory } from "./helpers";
-import { medirDesborde, medirNavegacion, medirObjetivos, medirSolapes, medirTextoMinimo, medirTextoRecortado } from "./responsive-helpers";
+import { medirDesborde, medirNavegacion, medirObjetivos, medirSolapes, medirTextoMinimo, medirTexto } from "./responsive-helpers";
 import { VIEWPORTS } from "./viewports";
 
 /**
@@ -15,6 +15,10 @@ import { VIEWPORTS } from "./viewports";
 const INICIO = "organismos-customizabledashboard--default";
 const SHELL = "plantillas-tenantshell--desktop";
 const MODAL = "plantillas-tenantshell--with-modal";
+/** Inicio fiel: `TenantShell` real + la composición de `page.tsx` con datos de muestra (`dashboard-fiel.stories.tsx`). */
+const FIEL = "páginas-inicio-dashboard-fiel--con-datos";
+const FIEL_NUEVA = "páginas-inicio-dashboard-fiel--cuenta-nueva";
+const FIEL_CARGANDO = "páginas-inicio-dashboard-fiel--cargando";
 const TABLET_MIN = 768;
 
 for (const vp of VIEWPORTS) {
@@ -38,7 +42,7 @@ for (const vp of VIEWPORTS) {
     test("Inicio: los textos de las tarjetas no se recortan", async ({ page }) => {
       test.fail(vp.ancho < 360, "P1-1: importes recortados a 320 px · paso 3");
       await openStory(page, INICIO);
-      expect(await medirTextoRecortado(page)).toEqual([]);
+      expect((await medirTexto(page)).recortados).toEqual([]);
     });
 
     // R2/R3 · la barra superior no se pisa a sí misma.
@@ -108,6 +112,78 @@ for (const vp of VIEWPORTS) {
         expect(Math.round(caja.width)).toBe(vp.ancho);
       } else {
         expect(pegadoAbajo, "modal centrado, no anclado abajo").toBe(false);
+      }
+    });
+    // ── Inicio fiel (paso 2): la composición real del dashboard, con datos de muestra ────────────────────────────
+    for (const [nombre, id] of [["Inicio fiel", FIEL], ["Cuenta nueva", FIEL_NUEVA], ["Cargando", FIEL_CARGANDO]] as const) {
+      test(`${nombre}: sin desborde horizontal de la página`, async ({ page }) => {
+        await openStory(page, id);
+        await page.waitForTimeout(800);
+        const d = await medirDesborde(page);
+        expect(d.desborda, `scrollWidth ${d.scroll} > viewport ${d.viewport}`).toBe(false);
+      });
+    }
+
+    test("Inicio fiel: los importes y textos de las tarjetas no se recortan", async ({ page }) => {
+      test.fail(vp.ancho <= 375, "P1-3: importes con datos reales recortados hasta 375 px («$ 2.340.000», 5 importes a 320 px) · paso 3");
+      await openStory(page, FIEL);
+      await page.waitForTimeout(800);
+      expect((await medirTexto(page)).recortados).toEqual([]);
+    });
+
+    test("Inicio fiel: la barra superior con la campana no se superpone", async ({ page }) => {
+      test.fail(vp.ancho < 375, "P1-2: con la campana de producción la barra se pisa a 320 y 360 px aunque el nombre sea corto · paso 3");
+      await openStory(page, FIEL);
+      await page.waitForTimeout(800);
+      expect(await medirSolapes(page)).toEqual([]);
+    });
+
+    test("Cuenta nueva: los textos de las tarjetas no se recortan", async ({ page }) => {
+      await openStory(page, FIEL_NUEVA);
+      await page.waitForTimeout(800);
+      expect((await medirTexto(page)).recortados).toEqual([]);
+    });
+
+    test("Cuenta nueva: muestra los primeros pasos y la actividad vacía", async ({ page }) => {
+      await openStory(page, FIEL_NUEVA);
+      await expect(page.getByText("Registra tu primer socio").first()).toBeVisible();
+    });
+
+    test("Cargando: el esqueleto de la ruta está dentro del shell", async ({ page }) => {
+      await openStory(page, FIEL_CARGANDO);
+      await expect(page.getByRole("status", { name: "Cargando inicio" })).toBeVisible();
+    });
+
+    if (vp.tactil) {
+      test("Inicio fiel: objetivos táctiles de al menos 24 px (AA)", async ({ page }) => {
+        await openStory(page, FIEL);
+        await page.waitForTimeout(800);
+        expect((await medirObjetivos(page)).filter((o) => o.ancho < 24 || o.alto < 24)).toEqual([]);
+      });
+      test("Inicio fiel: objetivos táctiles de 44 px", async ({ page }) => {
+        test.fail(true, "P2-5: selectores de periodo (30 px), filtros (32 px), ayudas (24 px) y enlaces de 24 px · paso 4");
+        await openStory(page, FIEL);
+        await page.waitForTimeout(800);
+        expect((await medirObjetivos(page)).filter((o) => o.ancho < 44 || o.alto < 44), "controles por debajo de 44 px").toEqual([]);
+      });
+    }
+
+    // Detalle de la gráfica (panel de movimientos): hoja inferior bajo 768 px y panel lateral derecho desde 768 px.
+    test("Inicio fiel: el detalle de la gráfica es hoja inferior en móvil y panel lateral desde 768 px", async ({ page }) => {
+      await openStory(page, FIEL);
+      await page.waitForTimeout(800);
+      await page.getByRole("group", { name: /Gráfico de ingresos y gastos/ }).focus();
+      await page.keyboard.press("Enter");
+      const dialogo = page.getByRole("dialog");
+      await expect(dialogo).toBeVisible();
+      await page.waitForTimeout(900);
+      const caja = (await dialogo.boundingBox())!;
+      if (vp.ancho < TABLET_MIN) {
+        expect(Math.abs(caja.y + caja.height - vp.alto), "hoja anclada abajo").toBeLessThanOrEqual(2);
+        expect(Math.round(caja.width), "a ancho completo").toBe(vp.ancho);
+      } else {
+        expect(Math.abs(caja.x + caja.width - vp.ancho), "panel pegado a la derecha").toBeLessThanOrEqual(2);
+        expect(caja.width, "no ocupa todo el ancho").toBeLessThan(vp.ancho * 0.7);
       }
     });
   });
