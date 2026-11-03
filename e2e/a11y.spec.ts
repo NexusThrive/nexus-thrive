@@ -16,6 +16,8 @@ const STORIES = [
   "moléculas-field--optional",
   "moléculas-alert--danger",
   "moléculas-emptystate--default",
+  "moléculas-errorstate--default",
+  "moléculas-errorstate--bloque",
   "moléculas-loadingstate--block",
   "moléculas-contexthelp--default",
 ];

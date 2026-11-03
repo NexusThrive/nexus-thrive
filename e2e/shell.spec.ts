@@ -16,8 +16,14 @@ test.describe("Paleta de comandos", () => {
     await input.fill("error");
     await expect(page.getByText("No se pudo buscar ahora")).toBeVisible();
     // Las secciones siguen disponibles aunque falle la búsqueda.
-    await input.fill("");
+    await input.fill("a");
     await expect(page.getByRole("option").first()).toBeVisible();
+  });
+
+  test("sin texto no vuelca todo: invita a buscar", async ({ page }) => {
+    await openStory(page, "organismos-commandpalette--open");
+    await expect(page.getByText("Encuentra lo que necesitas")).toBeVisible();
+    await expect(page.getByRole("option")).toHaveCount(0);
   });
 });
 
@@ -40,7 +46,7 @@ test.describe("Buscador de la navbar (PC)", () => {
     await openStory(page, "organismos-navbarsearch--default");
     const input = page.getByRole("combobox");
     await input.click();
-    await expect(page.getByRole("listbox")).toBeVisible();
+    await expect(page.getByText("Encuentra lo que necesitas")).toBeVisible();
     await expect(page.getByRole("dialog")).toHaveCount(0);
 
     await input.fill("mar");
@@ -58,8 +64,7 @@ test.describe("Buscador de la navbar (PC)", () => {
     const input = page.getByRole("combobox");
     const before = (await input.boundingBox())!;
     await input.click();
-    const panel = page.getByRole("listbox");
-    await panel.waitFor();
+    await page.getByText("Encuentra lo que necesitas").waitFor();
     await page.waitForTimeout(500); // termina el ensanche (320 ms)
     const after = (await input.boundingBox())!;
     expect(after.width, "se ensancha al enfocar").toBeGreaterThan(before.width + 80);
@@ -77,13 +82,13 @@ test.describe("Buscador de la navbar (PC)", () => {
     await openStory(page, "organismos-navbarsearch--default");
     await page.keyboard.press("Control+k");
     await expect(page.getByRole("combobox")).toBeFocused();
-    await expect(page.getByRole("listbox")).toBeVisible();
+    await expect(page.getByText("Encuentra lo que necesitas")).toBeVisible();
   });
 
   test("axe con el panel abierto", async ({ page }) => {
     await openStory(page, "organismos-navbarsearch--default");
     await page.getByRole("combobox").click();
-    await page.getByRole("listbox").waitFor();
+    await page.getByText("Encuentra lo que necesitas").waitFor();
     await expectNoAxeViolations(page);
   });
 });
@@ -133,21 +138,23 @@ test.describe("Barra lateral en riel", () => {
   });
 });
 
-test.describe("Barra lateral: Ingresos y Gastos desplegables", () => {
+test.describe("Barra lateral: categorías como opciones desplegables", () => {
   test.skip(({ isMobile }) => isMobile, "La barra lateral es de tablet y PC");
 
-  test("Ventas y cobros se oculta y se despliega; Compras y gastos existe con Finanzas", async ({ page }) => {
+  test("cada categoría es una opción que se despliega (cerrada si no tiene la página activa)", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
     await openStory(page, "organismos-appsidebar--ingresos-y-gastos");
     const side = page.getByRole("complementary", { name: "Navegación principal" });
     const toggle = side.getByRole("button", { name: "Ventas y cobros" });
+    // Sin la página activa dentro, la categoría llega cerrada (DR: opción desplegable, no un título con ítems siempre a la vista).
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+    await expect(side.getByRole("link", { name: "Facturación" })).toBeHidden();
+    await toggle.click();
     await expect(toggle).toHaveAttribute("aria-expanded", "true");
     await expect(side.getByRole("link", { name: "Facturación" })).toBeVisible();
     await toggle.click();
     await expect(toggle).toHaveAttribute("aria-expanded", "false");
     await expect(side.getByRole("link", { name: "Facturación" })).toBeHidden();
-    await toggle.click();
-    await expect(side.getByRole("link", { name: "Facturación" })).toBeVisible();
     await expect(side.getByRole("button", { name: "Compras y gastos" })).toBeVisible();
   });
 
@@ -157,5 +164,49 @@ test.describe("Barra lateral: Ingresos y Gastos desplegables", () => {
     const nav = page.getByRole("navigation").first();
     const scrolls = await nav.evaluate((el) => el.scrollHeight > el.clientHeight && getComputedStyle(el).overflowY === "auto");
     expect(scrolls).toBe(true);
+  });
+});
+
+test.describe("Centro de ayuda", () => {
+  test("el «?» abre el panel flotante, busca una función y ofrece contacto", async ({ page }) => {
+    await openStory(page, "organismos-helpcenter--default");
+    const trigger = page.getByRole("button", { name: "Centro de ayuda" });
+    await trigger.click();
+    const panel = page.getByRole("dialog", { name: "Centro de ayuda" });
+    await expect(panel).toBeVisible();
+
+    await panel.getByRole("searchbox", { name: "Buscar en el centro de ayuda" }).fill("clientes");
+    await expect(panel.getByRole("link", { name: /Clientes/ }).first()).toBeVisible();
+
+    await panel.getByRole("tab", { name: "Contacto" }).click();
+    await expect(panel.getByRole("link", { name: /Chat por WhatsApp/ })).toHaveAttribute("href", /wa\.me/);
+    await expect(panel.getByText("gym-norte")).toBeVisible();
+    await expectNoAxeViolations(page);
+
+    await page.keyboard.press("Escape");
+    await expect(trigger).toBeFocused();
+  });
+});
+
+test.describe("Selector de fecha", () => {
+  test("abre el calendario de NEXUS, elige un día y respeta el rango", async ({ page }) => {
+    await openStory(page, "moléculas-dateinput--with-range");
+    const trigger = page.getByRole("button", { name: /Entrega/ });
+    await trigger.click();
+    // Fuera del rango, el día no se puede elegir.
+    await expect(page.getByRole("button", { name: /^5 de nov de 2026/ })).toBeDisabled();
+    await page.getByRole("button", { name: /^18 de nov de 2026/ }).click();
+    await expect(trigger).toContainText("18 de nov de 2026");
+    await expectNoAxeViolations(page);
+  });
+
+  test("salta de año sin retroceder de uno en uno: título → año → mes", async ({ page }) => {
+    await openStory(page, "moléculas-dateinput--with-value");
+    await page.getByRole("button", { name: /Inicio/ }).click();
+    await page.getByRole("button", { name: /Elegir mes y año/ }).click();
+    await page.getByRole("button", { name: /Elegir año/ }).click();
+    await page.getByRole("button", { name: "2019" }).click();
+    await page.getByRole("button", { name: "mar", exact: true }).click();
+    await expect(page.getByText("Marzo de 2019")).toBeVisible();
   });
 });

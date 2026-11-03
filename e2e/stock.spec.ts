@@ -7,7 +7,8 @@ test.describe("Existencias", () => {
 
   test("existencias por bodega con su costo y valor", async ({ page }) => {
     await openStory(page, "páginas-inventario-existencias--default");
-    await expect(page.getByRole("table", { name: /Existencias por producto y bodega/ })).toBeVisible();
+    // Tabla en un contenedor ancho; lista en uno angosto (DR-08).
+    await expect(page.getByRole("table", { name: /Existencias por producto y bodega/ }).or(page.getByRole("list", { name: /Existencias por producto y bodega/ }))).toBeVisible();
     await expect(page.getByText("Valor del inventario")).toBeVisible();
     await expectNoAxeViolations(page);
   });

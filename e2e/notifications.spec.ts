@@ -8,7 +8,7 @@ test.describe("Centro de notificaciones", () => {
     await page.evaluate(() => window.localStorage.setItem("sb:notifications-llega", new Date().toISOString()));
     await page.reload();
     await page.waitForTimeout(500);
-    const aviso = page.getByRole("status").filter({ hasText: "Pago recibido · $ 120.000" });
+    const aviso = page.getByRole("status").filter({ hasText: "Cobro registrado · $ 120.000" });
     await expect(aviso).toHaveCount(0); // lo que ya estaba al cargar no avisa
     await page.getByRole("button", { name: /Registrar un pago/ }).click();
     // No sale de inmediato: unos 5 segundos después de la acción.
@@ -29,7 +29,7 @@ test.describe("Centro de notificaciones", () => {
     await expect(page.getByRole("tab", { name: /Pendientes/ })).toHaveAttribute("aria-selected", "true");
     await page.getByRole("button", { name: "Marcar leídas" }).click();
     await page.getByRole("tab", { name: /Leídas/ }).click();
-    await expect(page.getByRole("link", { name: /Pago recibido/ })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Cobro registrado/ })).toBeVisible();
     await page.getByRole("tab", { name: /Pendientes/ }).click();
     await expect(page.getByText("Estás al día")).toBeVisible();
   });

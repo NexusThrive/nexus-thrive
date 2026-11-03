@@ -7,7 +7,8 @@ import { defineConfig, devices } from "@playwright/test";
  * aislados, sin sesión de Clerk ni base de datos. `pnpm test:e2e` construye
  * Storybook y lo sirve en 6007.
  */
-const PORT = 6007;
+/** `E2E_PORT` permite probar otra copia de Storybook sin chocar con el servidor de otra rama que ya use el 6007. */
+const PORT = Number(process.env.E2E_PORT ?? 6007);
 /** Pruebas responsive (principio 08): solo corren en el proyecto `responsive`. */
 const RESPONSIVE = /responsive\.spec\.ts/;
 

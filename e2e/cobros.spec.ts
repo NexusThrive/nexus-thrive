@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { expectNoAxeViolations, openStory } from "./helpers";
+import { expectNoAxeViolations, openStory, datos, fila } from "./helpers";
 
 /** Cobros en línea: enlaces, confirmación, reembolsos y conciliación. */
 test.describe("Cobros en línea", () => {
@@ -52,9 +52,9 @@ test.describe("Cobros en línea", () => {
     await page.getByRole("button", { name: /Conciliación/ }).click();
     await page.getByLabel(/Reporte del proveedor/).fill("evt_dif, 44000\nevt_extra, 9000");
     await page.getByRole("button", { name: "Conciliar" }).click();
-    const table = page.getByRole("table", { name: /Diferencias de la conciliación/ });
-    await expect(table.getByRole("row", { name: /evt_dif.*no coincide/ })).toBeVisible();
-    await expect(table.getByRole("row", { name: /evt_extra.*NEXUS no lo tiene/ })).toBeVisible();
+    const table = datos(page, /Diferencias de la conciliación/);
+    await expect(fila(table, /evt_dif.*no coincide/)).toBeVisible();
+    await expect(fila(table, /evt_extra.*NEXUS no lo tiene/)).toBeVisible();
     await expectNoAxeViolations(page);
   });
 

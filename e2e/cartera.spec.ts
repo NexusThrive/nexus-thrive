@@ -1,13 +1,13 @@
 import { expect, test } from "@playwright/test";
-import { expectNoAxeViolations, openStory } from "./helpers";
+import { expectNoAxeViolations, openStory, datos, fila } from "./helpers";
 
 /** Cartera por cobrar y por pagar. */
 test.describe("Cartera", () => {
   test("por cobrar: total por antigüedad, mora y saldo", async ({ page }) => {
     await openStory(page, "páginas-finanzas-cartera--default");
-    const table = page.getByRole("table", { name: /Cuentas por cobrar/ });
-    await expect(table.getByRole("row", { name: /Gimnasio Atlas.*115 días de mora/ })).toBeVisible();
-    await expect(table.getByRole("row", { name: /María Pérez.*600\.000/ })).toBeVisible();
+    const table = datos(page, /Cuentas por cobrar/);
+    await expect(fila(table, /Gimnasio Atlas.*115 días de mora/)).toBeVisible();
+    await expect(fila(table, /María Pérez.*600\.000/)).toBeVisible();
     await expect(page.getByRole("region", { name: /Antigüedad de la cartera por cobrar/ }).getByText("Más de 90 días")).toBeVisible();
     await expectNoAxeViolations(page);
   });
@@ -29,7 +29,7 @@ test.describe("Cartera", () => {
   test("por pagar: pestaña propia y el error del servidor no cierra el diálogo", async ({ page }) => {
     await openStory(page, "páginas-finanzas-cartera--default");
     await page.getByRole("button", { name: /Por pagar/ }).click();
-    await expect(page.getByRole("table", { name: /Cuentas por pagar/ }).getByText("Distribuidora Sur")).toBeVisible();
+    await expect(datos(page, /Cuentas por pagar/).getByText("Distribuidora Sur")).toBeVisible();
     await page.getByRole("button", { name: /Pagar · Distribuidora Sur/ }).click();
     const dialog = page.getByRole("dialog", { name: "Registrar pago" });
     await dialog.getByLabel(/Valor/).fill("13");
