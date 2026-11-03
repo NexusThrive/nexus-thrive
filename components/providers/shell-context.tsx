@@ -63,6 +63,11 @@ export function usePalette(): PaletteContextValue {
   return ctx;
 }
 
+/** Como `usePalette`, pero devuelve `null` fuera del shell del negocio (p. ej. en el Operations Center, que tiene su propia paleta). */
+export function useOptionalPalette(): PaletteContextValue | null {
+  return useContext(PaletteContext);
+}
+
 /**
  * Shell de la app del negocio: navegación de los módulos activos con el
  * vocabulario de la vertical, ítem activo por la URL y acciones de "Crear".
