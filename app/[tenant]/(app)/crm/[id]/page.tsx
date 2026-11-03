@@ -86,7 +86,7 @@ export default async function CustomerPage({
 
   const tabs: ProfileTab[] = [
     { key: "resumen", label: "Resumen" },
-    ...(showPayments ? [{ key: "pagos" as const, label: "Pagos" }] : []),
+    ...(showPayments ? [{ key: "pagos" as const, label: "Cobros" }] : []),
     ...(showMemberships
       ? [{ key: "membresias" as const, label: terms.items }]
       : []),

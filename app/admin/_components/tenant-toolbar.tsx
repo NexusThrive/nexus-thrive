@@ -80,7 +80,7 @@ export default function TenantToolbar({
           {typeof attentionCount === "number" && attentionCount > 0 ? (
             <span
               className={cn(
-                "ml-0.5 inline-flex min-w-[18px] items-center justify-center rounded-sm px-1 text-[11px] font-semibold tabular-nums",
+                "ml-0.5 inline-flex min-w-[18px] items-center justify-center rounded-sm px-1 text-2xs font-semibold tabular-nums",
                 attentionOnly
                   ? "bg-primary-foreground/20 text-primary-foreground"
                   : "bg-gold-100 text-gold-700",

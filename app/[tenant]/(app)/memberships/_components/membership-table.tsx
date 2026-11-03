@@ -11,7 +11,7 @@ import { typeLabel, type MembershipStatusValue, type MembershipTypeValue } from 
 import MembershipStatusBadge from "./membership-status-badge";
 import MembershipModal from "./membership-modal";
 import WhatsAppReminder from "./whatsapp-reminder";
-import { buttonVariants } from "@/components/atoms/button-variants";
+import { AdaptiveTable } from "@/components/organisms/adaptive-table";
 
 export type MembershipViewRow = {
   id: string;
@@ -73,151 +73,46 @@ export default function MembershipTable({
 
   return (
     <>
-      {/* Desktop */}
-      <div className="hidden overflow-hidden rounded-lg border border-border bg-card md:block">
-        <table className="w-full text-left text-sm">
-          <thead className="border-b border-border bg-muted text-xs font-semibold text-muted-foreground">
-            <tr>
-              <th scope="col" className="px-4 py-3">
-                Cliente
-              </th>
-              <th scope="col" className="px-4 py-3">
-                Plan
-              </th>
-              <th scope="col" className="px-4 py-3">
-                Vigencia
-              </th>
-              <th scope="col" className="px-4 py-3 text-right">
-                Precio
-              </th>
-              <th scope="col" className="px-4 py-3">
-                Estado
-              </th>
-              <th scope="col" className="px-4 py-3 text-right">
-                Acciones
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {rows.map((row) => (
-              <tr key={row.id} className="transition hover:bg-muted/60">
-                <td className="max-w-[14rem] px-4 py-3">
-                  <p className="truncate font-medium text-foreground">
-                    {row.customerName}
-                  </p>
-                  <p className="truncate text-xs text-muted-foreground">
-                    {row.customerPhone ?? row.customerEmail ?? "Sin contacto"}
-                  </p>
-                </td>
-                <td className="px-4 py-3 text-foreground/80">
-                  {typeLabel(row.type)}
-                </td>
-                <td className="whitespace-nowrap px-4 py-3 text-foreground/80">
-                  {formatDateShort(row.startDate)} → {formatDateShort(row.endDate)}
-                </td>
-                <td className="whitespace-nowrap px-4 py-3 text-right font-medium text-foreground">
-                  {formatCurrency(row.price)}
-                </td>
-                <td className="px-4 py-3">
-                  {badge(row)}
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center justify-end gap-1">
-                    {canSell ? (
-                      <RowAction
-                        label={`Renovar membresía de ${row.customerName}`}
-                        onClick={() => setRenewTarget(row)}
-                      >
-                        <RefreshCw aria-hidden="true" className="h-4 w-4" />
-                      </RowAction>
-                    ) : null}
-                    <RowAction
-                      label={`Recordatorio de vencimiento para ${row.customerName}`}
-                      onClick={() => setReminderTarget(row)}
-                    >
-                      <MessageCircle aria-hidden="true" className="h-4 w-4" />
-                    </RowAction>
-                    <RowAction
-                      label={`Congelar o cancelar la membresía de ${row.customerName}`}
-                      onClick={() => setHoldTarget(row)}
-                    >
-                      <PauseCircle aria-hidden="true" className="h-4 w-4" />
-                    </RowAction>
-                    <Link
-                      href={`/${tenantSlug}/crm?q=${encodeURIComponent(row.customerName)}`}
-                      aria-label={`Ver a ${row.customerName} en el CRM`}
-                      className="grid h-8 w-8 place-items-center rounded-lg text-muted-foreground transition hover:bg-muted hover:text-foreground"
-                    >
-                      <UserRound aria-hidden="true" className="h-4 w-4" />
-                    </Link>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Mobile */}
-      <div className="space-y-3 md:hidden">
-        {rows.map((row) => (
-          <article
-            key={row.id}
-            className="rounded-lg border border-border bg-card p-4"
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <p className="truncate font-medium text-foreground">
-                  {row.customerName}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {typeLabel(row.type)} · {formatCurrency(row.price)}
-                </p>
-              </div>
-              {badge(row)}
-            </div>
-            <p className="mt-2 text-xs text-muted-foreground">
-              {formatDateShort(row.startDate)} → {formatDateShort(row.endDate)}
-            </p>
-            <div className="mt-3 flex items-center gap-2 border-t border-border pt-3">
-              {canSell ? (
-                <button
-                  type="button"
-                  onClick={() => setRenewTarget(row)}
-                  className={buttonVariants({ size: "sm" })}
+      <AdaptiveTable
+        caption="Membresías"
+        rows={rows}
+        getRowId={(r) => r.id}
+        columns={[
+          { key: "customer", header: "Cliente", role: "primary", cell: (r) => r.customerName },
+          { key: "contact", header: "Contacto", role: "secondary", cell: (r) => r.customerPhone ?? r.customerEmail ?? "Sin contacto" },
+          { key: "plan", header: "Plan", role: "detail", cell: (r) => typeLabel(r.type) },
+          { key: "term", header: "Vigencia", role: "detail", cell: (r) => <>{formatDateShort(r.startDate)} → {formatDateShort(r.endDate)}</> },
+          { key: "price", header: "Precio", role: "figure", cell: (r) => <span className="font-medium">{formatCurrency(r.price)}</span> },
+          { key: "status", header: "Estado", role: "status", cell: (r) => badge(r) },
+          {
+            key: "actions",
+            header: "Acciones",
+            role: "action",
+            cell: (row) => (
+              <div className="flex items-center justify-end gap-1">
+                {canSell ? (
+                  <RowAction label={`Renovar membresía de ${row.customerName}`} onClick={() => setRenewTarget(row)}>
+                    <RefreshCw aria-hidden="true" className="h-4 w-4" />
+                  </RowAction>
+                ) : null}
+                <RowAction label={`Recordatorio de vencimiento para ${row.customerName}`} onClick={() => setReminderTarget(row)}>
+                  <MessageCircle aria-hidden="true" className="h-4 w-4" />
+                </RowAction>
+                <RowAction label={`Congelar o cancelar la membresía de ${row.customerName}`} onClick={() => setHoldTarget(row)}>
+                  <PauseCircle aria-hidden="true" className="h-4 w-4" />
+                </RowAction>
+                <Link
+                  href={`/${tenantSlug}/crm?q=${encodeURIComponent(row.customerName)}`}
+                  aria-label={`Ver a ${row.customerName} en el CRM`}
+                  className="grid h-8 w-8 pointer-coarse:size-11 place-items-center rounded-lg text-muted-foreground transition hover:bg-muted hover:text-foreground"
                 >
-                  <RefreshCw aria-hidden="true" className="h-3.5 w-3.5" />
-                  Renovar
-                </button>
-              ) : null}
-              <button
-                type="button"
-                onClick={() => setReminderTarget(row)}
-                className={buttonVariants({ variant: "outline", size: "sm" })}
-              >
-                <MessageCircle aria-hidden="true" className="h-3.5 w-3.5" />
-                Recordatorio
-              </button>
-              <button
-                type="button"
-                aria-label={`Congelar o cancelar la membresía de ${row.customerName}`}
-                onClick={() => setHoldTarget(row)}
-                className={buttonVariants({ variant: "outline", size: "icon-sm" })}
-              >
-                <PauseCircle aria-hidden="true" className="h-3.5 w-3.5" />
-              </button>
-              <Link
-                href={`/${tenantSlug}/crm?q=${encodeURIComponent(row.customerName)}`}
-                aria-label={`Ver a ${row.customerName} en el CRM`}
-                className={buttonVariants({ variant: "outline", size: "sm" })}
-              >
-                <UserRound aria-hidden="true" className="h-3.5 w-3.5" />
-                Cliente
-              </Link>
-            </div>
-          </article>
-        ))}
-      </div>
+                  <UserRound aria-hidden="true" className="h-4 w-4" />
+                </Link>
+              </div>
+            ),
+          },
+        ]}
+      />
 
       <PaginationLinks
         paramKey="page"
@@ -267,7 +162,7 @@ function RowAction({
       aria-label={label}
       title={label}
       onClick={onClick}
-      className="grid h-8 w-8 place-items-center rounded-lg text-muted-foreground transition hover:bg-muted hover:text-foreground"
+      className="grid h-8 w-8 pointer-coarse:size-11 place-items-center rounded-lg text-muted-foreground transition hover:bg-muted hover:text-foreground"
     >
       {children}
     </button>

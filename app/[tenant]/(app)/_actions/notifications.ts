@@ -12,7 +12,7 @@ import { requireTenantContext } from "@/lib/core/tenancy/context";
 export async function loadNotificationsAction(tenantSlug: string): Promise<AppNotification[]> {
   const ctx = await requireTenantContext(tenantSlug);
   if (!ctx) return [];
-  return loadNotifications(ctx.tenantId, ctx.memberId);
+  return loadNotifications(ctx.tenantId, ctx.memberId, ctx.role);
 }
 
 /** Descarta una notificación para esta persona (deslizar o ×). */

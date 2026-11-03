@@ -63,7 +63,7 @@ export async function searchEntitiesAction(tenantSlug: string, query: string): P
         id: p.id,
         kind: "payment" as const,
         title: `${formatCurrency(p.amount)} · ${p.customerName ?? "Venta de mostrador"}`,
-        subtitle: p.description?.trim() || p.providerRefId || "Pago recibido",
+        subtitle: p.description?.trim() || p.providerRefId || "Cobro registrado",
         href: `/finance`,
       })),
       ...(expenses?.rows ?? [])

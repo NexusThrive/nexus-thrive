@@ -50,7 +50,7 @@ export function PriorityBoard({ groups }: { groups: PriorityGroup[] }) {
         <span className="font-mono text-xs text-muted-foreground">{total} pendientes</span>
       </div>
       {pending.length === 0 ? (
-        <p className="flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-4 text-[13px] text-muted-foreground">
+        <p className="flex items-center gap-2 rounded-lg border border-border bg-surface px-4 py-4 text-ui text-muted-foreground">
           <CheckCircle2 aria-hidden="true" className="size-4 text-success" />
           Todo al día: no hay nada pendiente.
         </p>
@@ -61,7 +61,7 @@ export function PriorityBoard({ groups }: { groups: PriorityGroup[] }) {
             <div className="flex items-center gap-2.5 border-b border-border px-4 py-3">
               <g.icon aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" strokeWidth={1.7} />
               <div className="min-w-0 flex-1">
-                <h3 className="font-sans text-[13.5px] font-semibold">{g.title}</h3>
+                <h3 className="font-sans text-ui font-semibold">{g.title}</h3>
                 <p className="truncate text-xs text-muted-foreground">{g.hint}</p>
               </div>
               <span
@@ -82,7 +82,7 @@ export function PriorityBoard({ groups }: { groups: PriorityGroup[] }) {
                       <i aria-hidden="true" className={cn("block size-1.5 shrink-0", TONE[g.tone])} />
                       <Icon aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
                       <span className="min-w-0 flex-1">
-                        <b className="block truncate text-[13.5px] font-medium">{it.name}</b>
+                        <b className="block truncate text-ui font-medium">{it.name}</b>
                         <small className="block truncate text-xs text-muted-foreground">{it.detail}</small>
                       </span>
                       <small className="shrink-0 text-xs text-muted-foreground">{since(it.at)}</small>

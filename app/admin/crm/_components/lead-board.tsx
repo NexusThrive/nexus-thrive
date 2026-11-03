@@ -45,7 +45,7 @@ function LeadCardBody({ lead, today, asLink = true }: { lead: LeadRow; today: st
   const follow = followUpState(lead.stage, lead.nextStepDate, today);
   const inner = (
     <>
-      <b className="truncate text-[13.5px] font-medium">{lead.company}</b>
+      <b className="truncate text-ui font-medium">{lead.company}</b>
       <small className="truncate text-xs text-muted-foreground">
         {[lead.contactName, lead.city].filter(Boolean).join(" · ") || lead.source}
       </small>
@@ -193,8 +193,8 @@ function Column({
       )}
     >
       <header className="mb-2 flex items-baseline justify-between gap-2 px-1">
-        <h2 className="truncate text-[12.5px] font-semibold">{label}</h2>
-        <span className="font-mono text-[11px] text-muted-foreground">
+        <h2 className="truncate text-xs font-semibold">{label}</h2>
+        <span className="font-mono text-2xs text-muted-foreground">
           {items.length}
           {value ? ` · ${formatUsdCents(value)}` : ""}
         </span>

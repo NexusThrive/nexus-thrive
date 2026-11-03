@@ -17,6 +17,7 @@ import ProgressPanel from "./progress-panel";
 import { fieldClasses, inputClasses, labelClasses } from "@/components/atoms/input";
 import { cn } from "@/lib/utils";
 import { Select } from "@/components/atoms/select";
+import { DateInput } from "@/components/molecules/date-input";
 
 const TYPE_STYLES: Record<FieldLogEntryData["type"], { label: string; className: string }> = {
   ADVANCE: { label: "Avance", className: "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300" },
@@ -269,12 +270,12 @@ function NewEntryForm({
         </label>
         <label htmlFor="fl-date" className="block">
           <span className={labelClasses}>Fecha</span>
-          <input id="fl-date" name="entryDate" type="date" required defaultValue={bogotaTodayIso()} max={bogotaTodayIso()} className={inputClass} />
+          <DateInput id="fl-date" name="entryDate" required defaultValue={bogotaTodayIso()} max={bogotaTodayIso()} className={inputClass} />
           {fieldError("entryDate")}
         </label>
         <label htmlFor="fl-title" className="block sm:col-span-2">
           <span className={labelClasses}>Título</span>
-          <input id="fl-title" name="title" required maxLength={150} placeholder="Fundida de placa nivel 2" className={inputClass} />
+          <input id="fl-title" name="title" required maxLength={150} placeholder="Título de la actividad" className={inputClass} />
           {fieldError("title")}
         </label>
         <label htmlFor="fl-description" className="block sm:col-span-2">

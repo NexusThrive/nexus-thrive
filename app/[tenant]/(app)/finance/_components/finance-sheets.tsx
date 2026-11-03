@@ -59,7 +59,7 @@ export function ConnectedPaymentSheet({
           // La campana avisa (el servidor confirma por detrás).
           requestNotificationsRefresh({
             kind: "payment",
-            title: `Pago recibido · ${formatCurrency(amount)}`,
+            title: `Cobro registrado · ${formatCurrency(amount)}`,
             detail: customers.find((c) => c.id === customerId)?.name ?? "Venta de mostrador",
             href: "/finance",
           });

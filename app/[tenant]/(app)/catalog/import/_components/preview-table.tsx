@@ -9,7 +9,7 @@ const PREVIEW_LIMIT = 50;
 function StatusBadge({ row }: { row: ParsedRow }) {
   if (row.status === "OK") {
     return (
-      <span className="inline-flex items-center gap-1 rounded-sm bg-success/10 px-2 py-0.5 text-[11px] font-medium text-success">
+      <span className="inline-flex items-center gap-1 rounded-sm bg-success/10 px-2 py-0.5 text-2xs font-medium text-success">
         <CheckCircle2 aria-hidden="true" className="h-3 w-3" />
         OK
       </span>
@@ -17,14 +17,14 @@ function StatusBadge({ row }: { row: ParsedRow }) {
   }
   if (row.status === "WARNING") {
     return (
-      <span className="inline-flex items-center gap-1 rounded-sm bg-gold-100 px-2 py-0.5 text-[11px] font-medium text-gold-700">
+      <span className="inline-flex items-center gap-1 rounded-sm bg-gold-100 px-2 py-0.5 text-2xs font-medium text-gold-700">
         <AlertTriangle aria-hidden="true" className="h-3 w-3" />
         Aviso
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1 rounded-sm bg-destructive/10 px-2 py-0.5 text-[11px] font-medium text-destructive">
+    <span className="inline-flex items-center gap-1 rounded-sm bg-destructive/10 px-2 py-0.5 text-2xs font-medium text-destructive">
       <XCircle aria-hidden="true" className="h-3 w-3" />
       Omitir
     </span>
@@ -38,7 +38,7 @@ function ItemRow({ row }: { row: ParsedRow }) {
       <td className="px-3 py-2">
         <StatusBadge row={row} />
         {row.reason && (
-          <p className="mt-0.5 max-w-[220px] text-[10px] leading-tight text-muted-foreground">{row.reason}</p>
+          <p className="mt-0.5 max-w-[220px] text-2xs leading-tight text-muted-foreground">{row.reason}</p>
         )}
       </td>
       <td className="max-w-[220px] truncate px-3 py-2 text-sm text-foreground/80">{v.name || "—"}</td>
@@ -71,7 +71,7 @@ function ActivityRow({ row }: { row: ParsedRow }) {
       <td className="px-3 py-2">
         <StatusBadge row={row} />
         {row.reason && (
-          <p className="mt-0.5 max-w-[220px] text-[10px] leading-tight text-muted-foreground">{row.reason}</p>
+          <p className="mt-0.5 max-w-[220px] text-2xs leading-tight text-muted-foreground">{row.reason}</p>
         )}
       </td>
       <td className="max-w-[260px] truncate px-3 py-2 text-sm text-foreground/80">{v.activityName || "(sin nombre)"}</td>
@@ -104,7 +104,7 @@ export default function PreviewTable({ rows, blockMode }: { rows: ParsedRow[]; b
       <div className="overflow-x-auto">
         <table className="w-full min-w-[720px] text-left">
           <thead>
-            <tr className="bg-muted text-[11px] text-muted-foreground">
+            <tr className="bg-muted text-2xs text-muted-foreground">
               <th className="px-3 py-2 font-medium">Estado</th>
               <th className="px-3 py-2 font-medium">{blockMode ? "Actividad" : "Nombre"}</th>
               <th className="px-3 py-2 font-medium">Código</th>

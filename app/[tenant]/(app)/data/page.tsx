@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { Alert } from "@/components/molecules/alert";
+import { PermissionNotice } from "@/components/molecules/permission-notice";
 import { PageHeader } from "@/components/molecules/page-header";
 import { can } from "@/lib/core/auth/permissions";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
@@ -18,7 +18,7 @@ export default async function DataPage({ params }: { params: Promise<{ tenant: s
     return (
       <div className="grid gap-5">
         {header}
-        <Alert tone="info">Solo el dueño o administración puede importar y exportar datos.</Alert>
+        <PermissionNotice permission="data.exchange" action="importar y exportar datos" />
       </div>
     );
   }

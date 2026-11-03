@@ -62,7 +62,7 @@ export default function CashPanel({ slug, boxes, moves, history, members, canMan
       <section className="grid max-w-xl gap-4 rounded-lg border border-border bg-surface p-[18px]">
         <div>
           <h2 className="font-display text-[17px] font-semibold">{box ? "Editar caja" : "Crea tu caja menor"}</h2>
-          <p className="text-[13px] text-muted-foreground">Un fondo fijo de efectivo para gastos pequeños. Cada turno se abre, se mueve y se cierra contando el efectivo.</p>
+          <p className="text-ui text-muted-foreground">Un fondo fijo de efectivo para gastos pequeños. Cada turno se abre, se mueve y se cierra contando el efectivo.</p>
         </div>
         {canManage ? (
           <>
@@ -101,7 +101,7 @@ export default function CashPanel({ slug, boxes, moves, history, members, canMan
             </div>
           </>
         ) : (
-          <p className="text-[13px] text-muted-foreground">Pídele al dueño o a administración que cree la caja.</p>
+          <p className="text-ui text-muted-foreground">Pídele al dueño o a administración que cree la caja.</p>
         )}
       </section>
     );
@@ -113,19 +113,19 @@ export default function CashPanel({ slug, boxes, moves, history, members, canMan
 
   return (
     <div className="grid gap-4">
-      <section className="grid gap-4 rounded-lg bg-ink p-[18px] text-[#F7F6F3] sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+      <section className="grid gap-4 rounded-lg bg-ink p-[18px] text-doc-bg sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
         <div className="grid gap-1">
-          <p className="flex flex-wrap items-center gap-2 font-mono text-[11px] uppercase tracking-[0.16em] text-[#A1A1A8]">
+          <p className="flex flex-wrap items-center gap-2 font-mono text-2xs uppercase tracking-[0.16em] text-doc-rule">
             {box.name} · fondo {formatCurrency(box.fundAmount)}
             {responsible ? ` · ${responsible}` : ""}
           </p>
           <p className="font-display text-[38px] font-bold leading-none tabular-nums">{session ? formatCurrency(current) : "Cerrada"}</p>
-          <p className="text-[13px] text-[#A1A1A8]">{session ? `Efectivo esperado · turno abierto ${formatDateTime(session.openedAt)}` : "Abre el turno para registrar movimientos."}</p>
-          {session && need > 0 ? <p className="text-[12.5px] text-[#D4AF37]">Faltan {formatCurrency(need)} para volver al fondo fijo.</p> : null}
+          <p className="text-ui text-doc-rule">{session ? `Efectivo esperado · turno abierto ${formatDateTime(session.openedAt)}` : "Abre el turno para registrar movimientos."}</p>
+          {session && need > 0 ? <p className="text-xs text-doc-gold">Faltan {formatCurrency(need)} para volver al fondo fijo.</p> : null}
         </div>
         <div className="flex flex-wrap gap-2">
           {canManage ? (
-            <button type="button" onClick={() => setBoxForm({ id: box.id, name: box.name, fund: box.fundAmount, responsibleUserId: box.responsibleUserId ?? "" })} className={cn(buttonVariants({ variant: "outline", size: "sm" }), "border-[#3A3A40] text-[#F7F6F3] hover:bg-[#1E1E21]")}>
+            <button type="button" onClick={() => setBoxForm({ id: box.id, name: box.name, fund: box.fundAmount, responsibleUserId: box.responsibleUserId ?? "" })} className={cn(buttonVariants({ variant: "outline", size: "sm" }), "border-doc-edge-strong text-doc-bg hover:bg-[#1E1E21]")}>
               Editar caja
             </button>
           ) : null}
@@ -161,7 +161,7 @@ export default function CashPanel({ slug, boxes, moves, history, members, canMan
               {[...moves].reverse().map((m) => {
                 const sign = m.kind === "ADJUST" ? Math.sign(m.amount) : CASH_SIGN[m.kind];
                 return (
-                  <li key={m.id} className="flex items-center gap-3 px-[18px] py-2.5 text-[13.5px]">
+                  <li key={m.id} className="flex items-center gap-3 px-[18px] py-2.5 text-ui">
                     <span className="min-w-0 flex-1">
                       <b className="block truncate font-medium">{m.description}</b>
                       <small className="text-xs text-muted-foreground">
@@ -188,7 +188,7 @@ export default function CashPanel({ slug, boxes, moves, history, members, canMan
             {history.map((h) => {
               const a = arqueo(h.expected, h.counted);
               return (
-                <li key={h.id} className="grid gap-1 px-[18px] py-2.5 text-[13px] sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+                <li key={h.id} className="grid gap-1 px-[18px] py-2.5 text-ui sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
                   <span>
                     {formatDateTime(h.closedAt)} · esperado {formatCurrency(h.expected)} · contado {formatCurrency(h.counted)}
                     {h.notes ? <small className="block text-xs text-muted-foreground">{h.notes}</small> : null}
@@ -223,7 +223,7 @@ export default function CashPanel({ slug, boxes, moves, history, members, canMan
               {(c) => (move.kind === "ADJUST" ? <input {...c} inputMode="decimal" value={move.amount ?? ""} onChange={(e) => setMove({ ...move, amount: e.target.value ? Number(e.target.value.replace(",", ".")) : null })} className={inputClasses} /> : <MoneyInput id={c.id} value={move.amount} onValueChange={(v) => setMove({ ...move, amount: v })} />)}
             </Field>
             <Field label="Descripción" required>
-              {(c) => <input {...c} value={move.description} onChange={(e) => setMove({ ...move, description: e.target.value })} className={inputClasses} placeholder={move.kind === "VOUCHER" ? "Transporte a proveedor" : "Café y aseo"} />}
+              {(c) => <input {...c} value={move.description} onChange={(e) => setMove({ ...move, description: e.target.value })} className={inputClasses} placeholder="Concepto" />}
             </Field>
             {move.kind === "VOUCHER" ? (
               <Field label="Para quién es el vale" required>
@@ -252,7 +252,7 @@ export default function CashPanel({ slug, boxes, moves, history, members, canMan
           }
         >
           <div className="grid gap-4">
-            <p className="flex justify-between text-[13.5px]">
+            <p className="flex justify-between text-ui">
               <span className="text-muted-foreground">Efectivo esperado</span>
               <b className="font-mono tabular-nums">{formatCurrency(current)}</b>
             </p>
@@ -260,7 +260,7 @@ export default function CashPanel({ slug, boxes, moves, history, members, canMan
               {(c) => <MoneyInput id={c.id} value={closing.counted} onValueChange={(v) => setClosing({ ...closing, counted: v })} />}
             </Field>
             {result ? (
-              <p className={cn("rounded-md p-3 text-[13.5px] font-medium", result.status === "cuadra" ? "bg-success-subtle text-success" : result.status === "sobra" ? "bg-warning/15 text-warning-foreground" : "bg-danger-subtle text-danger")}>
+              <p className={cn("rounded-md p-3 text-ui font-medium", result.status === "cuadra" ? "bg-success-subtle text-success" : result.status === "sobra" ? "bg-warning/15 text-warning-foreground" : "bg-danger-subtle text-danger")}>
                 {result.status === "cuadra" ? "La caja cuadra." : `${result.status === "sobra" ? "Sobran" : "Faltan"} ${formatCurrency(Math.abs(result.difference))}.`}
               </p>
             ) : null}

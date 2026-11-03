@@ -29,7 +29,7 @@ export default function ReviewForm({ slug, business, accent, onAccent }: { slug:
       className="grid gap-4"
     >
       <fieldset className="grid gap-2">
-        <legend className="text-[14px] font-semibold">¿Cómo fue tu experiencia?</legend>
+        <legend className="text-sm font-semibold">¿Cómo fue tu experiencia?</legend>
         <div className="flex gap-1" role="radiogroup" aria-label="Calificación">
           {[1, 2, 3, 4, 5].map((n) => (
             <label key={n} className="cursor-pointer">
@@ -40,10 +40,10 @@ export default function ReviewForm({ slug, business, accent, onAccent }: { slug:
           ))}
         </div>
       </fieldset>
-      <label className="grid gap-1 text-[13px] font-medium">Cuéntanos más (opcional)<textarea value={v.comment} onChange={(e) => setV((p) => ({ ...p, comment: e.target.value }))} rows={3} maxLength={600} className="w-full rounded-md border border-[#C9C6BE] bg-white px-3 py-2 text-[15px] text-black" /></label>
-      <label className="grid gap-1 text-[13px] font-medium">Tu nombre (opcional)<input value={v.name} onChange={(e) => setV((p) => ({ ...p, name: e.target.value }))} autoComplete="name" className="h-11 w-full rounded-md border border-[#C9C6BE] bg-white px-3 text-[15px] text-black" /></label>
-      <label className="grid gap-1 text-[13px] font-medium">Celular o correo para responderte (opcional)<input value={v.contact} onChange={(e) => setV((p) => ({ ...p, contact: e.target.value }))} className="h-11 w-full rounded-md border border-[#C9C6BE] bg-white px-3 text-[15px] text-black" /></label>
-      {state.status === "error" ? <p role="alert" className="text-[13px] text-[#9B2C2C]">{state.message}</p> : null}
+      <label className="grid gap-1 text-ui font-medium">Cuéntanos más (opcional)<textarea value={v.comment} onChange={(e) => setV((p) => ({ ...p, comment: e.target.value }))} rows={3} maxLength={600} className="w-full rounded-md border border-[#C9C6BE] bg-white px-3 py-2 text-[15px] text-black" /></label>
+      <label className="grid gap-1 text-ui font-medium">Tu nombre (opcional)<input value={v.name} onChange={(e) => setV((p) => ({ ...p, name: e.target.value }))} autoComplete="name" className="h-11 w-full rounded-md border border-[#C9C6BE] bg-white px-3 text-[15px] text-black" /></label>
+      <label className="grid gap-1 text-ui font-medium">Celular o correo para responderte (opcional)<input value={v.contact} onChange={(e) => setV((p) => ({ ...p, contact: e.target.value }))} className="h-11 w-full rounded-md border border-[#C9C6BE] bg-white px-3 text-[15px] text-black" /></label>
+      {state.status === "error" ? <p role="alert" className="text-ui text-[#9B2C2C]">{state.message}</p> : null}
       <button type="submit" disabled={state.status === "busy" || rating === 0} style={{ background: accent, color: onAccent }} className="h-12 rounded-md text-[15px] font-semibold disabled:opacity-60">{state.status === "busy" ? "Enviando…" : "Enviar reseña"}</button>
     </form>
   );

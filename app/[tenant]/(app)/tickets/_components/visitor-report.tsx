@@ -14,7 +14,7 @@ function Breakdown({ title, rows }: { title: string; rows: { label: string; valu
         <ul className="grid gap-2.5">
           {rows.map((r) => (
             <li key={r.label} className="grid gap-1">
-              <span className="flex justify-between gap-2 text-[13px]">
+              <span className="flex justify-between gap-2 text-ui">
                 <span className="truncate">{r.label}</span>
                 <span className="font-mono tabular-nums text-muted-foreground">
                   {r.value.toLocaleString("es-CO")}
@@ -28,7 +28,7 @@ function Breakdown({ title, rows }: { title: string; rows: { label: string; valu
           ))}
         </ul>
       ) : (
-        <p className="text-[13px] text-muted-foreground">Sin datos.</p>
+        <p className="text-ui text-muted-foreground">Sin datos.</p>
       )}
     </section>
   );
@@ -66,11 +66,11 @@ export default function VisitorReportView({ report, from, to }: { report: Visito
             </div>
           ))}
         </div>
-        <div className="flex justify-between text-[11px] text-muted-foreground">
+        <div className="flex justify-between text-2xs text-muted-foreground">
           <span>{dayLabel(from, { day: "numeric", month: "short" })}</span>
           <span>{dayLabel(to, { day: "numeric", month: "short" })}</span>
         </div>
-        <details className="text-[13px]">
+        <details className="text-ui">
           <summary className="cursor-pointer text-muted-foreground">Ver como tabla</summary>
           <table className="mt-2 w-full">
             <thead className="text-left text-xs text-muted-foreground">

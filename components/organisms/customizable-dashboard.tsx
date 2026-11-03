@@ -303,7 +303,8 @@ function Item({
         <div
           inert={editing || undefined}
           style={height != null ? { height } : undefined}
-          className={cn(editing && mobile ? "min-h-0 flex-1 [&>*]:h-full" : "h-full [&>*]:h-full", editing && "pointer-events-none select-none", drag.isDragging && "invisible")}
+          // `flex-1` (flex-basis 0) anularía el alto fijo de un gráfico agregado y la dona se mediría a sí misma en bucle.
+          className={cn(editing && mobile && height == null ? "min-h-0 flex-1 [&>*]:h-full" : "h-full [&>*]:h-full", editing && "pointer-events-none select-none", drag.isDragging && "invisible")}
         >
           {widget.node}
         </div>

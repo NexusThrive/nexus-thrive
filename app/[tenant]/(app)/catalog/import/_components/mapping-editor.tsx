@@ -116,7 +116,7 @@ export default function MappingEditor({
               <span className="flex items-center justify-between gap-2 text-xs font-medium text-muted-foreground">
                 {TARGET_LABELS[field]}
                 {entry.needsAttention && (
-                  <span className="inline-flex items-center gap-1 rounded-sm bg-gold-100 px-1.5 py-0.5 text-[10px] font-medium text-gold-700">
+                  <span className="inline-flex items-center gap-1 rounded-sm bg-gold-100 px-1.5 py-0.5 text-2xs font-medium text-gold-700">
                     <AlertTriangle aria-hidden="true" className="h-3 w-3" />
                     difusa
                   </span>
@@ -135,7 +135,7 @@ export default function MappingEditor({
                   </option>
                 ))}
               </Select>
-              <span className="mt-1 block text-right text-[10px] text-muted-foreground">
+              <span className="mt-1 block text-right text-2xs text-muted-foreground">
                 confianza {entry.confidence}
               </span>
             </label>

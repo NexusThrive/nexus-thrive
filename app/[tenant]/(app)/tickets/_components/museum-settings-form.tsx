@@ -41,10 +41,10 @@ export default function MuseumSettingsForm({ slug, settings, canManage, ticketTy
           {(c) => <input {...c} disabled={!canManage} value={slots} onChange={(e) => setSlots(e.target.value)} className={inputClasses} />}
         </Field>
         <fieldset className="grid gap-2">
-          <legend className="mb-1 text-[13px] font-medium">Días de cierre</legend>
+          <legend className="mb-1 text-ui font-medium">Días de cierre</legend>
           <div className="flex flex-wrap gap-2">
             {WEEKDAYS.map((d, i) => (
-              <label key={d} className="flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1.5 text-[13px]">
+              <label key={d} className="flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1.5 text-ui">
                 <input type="checkbox" disabled={!canManage} checked={closed.includes(i)} onChange={(e) => setClosed((c) => (e.target.checked ? [...c, i] : c.filter((x) => x !== i)))} />
                 {d}
               </label>
@@ -77,7 +77,7 @@ export default function MuseumSettingsForm({ slug, settings, canManage, ticketTy
             ))}
           </ul>
         ) : (
-          <p className="text-[13px] text-muted-foreground">Crea las entradas sugeridas (general, estudiante, niño, adulto mayor, extranjero y colegio) y ajusta los precios después.</p>
+          <p className="text-ui text-muted-foreground">Crea las entradas sugeridas (general, estudiante, niño, adulto mayor, extranjero y colegio) y ajusta los precios después.</p>
         )}
         <div className="flex flex-wrap gap-2">
           {!ticketTypes.length && canManage ? (

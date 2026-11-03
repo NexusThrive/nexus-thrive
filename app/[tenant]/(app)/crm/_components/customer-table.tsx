@@ -4,7 +4,7 @@ import { useEffect, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { SwipeCard } from "@/components/molecules/swipe-card";
-import { Archive, Banknote, ChevronLeft, ChevronRight, Mail, MessageCircle, Pencil, Phone, RotateCcw, Trash2, X } from "lucide-react";
+import { Archive, Banknote, ChevronLeft, ChevronRight, Mail, MessageCircle, Pencil, Phone, Plus, RotateCcw, Trash2, X } from "lucide-react";
 import { NLoader } from "@/components/atoms/n-loader";
 import {
   archiveCustomerAction,
@@ -17,6 +17,7 @@ import CustomerSheet from "./customer-sheet";
 import { useVerticalTerms } from "../../vertical-terms-context";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { EmptyState } from "@/components/molecules/empty-state";
+import { useQuickCreate } from "@/components/organisms/quick-create-host";
 
 export type CustomerRow = {
   id: string;
@@ -77,6 +78,7 @@ export default function CustomerTable({
   canRemove?: boolean;
 }) {
   const router = useRouter();
+  const quick = useQuickCreate();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
@@ -265,7 +267,8 @@ export default function CustomerTable({
         <EmptyState
           className="rounded-lg border border-border bg-card"
           title={query ? `Sin coincidencias para «${query}»` : isArchivedView ? `No hay ${customersLabel} archivados` : `Aún no hay ${customersLabel} registrados`}
-          description={query ? "Prueba con otro término o limpia la búsqueda." : isArchivedView ? `Los ${customersLabel} que archives aparecerán aquí.` : `Crea el primer ${customerLabel} con el botón «Nuevo ${customerLabel}».`}
+          description={query ? "Prueba con otro término o limpia la búsqueda." : isArchivedView ? `Los ${customersLabel} que archives aparecerán aquí.` : `Registra a tu primer ${customerLabel} para llevar su historial, sus cobros y su seguimiento.`}
+          action={!query && !isArchivedView ? <button type="button" onClick={() => quick.open("new-customer")} className={buttonVariants()}><Plus aria-hidden="true" className="size-4" /> Nuevo {customerLabel}</button> : undefined}
         />
       ) : (
         <>
@@ -338,7 +341,7 @@ export default function CustomerTable({
                               {row.name}
                             </Link>
                             {isArchivedView ? (
-                              <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-semibold uppercase text-muted-foreground">
+                              <span className="rounded bg-muted px-1.5 py-0.5 text-2xs font-semibold uppercase text-muted-foreground">
                                 Archivado
                               </span>
                             ) : null}
@@ -437,7 +440,7 @@ export default function CustomerTable({
                     <div className="min-w-0 flex-1">
                       <p className="flex flex-wrap items-center gap-2 font-medium text-foreground">
                         {row.name}
-                        <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-semibold uppercase text-muted-foreground">Archivado</span>
+                        <span className="rounded bg-muted px-1.5 py-0.5 text-2xs font-semibold uppercase text-muted-foreground">Archivado</span>
                       </p>
                       <p className="mt-0.5 text-xs text-muted-foreground">
                         {row.phone || "Sin teléfono"} · {row.createdAt}
@@ -484,7 +487,7 @@ export default function CustomerTable({
                           {row.tags.length ? (
                             <span className="mt-1 flex flex-wrap gap-1">
                               {row.tags.slice(0, 3).map((t) => (
-                                <span key={t} className="rounded-sm bg-surface-muted px-1.5 py-0.5 text-[10.5px] font-medium text-muted-foreground">
+                                <span key={t} className="rounded-sm bg-surface-muted px-1.5 py-0.5 text-2xs font-medium text-muted-foreground">
                                   {t}
                                 </span>
                               ))}

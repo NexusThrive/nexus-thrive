@@ -97,9 +97,9 @@ export default function MoneyDetailSheet({ slug, item, business, onClose }: { sl
           {item.kind === "PAYMENT" && item.receiptNumber ? <Badge tone="neutral">{receiptCode(item.receiptNumber)}</Badge> : null}
           {item.kind === "EXPENSE" ? <Badge tone="neutral">{PAID_FROM[item.paidFrom] ?? item.paidFrom}</Badge> : null}
         </div>
-        {voided && item.voidReason ? <p className="rounded-md bg-surface-muted p-3 text-[13px]">Motivo de la anulación: {item.voidReason}</p> : null}
+        {voided && item.voidReason ? <p className="rounded-md bg-surface-muted p-3 text-ui">Motivo de la anulación: {item.voidReason}</p> : null}
 
-        <dl className="grid gap-2 text-[13.5px]">
+        <dl className="grid gap-2 text-ui">
           {(item.kind === "PAYMENT"
             ? [
                 ["Concepto", item.concept],
@@ -122,12 +122,12 @@ export default function MoneyDetailSheet({ slug, item, business, onClose }: { sl
         </dl>
 
         <section className="grid gap-2">
-          <h3 className="text-[13px] font-semibold">{item.kind === "PAYMENT" ? "Comprobantes" : "Soporte (factura o recibo)"}</h3>
+          <h3 className="text-ui font-semibold">{item.kind === "PAYMENT" ? "Comprobantes" : "Soporte (factura o recibo)"}</h3>
           {detail?.files.length ? (
             <ul className="grid gap-1.5">
               {detail.files.map((f) => (
                 <li key={f.id}>
-                  <a href={`/api/files/${f.id}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 rounded-md border border-border px-3 py-2 text-[13px] hover:bg-surface-muted">
+                  <a href={`/api/files/${f.id}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 rounded-md border border-border px-3 py-2 text-ui hover:bg-surface-muted">
                     <FileText aria-hidden="true" className="size-4 text-accent-text" />
                     <span className="min-w-0 flex-1 truncate">{f.fileName}</span>
                     <small className="text-xs text-muted-foreground">{kb(f.byteSize)}</small>
@@ -136,7 +136,7 @@ export default function MoneyDetailSheet({ slug, item, business, onClose }: { sl
               ))}
             </ul>
           ) : (
-            detail ? <p className="text-[13px] text-muted-foreground">Sin archivos.</p> : <SkeletonRows rows={2} label="Cargando archivos" />
+            detail ? <p className="text-ui text-muted-foreground">Sin archivos.</p> : <SkeletonRows rows={2} label="Cargando archivos" />
           )}
           {!voided ? (
             <>
@@ -165,7 +165,7 @@ export default function MoneyDetailSheet({ slug, item, business, onClose }: { sl
           asking ? (
             <div className="grid gap-2">
               <Field label="Motivo de la anulación" required>
-                {(c) => <input {...c} value={reason} onChange={(e) => setReason(e.target.value)} className={inputClasses} placeholder="Se registró dos veces" />}
+                {(c) => <input {...c} value={reason} onChange={(e) => setReason(e.target.value)} className={inputClasses} placeholder="Motivo" />}
               </Field>
               <div className="flex gap-2">
                 <button type="button" onClick={() => setAsking(false)} className={buttonVariants({ size: "sm", variant: "ghost" })}>

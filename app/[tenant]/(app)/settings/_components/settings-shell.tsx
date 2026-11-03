@@ -82,12 +82,12 @@ export default function SettingsShell({
     <div className="w-full">
         <PageHeader
           eyebrow="Sistema"
-          title="Ajustes"
+          title="Configuración"
           description="Los datos de tu negocio, las personas que lo usan y tus preferencias."
         />
 
         <div className="lg:grid lg:grid-cols-[248px_minmax(0,1fr)] lg:gap-8">
-        <SectionNav ariaLabel="Secciones de ajustes" items={TABS} value={tab} onChange={setTab} />
+        <SectionNav ariaLabel="Secciones de configuración" items={TABS} value={tab} onChange={setTab} />
         <div key={tab} className="nx-rise min-w-0">
         {tab === "profile" && (
           <ProfileTab

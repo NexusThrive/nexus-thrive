@@ -17,7 +17,7 @@ export default function PresencePillars({ pillars, phase, trend }: { pillars: Pi
       <header className="flex flex-wrap items-center gap-3">
         <h2 id="pillars-title" className="font-display text-[15px] font-semibold">Visibilidad verificada · Fase A</h2>
         <Badge variant={phase.phase === "B_READY" ? "gold" : "outline"}>{phase.phase === "B_READY" ? "Lista para la fase B (madurez NEXUS)" : `Cobertura ${phase.coverage} %`}</Badge>
-        <span className={`ml-auto inline-flex items-center gap-1 text-[13px] font-medium ${t.tone}`}>
+        <span className={`ml-auto inline-flex items-center gap-1 text-ui font-medium ${t.tone}`}>
           <TrendIcon aria-hidden="true" className="size-4" />
           {t.text}
           {trend.days > 0 ? ` ${trend.delta > 0 ? "+" : ""}${trend.delta} pts en ${trend.days} días` : ""}
@@ -36,7 +36,7 @@ export default function PresencePillars({ pillars, phase, trend }: { pillars: Pi
       <ul className="grid gap-3">
         {pillars.map((p) => (
           <li key={p.key} className="grid gap-1">
-            <div className="flex items-center justify-between gap-3 text-[13.5px]">
+            <div className="flex items-center justify-between gap-3 text-ui">
               <span className="font-medium">{p.label}{!p.verified ? <small className="ml-2 font-normal text-muted-foreground">declarado</small> : null}</span>
               <span className="font-mono tabular-nums text-muted-foreground">{p.score === null ? "Sin medir" : `${p.score} / 100`}</span>
             </div>

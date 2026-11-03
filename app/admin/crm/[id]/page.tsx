@@ -20,7 +20,7 @@ export default async function LeadPage({ params }: { params: Promise<{ id: strin
   if (!lead) notFound();
   return (
     <div className="grid gap-5">
-      <Link href="/admin/crm" className="inline-flex items-center gap-1.5 text-[13px] text-muted-foreground hover:text-foreground">
+      <Link href="/admin/crm" className="inline-flex items-center gap-1.5 text-ui text-muted-foreground hover:text-foreground">
         <ArrowLeft aria-hidden="true" className="size-3.5" /> CRM comercial
       </Link>
       <PageHeader eyebrow="Lead" title={lead.company} description={[lead.contactName, lead.phone, lead.email].filter(Boolean).join(" · ") || undefined} />

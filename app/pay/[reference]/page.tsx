@@ -18,17 +18,17 @@ export default async function PayPage({ params }: { params: Promise<{ reference:
   return (
     <main className="mx-auto grid min-h-dvh max-w-md content-center gap-5 px-4 py-10">
       <section aria-labelledby="pay-title" className="grid gap-4 rounded-lg border border-border bg-surface p-6">
-        <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-muted-foreground">Cobro de {intent.business}</p>
+        <p className="font-mono text-2xs uppercase tracking-[0.16em] text-muted-foreground">Cobro de {intent.business}</p>
         <h1 id="pay-title" className="font-display text-3xl font-bold tabular-nums">{formatCurrency(intent.amount)}</h1>
-        <p className="text-[14px]">{intent.description}</p>
-        <p role="status" className={`text-[14px] font-semibold ${tone}`}>{STATUS_LABELS[intent.status]}</p>
+        <p className="text-sm">{intent.description}</p>
+        <p role="status" className={`text-sm font-semibold ${tone}`}>{STATUS_LABELS[intent.status]}</p>
         {intent.payUrl ? (
           <a href={intent.payUrl} className="inline-flex h-12 items-center justify-center rounded-md bg-primary px-5 text-[15px] font-semibold text-primary-foreground">
             Pagar con tarjeta, PSE o Nequi
           </a>
         ) : null}
         {intent.status === "PENDING" ? (
-          <p className="text-[13px] text-muted-foreground">Este cobro está pendiente. El pago se confirma con el estado oficial de la pasarela o de la transferencia; no necesitas enviar comprobantes por aquí.</p>
+          <p className="text-ui text-muted-foreground">Este cobro está pendiente. El pago se confirma con el estado oficial de la pasarela o de la transferencia; no necesitas enviar comprobantes por aquí.</p>
         ) : null}
       </section>
     </main>

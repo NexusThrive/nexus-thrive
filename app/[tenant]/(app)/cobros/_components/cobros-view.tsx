@@ -14,10 +14,12 @@ import { Field } from "@/components/molecules/field";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useToast } from "@/components/molecules/toast";
 import { FormDialog } from "@/components/organisms/form-sheet";
+import { AdaptiveTable } from "@/components/organisms/adaptive-table";
 import { cancelIntentAction, confirmManualAction, createIntentAction, reconcileAction, refundAction } from "@/app/[tenant]/(app)/cobros/actions";
 import { STATUS_LABELS, payButtonHtml, type Reconciliation } from "@/lib/domains/finance/payments/intents";
 import type { IntentRow } from "@/lib/domains/finance/payments/intents-db";
 import { formatCurrency } from "@/lib/foundation/format";
+import { DateInput } from "@/components/molecules/date-input";
 
 type Run = { id: string; provider: string; day: string; expected: number; reported: number; matched: number; differences: Reconciliation["differences"] };
 type Tab = "links" | "recon";
@@ -60,18 +62,18 @@ export default function CobrosView({ slug, baseUrl, intents, runs, canAdmin, tod
             </button>
           </div>
           {intents.length === 0 ? (
-            <EmptyState title="Aún no hay cobros en línea" description="Crea un enlace, compártelo por WhatsApp o ponlo como botón en tu página. Se marca pagado cuando llega la confirmación oficial." />
+            <EmptyState title="Aún no hay cobros en línea" description="Crea un enlace, compártelo por WhatsApp o ponlo como botón en tu página. Se marca pagado cuando llega la confirmación oficial." action={<button type="button" onClick={() => setCreating(true)} className={buttonVariants()}><Plus aria-hidden="true" className="size-4" /> Nuevo cobro</button>} />
           ) : (
             <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">
               {intents.map((r) => (
                 <li key={r.id} className="grid gap-2 px-4 py-3">
                   <div className="flex flex-wrap items-center gap-2">
-                    <b className="text-[13.5px] font-medium">{r.description}</b>
+                    <b className="text-ui font-medium">{r.description}</b>
                     <Badge variant={TONE[r.status]}>{STATUS_LABELS[r.status]}</Badge>
                     {r.refundedTotal > 0 ? <Badge variant="outline">Reembolsado {formatCurrency(r.refundedTotal)}</Badge> : null}
-                    <span className="ml-auto font-mono text-[13.5px] font-semibold tabular-nums">{formatCurrency(r.amount)}</span>
+                    <span className="ml-auto font-mono text-ui font-semibold tabular-nums">{formatCurrency(r.amount)}</span>
                   </div>
-                  <div className="flex flex-wrap items-center gap-2 text-[12.5px] text-muted-foreground">
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                     <span>Vence {r.expiresAt.slice(0, 10)}</span>
                     {r.confirmedBy ? <span>· confirmado por {r.confirmedBy === "PROVIDER" ? "la pasarela" : "una persona"}</span> : null}
                     <span className="ml-auto flex flex-wrap gap-2">
@@ -111,7 +113,7 @@ export default function CobrosView({ slug, baseUrl, intents, runs, canAdmin, tod
         {({ fieldErrors }) => (
           <div className="grid gap-3">
             <Field label="Valor (COP)" required error={fieldErrors.amount}>{(c) => <input {...c} name="amount" inputMode="numeric" autoComplete="off" className={inputClasses} placeholder="150000" />}</Field>
-            <Field label="Qué se cobra" required>{(c) => <input {...c} name="description" autoComplete="off" maxLength={160} className={inputClasses} placeholder="Matrícula anual" />}</Field>
+            <Field label="Qué se cobra" required>{(c) => <input {...c} name="description" autoComplete="off" maxLength={160} className={inputClasses} placeholder="Concepto" />}</Field>
             {gateways.length > 1 ? (
               <Field label="Pasarela" required>
                 {(c) => (
@@ -161,7 +163,7 @@ export default function CobrosView({ slug, baseUrl, intents, runs, canAdmin, tod
         }}
         onSuccess={({ message }) => done(message)}
       >
-        {({ fieldErrors }) => <Field label="Referencia o evidencia" required error={fieldErrors.evidence}>{(c) => <input {...c} name="evidence" autoComplete="off" maxLength={200} className={inputClasses} placeholder="Transferencia Bancolombia 998877" />}</Field>}
+        {({ fieldErrors }) => <Field label="Referencia o evidencia" required error={fieldErrors.evidence}>{(c) => <input {...c} name="evidence" autoComplete="off" maxLength={200} className={inputClasses} placeholder="Referencia del pago" />}</Field>}
       </FormDialog>
 
       <FormDialog
@@ -210,10 +212,10 @@ function Reconciliation({ slug, runs, today }: { slug: string; runs: Run[]; toda
     <div className="grid gap-4">
       <section aria-labelledby="recon-title" className="grid gap-3 rounded-lg border border-border bg-surface p-4">
         <h2 id="recon-title" className="font-display text-[15px] font-semibold">Conciliar un día</h2>
-        <p className="text-[13px] text-muted-foreground">Pega el reporte de la pasarela (un cobro por línea: «id, valor») y NEXUS lo compara con lo que confirmó ese día.</p>
+        <p className="text-ui text-muted-foreground">Pega el reporte de la pasarela (un cobro por línea: «id, valor») y NEXUS lo compara con lo que confirmó ese día.</p>
         <div className="grid gap-3 sm:grid-cols-[180px_1fr]">
-          <Field label="Día" required>{(c) => <input {...c} type="date" value={day} onChange={(e) => setDay(e.target.value)} className={inputClasses} />}</Field>
-          <Field label="Reporte del proveedor" required>{(c) => <textarea {...c} rows={5} value={report} onChange={(e) => setReport(e.target.value)} className={`${inputClasses} h-auto font-mono text-[12.5px]`} placeholder={"evt_123, 150000\nevt_124, 80000"} />}</Field>
+          <Field label="Día" required>{(c) => <DateInput {...c} value={day} onChange={(e) => setDay(e.target.value)} className={inputClasses} />}</Field>
+          <Field label="Reporte del proveedor" required>{(c) => <textarea {...c} rows={5} value={report} onChange={(e) => setReport(e.target.value)} className={`${inputClasses} h-auto font-mono text-xs`} placeholder={"evt_123, 150000\nevt_124, 80000"} />}</Field>
         </div>
         {error ? <Alert tone="danger">{error}</Alert> : null}
         <button type="button" disabled={pending || !report.trim()} onClick={run} className={buttonVariants({ className: "justify-self-start" })}>{pending ? "Conciliando…" : "Conciliar"}</button>
@@ -229,8 +231,8 @@ function Reconciliation({ slug, runs, today }: { slug: string; runs: Run[]; toda
       ) : null}
       {runs.length ? (
         <section aria-label="Conciliaciones anteriores" className="grid gap-2">
-          <h3 className="text-[12px] font-semibold uppercase tracking-wide text-muted-foreground">Anteriores</h3>
-          <ul className="divide-y divide-border rounded-lg border border-border bg-surface text-[13px]">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Anteriores</h3>
+          <ul className="divide-y divide-border rounded-lg border border-border bg-surface text-ui">
             {runs.map((r) => (
               <li key={r.id} className="flex flex-wrap items-center gap-2 px-4 py-2.5">
                 <b className="font-mono">{r.day}</b>
@@ -249,23 +251,16 @@ function Reconciliation({ slug, runs, today }: { slug: string; runs: Run[]; toda
 function Differences({ list }: { list: Reconciliation["differences"] }) {
   if (!list.length) return null;
   return (
-    <div role="region" aria-label="Diferencias" tabIndex={0} className="overflow-x-auto rounded-md border border-border focus-visible:outline-2 focus-visible:outline-accent">
-      <table className="w-full min-w-[520px] text-[13px]">
-        <caption className="sr-only">Diferencias de la conciliación</caption>
-        <thead className="bg-surface-muted text-left text-xs text-muted-foreground">
-          <tr><th scope="col" className="px-3 py-1.5 font-medium">Cobro</th><th scope="col" className="px-3 py-1.5 font-medium">Qué pasa</th><th scope="col" className="px-3 py-1.5 text-right font-medium">NEXUS</th><th scope="col" className="px-3 py-1.5 text-right font-medium">Proveedor</th></tr>
-        </thead>
-        <tbody className="divide-y divide-border">
-          {list.map((d) => (
-            <tr key={`${d.kind}-${d.externalId}`}>
-              <th scope="row" className="px-3 py-1.5 text-left font-mono font-normal">{d.externalId}</th>
-              <td className="px-3 py-1.5">{KIND_TEXT[d.kind]}</td>
-              <td className="px-3 py-1.5 text-right font-mono tabular-nums">{d.expected === null ? "—" : formatCurrency(d.expected)}</td>
-              <td className="px-3 py-1.5 text-right font-mono tabular-nums">{d.reported === null ? "—" : formatCurrency(d.reported)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <AdaptiveTable
+      caption="Diferencias de la conciliación"
+      rows={list}
+      getRowId={(d) => `${d.kind}-${d.externalId}`}
+      columns={[
+        { key: "ref", header: "Cobro", role: "primary", cell: (d) => <span className="font-mono font-normal">{d.externalId}</span> },
+        { key: "kind", header: "Qué pasa", role: "secondary", cell: (d) => KIND_TEXT[d.kind] },
+        { key: "expected", header: "NEXUS", role: "detail", align: "right", cell: (d) => <span className="font-mono tabular-nums">{d.expected === null ? "—" : formatCurrency(d.expected)}</span> },
+        { key: "reported", header: "Proveedor", role: "detail", align: "right", cell: (d) => <span className="font-mono tabular-nums">{d.reported === null ? "—" : formatCurrency(d.reported)}</span> },
+      ]}
+    />
   );
 }

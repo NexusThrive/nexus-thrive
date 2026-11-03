@@ -13,6 +13,7 @@ import { isActiveStage, LEAD_SOURCES, LEAD_STAGES, LOST_REASONS, type LeadInput,
 import type { LeadRow } from "@/lib/platform/crm/leads";
 import { saveLeadAction } from "../actions";
 import { Select } from "@/components/atoms/select";
+import { DateInput } from "@/components/molecules/date-input";
 
 export type Option = { id: string; name: string };
 
@@ -101,7 +102,7 @@ export default function LeadSheet({
     >
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Field label="Negocio o prospecto" required error={errors.company}>
-          {(c) => <input {...c} value={v.company} onChange={(e) => set("company", e.target.value)} className={inputClasses} placeholder="Gimnasio Andes" />}
+          {(c) => <input {...c} value={v.company} onChange={(e) => set("company", e.target.value)} className={inputClasses} placeholder="Nombre del negocio" />}
         </Field>
         <Field label="Persona de contacto">{(c) => <input {...c} value={v.contactName ?? ""} onChange={(e) => set("contactName", e.target.value)} className={inputClasses} />}</Field>
         <Field label="Teléfono / WhatsApp" error={errors.phone}>
@@ -164,10 +165,10 @@ export default function LeadSheet({
         {active ? (
           <>
             <Field label="Próximo paso" required error={errors.nextStep}>
-              {(c) => <input {...c} value={v.nextStep ?? ""} onChange={(e) => set("nextStep", e.target.value)} className={inputClasses} placeholder="Enviar propuesta" />}
+              {(c) => <input {...c} value={v.nextStep ?? ""} onChange={(e) => set("nextStep", e.target.value)} className={inputClasses} placeholder="Próxima acción" />}
             </Field>
             <Field label="Fecha del próximo paso" required error={errors.nextStepDate}>
-              {(c) => <input {...c} type="date" value={v.nextStepDate ?? ""} onChange={(e) => set("nextStepDate", e.target.value)} className={inputClasses} />}
+              {(c) => <DateInput {...c} value={v.nextStepDate ?? ""} onChange={(e) => set("nextStepDate", e.target.value)} className={inputClasses} />}
             </Field>
           </>
         ) : null}

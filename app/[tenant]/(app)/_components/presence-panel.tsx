@@ -35,7 +35,7 @@ function Chequeo({ check }: { check: PresenceCheck }) {
     <li className="flex items-start gap-2.5">
       <StatusDot tone={check.done ? "success" : "muted"} className="mt-1.5" />
       <div className="min-w-0 flex-1">
-        <p className={cn("truncate text-[13px] font-medium", check.done ? "text-foreground" : "text-muted-foreground")}>
+        <p className={cn("truncate text-ui font-medium", check.done ? "text-foreground" : "text-muted-foreground")}>
           {check.label}
         </p>
         <p className="truncate text-xs text-muted-foreground">{check.hint}</p>
@@ -177,7 +177,7 @@ export function PresencePanel({
             </Badge>
           </div>
           <ProgressBar value={presence.score / 100} tone={meta.bar} label="Presencia digital" className="h-2" />
-          <p className="text-[13px] text-muted-foreground">{meta.tagline}</p>
+          <p className="text-ui text-muted-foreground">{meta.tagline}</p>
 
           <ul className="mt-1 grid gap-2.5 sm:grid-cols-2">
             {presence.checks.map((check) => (
@@ -213,7 +213,7 @@ export function PresencePanel({
             </div>
           ) : (
             <div className="flex flex-col items-start gap-1.5 rounded-md border border-dashed border-border-strong bg-background p-3">
-              <p className="text-[13px] font-medium">Tu página con Presence Thrive</p>
+              <p className="text-ui font-medium">Tu página con Presence Thrive</p>
               <p className="text-xs text-muted-foreground">
                 Te la diseñamos, la publicamos y aparece aquí mismo. También suma a tu puntaje.
               </p>
@@ -228,7 +228,7 @@ export function PresencePanel({
               ? "Edita tus canales en "
               : "Conecta tus canales en "}
             <Link href={settingsHref} className="font-semibold text-accent-text">
-              Ajustes → Perfil
+              Configuración → Perfil
             </Link>
             .
           </p>

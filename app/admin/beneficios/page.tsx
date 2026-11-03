@@ -8,6 +8,7 @@ import { receiptQrDataUrl } from "@/lib/business/sales/receipt-qr";
 import { createBenefitAction, toggleBenefitAction, updateBenefitAction } from "./actions";
 import { ContractFields, contractSummary } from "./_components/contract-fields";
 import { Select } from "@/components/atoms/select";
+import { DateInput } from "@/components/molecules/date-input";
 
 export const metadata: Metadata = { title: "Accesos · NEXUS Operations Center" };
 
@@ -91,7 +92,7 @@ export default async function BeneficiosPage({
           <input type="hidden" name="maxUses" value="1" />
           <label className={`${labelClass} sm:col-span-2 lg:col-span-1`}>
             Cliente
-            <input name="label" required placeholder="Restaurante Donde Ana" className={inputClass} />
+            <input name="label" required placeholder="Nombre del negocio" className={inputClass} />
           </label>
           <label className={labelClass}>
             Plan que otorga
@@ -107,7 +108,7 @@ export default async function BeneficiosPage({
           </label>
           <label className={`${labelClass} sm:col-span-2`}>
             Referencia del pago (opcional)
-            <input name="notes" placeholder="Nequi · ref 12345 · 12 oct" className={inputClass} />
+            <input name="notes" placeholder="Medio de pago y referencia" className={inputClass} />
           </label>
           <ContractFields idPrefix="nuevo" />
           <div className="flex items-end">
@@ -131,7 +132,7 @@ export default async function BeneficiosPage({
           <input type="hidden" name="kind" value="PROMO" />
           <label className={`${labelClass} sm:col-span-2 lg:col-span-1`}>
             Nombre del beneficio
-            <input name="label" required placeholder="Mes de regalo — Feria escolar" className={inputClass} />
+            <input name="label" required placeholder="Motivo del beneficio" className={inputClass} />
           </label>
           <label className={labelClass}>
             Código (opcional)
@@ -155,7 +156,7 @@ export default async function BeneficiosPage({
           </label>
           <label className={labelClass}>
             Vence el (opcional)
-            <input name="expiresAt" type="date" className={inputClass} />
+            <DateInput name="expiresAt" className={inputClass} />
           </label>
           <label className={`${labelClass} sm:col-span-2`}>
             Notas (opcional)
@@ -207,7 +208,7 @@ export default async function BeneficiosPage({
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="font-mono text-sm font-semibold tracking-wider">{row.code}</span>
                         <span
-                          className={`rounded-full px-2 py-[2px] text-[10px] font-semibold uppercase tracking-wide ${
+                          className={`rounded-full px-2 py-[2px] text-2xs font-semibold uppercase tracking-wide ${
                             row.kind === "PAID"
                               ? "bg-sky-100 text-sky-800"
                               : "bg-emerald-100 text-emerald-800"
@@ -215,7 +216,7 @@ export default async function BeneficiosPage({
                         >
                           {KIND_LABELS[row.kind] ?? row.kind}
                         </span>
-                        <span className={`rounded-full px-2 py-[2px] text-[10px] font-semibold uppercase tracking-wide ${status.className}`}>
+                        <span className={`rounded-full px-2 py-[2px] text-2xs font-semibold uppercase tracking-wide ${status.className}`}>
                           {status.text}
                         </span>
                       </div>
@@ -226,7 +227,7 @@ export default async function BeneficiosPage({
                         {row.maxUses != null ? `/${row.maxUses}` : " (ilimitado)"} · canjes {row.redemptions}
                         {row.expiresAt ? ` · vence ${row.expiresAt.slice(0, 10)}` : ""}
                       </p>
-                      <a href={link} className="break-all font-mono text-[11px] text-muted-foreground underline">
+                      <a href={link} className="break-all font-mono text-2xs text-muted-foreground underline">
                         {link}
                       </a>
                       {contractSummary(row.terms) ? (
@@ -310,9 +311,8 @@ export default async function BeneficiosPage({
                       </label>
                       <label className={labelClass}>
                         Vence el (vacío = nunca)
-                        <input
+                        <DateInput
                           name="expiresAt"
-                          type="date"
                           defaultValue={row.expiresAt ? row.expiresAt.slice(0, 10) : ""}
                           className={inputClass}
                         />

@@ -13,10 +13,12 @@ import { Field } from "@/components/molecules/field";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useToast } from "@/components/molecules/toast";
 import { FormDialog } from "@/components/organisms/form-sheet";
+import { AdaptiveTable } from "@/components/organisms/adaptive-table";
 import { createResolutionAction, createTaxRateAction, loadDefaultTaxesAction, toggleResolutionAction, updateTaxRateAction, type TaxActionResult } from "@/app/[tenant]/(app)/taxes/actions";
 import { DOCUMENT_LABELS, type DocumentKind } from "@/lib/business/sales/commercial-document";
 import { TAX_KINDS, TAX_KIND_LABELS, NUMBERED_KINDS, todayCO, type TaxRateRow } from "@/lib/domains/finance/tax/tax";
 import type { ResolutionRow } from "@/lib/domains/finance/tax/tax-db";
+import { DateInput } from "@/components/molecules/date-input";
 
 type Tab = "taxes" | "numbering";
 const STATE_LABEL = { ok: "Vigente", inactive: "Desactivada", not_started: "Aún no rige", expired: "Vencida", exhausted: "Agotada" } as const;
@@ -64,7 +66,7 @@ function RatesPanel({ slug, rates }: { slug: string; rates: TaxRateRow[] }) {
   return (
     <div className="grid gap-3">
       <div className="flex flex-wrap items-center gap-2">
-        <p className="mr-auto text-[13px] text-muted-foreground">El IVA de cada venta sale de la tarifa que eliges en la línea; las retenciones se calculan con la tarifa vigente el día del documento.</p>
+        <p className="mr-auto text-ui text-muted-foreground">El IVA de cada venta sale de la tarifa que eliges en la línea; las retenciones se calculan con la tarifa vigente el día del documento.</p>
         <button type="button" onClick={() => setCreating(true)} className={buttonVariants()}>
           <Plus aria-hidden="true" className="size-4" /> Nueva tarifa
         </button>
@@ -72,53 +74,57 @@ function RatesPanel({ slug, rates }: { slug: string; rates: TaxRateRow[] }) {
       {rates.length === 0 ? (
         <EmptyState title="Aún no tienes tarifas" description="Carga las habituales en Colombia (IVA 19 % y 5 %, impoconsumo, retefuente, reteIVA) y ajústalas con tu contador." action={<button type="button" disabled={pending} onClick={() => run(() => loadDefaultTaxesAction(slug))} className={buttonVariants()}>Cargar tarifas habituales</button>} />
       ) : (
-        <div role="region" aria-label="Tarifas" tabIndex={0} className="overflow-x-auto rounded-lg border border-border bg-surface focus-visible:outline-2 focus-visible:outline-accent">
-          <table className="w-full min-w-[720px] text-[13px]">
-            <caption className="sr-only">Impuestos y retenciones con su vigencia</caption>
-            <thead className="bg-surface-muted text-left text-xs text-muted-foreground">
-              <tr>
-                <th scope="col" className="px-3 py-2 font-medium">Concepto</th>
-                <th scope="col" className="px-3 py-2 font-medium">Tipo</th>
-                <th scope="col" className="px-3 py-2 text-right font-medium">Tarifa</th>
-                <th scope="col" className="px-3 py-2 font-medium">Vigencia</th>
-                <th scope="col" className="px-3 py-2 font-medium">Estado</th>
-                <th scope="col" className="px-3 py-2"><span className="sr-only">Acciones</span></th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {rates.map((r) => {
+        <AdaptiveTable
+          caption="Impuestos y retenciones con su vigencia"
+          rows={rates}
+          getRowId={(r) => r.id}
+          columns={[
+            { key: "name", header: "Concepto", role: "primary", cell: (r) => r.name },
+            { key: "code", header: "Código", role: "secondary", hideInList: false, cell: (r) => <span className="font-mono text-xs">{r.code}</span> },
+            { key: "kind", header: "Tipo", role: "detail", cell: (r) => TAX_KIND_LABELS[r.kind] },
+            {
+              key: "rate",
+              header: "Tarifa",
+              role: "figure",
+              cell: (r) => (
+                <>
+                  <span className="font-mono">{fmtPct(r.ratePct)}</span>
+                  {r.minBase > 0 ? <small className="block text-xs font-normal text-muted-foreground">desde {r.minBase.toLocaleString("es-CO")}</small> : null}
+                </>
+              ),
+            },
+            { key: "validity", header: "Vigencia", role: "detail", cell: (r) => <>{r.validFrom} → {r.validTo ?? "sin fin"}</> },
+            {
+              key: "state",
+              header: "Estado",
+              role: "status",
+              cell: (r) => {
+                const inForce = r.active && r.validFrom <= today && (r.validTo === null || today <= r.validTo);
+                return <Badge variant={inForce ? "success" : "secondary"}>{inForce ? "Vigente hoy" : r.active ? "Fuera de vigencia" : "Desactivada"}</Badge>;
+              },
+            },
+            {
+              key: "actions",
+              header: "Acciones",
+              role: "action",
+              cell: (r) => {
                 const inForce = r.active && r.validFrom <= today && (r.validTo === null || today <= r.validTo);
                 return (
-                  <tr key={r.id}>
-                    <th scope="row" className="px-3 py-2 text-left font-medium">
-                      {r.name}
-                      <small className="block font-mono text-xs font-normal text-muted-foreground">{r.code}</small>
-                    </th>
-                    <td className="px-3 py-2">{TAX_KIND_LABELS[r.kind]}</td>
-                    <td className="px-3 py-2 text-right font-mono tabular-nums">
-                      {fmtPct(r.ratePct)}
-                      {r.minBase > 0 ? <small className="block text-xs text-muted-foreground">desde {r.minBase.toLocaleString("es-CO")}</small> : null}
-                    </td>
-                    <td className="px-3 py-2">{r.validFrom} → {r.validTo ?? "sin fin"}</td>
-                    <td className="px-3 py-2"><Badge variant={inForce ? "success" : "secondary"}>{inForce ? "Vigente hoy" : r.active ? "Fuera de vigencia" : "Desactivada"}</Badge></td>
-                    <td className="px-3 py-2 text-right">
-                      <div className="flex justify-end gap-2 whitespace-nowrap">
-                        {inForce && r.validTo === null ? (
-                          <button type="button" disabled={pending} aria-label={`Terminar vigencia de ${r.name}`} onClick={() => run(() => updateTaxRateAction(slug, r.id, { validTo: today }))} className={buttonVariants({ variant: "outline", size: "sm" })}>
-                            Terminar vigencia
-                          </button>
-                        ) : null}
-                        <button type="button" disabled={pending} aria-label={`${r.active ? "Desactivar" : "Activar"} ${r.name}`} onClick={() => run(() => updateTaxRateAction(slug, r.id, { active: !r.active }))} className={buttonVariants({ variant: "ghost", size: "sm" })}>
-                          {r.active ? "Desactivar" : "Activar"}
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                  <div className="flex justify-end gap-2 whitespace-nowrap">
+                    {inForce && r.validTo === null ? (
+                      <button type="button" disabled={pending} aria-label={`Terminar vigencia de ${r.name}`} onClick={() => run(() => updateTaxRateAction(slug, r.id, { validTo: today }))} className={buttonVariants({ variant: "outline", size: "sm" })}>
+                        Terminar vigencia
+                      </button>
+                    ) : null}
+                    <button type="button" disabled={pending} aria-label={`${r.active ? "Desactivar" : "Activar"} ${r.name}`} onClick={() => run(() => updateTaxRateAction(slug, r.id, { active: !r.active }))} className={buttonVariants({ variant: "ghost", size: "sm" })}>
+                      {r.active ? "Desactivar" : "Activar"}
+                    </button>
+                  </div>
                 );
-              })}
-            </tbody>
-          </table>
-        </div>
+              },
+            },
+          ]}
+        />
       )}
       <FormDialog
         open={creating}
@@ -153,8 +159,8 @@ function RatesPanel({ slug, rates }: { slug: string; rates: TaxRateRow[] }) {
               <Field label="Base mínima" optional hint="Retenciones: desde qué valor se practican.">{(c) => <input {...c} name="minBase" inputMode="decimal" autoComplete="off" className={inputClasses} placeholder="0" />}</Field>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <Field label="Rige desde" required>{(c) => <input {...c} name="validFrom" type="date" defaultValue={todayCO()} className={inputClasses} />}</Field>
-              <Field label="Hasta" optional>{(c) => <input {...c} name="validTo" type="date" className={inputClasses} />}</Field>
+              <Field label="Rige desde" required>{(c) => <DateInput {...c} name="validFrom" defaultValue={todayCO()} className={inputClasses} />}</Field>
+              <Field label="Hasta" optional>{(c) => <DateInput {...c} name="validTo" className={inputClasses} />}</Field>
             </div>
           </div>
         )}
@@ -170,7 +176,7 @@ function ResolutionsPanel({ slug, resolutions }: { slug: string; resolutions: Re
   return (
     <div className="grid gap-3">
       <div className="flex flex-wrap items-center gap-2">
-        <p className="mr-auto text-[13px] text-muted-foreground">Con una resolución activa, los documentos de ese tipo salen numerados dentro de su rango; sin resolución llevan el consecutivo interno.</p>
+        <p className="mr-auto text-ui text-muted-foreground">Con una resolución activa, los documentos de ese tipo salen numerados dentro de su rango; sin resolución llevan el consecutivo interno.</p>
         <button type="button" onClick={() => setCreating(true)} className={buttonVariants()}>
           <Plus aria-hidden="true" className="size-4" /> Nueva resolución
         </button>
@@ -185,20 +191,20 @@ function ResolutionsPanel({ slug, resolutions }: { slug: string; resolutions: Re
             return (
               <li key={r.id} className="grid gap-2 rounded-lg border border-border bg-surface p-4">
                 <div className="flex flex-wrap items-center gap-2">
-                  <b className="text-[14px]">{DOCUMENT_LABELS[r.documentKind as DocumentKind] ?? r.documentKind}</b>
+                  <b className="text-sm">{DOCUMENT_LABELS[r.documentKind as DocumentKind] ?? r.documentKind}</b>
                   {r.prefix ? <Badge variant="outline">Prefijo {r.prefix}</Badge> : null}
                   <Badge variant={STATE_TONE[r.status.state]}>{STATE_LABEL[r.status.state]}</Badge>
                   <button type="button" disabled={pending} aria-label={`${r.active ? "Desactivar" : "Activar"} la resolución ${r.resolutionNumber}`} onClick={() => run(() => toggleResolutionAction(slug, r.id, !r.active))} className={buttonVariants({ variant: "ghost", size: "sm", className: "ml-auto" })}>
                     {r.active ? "Desactivar" : "Activar"}
                   </button>
                 </div>
-                <p className="text-[13px] text-muted-foreground">
+                <p className="text-ui text-muted-foreground">
                   Resolución <span className="font-mono">{r.resolutionNumber}</span> · rango {r.rangeFrom}–{r.rangeTo} · vigente {r.validFrom} → {r.validTo}
                 </p>
                 <div role="progressbar" aria-label={`Rango usado de la resolución ${r.resolutionNumber}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct} className="h-1.5 overflow-hidden rounded-full bg-surface-muted">
                   <div className="h-full bg-accent" style={{ width: `${pct}%` }} />
                 </div>
-                <p className="text-[13px]">
+                <p className="text-ui">
                   Próximo número: <b className="font-mono">{r.status.state === "exhausted" ? "—" : `${r.prefix}${r.nextNumber}`}</b> · quedan <b>{r.status.remaining}</b>
                 </p>
                 {"message" in r.status && r.active ? <Alert tone="danger">{r.status.message}</Alert> : null}
@@ -245,8 +251,8 @@ function ResolutionsPanel({ slug, resolutions }: { slug: string; resolutions: Re
               <Field label="Número final" required>{(c) => <input {...c} name="rangeTo" inputMode="numeric" autoComplete="off" className={inputClasses} placeholder="5000" />}</Field>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <Field label="Vigente desde" required>{(c) => <input {...c} name="validFrom" type="date" defaultValue={`${year}-01-01`} className={inputClasses} />}</Field>
-              <Field label="Vigente hasta" required>{(c) => <input {...c} name="validTo" type="date" defaultValue={`${year + 1}-12-31`} className={inputClasses} />}</Field>
+              <Field label="Vigente desde" required>{(c) => <DateInput {...c} name="validFrom" defaultValue={`${year}-01-01`} className={inputClasses} />}</Field>
+              <Field label="Vigente hasta" required>{(c) => <DateInput {...c} name="validTo" defaultValue={`${year + 1}-12-31`} className={inputClasses} />}</Field>
             </div>
           </div>
         )}

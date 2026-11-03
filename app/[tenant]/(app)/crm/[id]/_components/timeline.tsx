@@ -61,7 +61,7 @@ export default function TimelinePanel({
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                 <p className="font-medium text-foreground">{event.title}</p>
                 {event.status ? (
-                  <span className="rounded-sm bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                  <span className="rounded-sm bg-muted px-2 py-0.5 text-2xs font-medium text-muted-foreground">
                     {event.status}
                   </span>
                 ) : null}

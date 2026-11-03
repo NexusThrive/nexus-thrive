@@ -348,7 +348,7 @@ export default function BudgetWorkspace({
         </div>
       </div>
       {exportError ? (
-        <p role="alert" className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-[13px] text-danger">
+        <p role="alert" className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-ui text-danger">
           {exportError}
         </p>
       ) : null}

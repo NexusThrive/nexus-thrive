@@ -62,22 +62,22 @@ export default function FunctionsView({ slug, groups, canManage, profile }: { sl
       <li className="flex items-start gap-3 px-4 py-3">
         <Icon aria-hidden="true" className={cn("mt-0.5 size-[18px] shrink-0", enabled ? "text-accent-text" : "text-muted-foreground")} />
         <div className="min-w-0 flex-1">
-          <p className="flex flex-wrap items-center gap-1.5 text-[14px] font-medium">
+          <p className="flex flex-wrap items-center gap-1.5 text-sm font-medium">
             {item.label}
             {item.planned ? <Badge variant="outline">Próximamente</Badge> : needsSetup ? <Badge variant="warning">Falta configurar</Badge> : enabled ? <Badge variant="success">Activa</Badge> : null}
             {item.specialty ? <Badge variant="outline">Especialidad</Badge> : null}
             {item.beta && !item.planned ? <Badge variant="gold">Beta</Badge> : null}
             {item.reason && !enabled && !item.planned ? <Badge variant="outline">Sugerida</Badge> : null}
           </p>
-          <p className="mt-0.5 text-[13px] text-muted-foreground">{item.pitch}</p>
+          <p className="mt-0.5 text-ui text-muted-foreground">{item.pitch}</p>
           {needsSetup ? (
-            <p className="mt-1 text-[12.5px]">
+            <p className="mt-1 text-xs">
               {item.setup!.hint}{" "}
               <Link href={`/${slug}${item.setup!.href}`} className="font-medium underline underline-offset-2">Configurar</Link>
             </p>
           ) : null}
-          {item.reason && !enabled && !item.planned ? <p className="mt-1 text-[12.5px] text-foreground">{item.reason}</p> : null}
-          {missing && !item.planned ? <p className="mt-1 text-[12.5px] text-muted-foreground">Funciona con «{missing}»{enabled ? ": enciéndela para usarla completa." : ": se enciende primero."}</p> : null}
+          {item.reason && !enabled && !item.planned ? <p className="mt-1 text-xs text-foreground">{item.reason}</p> : null}
+          {missing && !item.planned ? <p className="mt-1 text-xs text-muted-foreground">Funciona con «{missing}»{enabled ? ": enciéndela para usarla completa." : ": se enciende primero."}</p> : null}
         </div>
         {item.planned ? null : <Switch checked={enabled} disabled={!canManage || pending} onCheckedChange={(v) => toggle(item, v)} aria-label={`${enabled ? "Apagar" : "Encender"} ${item.label}`} />}
       </li>
@@ -109,7 +109,7 @@ export default function FunctionsView({ slug, groups, canManage, profile }: { sl
           const rows = visible.filter((i) => i.category === c);
           return rows.length ? (
             <section key={c} aria-labelledby={`fn-${c.replace(/\s+/g, "-")}`} className="grid gap-2">
-              <h2 id={`fn-${c.replace(/\s+/g, "-")}`} className="font-display text-[15px] font-semibold">{c} <span className="text-[13px] font-normal text-muted-foreground">· {rows.length}</span></h2>
+              <h2 id={`fn-${c.replace(/\s+/g, "-")}`} className="font-display text-[15px] font-semibold">{c} <span className="text-ui font-normal text-muted-foreground">· {rows.length}</span></h2>
               <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">
                 {rows.map((item) => <Row key={item.id} item={item} />)}
               </ul>

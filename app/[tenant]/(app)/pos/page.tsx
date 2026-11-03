@@ -1,24 +1,23 @@
 import { notFound } from "next/navigation";
-import { Alert } from "@/components/molecules/alert";
+import { PermissionNotice } from "@/components/molecules/permission-notice";
 import { PageHeader } from "@/components/molecules/page-header";
 import { can } from "@/lib/core/auth/permissions";
 import { listProducts } from "@/lib/business/catalog/products-db";
 import { listTerminals, myTurn } from "@/lib/business/pos/pos-db";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
 import PosView from "./_components/pos-view";
-import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 
 /** Punto de venta: turno por cajero en una terminal, venta de varias líneas, propina y pago mixto. */
 export default async function PosPage({ params }: { params: Promise<{ tenant: string }> }) {
   const { tenant } = await params;
   const ctx = await requireTenantContext(tenant, "/pos");
   if (!ctx) notFound();
-  const header = <PageHeader eyebrow={routeCategory("/pos")} title="Punto de venta" description="Abre tu turno, vende y cierra con arqueo." />;
+  const header = <PageHeader title="Punto de venta" description="Abre tu turno, vende y cierra con arqueo." />;
   if (!can(ctx.role, "money.handle")) {
     return (
       <div className="grid gap-5">
         {header}
-        <Alert tone="info">Tu rol no maneja el punto de venta.</Alert>
+        <PermissionNotice permission="money.handle" action="usar el punto de venta" />
       </div>
     );
   }

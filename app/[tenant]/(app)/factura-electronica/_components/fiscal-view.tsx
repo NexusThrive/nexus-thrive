@@ -11,6 +11,7 @@ import { Field } from "@/components/molecules/field";
 import { FormDialog } from "@/components/organisms/form-sheet";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { useToast } from "@/components/molecules/toast";
+import { AdaptiveTable } from "@/components/organisms/adaptive-table";
 import { connectHttpAction, connectSandboxAction, retryAction, setEnabledAction, submitAction, type FiscalResult } from "@/app/[tenant]/(app)/factura-electronica/actions";
 import { FISCAL_LABELS } from "@/lib/integrations/einvoice/port";
 import type { FiscalRow } from "@/lib/integrations/einvoice/einvoice-db";
@@ -36,12 +37,12 @@ export default function FiscalView({ slug, settings, docs }: { slug: string; set
       <section aria-labelledby="fiscal-settings" className="grid gap-3 rounded-lg border border-border bg-surface p-4">
         <div className="flex flex-wrap items-center gap-3">
           <h2 id="fiscal-settings" className="font-display text-[15px] font-semibold">Facturación electrónica</h2>
-          <label className="ml-auto flex items-center gap-2 text-[13px]">
+          <label className="ml-auto flex items-center gap-2 text-ui">
             <Switch checked={settings.enabled} disabled={pending} onCheckedChange={(v) => run(() => setEnabledAction(slug, v))} aria-label="Generar documento fiscal de cada venta" />
             Generar el documento fiscal de cada venta
           </label>
         </div>
-        <p className="text-[13px] text-muted-foreground">NEXUS arma el documento y se lo entrega a un proveedor tecnológico autorizado; no firma ni emite por su cuenta. Vender nunca se bloquea: si el proveedor no responde, el documento espera en cola.</p>
+        <p className="text-ui text-muted-foreground">NEXUS arma el documento y se lo entrega a un proveedor tecnológico autorizado; no firma ni emite por su cuenta. Vender nunca se bloquea: si el proveedor no responde, el documento espera en cola.</p>
         {settings.enabled && !settings.connected ? (
           <Alert tone="warning">
             Aún no hay proveedor conectado: los documentos esperan en cola.
@@ -49,7 +50,7 @@ export default function FiscalView({ slug, settings, docs }: { slug: string; set
             <button type="button" onClick={() => setConnecting(true)} className={buttonVariants({ size: "sm", className: "ml-2" })}>Conectar mi proveedor</button>
           </Alert>
         ) : null}
-        {settings.connected ? <p className="text-[13px]">Proveedor: <b>{settings.provider === "sandbox" ? "Proveedor de prueba (no es ante la DIAN)" : settings.provider}</b> · {settings.pending} en cola</p> : null}
+        {settings.connected ? <p className="text-ui">Proveedor: <b>{settings.provider === "sandbox" ? "Proveedor de prueba (no es ante la DIAN)" : settings.provider}</b> · {settings.pending} en cola</p> : null}
         {settings.connected ? <button type="button" disabled={pending || settings.pending === 0} onClick={() => run(() => submitAction(slug))} className={buttonVariants({ className: "justify-self-start" })}>{pending ? "Enviando…" : "Enviar los pendientes"}</button> : null}
       </section>
 
@@ -88,29 +89,40 @@ export default function FiscalView({ slug, settings, docs }: { slug: string; set
       {list.length === 0 ? (
         <EmptyState title="Sin documentos fiscales" description={settings.enabled ? "Cada venta, nota crédito o débito que hagas aparecerá aquí." : "Activa la factura electrónica para que cada venta deje su documento fiscal."} />
       ) : (
-        <div role="region" aria-label="Documentos fiscales" tabIndex={0} className="overflow-x-auto rounded-lg border border-border bg-surface focus-visible:outline-2 focus-visible:outline-accent">
-          <table className="w-full min-w-[720px] text-[13px]">
-            <caption className="sr-only">Documentos fiscales con su estado</caption>
-            <thead className="bg-surface-muted text-left text-xs text-muted-foreground">
-              <tr><th scope="col" className="px-3 py-2 font-medium">Documento</th><th scope="col" className="px-3 py-2 font-medium">Adquirente</th><th scope="col" className="px-3 py-2 text-right font-medium">Total</th><th scope="col" className="px-3 py-2 font-medium">Estado</th><th scope="col" className="px-3 py-2"><span className="sr-only">Acciones</span></th></tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {list.map((d) => (
-                <tr key={d.id}>
-                  <th scope="row" className="px-3 py-2 text-left font-normal"><span className="font-mono font-semibold">{d.code}</span><small className="block text-xs text-muted-foreground">{FISCAL_LABELS[d.kind]}</small></th>
-                  <td className="px-3 py-2">{d.acquirer}</td>
-                  <td className="px-3 py-2 text-right font-mono tabular-nums">{formatCurrency(d.total)}</td>
-                  <td className="px-3 py-2">
-                    <Badge variant={STATUS[d.status as keyof typeof STATUS]?.tone ?? "secondary"}>{STATUS[d.status as keyof typeof STATUS]?.label ?? d.status}</Badge>
-                    {d.rejectReason ? <small className="mt-1 block max-w-xs text-xs text-danger">{d.rejectReason}</small> : null}
-                    {d.cufe ? <small className="mt-1 block max-w-[220px] truncate font-mono text-[11px] text-muted-foreground" title={d.cufe}>CUFE {d.cufe}</small> : null}
-                  </td>
-                  <td className="px-3 py-2 text-right">{d.status === "REJECTED" ? <button type="button" disabled={pending} aria-label={`Reintentar ${d.code}`} onClick={() => run(() => retryAction(slug, d.id))} className={buttonVariants({ variant: "outline", size: "sm" })}>Reintentar</button> : null}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <AdaptiveTable
+          caption="Documentos fiscales con su estado"
+          rows={list}
+          getRowId={(d) => d.id}
+          columns={[
+            { key: "code", header: "Documento", role: "primary", cell: (d) => <span className="font-mono font-semibold">{d.code}</span> },
+            { key: "kind", header: "Tipo", role: "secondary", cell: (d) => FISCAL_LABELS[d.kind] },
+            { key: "acquirer", header: "Adquirente", role: "detail", cell: (d) => d.acquirer },
+            { key: "total", header: "Total", role: "figure", cell: (d) => <span className="font-mono">{formatCurrency(d.total)}</span> },
+            {
+              key: "status",
+              header: "Estado",
+              role: "status",
+              cell: (d) => (
+                <>
+                  <Badge variant={STATUS[d.status as keyof typeof STATUS]?.tone ?? "secondary"}>{STATUS[d.status as keyof typeof STATUS]?.label ?? d.status}</Badge>
+                  {d.rejectReason ? <small className="mt-1 block max-w-xs text-xs text-danger">{d.rejectReason}</small> : null}
+                  {d.cufe ? <small className="mt-1 block max-w-[220px] truncate font-mono text-2xs text-muted-foreground" title={d.cufe}>CUFE {d.cufe}</small> : null}
+                </>
+              ),
+            },
+            {
+              key: "actions",
+              header: "Acciones",
+              role: "action",
+              cell: (d) =>
+                d.status === "REJECTED" ? (
+                  <button type="button" disabled={pending} aria-label={`Reintentar ${d.code}`} onClick={() => run(() => retryAction(slug, d.id))} className={buttonVariants({ variant: "outline", size: "sm" })}>
+                    Reintentar
+                  </button>
+                ) : null,
+            },
+          ]}
+        />
       )}
     </div>
   );

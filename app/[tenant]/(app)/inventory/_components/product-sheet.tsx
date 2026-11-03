@@ -70,7 +70,7 @@ export default function ProductSheet({ slug, kinds, product, defaultKind, onClos
           </div>
         ) : null}
         <Field label="Nombre" required error={errors.name} className="sm:col-span-2">
-          {(c) => <input {...c} value={d.name} onChange={(e) => set("name", e.target.value)} className={inputClasses} placeholder={d.kind === "PLAN" ? "Plan mensual" : d.kind === "TICKET" ? "Entrada general" : d.kind === "TOUR" ? "Tour por la ciudad amurallada" : d.kind === "SERVICE" ? "Entrenamiento personalizado" : "Proteína 2 lb"} />}
+          {(c) => <input {...c} value={d.name} onChange={(e) => set("name", e.target.value)} className={inputClasses} placeholder="Nombre del producto" />}
         </Field>
         <Field label="Precio" required error={errors.price}>
           {(c) => <MoneyInput id={c.id} value={d.price} onValueChange={(v) => set("price", v)} />}
@@ -99,7 +99,7 @@ export default function ProductSheet({ slug, kinds, product, defaultKind, onClos
             <Field label="Referencia (SKU)">{(c) => <input {...c} value={d.sku} onChange={(e) => set("sku", e.target.value)} className={inputClasses} />}</Field>
             <label htmlFor="p-stock" className="flex items-center justify-between gap-3 rounded-md bg-surface-muted p-3 sm:col-span-2">
               <span>
-                <b className="block text-[13.5px] font-medium">Llevar inventario</b>
+                <b className="block text-ui font-medium">Llevar inventario</b>
                 <small className="text-xs text-muted-foreground">Descuenta con cada venta y avisa cuando quede poco.</small>
               </span>
               <Switch id="p-stock" checked={d.trackStock} onCheckedChange={(v) => set("trackStock", v)} />
@@ -124,7 +124,7 @@ export default function ProductSheet({ slug, kinds, product, defaultKind, onClos
         {product ? (
           <label htmlFor="p-active" className="flex items-center justify-between gap-3 rounded-md bg-surface-muted p-3 sm:col-span-2">
             <span>
-              <b className="block text-[13.5px] font-medium">Disponible</b>
+              <b className="block text-ui font-medium">Disponible</b>
               <small className="text-xs text-muted-foreground">Si lo apagas, no aparece para vender ni agendar.</small>
             </span>
             <Switch id="p-active" checked={d.active} onCheckedChange={(v) => set("active", v)} />

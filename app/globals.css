@@ -26,7 +26,10 @@
    se apoyan en las variables del kit, así que cambian solos entre claro y
    oscuro sin repetir tokens.
    ========================================================================== */
-:root {
+:root,
+.dark,
+[data-theme="dark"] {
+  /* También en el ámbito oscuro: un `.dark` anidado (barra lateral, barra superior, tarjeta destacada) recalcula estos alias. */
   --card: var(--surface);
   --card-foreground: var(--foreground);
   --popover: var(--surface);
@@ -39,6 +42,11 @@
   --destructive-foreground: var(--nx-white);
   --success-foreground: var(--nx-white);
   --input: var(--surface-muted);
+}
+
+/* Un ámbito oscuro anidado pinta su texto con los tokens oscuros. */
+.dark:not(html) {
+  color: var(--foreground);
 }
 
 /* ==========================================================================
@@ -543,5 +551,36 @@ body {
   }
   body {
     background: #fff !important;
+  }
+}
+
+/* Menú «Crear» de la barra superior: Radix fija la capa en el contenedor del menú (estilo en línea, `--z-popover`), así que al
+   cerrarse —mientras se abre el formulario lateral que eligió— su animación de regreso al botón quedaba por encima del panel
+   y de su sombra. Cerrándose, el contenedor baja por debajo de los diálogos y paneles (`--z-modal`). */
+[data-radix-popper-content-wrapper]:has([data-nx-create-menu][data-state="closed"]) {
+  z-index: var(--z-ghost) !important;
+}
+
+/* Menú que se está abriendo (`popover-morph`): un escudo invisible sobre todo el panel absorbe los clics hasta que termina
+   de aparecer, para no elegir opciones que aún se están dibujando. Se retira solo al acabar la animación. */
+/* En la capa `base` para que un panel que ya es `absolute` o `fixed` (la campana de notificaciones) conserve su posición:
+   sin capa, esta regla ganaba a las utilidades y lo metía en el flujo de la barra mientras se abría. */
+@layer base {
+  [data-settling] {
+    position: relative;
+  }
+}
+[data-settling]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* Recorrido guiado: la tarjeta acompaña al resaltado deslizándose de una pieza a la siguiente (Radix coloca el contenedor
+   con `transform`). Con movimiento reducido salta directo. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-radix-popper-content-wrapper]:has([data-nx-tour]) {
+    transition: transform 560ms var(--nx-ease-in-out);
   }
 }

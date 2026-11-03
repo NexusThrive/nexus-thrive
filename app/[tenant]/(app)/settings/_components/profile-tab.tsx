@@ -75,7 +75,7 @@ export default function ProfileTab({
 
       <SettingsSection id="profile-identity" title="Identidad" description="Cómo se llama tu negocio y cuál es la dirección de tu panel." canManage={canManage} onEdit={() => open("identity")}>
         <SettingsRow label="Nombre comercial" value={values.name} />
-        <SettingsRow label="Dirección del panel" value={<span className="font-mono text-[13px]">/{values.slug}</span>} />
+        <SettingsRow label="Dirección del panel" value={<span className="font-mono text-ui">/{values.slug}</span>} />
       </SettingsSection>
 
       <SettingsSection id="profile-contact" title="Contacto y ubicación" description="Dónde y cómo te encuentran tus clientes." canManage={canManage} onEdit={() => open("contact")}>
@@ -136,7 +136,7 @@ export default function ProfileTab({
       >
         {({ fieldErrors }) => (
           <div className="grid gap-3">
-            <Field label="Ciudad" optional error={fieldErrors.city}>{(c) => <input {...c} name="city" defaultValue={values.city} autoComplete="address-level2" className={inputClasses} placeholder="Bogotá" />}</Field>
+            <Field label="Ciudad" optional error={fieldErrors.city}>{(c) => <input {...c} name="city" defaultValue={values.city} autoComplete="address-level2" className={inputClasses} placeholder="Ciudad" />}</Field>
             <Field label="Dirección" optional error={fieldErrors.address}>{(c) => <input {...c} name="address" defaultValue={values.address} autoComplete="street-address" className={inputClasses} placeholder="Calle y número" />}</Field>
             <Field label="Teléfono / WhatsApp" optional error={fieldErrors.phone}>{(c) => <PhoneInput id={c.id} value={phoneDraft} onChange={setPhoneDraft} />}</Field>
           </div>
@@ -153,7 +153,7 @@ export default function ProfileTab({
         onSuccess={({ message }) => after(message)}
       >
         {({ fieldErrors }) => (
-          <Field label="NIT / RUT" optional error={fieldErrors.taxId}>{(c) => <input {...c} name="taxId" defaultValue={values.taxId} autoComplete="off" className={inputClasses} placeholder="900123456-7" />}</Field>
+          <Field label="NIT / RUT" optional error={fieldErrors.taxId}>{(c) => <input {...c} name="taxId" defaultValue={values.taxId} autoComplete="off" className={inputClasses} placeholder="Número de NIT" />}</Field>
         )}
       </FormDialog>
     </div>

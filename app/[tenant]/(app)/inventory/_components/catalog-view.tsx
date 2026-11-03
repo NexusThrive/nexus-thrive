@@ -28,7 +28,7 @@ export default function CatalogView({ slug, products, kinds, customers, canManag
   return (
     <div className="grid gap-4">
       {low.length ? (
-        <p className="flex items-start gap-2 rounded-md border border-warning/40 bg-warning/10 px-3.5 py-2.5 text-[13px]">
+        <p className="flex items-start gap-2 rounded-md border border-warning/40 bg-warning/10 px-3.5 py-2.5 text-ui">
           <AlertTriangle aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-warning-foreground" />
           <span>
             <b className="font-medium">Por reponer:</b> {low.map((p) => `${p.name} (${p.stock})`).join(" · ")}
@@ -57,8 +57,8 @@ export default function CatalogView({ slug, products, kinds, customers, canManag
               <li key={p.id}>
                 <button type="button" onClick={() => setOpen(p)} className={cn("grid w-full gap-2 rounded-lg border border-border bg-surface p-3.5 text-left transition-colors hover:border-border-strong", !p.active && "opacity-60")}>
                   <span className="flex items-start justify-between gap-3">
-                    <b className="min-w-0 flex-1 truncate text-[14px] font-medium">{p.name}</b>
-                    <b className="font-mono text-[14px] tabular-nums">{formatCurrency(p.price)}</b>
+                    <b className="min-w-0 flex-1 truncate text-sm font-medium">{p.name}</b>
+                    <b className="font-mono text-sm tabular-nums">{formatCurrency(p.price)}</b>
                   </span>
                   <span className="flex flex-wrap gap-1.5">
                     {p.category ? <Badge tone="neutral">{p.category}</Badge> : null}
@@ -75,7 +75,7 @@ export default function CatalogView({ slug, products, kinds, customers, canManag
         </ul>
       ) : (
         <div className="rounded-lg border border-border bg-surface">
-          <EmptyState title={text ? "Sin coincidencias" : `Aún no hay ${KIND_LABELS[kind].many.toLowerCase()}`} description={KIND_LABELS[kind].hint} />
+          <EmptyState title={text ? "Sin coincidencias" : `Aún no hay ${KIND_LABELS[kind].many.toLowerCase()}`} description={KIND_LABELS[kind].hint} action={!text && canManage ? <button type="button" onClick={() => setEditing("new")} className={buttonVariants()}><Plus aria-hidden="true" className="size-4" /> Agregar {KIND_LABELS[kind].one.toLowerCase()}</button> : undefined} />
         </div>
       )}
 

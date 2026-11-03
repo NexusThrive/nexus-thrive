@@ -141,7 +141,7 @@ export default function ContactsPanel({ tenantId, contacts, canEdit }: { tenantI
               {(c) => <input {...c} autoFocus value={editing.name} onChange={(e) => set("name", e.target.value)} className={inputClasses} />}
             </Field>
             <div>
-              <p className="mb-2 text-[13px] font-medium">Para qué sirve</p>
+              <p className="mb-2 text-ui font-medium">Para qué sirve</p>
               <ChipRow className="flex-wrap">
                 {CONTACT_PURPOSES.map((p) => (
                   <Chip key={p} selected={editing.purpose === p} onClick={() => set("purpose", p)}>
@@ -156,7 +156,7 @@ export default function ContactsPanel({ tenantId, contacts, canEdit }: { tenantI
             </div>
             <Field label="Correo" error={errors.email}>{(c) => <input {...c} type="email" value={editing.email} onChange={(e) => set("email", e.target.value)} className={inputClasses} />}</Field>
             <div>
-              <p className="mb-2 text-[13px] font-medium">Canal preferido</p>
+              <p className="mb-2 text-ui font-medium">Canal preferido</p>
               <ChipRow>
                 {CONTACT_CHANNELS.map((ch) => (
                   <Chip key={ch} selected={editing.preferredChannel === ch} onClick={() => set("preferredChannel", ch)}>

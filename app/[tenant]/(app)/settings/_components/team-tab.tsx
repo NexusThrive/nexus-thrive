@@ -46,9 +46,9 @@ export default function TeamTab({ slug, members, invites, seats, canManage, meRo
 
   const row = (m: TeamMember) => (
     <li key={m.id} className={cn("flex items-center gap-3 px-[18px] py-3", !m.active && "opacity-60")}>
-      <span className="grid size-9 shrink-0 place-items-center rounded-full bg-surface-muted font-display text-[13px] font-bold">{m.name.slice(0, 1).toUpperCase()}</span>
+      <span className="grid size-9 shrink-0 place-items-center rounded-full bg-surface-muted font-display text-ui font-bold">{m.name.slice(0, 1).toUpperCase()}</span>
       <span className="min-w-0 flex-1">
-        <b className="block truncate text-[13.5px] font-medium">
+        <b className="block truncate text-ui font-medium">
           {m.name}
           {m.isMe ? <span className="font-normal text-muted-foreground"> (tú)</span> : null}
         </b>
@@ -102,19 +102,19 @@ export default function TeamTab({ slug, members, invites, seats, canManage, meRo
           </button>
         ) : null}
       </div>
-      {full && canManage ? <p className="rounded-md bg-accent-subtle px-3.5 py-2.5 text-[13px]">Usaste todos los usuarios de tu plan. Mejora tu plan en la pestaña Plan para sumar más personas.</p> : null}
+      {full && canManage ? <p className="rounded-md bg-accent-subtle px-3.5 py-2.5 text-ui">Usaste todos los usuarios de tu plan. Mejora tu plan en la pestaña Plan para sumar más personas.</p> : null}
 
       <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">{active.map(row)}</ul>
 
       {invites.length ? (
         <section className="overflow-hidden rounded-lg border border-border bg-surface">
-          <h3 className="border-b border-border px-[18px] py-3 text-[13px] font-semibold">Invitaciones pendientes</h3>
+          <h3 className="border-b border-border px-[18px] py-3 text-ui font-semibold">Invitaciones pendientes</h3>
           <ul className="divide-y divide-border">
             {invites.map((i) => (
               <li key={i.id} className="flex items-center gap-3 px-[18px] py-2.5">
                 <Mail aria-hidden="true" className="size-4 text-muted-foreground" />
                 <span className="min-w-0 flex-1">
-                  <b className="block truncate text-[13.5px] font-medium">{i.name ?? i.email}</b>
+                  <b className="block truncate text-ui font-medium">{i.name ?? i.email}</b>
                   <small className="block truncate text-xs text-muted-foreground">
                     {i.email} · {roleLabel(i.role)} · vence {new Date(i.expiresAt).toLocaleDateString("es-CO")}
                   </small>
@@ -132,14 +132,14 @@ export default function TeamTab({ slug, members, invites, seats, canManage, meRo
 
       {removed.length ? (
         <div>
-          <button type="button" onClick={() => setShowRemoved(!showRemoved)} className="text-[13px] text-muted-foreground underline-offset-2 hover:underline">
+          <button type="button" onClick={() => setShowRemoved(!showRemoved)} className="text-ui text-muted-foreground underline-offset-2 hover:underline">
             {showRemoved ? "Ocultar" : "Ver"} personas retiradas ({removed.length})
           </button>
           {showRemoved ? <ul className="mt-2 divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">{removed.map(row)}</ul> : null}
         </div>
       ) : null}
 
-      <div className="grid gap-1.5 rounded-lg border border-border bg-surface p-[18px] text-[13px]">
+      <div className="grid gap-1.5 rounded-lg border border-border bg-surface p-[18px] text-ui">
         <h3 className="font-semibold">Qué puede hacer cada rol</h3>
         {BUSINESS_ROLES.map((r) => (
           <p key={r.value}>
@@ -166,7 +166,7 @@ export default function TeamTab({ slug, members, invites, seats, canManage, meRo
           }
         >
           <div className="grid gap-4">
-            <Field label="Correo" required>{(c) => <input {...c} type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className={inputClasses} placeholder="recepcion@tunegocio.com" />}</Field>
+            <Field label="Correo" required>{(c) => <input {...c} type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className={inputClasses} placeholder="correo@ejemplo.com" />}</Field>
             <Field label="Nombre">{(c) => <input {...c} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={inputClasses} />}</Field>
             <Field label="Rol" hint={BUSINESS_ROLES.find((r) => r.value === form.role)?.hint}>
               {(c) => (

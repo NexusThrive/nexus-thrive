@@ -32,7 +32,7 @@ export default function InvoiceActions({ slug, id, status, canManage }: { slug: 
       </button>
       {status === "ISSUED" ? (
         <>
-          <Select aria-label="Medio de pago" value={method} onChange={(e) => setMethod(e.target.value)} className="h-8 w-auto text-[13px]">
+          <Select aria-label="Medio de pago" value={method} onChange={(e) => setMethod(e.target.value)} className="h-8 w-auto text-ui">
             {PAYMENT_METHODS.map((m) => (
               <option key={m.value} value={m.value}>
                 {m.label}

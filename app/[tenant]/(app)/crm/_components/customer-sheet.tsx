@@ -16,6 +16,7 @@ import { formatCurrency } from "@/lib/foundation/format";
 import { useVerticalTerms } from "../../vertical-terms-context";
 import { customerFormDataAction, getCustomerForEditAction, saveCustomerAction, type CustomerEdit } from "@/app/[tenant]/(app)/crm/profile-actions";
 import { Select } from "@/components/atoms/select";
+import { DateInput } from "@/components/molecules/date-input";
 
 const EMPTY: CustomerEdit = { id: "", name: "", email: "", phone: "", documentId: "", birthDate: "", city: "", tags: "", profile: {}, photoId: null };
 
@@ -165,7 +166,7 @@ export default function CustomerSheet({ tenantSlug, customerId, onClose, onSaved
             ) : null}
             <div className="grid min-w-0 flex-1 gap-3">
               <Field label="Nombre completo" required error={errors.name}>
-                {(c) => <input {...c} autoFocus value={v.name} onChange={(e) => setV({ ...v, name: e.target.value })} className={inputClasses} placeholder="María Pérez" />}
+                {(c) => <input {...c} autoFocus value={v.name} onChange={(e) => setV({ ...v, name: e.target.value })} className={inputClasses} placeholder="Nombre completo" />}
               </Field>
               {errors.photo ? <p className="text-xs text-danger">{errors.photo}</p> : null}
             </div>
@@ -179,7 +180,7 @@ export default function CustomerSheet({ tenantSlug, customerId, onClose, onSaved
             </Field>
             <Field label={profile.documentLabel}>{(c) => <input {...c} value={v.documentId} onChange={(e) => setV({ ...v, documentId: e.target.value })} className={inputClasses} />}</Field>
             <Field label="Fecha de nacimiento" error={errors.birthDate}>
-              {(c) => <input {...c} type="date" value={v.birthDate} onChange={(e) => setV({ ...v, birthDate: e.target.value })} className={inputClasses} />}
+              {(c) => <DateInput {...c} value={v.birthDate} onChange={(e) => setV({ ...v, birthDate: e.target.value })} className={inputClasses} />}
             </Field>
             <Field label="Ciudad">{(c) => <input {...c} value={v.city} onChange={(e) => setV({ ...v, city: e.target.value })} className={inputClasses} />}</Field>
             <Field label="Etiquetas" hint="Separadas por coma: VIP, mañana, referido…">
@@ -188,7 +189,7 @@ export default function CustomerSheet({ tenantSlug, customerId, onClose, onSaved
           </div>
           {profile.fields.length ? (
             <section className="grid gap-3">
-              <h3 className="flex items-baseline justify-between gap-3 text-[13px] font-semibold">
+              <h3 className="flex items-baseline justify-between gap-3 text-ui font-semibold">
                 {profile.title}
                 {b ? <span className="font-mono text-xs font-normal text-muted-foreground">IMC {b.value.toLocaleString("es-CO")} · {b.label}</span> : null}
               </h3>
@@ -197,7 +198,7 @@ export default function CustomerSheet({ tenantSlug, customerId, onClose, onSaved
           ) : null}
           {!customerId && profile.planOnCreate ? (
             <section className="grid gap-3 rounded-md bg-surface-muted p-3.5">
-              <h3 className="text-[13px] font-semibold">Plan con el que entra</h3>
+              <h3 className="text-ui font-semibold">Plan con el que entra</h3>
               {meta?.plans.length ? (
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <Field label="Plan">
@@ -228,7 +229,7 @@ export default function CustomerSheet({ tenantSlug, customerId, onClose, onSaved
                   ) : null}
                 </div>
               ) : (
-                <p className="text-[13px] text-muted-foreground">Crea tus planes en Catálogo → Planes para inscribir desde aquí.</p>
+                <p className="text-ui text-muted-foreground">Crea tus planes en Catálogo → Planes para inscribir desde aquí.</p>
               )}
             </section>
           ) : null}

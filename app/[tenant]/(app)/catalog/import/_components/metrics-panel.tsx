@@ -62,7 +62,7 @@ export default function MetricsPanel({
             {confidence.value}
           </div>
         </div>
-        <div className="mt-3 grid grid-cols-2 gap-1.5 border-t border-border pt-3 text-[11px] text-muted-foreground">
+        <div className="mt-3 grid grid-cols-2 gap-1.5 border-t border-border pt-3 text-2xs text-muted-foreground">
           <span>Columnas: {confidence.breakdown.columns}</span>
           <span>Precios: {confidence.breakdown.priceValidity}</span>
           <span>Filas: {confidence.breakdown.rows}</span>
@@ -93,7 +93,7 @@ export default function MetricsPanel({
             tone="text-foreground/80"
           />
         </div>
-        <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
+        <p className="mt-3 text-2xs leading-relaxed text-muted-foreground">
           Las filas omitidas no se importan. Las filas con aviso se importan pero
           conviene revisarlas en la tabla.
         </p>

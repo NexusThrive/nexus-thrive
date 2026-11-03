@@ -23,7 +23,7 @@ export function ContractFields({ terms, idPrefix }: { terms?: ContractTerms; idP
       <div className="grid gap-3 sm:grid-cols-3">
         <label className={labelClass}>
           Precio mensual acordado (USD)
-          <input name="priceUsd" inputMode="decimal" defaultValue={price} placeholder="Ej. 39.90" className={inputClass} />
+          <input name="priceUsd" inputMode="decimal" defaultValue={price} placeholder="0.00" className={inputClass} />
         </label>
         <label className={labelClass}>
           Máximo de usuarios

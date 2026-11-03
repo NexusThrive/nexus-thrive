@@ -89,7 +89,7 @@ export default function RoleBuilder({
         {!locked ? (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label="Nombre del rol" required error={errors.name}>
-              {(c) => <input {...c} value={name} onChange={(e) => setName(e.target.value)} placeholder="Ej. Soporte nivel 2" className={inputClasses} />}
+              {(c) => <input {...c} value={name} onChange={(e) => setName(e.target.value)} placeholder="Nombre del rol" className={inputClasses} />}
             </Field>
             <Field label="Descripción" error={errors.description}>
               {(c) => <textarea {...c} rows={1} value={description} onChange={(e) => setDescription(e.target.value)} className={cn(textareaClasses, "min-h-[var(--control-h)]")} />}
@@ -99,13 +99,13 @@ export default function RoleBuilder({
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {PERMISSION_GROUPS.map((g) => (
             <fieldset key={g.key} className="min-w-0 rounded-md border border-border p-3.5">
-              <legend className="px-1 text-[12px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">{g.label}</legend>
+              <legend className="px-1 text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">{g.label}</legend>
               <div className="grid gap-2">
                 {g.permissions.map((p) => {
                   const allowed = editorPermissions.includes(p.key);
                   const id = `perm-${p.key}`;
                   return (
-                    <label key={p.key} htmlFor={id} className={cn("flex items-center gap-2.5 text-[13.5px]", (!allowed || locked) && "opacity-50")}>
+                    <label key={p.key} htmlFor={id} className={cn("flex items-center gap-2.5 text-ui", (!allowed || locked) && "opacity-50")}>
                       <input
                         id={id}
                         type="checkbox"
@@ -115,7 +115,7 @@ export default function RoleBuilder({
                         className="size-4 accent-[var(--foreground)]"
                       />
                       <span className="min-w-0 flex-1">{p.label}</span>
-                      <code className="hidden font-mono text-[10.5px] text-muted-foreground sm:inline">{p.key}</code>
+                      <code className="hidden font-mono text-2xs text-muted-foreground sm:inline">{p.key}</code>
                     </label>
                   );
                 })}

@@ -23,9 +23,9 @@ function PlanCard({ plan, canPrice, canStructure }: { plan: PlanConfig; canPrice
   return (
     <section className={cn("grid gap-4 rounded-lg border bg-surface p-[18px]", p.recommended ? "border-accent shadow-[0_0_0_3px_var(--color-accent-subtle)]" : "border-border")}>
       <header className="flex items-center gap-2">
-        <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-accent-text">{plan.key}</span>
+        <span className="font-mono text-2xs font-semibold uppercase tracking-[0.14em] text-accent-text">{plan.key}</span>
         {p.recommended ? (
-          <span className="inline-flex items-center gap-1 rounded-sm bg-primary px-2 py-0.5 text-[10.5px] font-semibold text-primary-foreground">
+          <span className="inline-flex items-center gap-1 rounded-sm bg-primary px-2 py-0.5 text-2xs font-semibold text-primary-foreground">
             <Sparkles aria-hidden="true" className="size-3" /> Recomendado
           </span>
         ) : null}
@@ -63,7 +63,7 @@ function PlanCard({ plan, canPrice, canStructure }: { plan: PlanConfig; canPrice
         ).map(([k, label, hint]) => (
           <label key={k} htmlFor={id(k)} className="flex items-center justify-between gap-3">
             <span>
-              <b className="block text-[13.5px] font-medium">{label}</b>
+              <b className="block text-ui font-medium">{label}</b>
               <small className="text-xs text-muted-foreground">{hint}</small>
             </span>
             <Switch id={id(k)} checked={p[k]} disabled={!canStructure} onCheckedChange={(v) => set(k, v)} />

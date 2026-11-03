@@ -59,7 +59,7 @@ export default function FinanceSummary({
         </div>
       </div>
 
-      <dl className="grid gap-3 border-t border-border pt-4 text-[13.5px]">
+      <dl className="grid gap-3 border-t border-border pt-4 text-ui">
         <div className="grid gap-0.5">
           <dt className="text-xs text-muted-foreground">Último movimiento</dt>
           <dd className="font-medium text-foreground">

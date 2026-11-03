@@ -34,7 +34,7 @@ export default function SuppliersView({ slug, suppliers }: { slug: string; suppl
         <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">
           {shown.map((s) => (
             <li key={s.id} className="grid gap-0.5 px-4 py-3">
-              <b className="truncate text-[13.5px] font-medium">{s.legalName}</b>
+              <b className="truncate text-ui font-medium">{s.legalName}</b>
               <small className="truncate text-xs text-muted-foreground">
                 {[s.documentType && s.documentNumber ? `${s.documentType} ${s.documentNumber}` : s.documentNumber, s.phone, s.email, s.city].filter(Boolean).join(" · ") || "Sin datos de contacto"}
                 {s.roles.includes("CUSTOMER") ? " · también es cliente" : ""}
@@ -44,7 +44,7 @@ export default function SuppliersView({ slug, suppliers }: { slug: string; suppl
         </ul>
       ) : (
         <div className="rounded-lg border border-border bg-surface">
-          <EmptyState title={suppliers.length ? "Sin resultados" : "Aún no hay proveedores"} description={suppliers.length ? "Prueba con otro nombre o documento." : "Registra a quienes te venden mercancía para poder hacerles órdenes de compra."} />
+          <EmptyState title={suppliers.length ? "Sin resultados" : "Aún no hay proveedores"} description={suppliers.length ? "Prueba con otro nombre o documento." : "Registra a quienes te venden mercancía para poder hacerles órdenes de compra."} action={suppliers.length ? undefined : <button type="button" onClick={() => setCreating(true)} className={buttonVariants()}><Plus aria-hidden="true" className="size-4" /> Nuevo proveedor</button>} />
         </div>
       )}
 
@@ -79,7 +79,7 @@ export default function SuppliersView({ slug, suppliers }: { slug: string; suppl
         {({ fieldErrors }) => (
           <div className="grid gap-3 sm:grid-cols-2">
             <Field label="Nombre o razón social" required error={fieldErrors.legalName} className="sm:col-span-2">
-              {(c) => <input {...c} name="legalName" autoComplete="off" className={inputClasses} placeholder="Distribuidora Andina SAS" />}
+              {(c) => <input {...c} name="legalName" autoComplete="off" className={inputClasses} placeholder="Nombre o razón social" />}
             </Field>
             <Field label="Tipo">
               {(c) => (

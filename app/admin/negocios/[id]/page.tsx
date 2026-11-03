@@ -84,7 +84,7 @@ export default async function AccountPage({ params, searchParams }: { params: Pr
 
   return (
     <div className="grid gap-5">
-      <Link href="/admin/negocios" className="inline-flex w-fit items-center gap-1.5 text-[13px] text-muted-foreground hover:text-foreground">
+      <Link href="/admin/negocios" className="inline-flex w-fit items-center gap-1.5 text-ui text-muted-foreground hover:text-foreground">
         <ArrowLeft aria-hidden="true" className="size-4" /> Negocios
       </Link>
 
@@ -94,7 +94,7 @@ export default async function AccountPage({ params, searchParams }: { params: Pr
         </span>
         <div className="min-w-0 flex-1 basis-[calc(100%-4rem)] sm:basis-auto">
           <h1 className="font-display text-[clamp(22px,3.4vw,30px)] font-bold leading-tight">{detail.name}</h1>
-          <p className="mt-0.5 text-[13.5px] text-muted-foreground">
+          <p className="mt-0.5 text-ui text-muted-foreground">
             {VERTICAL_LABELS[detail.vertical]} · <span className="whitespace-nowrap font-mono">/{detail.slug}</span>
             {detail.city ? ` · ${detail.city}` : ""}
           </p>
@@ -131,7 +131,7 @@ export default async function AccountPage({ params, searchParams }: { params: Pr
       {alerts.length ? (
         <ul className="grid gap-2">
           {alerts.map((a) => (
-            <li key={a.text} className={`flex items-center gap-2.5 rounded-md border-l-[3px] px-3.5 py-2.5 text-[13px] ${a.tone === "danger" ? "border-l-danger bg-danger-subtle text-danger" : "border-l-accent bg-warning text-warning-foreground"}`}>
+            <li key={a.text} className={`flex items-center gap-2.5 rounded-md border-l-[3px] px-3.5 py-2.5 text-ui ${a.tone === "danger" ? "border-l-danger bg-danger-subtle text-danger" : "border-l-accent bg-warning text-warning-foreground"}`}>
               <a.icon aria-hidden="true" className="size-4 shrink-0" />
               {a.text}
             </li>
@@ -170,11 +170,11 @@ export default async function AccountPage({ params, searchParams }: { params: Pr
               <p className="font-display text-[22px] font-bold">
                 Thrive <span className="text-accent-text">{plan?.name ?? extras.plan}</span>
               </p>
-              <p className="text-[13px] text-muted-foreground">{plan?.tagline}</p>
+              <p className="text-ui text-muted-foreground">{plan?.tagline}</p>
               <p className="mt-3 font-display text-[28px] font-bold tabular-nums">
-                {formatUsdCents(subscription?.priceUsdCents ?? extras.planMonthlyUsdCents)} <span className="text-[13px] font-normal text-muted-foreground">USD/mes · {(subscription?.billingCycle ?? extras.billingCycle) === "ANNUAL" ? "anual" : "mensual"}</span>
+                {formatUsdCents(subscription?.priceUsdCents ?? extras.planMonthlyUsdCents)} <span className="text-ui font-normal text-muted-foreground">USD/mes · {(subscription?.billingCycle ?? extras.billingCycle) === "ANNUAL" ? "anual" : "mensual"}</span>
               </p>
-              <p className="text-[13px] text-muted-foreground">Clientes: {tier?.label ?? "sin tramo (negocio anterior al catálogo)"}</p>
+              <p className="text-ui text-muted-foreground">Clientes: {tier?.label ?? "sin tramo (negocio anterior al catálogo)"}</p>
               <p className="mt-2 text-xs text-muted-foreground">{subscription ? "Precio de la suscripción vigente." : "Precio elegido al registrarse; los cambios del catálogo aplican a registros nuevos."}</p>
             </div>
           </Panel>
@@ -198,15 +198,15 @@ export default async function AccountPage({ params, searchParams }: { params: Pr
                 {charges.slice(0, 6).map((c) => (
                   <li key={c.id}>
                     <Link href={`/admin/facturacion?cobro=${c.id}`} className="flex flex-wrap items-center gap-3 px-[18px] py-2.5 hover:bg-surface-muted">
-                      <span className="min-w-0 flex-1 text-[13px]">
+                      <span className="min-w-0 flex-1 text-ui">
                         {c.periodStart} → {c.periodEnd}
                         <small className="block text-xs text-muted-foreground">{c.status === "PENDING" ? dunningLabel(c.dunning) : CHARGE_STATUSES.find((x) => x.value === c.status)?.label}</small>
                       </span>
-                      <span className="font-mono text-[13px] tabular-nums">{formatUsdCents(c.amountUsdCents)}</span>
+                      <span className="font-mono text-ui tabular-nums">{formatUsdCents(c.amountUsdCents)}</span>
                     </Link>
                   </li>
                 ))}
-                {charges.length === 0 ? <li className="px-[18px] py-4 text-[13px] text-muted-foreground">Sin cobros.</li> : null}
+                {charges.length === 0 ? <li className="px-[18px] py-4 text-ui text-muted-foreground">Sin cobros.</li> : null}
               </ul>
             </Panel>
           ) : null}
@@ -263,20 +263,20 @@ export default async function AccountPage({ params, searchParams }: { params: Pr
                   <li key={t.id}>
                     <Link href={`/admin/soporte/${t.id}`} className="flex items-center gap-3 px-[18px] py-2.5 hover:bg-surface-muted">
                       <span className="min-w-0 flex-1">
-                        <b className="block truncate text-[13.5px] font-medium">{t.subject}</b>
+                        <b className="block truncate text-ui font-medium">{t.subject}</b>
                         <small className="font-mono text-xs text-muted-foreground">{t.code}</small>
                       </span>
                       <Badge tone={statusMeta(t.status).tone}>{statusMeta(t.status).label}</Badge>
                     </Link>
                   </li>
                 ))}
-                {tickets.length === 0 ? <li className="px-[18px] py-4 text-[13px] text-muted-foreground">Sin tickets.</li> : null}
+                {tickets.length === 0 ? <li className="px-[18px] py-4 text-ui text-muted-foreground">Sin tickets.</li> : null}
               </ul>
             </Panel>
           ) : null}
           <Panel title="Actividad del equipo en esta cuenta" hint="Cambios de estado, módulos, contactos y accesos.">
             <div className="p-[18px]">
-              {can("audit.view") ? <AuditLog rows={audit} /> : <p className="text-[13px] text-muted-foreground">Tu rol no consulta la auditoría.</p>}
+              {can("audit.view") ? <AuditLog rows={audit} /> : <p className="text-ui text-muted-foreground">Tu rol no consulta la auditoría.</p>}
             </div>
           </Panel>
         </div>

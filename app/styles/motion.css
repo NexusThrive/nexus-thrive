@@ -273,10 +273,84 @@ html[data-motion="off"] *::after {
 .nx-morph-panel[data-morph] {
   animation: none !important;
 }
-/* Lista de un Select: el mismo viaje, más corto (300 ms + margen). */
-.nx-select-list[data-morph][data-state="open"] {
-  animation: none;
+
+/* Búsqueda del móvil (components/organisms/mobile-topbar-search.tsx): la barra se vuelve campo creciendo desde la lupa
+   (esquina derecha) y el panel de sugerencias baja de la barra con un fundido. Movimiento reducido: lo apaga la regla global. */
+@keyframes nx-search-row-in {
+  from {
+    clip-path: inset(0 0 0 calc(100% - 52px) round 10px);
+    opacity: 0.6;
+  }
+  to {
+    clip-path: inset(0 0 0 0 round 0);
+    opacity: 1;
+  }
 }
-.nx-select-list[data-morph][data-state="closed"] {
-  animation: nx-popover-hold 360ms linear forwards;
+@keyframes nx-search-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+.nx-search-row {
+  animation: nx-search-row-in var(--d3) var(--nx-ease-out) both;
+}
+.nx-search-row > :not(button:first-child) {
+  animation: nx-search-panel-in var(--d3) var(--nx-ease-out) 80ms both;
+}
+.nx-search-panel {
+  animation: nx-search-panel-in var(--d3) var(--nx-ease-out) 60ms both;
+}
+/* Salida de la búsqueda del móvil: el espejo de la entrada (la barra se recoge hacia la lupa y el panel sube). */
+@keyframes nx-search-row-out {
+  to {
+    clip-path: inset(0 0 0 calc(100% - 52px) round 10px);
+    opacity: 0.6;
+  }
+}
+@keyframes nx-search-panel-out {
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+.nx-search-row[data-closing] {
+  animation: nx-search-row-out var(--d3) var(--nx-ease-in) both;
+  pointer-events: none;
+}
+.nx-search-row[data-closing] > :not(button:first-child) {
+  animation: nx-search-panel-out calc(var(--d3) * 0.6) var(--nx-ease-in) both;
+}
+.nx-search-panel[data-closing] {
+  animation: nx-search-panel-out var(--d3) var(--nx-ease-in) both;
+  pointer-events: none;
+}
+
+/* Resultados de la búsqueda: solo fundidos (sin saltos). Entran con un fundido corto y, al quitarse, se desvanecen mientras
+   la fila se recoge; el aviso «Buscando…» / «Sin resultados» espera un momento para no parpadear entre una letra y otra. */
+@keyframes nx-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes nx-hit-out {
+  from {
+    max-height: 48px;
+  }
+  to {
+    opacity: 0;
+    max-height: 0;
+  }
+}
+.nx-hit-in {
+  animation: nx-fade-in 180ms ease-out both;
+}
+.nx-hit-out {
+  min-height: 0 !important;
+  overflow: hidden;
+  pointer-events: none;
+  animation: nx-hit-out 180ms ease-in both;
+}
+.nx-search-note {
+  animation: nx-fade-in 200ms ease-out 350ms both;
 }

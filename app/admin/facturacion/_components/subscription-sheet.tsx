@@ -13,6 +13,7 @@ import { formatUsdCents } from "@/lib/core/entitlements/pricing";
 import { createSubscriptionAction, updateSubscriptionAction } from "../actions";
 import { useBilling } from "./use-billing";
 import { Select } from "@/components/atoms/select";
+import { DateInput } from "@/components/molecules/date-input";
 
 export type NewSubscription = { tenantId: string; name: string; plan: string; billingCycle: Cycle; monthlyCents: number };
 
@@ -75,7 +76,7 @@ export default function SubscriptionSheet({ create, edit, onClose, today, canPri
         </Field>
         {create ? (
           <Field label="Inicio" hint={`Primer período hasta ${periodEnd(start, cycle)}.`}>
-            {(c) => <input {...c} type="date" value={start} onChange={(e) => setStart(e.target.value)} className={inputClasses} />}
+            {(c) => <DateInput {...c} value={start} onChange={(e) => setStart(e.target.value)} className={inputClasses} />}
           </Field>
         ) : (
           <Field label="Estado">
@@ -92,7 +93,7 @@ export default function SubscriptionSheet({ create, edit, onClose, today, canPri
         {create ? (
           <label htmlFor="sub-trial" className="flex items-center justify-between gap-3 rounded-md bg-surface-muted p-3 sm:col-span-2">
             <span>
-              <b className="block text-[13.5px] font-medium">Empieza en prueba</b>
+              <b className="block text-ui font-medium">Empieza en prueba</b>
               <small className="text-xs text-muted-foreground">No genera cobro ahora; el primero se genera al renovar.</small>
             </span>
             <Switch id="sub-trial" checked={trial} onCheckedChange={setTrial} />

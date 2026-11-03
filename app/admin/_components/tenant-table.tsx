@@ -298,7 +298,7 @@ function ModuleChips({ modules }: { modules: ModuleValue[] }) {
       {visible.map((module) => (
         <span
           key={module}
-          className="rounded-sm bg-surface-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground"
+          className="rounded-sm bg-surface-muted px-1.5 py-0.5 text-2xs font-medium text-muted-foreground"
         >
           {MODULE_LABELS[module]}
         </span>
@@ -308,7 +308,7 @@ function ModuleChips({ modules }: { modules: ModuleValue[] }) {
           <TooltipTrigger asChild>
             <button
               type="button"
-              className="rounded-sm bg-surface-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground transition hover:bg-border"
+              className="rounded-sm bg-surface-muted px-1.5 py-0.5 text-2xs font-medium text-muted-foreground transition hover:bg-border"
             >
               +{rest.length}
             </button>

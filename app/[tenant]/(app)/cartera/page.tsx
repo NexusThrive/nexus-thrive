@@ -1,23 +1,22 @@
 import { notFound } from "next/navigation";
-import { Alert } from "@/components/molecules/alert";
+import { PermissionNotice } from "@/components/molecules/permission-notice";
 import { PageHeader } from "@/components/molecules/page-header";
 import { can } from "@/lib/core/auth/permissions";
 import { payables, receivables } from "@/lib/domains/finance/receivables/receivables-db";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
 import CarteraView from "./_components/cartera-view";
-import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 
 /** Cartera: lo que te deben (cuentas de cobro) y lo que debes (facturas de proveedor), por antigüedad. */
 export default async function CarteraPage({ params }: { params: Promise<{ tenant: string }> }) {
   const { tenant } = await params;
   const ctx = await requireTenantContext(tenant, "/cartera");
   if (!ctx) notFound();
-  const header = <PageHeader eyebrow={routeCategory("/cartera")} title="Cartera" description="Lo que te deben y lo que debes, con su antigüedad." />;
+  const header = <PageHeader title="Cartera" description="Lo que te deben y lo que debes, con su antigüedad." />;
   if (!can(ctx.role, "money.handle")) {
     return (
       <div className="grid gap-5">
         {header}
-        <Alert tone="info">Tu rol no ve la cartera del negocio.</Alert>
+        <PermissionNotice permission="money.handle" action="ver la cartera del negocio" />
       </div>
     );
   }

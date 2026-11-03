@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowDownRight, ArrowUpRight } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, Plus } from "lucide-react";
+import { buttonVariants } from "@/components/atoms/button-variants";
+import { useQuickCreate } from "@/components/organisms/quick-create-host";
 import { EmptyState } from "@/components/molecules/empty-state";
 import PaginationLinks from "@/components/molecules/pagination-links";
 import { receiptCode } from "@/lib/business/sales/invoice";
@@ -20,6 +22,7 @@ export default function MoneyList({
   pageParam,
   totalLabel,
   empty,
+  emptyAction,
 }: {
   slug: string;
   items: MoneyItem[];
@@ -29,9 +32,12 @@ export default function MoneyList({
   pageParam: string;
   totalLabel: string;
   empty: { title: string; description: string };
+  /** Botón para crear el primero (solo cuando no hay búsqueda activa): abre el mini-modal de creación. */
+  emptyAction?: { label: string; quick: "payment" | "expense" };
 }) {
+  const quick = useQuickCreate();
   const [open, setOpen] = useState<MoneyItem | null>(null);
-  if (!items.length) return <EmptyState className="rounded-lg border border-border bg-surface" title={empty.title} description={empty.description} />;
+  if (!items.length) return <EmptyState className="rounded-lg border border-border bg-surface" title={empty.title} description={empty.description} action={emptyAction ? <button type="button" onClick={() => quick.open(emptyAction.quick)} className={buttonVariants()}><Plus aria-hidden="true" className="size-4" /> {emptyAction.label}</button> : undefined} />;
   return (
     <div className="grid gap-3">
       <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">
@@ -45,7 +51,7 @@ export default function MoneyList({
                   <Icon aria-hidden="true" className="size-4" />
                 </span>
                 <span className="grid min-w-0">
-                  <b className={cn("truncate text-[13.5px] font-medium", voided && "text-muted-foreground line-through")}>{it.title}</b>
+                  <b className={cn("truncate text-ui font-medium", voided && "text-muted-foreground line-through")}>{it.title}</b>
                   <small className="truncate text-xs text-muted-foreground">
                     {it.kind === "PAYMENT"
                       ? [it.receiptNumber ? receiptCode(it.receiptNumber) : null, it.concept, paymentMethodLabel(it.method)].filter(Boolean).join(" · ")
@@ -54,11 +60,11 @@ export default function MoneyList({
                   </small>
                 </span>
                 <span className="grid justify-items-end">
-                  <b className={cn("font-mono text-[13.5px] tabular-nums", voided && "text-muted-foreground line-through")}>
+                  <b className={cn("font-mono text-ui tabular-nums", voided && "text-muted-foreground line-through")}>
                     {it.kind === "PAYMENT" ? "+" : "−"}
                     {formatCurrency(it.amount)}
                   </b>
-                  <small className="flex items-center gap-1 text-[11px] text-muted-foreground">{formatDateTime(it.date)}</small>
+                  <small className="flex items-center gap-1 text-2xs text-muted-foreground">{formatDateTime(it.date)}</small>
                 </span>
               </button>
             </li>

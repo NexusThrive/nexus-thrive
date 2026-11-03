@@ -55,17 +55,17 @@ export default function SiteEditor({ slug, baseUrl, initial }: { slug: string; b
         <section aria-labelledby="site-state" className="grid gap-3 rounded-lg border border-border bg-surface p-4">
           <div className="flex items-center gap-3">
             <h2 id="site-state" className="font-display text-[15px] font-semibold">Publicación</h2>
-            <label className="ml-auto flex items-center gap-2 text-[13px]"><Switch checked={enabled} onCheckedChange={setEnabled} aria-label="Sitio publicado" />{enabled ? "Publicado" : "Sin publicar"}</label>
+            <label className="ml-auto flex items-center gap-2 text-ui"><Switch checked={enabled} onCheckedChange={setEnabled} aria-label="Sitio publicado" />{enabled ? "Publicado" : "Sin publicar"}</label>
           </div>
           <Field label="Dirección del sitio" required error={fieldError("siteSlug")} hint={`Tu sitio: ${publicUrl}`}>{(c) => <input {...c} value={siteSlug} onChange={(e) => setSiteSlug(e.target.value.toLowerCase())} autoComplete="off" className={inputClasses} />}</Field>
-          {enabled ? <a href={publicUrl} target="_blank" rel="noopener noreferrer" className="text-[13px] font-medium underline underline-offset-2">Ver mi sitio publicado</a> : <p className="text-[12.5px] text-muted-foreground">Mientras no esté publicado, nadie lo ve (ni los buscadores).</p>}
+          {enabled ? <a href={publicUrl} target="_blank" rel="noopener noreferrer" className="text-ui font-medium underline underline-offset-2">Ver mi sitio publicado</a> : <p className="text-xs text-muted-foreground">Mientras no esté publicado, nadie lo ve (ni los buscadores).</p>}
         </section>
 
         <fieldset className="grid gap-2 rounded-lg border border-border bg-surface p-4">
           <legend className="px-1 font-display text-[15px] font-semibold">Plantilla</legend>
           <div className="grid grid-cols-2 gap-2">
             {(Object.keys(TEMPLATES) as TemplateKey[]).map((k) => (
-              <label key={k} className={`flex cursor-pointer items-center gap-2 rounded-md border p-2.5 text-[13px] ${template === k ? "border-foreground" : "border-border"}`}>
+              <label key={k} className={`flex cursor-pointer items-center gap-2 rounded-md border p-2.5 text-ui ${template === k ? "border-foreground" : "border-border"}`}>
                 <input type="radio" name="template" value={k} checked={template === k} onChange={() => setTemplate(k)} className="sr-only" />
                 <span aria-hidden="true" className="size-5 rounded-sm border border-border" style={{ background: TEMPLATES[k].bg }} />
                 {TEMPLATES[k].label}
@@ -88,15 +88,15 @@ export default function SiteEditor({ slug, baseUrl, initial }: { slug: string; b
         <section aria-labelledby="site-catalog" className="grid gap-3 rounded-lg border border-border bg-surface p-4">
           <div className="flex items-center gap-3">
             <h2 id="site-catalog" className="font-display text-[15px] font-semibold">Catálogo y mapa</h2>
-            <label className="ml-auto flex items-center gap-2 text-[13px]"><Switch checked={showCatalog} onCheckedChange={setShowCatalog} aria-label="Mostrar el catálogo" />Catálogo</label>
-            <label className="flex items-center gap-2 text-[13px]"><Switch checked={showMap} onCheckedChange={setShowMap} aria-label="Mostrar el mapa" />Mapa</label>
+            <label className="ml-auto flex items-center gap-2 text-ui"><Switch checked={showCatalog} onCheckedChange={setShowCatalog} aria-label="Mostrar el catálogo" />Catálogo</label>
+            <label className="flex items-center gap-2 text-ui"><Switch checked={showMap} onCheckedChange={setShowMap} aria-label="Mostrar el mapa" />Mapa</label>
           </div>
           {showCatalog ? (
-            initial.catalog.length === 0 ? <p className="text-[13px] text-muted-foreground">Aún no tienes productos o servicios. Cárgalos en Catálogo y vuelve aquí a elegir cuáles salen en tu sitio.</p> : (
+            initial.catalog.length === 0 ? <p className="text-ui text-muted-foreground">Aún no tienes productos o servicios. Cárgalos en Catálogo y vuelve aquí a elegir cuáles salen en tu sitio.</p> : (
               <ul className="grid max-h-56 gap-1 overflow-y-auto" aria-label="Productos del sitio">
                 {initial.catalog.map((c) => (
                   <li key={c.id}>
-                    <label className="flex items-center gap-2 text-[13px]">
+                    <label className="flex items-center gap-2 text-ui">
                       <input type="checkbox" checked={published.has(c.id)} onChange={(e) => setPublished((s) => { const n = new Set(s); if (e.target.checked) n.add(c.id); else n.delete(c.id); return n; })} />
                       <span className="min-w-0 flex-1 truncate">{c.name}</span>
                       <span className="font-mono text-muted-foreground">{peso(c.price)}</span>
@@ -110,7 +110,7 @@ export default function SiteEditor({ slug, baseUrl, initial }: { slug: string; b
 
         <section aria-labelledby="site-seo" className="grid gap-2 rounded-lg border border-border bg-surface p-4">
           <h2 id="site-seo" className="font-display text-[15px] font-semibold">Para que te encuentren</h2>
-          <ul className="grid gap-1 text-[13px]">
+          <ul className="grid gap-1 text-ui">
             {checks.map((c) => (
               <li key={c.text} className="flex items-center gap-2">
                 {c.ok ? <Check aria-hidden="true" className="size-4 text-success" /> : <X aria-hidden="true" className="size-4 text-danger" />}

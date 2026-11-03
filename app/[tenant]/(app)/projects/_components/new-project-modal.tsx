@@ -125,7 +125,7 @@ export default function NewProjectModal({
                 id="project-name"
                 name="name"
                 defaultValue={state.values?.name ?? ""}
-                placeholder="Ej. Torre Norte — Etapa 2"
+                placeholder="Nombre del proyecto"
                 aria-invalid={Boolean(errors.name)}
                 className={FIELD_CLASS(Boolean(errors.name))}
               />
@@ -162,7 +162,7 @@ export default function NewProjectModal({
             {state.status === "error" && state.message ? (
               <p
                 role="alert"
-                className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-[13px] text-danger"
+                className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-ui text-danger"
               >
                 {state.message}
               </p>

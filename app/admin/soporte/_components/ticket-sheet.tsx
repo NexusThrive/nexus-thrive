@@ -68,7 +68,7 @@ export default function TicketSheet({ open, onOpenChange, tenants, staff, me, de
           )}
         </Field>
         <Field label="Asunto" required error={errors.subject} className="sm:col-span-2">
-          {(c) => <input {...c} value={v.subject} onChange={(e) => set("subject", e.target.value)} className={inputClasses} placeholder="No puede registrar cobros" />}
+          {(c) => <input {...c} value={v.subject} onChange={(e) => set("subject", e.target.value)} className={inputClasses} placeholder="Resumen del problema" />}
         </Field>
         <Field label="Qué pasa" required error={errors.description} className="sm:col-span-2">
           {(c) => <textarea {...c} rows={4} value={v.description} onChange={(e) => set("description", e.target.value)} className={textareaClasses} placeholder="Pasos, pantallas y desde cuándo ocurre." />}

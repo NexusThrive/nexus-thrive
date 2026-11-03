@@ -41,8 +41,8 @@ export default function UsersView({ users, total, q, canEdit, canCreate, vertica
             return (
               <li key={u.email} className="grid gap-2 px-4 py-3">
                 <div className="flex flex-wrap items-center gap-2">
-                  <b className="text-[14px] font-medium">{u.name ?? u.email}</b>
-                  {u.name ? <span className="text-[12.5px] text-muted-foreground">{u.email}</span> : null}
+                  <b className="text-sm font-medium">{u.name ?? u.email}</b>
+                  {u.name ? <span className="text-xs text-muted-foreground">{u.email}</span> : null}
                   <Badge variant={over ? "destructive" : "outline"}>{u.owned} {u.owned === 1 ? "negocio propio" : "negocios propios"} · {u.limit === null ? "sin límite" : `límite ${u.limit}`}</Badge>
                   <span className="ml-auto flex gap-2">
                     {canEdit ? <button type="button" aria-label={`Límite de ${u.email}`} onClick={() => setDialog({ kind: "limit", user: u })} className={buttonVariants({ variant: "outline", size: "sm" })}>Límite</button> : null}
@@ -52,13 +52,13 @@ export default function UsersView({ users, total, q, canEdit, canCreate, vertica
                 {u.orgs.length ? (
                   <ul className="flex flex-wrap gap-1.5">
                     {u.orgs.map((o) => (
-                      <li key={`${o.tenantId}-${o.role}`} className="rounded-md border border-border px-2 py-0.5 text-[12.5px]">
+                      <li key={`${o.tenantId}-${o.role}`} className="rounded-md border border-border px-2 py-0.5 text-xs">
                         {o.name} <span className="text-muted-foreground">· {o.role === "OWNER" ? "dueño" : o.role.toLowerCase()}{!o.tenantActive ? " · suspendido" : !o.active ? " · retirado" : ""}</span>
                       </li>
                     ))}
                   </ul>
-                ) : <p className="text-[12.5px] text-muted-foreground">Aún no tiene negocios.{u.note ? ` Nota: ${u.note}` : ""}</p>}
-                {u.note && u.orgs.length ? <p className="text-[12.5px] text-muted-foreground">Nota: {u.note}</p> : null}
+                ) : <p className="text-xs text-muted-foreground">Aún no tiene negocios.{u.note ? ` Nota: ${u.note}` : ""}</p>}
+                {u.note && u.orgs.length ? <p className="text-xs text-muted-foreground">Nota: {u.note}</p> : null}
               </li>
             );
           })}

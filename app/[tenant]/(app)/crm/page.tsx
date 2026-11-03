@@ -6,7 +6,6 @@ import type { CustomerSort, CustomerStatus } from "./_components/customer-filter
 import { PageHeader } from "@/components/molecules/page-header";
 import { requirePageContext } from "@/lib/core/tenancy/context";
 import { can } from "@/lib/core/auth/permissions";
-import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 
 const PAGE_SIZE = 20;
 
@@ -110,7 +109,6 @@ export default async function CrmPage({
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow={routeCategory("/crm")}
         title={
           <span className="inline-flex items-baseline gap-2.5">
             {terms.customers}

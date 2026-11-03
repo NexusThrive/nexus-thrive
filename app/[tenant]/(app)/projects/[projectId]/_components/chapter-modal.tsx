@@ -99,7 +99,7 @@ export default function ChapterModal({
             id="chapter-name"
             name="name"
             defaultValue={defaults.name}
-            placeholder="Ej. Preliminares"
+            placeholder="Nombre del capítulo"
             aria-invalid={Boolean(errors.name)}
             className={FIELD_CLASS(Boolean(errors.name))}
           />
@@ -136,7 +136,7 @@ export default function ChapterModal({
         {state.status === "error" && state.message ? (
           <p
             role="alert"
-            className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-[13px] text-danger"
+            className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-ui text-danger"
           >
             {state.message}
           </p>

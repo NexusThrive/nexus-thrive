@@ -75,7 +75,7 @@ function ImportCard({ slug, kind, title, blurb, columns, matches, exportNote }: 
         <h2 id={headingId} className="flex items-center gap-2 text-[15px] font-semibold">
           <FileSpreadsheet aria-hidden="true" className="size-4 text-muted-foreground" /> {title}
         </h2>
-        <p className="text-[13px] text-muted-foreground">{blurb}</p>
+        <p className="text-ui text-muted-foreground">{blurb}</p>
       </header>
 
       <div className="flex flex-wrap gap-2">
@@ -103,7 +103,7 @@ function ImportCard({ slug, kind, title, blurb, columns, matches, exportNote }: 
       ) : (
         <div className="grid gap-3">
           <div className="grid gap-1.5">
-            <label htmlFor={`${headingId}-file`} className="text-[13px] font-medium">
+            <label htmlFor={`${headingId}-file`} className="text-ui font-medium">
               Archivo a importar (CSV o Excel)
             </label>
             <input
@@ -117,7 +117,7 @@ function ImportCard({ slug, kind, title, blurb, columns, matches, exportNote }: 
                 setPreview(null);
                 setError(null);
               }}
-              className="block w-full cursor-pointer text-[13px] file:mr-3 file:cursor-pointer file:rounded-md file:border file:border-border file:bg-surface-muted file:px-3 file:py-1.5 file:text-[13px] file:font-medium"
+              className="block w-full cursor-pointer text-ui file:mr-3 file:cursor-pointer file:rounded-md file:border file:border-border file:bg-surface-muted file:px-3 file:py-1.5 file:text-ui file:font-medium"
             />
             <p className="text-xs text-muted-foreground">Máximo 5 000 filas y 5 MB. {columns}</p>
             <p className="text-xs text-muted-foreground">{matches}</p>
@@ -178,7 +178,7 @@ function ErrorList({ errors, label }: { errors: ImportReport["errors"]; label: s
   const shown = errors.slice(0, 50);
   return (
     <div role="region" aria-label={label} tabIndex={0} className="max-h-64 overflow-auto rounded-md border border-border focus-visible:outline-2 focus-visible:outline-accent">
-      <table className="w-full text-[13px]">
+      <table className="w-full text-ui">
         <caption className="sr-only">{label}</caption>
         <thead className="bg-surface-muted text-left text-xs text-muted-foreground">
           <tr>

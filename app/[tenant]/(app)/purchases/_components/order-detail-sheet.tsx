@@ -14,6 +14,7 @@ import { formatCurrency } from "@/lib/foundation/format";
 import { canCancel, canClose, canMarkOrdered, canReceive, orderTotals, STATUS_LABELS } from "@/lib/business/purchasing/purchases";
 import type { OrderDetail } from "@/lib/business/purchasing/purchases-db";
 import { cancelOrderAction, closeOrderAction, markOrderedAction, orderDetailAction, receiveOrderAction } from "@/app/[tenant]/(app)/purchases/actions";
+import { DateInput } from "@/components/molecules/date-input";
 
 const TONES = { DRAFT: "muted", ORDERED: "warning", PARTIAL: "warning", RECEIVED: "success", CANCELED: "muted" } as const;
 
@@ -134,19 +135,19 @@ export default function OrderDetailSheet({ slug, id, today, onClose }: { slug: s
         {error ? (
           <Alert tone="danger">{error}</Alert>
         ) : !order ? (
-          <p role="status" className="text-[13px] text-muted-foreground">
+          <p role="status" className="text-ui text-muted-foreground">
             Cargando la orden…
           </p>
         ) : (
           <div className="grid gap-4">
             <div className="flex flex-wrap items-center gap-2">
               <Badge tone={TONES[order.status]}>{STATUS_LABELS[order.status]}</Badge>
-              {order.expectedDate ? <span className="text-[13px] text-muted-foreground">Esperada {order.expectedDate}</span> : null}
+              {order.expectedDate ? <span className="text-ui text-muted-foreground">Esperada {order.expectedDate}</span> : null}
             </div>
-            {order.note ? <p className="text-[13px] text-muted-foreground">{order.note}</p> : null}
+            {order.note ? <p className="text-ui text-muted-foreground">{order.note}</p> : null}
 
             <div role="region" aria-label={`Productos de la orden ${order.code}`} tabIndex={0} className="overflow-x-auto rounded-lg border border-border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
-              <table className="w-full min-w-[480px] text-[13px]">
+              <table className="w-full min-w-[480px] text-ui">
                 <caption className="sr-only">Productos de la orden {order.code}</caption>
                 <thead className="bg-surface-muted text-left text-xs text-muted-foreground">
                   <tr>
@@ -193,13 +194,13 @@ export default function OrderDetailSheet({ slug, id, today, onClose }: { slug: s
 
             {receiving ? (
               <section className="grid gap-3 rounded-lg border border-border p-3" aria-labelledby="invoice-title">
-                <h3 id="invoice-title" className="text-[13px] font-semibold">
+                <h3 id="invoice-title" className="text-ui font-semibold">
                   Factura del proveedor <span className="font-normal text-muted-foreground">(opcional)</span>
                 </h3>
                 <div className="grid gap-3 sm:grid-cols-3">
                   <Field label="Número" hint="Como aparece en su factura.">{(c) => <input {...c} value={invoice.number} onChange={(e) => setInvoice({ ...invoice, number: e.target.value })} className={inputClasses} />}</Field>
-                  <Field label="Emisión">{(c) => <input {...c} type="date" value={invoice.issueDate} onChange={(e) => setInvoice({ ...invoice, issueDate: e.target.value })} className={inputClasses} />}</Field>
-                  <Field label="Vence" optional>{(c) => <input {...c} type="date" value={invoice.dueDate} onChange={(e) => setInvoice({ ...invoice, dueDate: e.target.value })} className={inputClasses} />}</Field>
+                  <Field label="Emisión">{(c) => <DateInput {...c} value={invoice.issueDate} onChange={(e) => setInvoice({ ...invoice, issueDate: e.target.value })} className={inputClasses} />}</Field>
+                  <Field label="Vence" optional>{(c) => <DateInput {...c} value={invoice.dueDate} onChange={(e) => setInvoice({ ...invoice, dueDate: e.target.value })} className={inputClasses} />}</Field>
                 </div>
                 <p className="text-xs text-muted-foreground">El valor de la factura se calcula de lo que llega ahora ({formatCurrency(receiveTotals.total)} con IVA). Quedará lista para las cuentas por pagar.</p>
               </section>
@@ -207,8 +208,8 @@ export default function OrderDetailSheet({ slug, id, today, onClose }: { slug: s
 
             {order.invoices.length ? (
               <section aria-labelledby="invoices-title" className="grid gap-1">
-                <h3 id="invoices-title" className="text-[13px] font-semibold">Facturas del proveedor</h3>
-                <ul className="divide-y divide-border rounded-lg border border-border text-[13px]">
+                <h3 id="invoices-title" className="text-ui font-semibold">Facturas del proveedor</h3>
+                <ul className="divide-y divide-border rounded-lg border border-border text-ui">
                   {order.invoices.map((i) => (
                     <li key={i.id} className="flex flex-wrap items-center justify-between gap-2 px-3 py-2">
                       <span>

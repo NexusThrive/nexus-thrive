@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { Alert } from "@/components/molecules/alert";
+import { PermissionNotice } from "@/components/molecules/permission-notice";
 import { PageHeader } from "@/components/molecules/page-header";
 import { canManage } from "@/lib/core/auth/roles";
 import { listProducts } from "@/lib/business/catalog/products-db";
@@ -9,7 +10,6 @@ import { listOrders } from "@/lib/business/purchasing/purchases-db";
 import { tenantWithModules } from "@/lib/core/tenancy/membership";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
 import PurchasesView from "./_components/purchases-view";
-import { routeCategory } from "@/lib/experience/navigation/tenant-nav";
 import { getVerticalTerms } from "@/lib/core/sectors/terms";
 import { bogotaDay } from "@/lib/foundation/dates/plain-date";
 
@@ -29,15 +29,15 @@ export default async function PurchasesPage({ params }: { params: Promise<{ tena
   if (!canManage(ctx.role)) {
     return (
       <div className="grid gap-5">
-        <PageHeader eyebrow={routeCategory("/purchases")} title={title} description="Órdenes de compra, proveedores y recepción de mercancía." />
-        <Alert tone="info">Solo el dueño o administración maneja las compras.</Alert>
+        <PageHeader title={title} description="Órdenes de compra, proveedores y recepción de mercancía." />
+        <PermissionNotice permission="business.manage" action="manejar las compras" />
       </div>
     );
   }
   if (!inventoryActive) {
     return (
       <div className="grid gap-5">
-        <PageHeader eyebrow={routeCategory("/purchases")} title={title} description="Órdenes de compra, proveedores y recepción de mercancía." />
+        <PageHeader title={title} description="Órdenes de compra, proveedores y recepción de mercancía." />
         <Alert tone="warning" title="Falta el módulo «Catálogo e inventario»">
           La mercancía que recibes entra al inventario. Actívalo en Configuración → Módulos para empezar a comprar.
         </Alert>
@@ -53,7 +53,7 @@ export default async function PurchasesPage({ params }: { params: Promise<{ tena
   ]);
   return (
     <div className="grid gap-5">
-      <PageHeader eyebrow={routeCategory("/purchases")} title={title} description="Pide a tus proveedores y, al llegar la mercancía, entra al inventario con su costo." />
+      <PageHeader title={title} description="Pide a tus proveedores y, al llegar la mercancía, entra al inventario con su costo." />
       <PurchasesView
         slug={tenant}
         orders={orders}

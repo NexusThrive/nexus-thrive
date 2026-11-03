@@ -8,6 +8,7 @@ import { buttonVariants } from "@/components/atoms/button-variants";
 import { Select } from "@/components/atoms/select";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
+import { AdaptiveTable } from "@/components/organisms/adaptive-table";
 import { formatCurrency } from "@/lib/foundation/format";
 import { COUNT_LABELS } from "@/lib/business/inventory/stock-docs";
 import type { CountRow, OverviewRow, ReorderRow, TransferRow } from "@/lib/business/inventory/stock-docs-db";
@@ -65,39 +66,26 @@ export default function StockView({ slug, warehouses, overview, transfers, count
                 </Select>
               </div>
             ) : null}
-            <span className="text-[13px] text-muted-foreground">
+            <span className="text-ui text-muted-foreground">
               Valor del inventario <b className="font-mono text-foreground">{formatCurrency(total)}</b>
             </span>
           </div>
           {rows.length ? (
-            <div role="region" aria-label="Existencias por bodega" tabIndex={0} className="overflow-x-auto rounded-lg border border-border bg-surface focus-visible:outline-2 focus-visible:outline-accent">
-              <table className="w-full min-w-[520px] text-[13px]">
-                <caption className="sr-only">Existencias por producto y bodega</caption>
-                <thead className="bg-surface-muted text-left text-xs text-muted-foreground">
-                  <tr>
-                    <th scope="col" className="px-3 py-2 font-medium">Producto</th>
-                    <th scope="col" className="px-3 py-2 font-medium">Bodega</th>
-                    <th scope="col" className="px-3 py-2 text-right font-medium">Hay</th>
-                    <th scope="col" className="px-3 py-2 text-right font-medium">Costo promedio</th>
-                    <th scope="col" className="px-3 py-2 text-right font-medium">Valor</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {rows.map((r) => (
-                    <tr key={`${r.productId}-${r.warehouseId}`}>
-                      <th scope="row" className="px-3 py-2 text-left font-medium">{r.productName}</th>
-                      <td className="px-3 py-2">{r.warehouseName}</td>
-                      <td className="px-3 py-2 text-right font-mono tabular-nums">{r.quantity}</td>
-                      <td className="px-3 py-2 text-right font-mono tabular-nums">{formatCurrency(r.avgCost)}</td>
-                      <td className="px-3 py-2 text-right font-mono tabular-nums">{formatCurrency(r.value)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <AdaptiveTable<OverviewRow>
+              caption="Existencias por producto y bodega"
+              rows={rows}
+              getRowId={(r) => `${r.productId}-${r.warehouseId}`}
+              columns={[
+                { key: "product", header: "Producto", role: "primary", cell: (r) => r.productName },
+                { key: "warehouse", header: "Bodega", role: "secondary", cell: (r) => r.warehouseName },
+                { key: "qty", header: "Hay", role: "detail", align: "right", cell: (r) => <span className="font-mono tabular-nums">{r.quantity}</span> },
+                { key: "avg", header: "Costo promedio", role: "detail", align: "right", cell: (r) => <span className="font-mono tabular-nums">{formatCurrency(r.avgCost)}</span> },
+                { key: "value", header: "Valor", role: "figure", cell: (r) => <span className="font-mono">{formatCurrency(r.value)}</span> },
+              ]}
+            />
           ) : (
             <div className="rounded-lg border border-border bg-surface">
-              <EmptyState title="Aún no hay existencias" description="Registra una entrada desde el Catálogo o recibe una compra, y aparecerán aquí por bodega." />
+              <EmptyState title="Aún no hay existencias" description="Registra una entrada desde el Catálogo o recibe una compra, y aparecerán aquí por bodega." action={<Link href={`/${slug}/inventory`} className={buttonVariants()}>Ir al catálogo</Link>} />
             </div>
           )}
         </>
@@ -110,13 +98,13 @@ export default function StockView({ slug, warehouses, overview, transfers, count
               <Plus aria-hidden="true" className="size-4" /> Nuevo traslado
             </button>
           </div>
-          {!canMove ? <p className="text-[13px] text-muted-foreground">Para trasladar necesitas al menos dos bodegas: créala en la pestaña Bodegas.</p> : null}
+          {!canMove ? <p className="text-ui text-muted-foreground">Para trasladar necesitas al menos dos bodegas: créala en la pestaña Bodegas.</p> : null}
           {transfers.length ? (
             <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">
               {transfers.map((t) => (
                 <li key={t.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3">
                   <span className="grid min-w-0">
-                    <b className="truncate text-[13.5px] font-medium">
+                    <b className="truncate text-ui font-medium">
                       {t.fromName} → {t.toName}
                     </b>
                     <small className="truncate text-xs text-muted-foreground">
@@ -124,13 +112,13 @@ export default function StockView({ slug, warehouses, overview, transfers, count
                       {t.note ? ` · ${t.note}` : ""}
                     </small>
                   </span>
-                  <b className="font-mono text-[13.5px] tabular-nums">{formatCurrency(t.value)}</b>
+                  <b className="font-mono text-ui tabular-nums">{formatCurrency(t.value)}</b>
                 </li>
               ))}
             </ul>
           ) : (
             <div className="rounded-lg border border-border bg-surface">
-              <EmptyState title="Aún no hay traslados" description="Mueve mercancía de una bodega a otra sin perder su costo." />
+              <EmptyState title="Aún no hay traslados" description="Mueve mercancía de una bodega a otra sin perder su costo." action={canMove ? <button type="button" onClick={() => setTransferring(true)} className={buttonVariants()}><Plus aria-hidden="true" className="size-4" /> Nuevo traslado</button> : undefined} />
             </div>
           )}
         </>
@@ -149,7 +137,7 @@ export default function StockView({ slug, warehouses, overview, transfers, count
                 <li key={c.id}>
                   <button type="button" onClick={() => setOpenCount(c.id)} className="grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 text-left hover:bg-surface-muted">
                     <span className="grid min-w-0">
-                      <b className="truncate text-[13.5px] font-medium">{c.warehouseName}</b>
+                      <b className="truncate text-ui font-medium">{c.warehouseName}</b>
                       <small className="truncate text-xs text-muted-foreground">
                         <span className="font-mono">{c.code}</span> · {c.counted} de {c.lines} contados{c.withDifference ? ` · ${c.withDifference} con diferencia` : ""} · {c.createdAt.slice(0, 10)}
                       </small>
@@ -161,7 +149,7 @@ export default function StockView({ slug, warehouses, overview, transfers, count
             </ul>
           ) : (
             <div className="rounded-lg border border-border bg-surface">
-              <EmptyState title="Aún no hay conteos" description="Cuenta lo que hay en la bodega y NEXUS ajusta las diferencias, dejando el motivo en el kardex." />
+              <EmptyState title="Aún no hay conteos" description="Cuenta lo que hay en la bodega y NEXUS ajusta las diferencias, dejando el motivo en el kardex." action={<button type="button" onClick={() => setCounting(true)} className={buttonVariants()}><Plus aria-hidden="true" className="size-4" /> Nuevo conteo</button>} />
             </div>
           )}
         </>
@@ -174,7 +162,7 @@ export default function StockView({ slug, warehouses, overview, transfers, count
       {counting ? <NewCountDialog slug={slug} warehouses={warehouses} onClose={() => setCounting(false)} onCreated={(id) => { setCounting(false); setOpenCount(id); setTab("counts"); }} /> : null}
       {openCount ? <CountSheet slug={slug} id={openCount} onClose={() => setOpenCount(null)} /> : null}
       {purchasesActive ? null : tab === "reorder" ? (
-        <p className="text-[13px] text-muted-foreground">
+        <p className="text-ui text-muted-foreground">
           Para pedir a tus proveedores desde aquí, enciende «Compras» en{" "}
           <Link href={`/${slug}/functions`} className="font-medium text-foreground underline underline-offset-4">
             Funciones

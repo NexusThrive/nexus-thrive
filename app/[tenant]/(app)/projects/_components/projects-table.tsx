@@ -1,10 +1,11 @@
 "use client";
 
 import { useTransition } from "react";
-import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ChevronLeft, ChevronRight, FolderOpen } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { NLoader } from "@/components/atoms/n-loader";
+import { EmptyState } from "@/components/molecules/empty-state";
+import { AdaptiveTable } from "@/components/organisms/adaptive-table";
 import type { ProjectRow } from "@/lib/industry/construction/shared";
 import { ProjectStatusBadge } from "./project-status-badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
@@ -33,11 +34,14 @@ export default function ProjectsTable({
   rows,
   total,
   page,
+  emptyAction,
 }: {
   tenantSlug: string;
   rows: ProjectRow[];
   total: number;
   page: number;
+  /** Botón para crear el primer proyecto cuando no hay ninguno (el mismo de la cabecera). */
+  emptyAction?: React.ReactNode;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -60,81 +64,21 @@ export default function ProjectsTable({
 
   return (
     <div className="space-y-4">
-      <div className="overflow-x-auto rounded-lg border border-border bg-card">
-        <table className="min-w-full divide-y divide-border text-sm">
-          <thead className="bg-muted text-left text-xs font-semibold text-muted-foreground">
-            <tr>
-              <th className="px-4 py-3 font-medium">Código</th>
-              <th className="px-4 py-3 font-medium">Proyecto</th>
-              <th className="hidden px-4 py-3 font-medium sm:table-cell">
-                Cliente
-              </th>
-              <th className="px-4 py-3 font-medium">Estado</th>
-              <th className="hidden px-4 py-3 font-medium lg:table-cell">
-                Creado
-              </th>
-              <th className="px-4 py-3 text-right font-medium">Abrir</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {rows.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={6}
-                  className="px-4 py-12 text-center text-muted-foreground"
-                >
-                  Aún no hay proyectos de obra. Crea el primero con “Nuevo
-                  proyecto”.
-                </td>
-              </tr>
-            ) : (
-              rows.map((row) => (
-                <tr key={row.id} className="transition hover:bg-muted/60">
-                  <td className="px-4 py-3 font-mono text-xs font-medium text-accent-text">
-                    <Link
-                      href={`/${tenantSlug}/projects/${row.id}`}
-                      className="transition hover:underline"
-                    >
-                      {row.code}
-                    </Link>
-                  </td>
-                  <td className="max-w-[16rem] px-4 py-3 font-medium text-foreground">
-                    <Link
-                      href={`/${tenantSlug}/projects/${row.id}`}
-                      className="transition hover:text-accent-text"
-                    >
-                      <span className="block truncate">{row.name}</span>
-                    </Link>
-                    {row.description ? (
-                      <span className="mt-0.5 block truncate text-xs font-normal text-muted-foreground">
-                        {row.description}
-                      </span>
-                    ) : null}
-                  </td>
-                  <td className="hidden truncate px-4 py-3 text-muted-foreground sm:table-cell">
-                    {row.customerName}
-                  </td>
-                  <td className="px-4 py-3">
-                    <ProjectStatusBadge status={row.status} />
-                  </td>
-                  <td className="hidden px-4 py-3 text-xs text-muted-foreground lg:table-cell">
-                    {formatDate(row.createdAt)}
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <Link
-                      href={`/${tenantSlug}/projects/${row.id}`}
-                      className={buttonVariants({ variant: "outline", size: "sm" })}
-                    >
-                      <FolderOpen aria-hidden="true" className="h-3.5 w-3.5" />
-                      Ver
-                    </Link>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+      <AdaptiveTable
+        caption="Proyectos de obra"
+        rows={rows}
+        getRowId={(r) => r.id}
+        getRowHref={(r) => `/${tenantSlug}/projects/${r.id}`}
+        rowLabel={(r) => `Abrir ${r.code} · ${r.name}`}
+        empty={<EmptyState title="Aún no hay proyectos de obra" description="Crea el primero para armar su presupuesto, su plan y su bitácora." action={emptyAction} />}
+        columns={[
+          { key: "name", header: "Proyecto", role: "primary", cell: (r) => <span className="font-medium">{r.name}</span> },
+          { key: "code", header: "Código", role: "secondary", cell: (r) => <span className="font-mono text-xs text-accent-text">{r.code}</span> },
+          { key: "customer", header: "Cliente", role: "detail", cell: (r) => r.customerName },
+          { key: "status", header: "Estado", role: "status", cell: (r) => <ProjectStatusBadge status={r.status} /> },
+          { key: "created", header: "Creado", role: "detail", cell: (r) => <span className="text-xs text-muted-foreground">{formatDate(r.createdAt)}</span> },
+        ]}
+      />
 
       {total > PAGE_SIZE ? (
         <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">

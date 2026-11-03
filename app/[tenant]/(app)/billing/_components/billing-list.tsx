@@ -54,7 +54,7 @@ export default function BillingList({ slug, rows, customers, products, today, ca
     <div className="grid gap-4">
       <div className="flex flex-wrap items-center gap-2">
         <SegmentedControl ariaLabel="Estado" value={filter} onChange={setFilter} options={[{ value: "ISSUED", label: "Por cobrar", count: pending.length }, { value: "PAID", label: "Pagadas" }, { value: "notes", label: "Notas" }, { value: "all", label: "Todas" }]} />
-        <span className="text-[13px] text-muted-foreground">
+        <span className="text-ui text-muted-foreground">
           Por cobrar {formatCurrency(pending.reduce((s, r) => s + r.total, 0))}
           {overdue.length ? <span className="text-danger"> · {overdue.length} vencidas</span> : null}
         </span>
@@ -70,14 +70,14 @@ export default function BillingList({ slug, rows, customers, products, today, ca
             <li key={r.id}>
               <button type="button" onClick={() => openDoc(r.id)} className="grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 text-left hover:bg-surface-muted">
                 <span className="grid min-w-0">
-                  <b className="truncate text-[13.5px] font-medium">{r.customerName}</b>
+                  <b className="truncate text-ui font-medium">{r.customerName}</b>
                   <small className="truncate text-xs text-muted-foreground">
                     <span className="font-mono">{documentCode(r.kind, r.number)}</span> · {r.issueDate}
                     {r.dueDate ? ` · vence ${r.dueDate}` : ""}
                   </small>
                 </span>
                 <span className="grid justify-items-end gap-1">
-                  <b className="font-mono text-[13.5px] tabular-nums">{formatCurrency(r.total)}</b>
+                  <b className="font-mono text-ui tabular-nums">{formatCurrency(r.total)}</b>
                   <Badge tone={r.status === "ISSUED" && r.dueDate && r.dueDate < today && !isNote(r) ? "danger" : STATUS[r.status].tone}>{isNote(r) ? (r.kind === "CREDIT_NOTE" ? "Nota crédito" : "Nota débito") : r.status === "ISSUED" && r.dueDate && r.dueDate < today ? "Vencida" : STATUS[r.status].label}</Badge>
                 </span>
               </button>
@@ -86,7 +86,7 @@ export default function BillingList({ slug, rows, customers, products, today, ca
         </ul>
       ) : (
         <div className="rounded-lg border border-border bg-surface">
-          <EmptyState title="Nada por aquí" description="Crea cuentas de cobro y recibos numerados para tus clientes." />
+          <EmptyState title="Nada por aquí" description="Crea cuentas de cobro y recibos numerados para tus clientes." action={canCreate ? <button type="button" onClick={() => setCreating(true)} className={buttonVariants()}><Plus aria-hidden="true" className="size-4" /> Nueva cuenta de cobro</button> : undefined} />
         </div>
       )}
       <DocumentViewer
