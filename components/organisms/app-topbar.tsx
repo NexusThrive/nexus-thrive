@@ -19,7 +19,7 @@ import { MobileTopbarSearch } from "@/components/organisms/mobile-topbar-search"
 import { AccountButton } from "@/components/molecules/account-button";
 import { RouteBar } from "@/components/molecules/route-bar";
 import { useQuickCreate } from "@/components/organisms/quick-create-host";
-import { useShell } from "@/components/providers/shell-context";
+import { useOptionalPalette, useShell } from "@/components/providers/shell-context";
 import { cn } from "@/lib/utils";
 import styles from "./app-topbar.module.css";
 
@@ -34,6 +34,8 @@ import styles from "./app-topbar.module.css";
  */
 export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; /** Selector de negocio (PC), a la derecha. */ switcher?: ReactNode; /** Buscador en línea de PC (`NavbarSearch`); sin él, el botón abre la paleta modal. */ search?: ReactNode }) {
   const { title, brandName, hrefFor, openSearch, quickActions, createActions = quickActions } = useShell();
+  // El buscador móvil comparte la paleta del negocio; el Operations Center no la tiene y usa su botón de búsqueda.
+  const hasPalette = useOptionalPalette() !== null;
   const router = useRouter();
   const quick = useQuickCreate();
 
@@ -144,7 +146,7 @@ export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; 
       </div>
 
       {/* Debajo de la navbar, fuera de su fila y desde el borde de la barra lateral (`--sw`): no se mete en ella ni deforma la navbar. */}
-      <MobileTopbarSearch />
+      {hasPalette ? <MobileTopbarSearch /> : null}
 
       <RouteBar className="absolute inset-x-auto left-[var(--sw)] right-0 top-full" />
     </header>
