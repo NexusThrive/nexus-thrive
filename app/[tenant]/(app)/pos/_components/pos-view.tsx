@@ -218,7 +218,7 @@ function Sale({ slug, turn, products }: { slug: string; turn: { sessionId: strin
                 <input aria-label={`Valor del pago ${i + 1}`} inputMode="decimal" value={p.amount} onChange={(e) => setPays((ps) => ps.map((x, j) => (j === i ? { ...x, amount: e.target.value } : x)))} placeholder={i === 0 ? String(due) : ""} className={inputClasses} />
               </div>
             ))}
-            <button type="button" onClick={() => setPays((ps) => [...ps, { method: "NEQUI", amount: "" }])} className={buttonVariants({ variant: "ghost", size: "sm", className: "justify-self-start" })}>Agregar otro pago</button>
+            <button type="button" onClick={() => setPays((ps) => [...ps, { method: "TRANSFER", amount: "" }])} className={buttonVariants({ variant: "ghost", size: "sm", className: "justify-self-start" })}>Agregar otro pago</button>
             {"error" in settled && lines.length > 0 && payNums.some((x) => x.amount > 0) ? <p className="text-xs text-muted-foreground">{settled.error}</p> : null}
             {!("error" in settled) && settled.change > 0 ? <p className="text-ui font-medium">Cambio: {formatCurrency(settled.change)}</p> : null}
           </div>

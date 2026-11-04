@@ -272,6 +272,23 @@ export function createMembershipsDb(tenantId: string) {
       db.orm.public.Membership
         .where({ id, tenantId })
         .update(data),
+
+    /**
+     * Clientes de la lista que tienen una membresía vigente (no cancelada y
+     * sin vencer). El CRM pinta el aviso rojo a los que no están en el set.
+     */
+    activeCustomerIds: async (customerIds: readonly string[]): Promise<Set<string>> => {
+      if (!customerIds.length) return new Set();
+      const now = Temporal.Instant.fromEpochMilliseconds(Date.now());
+      const rows = await db.orm.public.Membership
+        .where({ tenantId })
+        .where((membership) => membership.customerId.in([...customerIds]))
+        .where((membership) => membership.cancelledAt.isNull())
+        .where((membership) => membership.endDate.gt(now))
+        .select("customerId")
+        .all();
+      return new Set(rows.map((row) => row.customerId));
+    },
   };
 }
 

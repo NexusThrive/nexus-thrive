@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { rememberBusinessAction } from "./_actions/business";
 import { activeTenantWithModules, businessesOfMember, memberTheme } from "@/lib/core/tenancy/membership";
 import { sortModules, isModule } from "@/lib/core/capabilities/modules";
-import { getVerticalTerms } from "@/lib/core/sectors/terms";
+import { getVerticalTerms, hasMemberAccess } from "@/lib/core/sectors/terms";
 import { TenantShell } from "@/components/templates/tenant-shell";
 import { VerticalTermsProvider } from "./vertical-terms-context";
 import TenantNotifications from "./_components/tenant-notifications";
@@ -109,7 +109,7 @@ export default async function AppLayout({
       >
         <ThemeSync tenantSlug={tenantRecord.slug} saved={savedTheme} />
         {children}
-        <HelpCenter tenantSlug={tenantRecord.slug} businessName={tenantRecord.name} activeModules={activeModules} />
+        <HelpCenter tenantSlug={tenantRecord.slug} businessName={tenantRecord.name} activeModules={activeModules} showFunctions={!hasMemberAccess(tenantRecord.vertical)} />
       </TenantShell>
     </VerticalTermsProvider>
   );

@@ -64,3 +64,19 @@ describe("severidad de las notificaciones (DR-40)", () => {
     expect(list[0].severity ?? "info").toBe("info");
   });
 });
+
+describe("altas del registro público", () => {
+  const base = { movements: [], bookings: [], expiring: 0, expired: 0, todayStart: "2026-11-04T05:00:00Z", modules: { finance: false, bookings: false, memberships: false, registrations: true } };
+
+  it("avisa al personal con enlace a la ficha del cliente", () => {
+    const list = buildNotifications({ ...base, registrations: [{ id: "ev1", customerId: "c9", name: "Laura", at: "2026-11-04T14:00:00Z" }] });
+    expect(list).toHaveLength(1);
+    expect(list[0]).toMatchObject({ kind: "customer", severity: "info", href: "/crm/c9" });
+    expect(list[0].title).toContain("Laura");
+  });
+
+  it("no avisa si el módulo de clientes no está activo", () => {
+    const list = buildNotifications({ ...base, modules: { ...base.modules, registrations: false }, registrations: [{ id: "ev1", customerId: "c9", name: "Laura", at: "2026-11-04T14:00:00Z" }] });
+    expect(list).toEqual([]);
+  });
+});

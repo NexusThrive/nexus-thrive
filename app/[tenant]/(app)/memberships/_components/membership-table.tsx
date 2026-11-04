@@ -11,6 +11,7 @@ import { typeLabel, type MembershipStatusValue, type MembershipTypeValue } from 
 import MembershipStatusBadge from "./membership-status-badge";
 import MembershipModal from "./membership-modal";
 import WhatsAppReminder from "./whatsapp-reminder";
+import { cn } from "@/lib/utils";
 import { AdaptiveTable } from "@/components/organisms/adaptive-table";
 
 export type MembershipViewRow = {
@@ -65,7 +66,7 @@ export default function MembershipTable({
         <p className="mt-1 text-sm text-muted-foreground">
           {query
             ? "Prueba con otro término o limpia los filtros."
-            : "Crea la primera membresía con el botón “Nueva membresía”."}
+            : "Asigna una membresía desde la ficha del cliente."}
         </p>
       </div>
     );
@@ -75,6 +76,7 @@ export default function MembershipTable({
     <>
       <AdaptiveTable
         caption="Membresías"
+        actionsBelow
         rows={rows}
         getRowId={(r) => r.id}
         columns={[
@@ -89,24 +91,25 @@ export default function MembershipTable({
             header: "Acciones",
             role: "action",
             cell: (row) => (
-              <div className="flex items-center justify-end gap-1">
+              <div className="flex flex-wrap items-center justify-end gap-1.5">
                 {canSell ? (
-                  <RowAction label={`Renovar membresía de ${row.customerName}`} onClick={() => setRenewTarget(row)}>
-                    <RefreshCw aria-hidden="true" className="h-4 w-4" />
+                  <RowAction label={`Renovar membresía de ${row.customerName}`} text="Renovar" primary onClick={() => setRenewTarget(row)}>
+                    <RefreshCw aria-hidden="true" className="size-4" />
                   </RowAction>
                 ) : null}
-                <RowAction label={`Recordatorio de vencimiento para ${row.customerName}`} onClick={() => setReminderTarget(row)}>
-                  <MessageCircle aria-hidden="true" className="h-4 w-4" />
+                <RowAction label={`Recordatorio de vencimiento para ${row.customerName}`} text="Avisar" onClick={() => setReminderTarget(row)}>
+                  <MessageCircle aria-hidden="true" className="size-4" />
                 </RowAction>
-                <RowAction label={`Congelar o cancelar la membresía de ${row.customerName}`} onClick={() => setHoldTarget(row)}>
-                  <PauseCircle aria-hidden="true" className="h-4 w-4" />
+                <RowAction label={`Congelar o cancelar la membresía de ${row.customerName}`} text="Pausar" onClick={() => setHoldTarget(row)}>
+                  <PauseCircle aria-hidden="true" className="size-4" />
                 </RowAction>
                 <Link
                   href={`/${tenantSlug}/crm?q=${encodeURIComponent(row.customerName)}`}
                   aria-label={`Ver a ${row.customerName} en el CRM`}
-                  className="grid h-8 w-8 pointer-coarse:size-11 place-items-center rounded-lg text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                  className={rowActionClass(false)}
                 >
-                  <UserRound aria-hidden="true" className="h-4 w-4" />
+                  <UserRound aria-hidden="true" className="size-4" />
+                  <span>Ficha</span>
                 </Link>
               </div>
             ),
@@ -147,24 +150,31 @@ export default function MembershipTable({
   );
 }
 
+/** Botón de fila con texto y borde: visible y fácil de tocar en la lista y en la tabla. */
+function rowActionClass(primary: boolean) {
+  return cn(
+    "inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg border px-3 text-sm font-medium transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring pointer-coarse:min-h-11",
+    primary ? "border-accent bg-accent text-accent-foreground hover:opacity-90" : "border-border bg-card text-foreground hover:bg-surface-muted",
+  );
+}
+
 function RowAction({
   label,
+  text,
+  primary = false,
   onClick,
   children,
 }: {
   label: string;
+  text: string;
+  primary?: boolean;
   onClick: () => void;
   children: React.ReactNode;
 }) {
   return (
-    <button
-      type="button"
-      aria-label={label}
-      title={label}
-      onClick={onClick}
-      className="grid h-8 w-8 pointer-coarse:size-11 place-items-center rounded-lg text-muted-foreground transition hover:bg-muted hover:text-foreground"
-    >
+    <button type="button" aria-label={label} onClick={onClick} className={rowActionClass(primary)}>
       {children}
+      <span>{text}</span>
     </button>
   );
 }

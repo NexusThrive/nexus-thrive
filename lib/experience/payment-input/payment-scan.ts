@@ -55,8 +55,8 @@ export function bestCopAmount(text: string): string | null {
 }
 
 const METHOD_HINTS: { re: RegExp; method: PaymentMethodValue }[] = [
-  { re: /nequi/i, method: "NEQUI" },
-  { re: /wompi/i, method: "WOMPI" },
+  { re: /nequi/i, method: "TRANSFER" },
+  { re: /wompi/i, method: "TRANSFER" },
   { re: /transferencia|bancolombia|davivienda|bbva|banco|ach|pse/i, method: "TRANSFER" },
   { re: /efectivo|recibido en efectivo/i, method: "CASH" },
 ];

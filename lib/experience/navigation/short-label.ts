@@ -17,6 +17,7 @@ const SHORT_LABELS: Readonly<Record<string, string>> = {
   Integraciones: "Integrac.",
   "Ficha de Google": "Google",
   "Mi sitio web": "Sitio web",
+  "Panel de registro de cliente": "Registro",
   "Catálogo APU": "Cat. APU",
 };
 

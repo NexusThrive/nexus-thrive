@@ -48,6 +48,7 @@ export function AdaptiveTable<T>({
   rowClassName,
   tableMinWidth = TABLE_MIN_WIDTH,
   footer,
+  actionsBelow = false,
   className,
 }: {
   /** Nombre de la tabla para lectores de pantalla (no se ve). */
@@ -67,6 +68,8 @@ export function AdaptiveTable<T>({
   tableMinWidth?: number;
   /** Fila de totales: aparece como pie de la tabla y como último elemento de la lista. `cells` va por clave de columna. */
   footer?: { label: string; cells: Record<string, ReactNode> };
+  /** En la lista, las acciones van en una fila propia bajo los datos (acciones con texto, no solo iconos). */
+  actionsBelow?: boolean;
   className?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -204,8 +207,11 @@ export function AdaptiveTable<T>({
                     ))}
                   </dl>
                 ) : null}
+                {actionsBelow && actions.length > 0 ? (
+                  <div className="relative z-10 mt-3 flex flex-wrap items-center gap-1.5">{actions.map((c) => <span key={c.key} className="contents">{c.cell(row)}</span>)}</div>
+                ) : null}
               </div>
-              {actions.length > 0 ? (
+              {actions.length > 0 && !actionsBelow ? (
                 <div className="relative z-10 flex shrink-0 items-center gap-1">{actions.map((c) => <span key={c.key}>{c.cell(row)}</span>)}</div>
               ) : null}
             </li>

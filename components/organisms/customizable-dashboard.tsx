@@ -182,7 +182,8 @@ function Item({
   onResizing: (active: boolean) => void;
   onRemove: () => void;
 }) {
-  const drag = useDraggable({ id: widget.id });
+  // En móvil no se arrastra (se ordena con subir/bajar): se desactiva el bloque, no los sensores.
+  const drag = useDraggable({ id: widget.id, disabled: mobile });
   const drop = useDroppable({ id: widget.id });
   const cellRef = useRef<HTMLDivElement>(null);
   const { label } = widget;
@@ -532,8 +533,10 @@ export function CustomizableDashboard({
   const pointerSensor = useSensor(PointerSensor, { activationConstraint: { delay: 350, tolerance: 6 } });
   const touchSensor = useSensor(TouchSensor, { activationConstraint: { delay: 220, tolerance: 8 } });
   const keyboardSensor = useSensor(KeyboardSensor, { coordinateGetter: verticalCoordinates });
-  // Siempre tres argumentos (React exige que no cambie el tamaño de las dependencias); en móvil, los de arrastre van vacíos.
-  const sensors = useSensors(lg ? pointerSensor : undefined, lg ? touchSensor : undefined, keyboardSensor);
+  // Siempre los tres: dnd-kit usa `sensors.map(...)` como dependencias de un efecto, así que la lista no puede cambiar
+  // de tamaño entre renders (el constructor de servidor asume `lg` y el de cliente puede no serlo). En móvil el arrastre
+  // se desactiva por bloque (`useDraggable({ disabled })`).
+  const sensors = useSensors(pointerSensor, touchSensor, keyboardSensor);
 
   // Bloques del sistema (servidor) y gráficos agregados por la persona (cliente).
   const addedWidgets: DashboardWidget[] = layout.added.map((a) => ({

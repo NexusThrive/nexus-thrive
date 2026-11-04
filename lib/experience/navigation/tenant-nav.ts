@@ -7,7 +7,7 @@ import { type VerticalValue } from "@/lib/core/sectors/verticals";
 import { MODULES, type ModuleValue } from "@/lib/core/capabilities/modules";
 import { CAPABILITIES, CAPABILITY_CATEGORIES, type CapabilityCategory } from "@/lib/core/capabilities/registry";
 import { MODULE_NAV } from "@/lib/core/capabilities/route-modules";
-import { getVerticalTerms } from "@/lib/core/sectors/terms";
+import { getVerticalTerms, hasMemberAccess } from "@/lib/core/sectors/terms";
 import type { NavGroup, NavItem } from "../../core/capabilities/nav-types";
 
 export type { NavGroup, NavItem };
@@ -79,8 +79,10 @@ const MODULE_GROUP: Partial<Record<string, GroupName>> = Object.fromEntries(CAPA
 export function buildTenantNav(vertical: VerticalValue, activeModules: readonly ModuleValue[]): NavGroup[] {
   const terms = getVerticalTerms(vertical);
   const active = new Set(activeModules);
+  // Rubros con control de acceso de socios (gimnasio): menú reducido, sin tienda en línea, funciones, datos ni integraciones.
+  const lean = hasMemberAccess(vertical);
   const items = (moduleName: ModuleValue): NavItem[] => {
-    return MODULE_NAV[moduleName].filter((nav) => !nav.verticals || nav.verticals.includes(vertical)).map((nav) => ({
+    return MODULE_NAV[moduleName].filter((nav) => !nav.verticals || nav.verticals.includes(vertical)).filter((nav) => !(lean && nav.href === "/pedidos-tienda")).map((nav) => ({
       key: nav.href || "home",
       module: moduleName,
       href: nav.href,
@@ -94,7 +96,8 @@ export function buildTenantNav(vertical: VerticalValue, activeModules: readonly 
     enabled
       .filter((m) => m !== "dashboard" && (MODULE_GROUP[m] ?? "Clientes y operación") === label)
       .flatMap((m) => items(m).filter((item) => !(m === "payments" && active.has("finance") && item.href.startsWith("/finance"))));
-  const expenses: NavItem[] = active.has("finance") ? [{ key: "/finance?tab=gastos", module: "finance", href: "/finance?tab=gastos", icon: Receipt, label: "Gastos" }] : [];
+  const gym = lean;
+  const expenses: NavItem[] = active.has("finance") && !gym ? [{ key: "/finance?tab=gastos", module: "finance", href: "/finance?tab=gastos", icon: Receipt, label: "Gastos" }] : [];
   return [
     // El inicio existe siempre (es la raíz del negocio), con o sin el módulo.
     { label: "General", items: items("dashboard") },
@@ -104,7 +107,7 @@ export function buildTenantNav(vertical: VerticalValue, activeModules: readonly 
       collapsible: true,
       icon: GROUP_ICONS[label],
     })),
-    { label: "Sistema", items: [FUNCTIONS_ITEM, DATA_ITEM, INTEGRATIONS_ITEM, SETTINGS_ITEM], pinned: true },
+    { label: "Sistema", items: gym ? [SETTINGS_ITEM] : [FUNCTIONS_ITEM, DATA_ITEM, INTEGRATIONS_ITEM, SETTINGS_ITEM], pinned: true },
   ].filter((group) => group.items.length > 0);
 }
 

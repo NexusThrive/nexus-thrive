@@ -65,7 +65,7 @@ export default function SettingsShell({
   tenantSlug: string;
   canManage: boolean;
   profile: ProfileInitialValues;
-  team: { members: BusinessMember[]; invites: PendingInvite[]; seats: Seats; canManage: boolean; meRole: string };
+  team: { members: BusinessMember[]; invites: PendingInvite[]; seats: Seats; canManage: boolean; meRole: string; gym?: boolean };
   systemInfo: SystemInfoItem[];
   plan: PlanInfo;
   context: { vertical: VerticalValue; businessModels: BusinessModel[]; activity: string };

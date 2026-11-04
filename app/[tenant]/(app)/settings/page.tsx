@@ -18,6 +18,7 @@ import SettingsShell, {
 } from "./_components/settings-shell";
 import { requirePageContext } from "@/lib/core/tenancy/context";
 import { roleLabel } from "@/lib/core/auth/roles";
+import { hasMemberAccess } from "@/lib/core/sectors/terms";
 
 /**
  * Módulo de Ajustes del negocio (Server Component).
@@ -106,7 +107,7 @@ export default async function SettingsPage({
       tenantSlug={tenantRecord.slug}
       canManage={canManage}
       profile={profile}
-      team={team}
+      team={{ ...team, gym: hasMemberAccess(tenantRecord.vertical) }}
       systemInfo={systemInfo}
       plan={plan}
       me={(() => { const m = team.members.find((x) => x.isMe); return { name: m?.name ?? "", email: m?.email ?? "", roleLabel: roleLabel(m?.role ?? "STAFF"), title: m?.title ?? "", phone: m?.phone ?? "" }; })()}

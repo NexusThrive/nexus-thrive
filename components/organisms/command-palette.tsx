@@ -101,7 +101,9 @@ export function PaletteList({
   const { canInstall, install } = usePwa();
   const actions = createActions ?? quickActions;
   // Lo que el negocio aún no usa también se encuentra: lleva a Funciones para encenderlo.
-  const off = activeModules ? CAPABILITIES.filter((c) => c.status !== "PLANNED" && c.id !== "dashboard" && !activeModules.includes(c.id)) : [];
+  // Sin «Funciones» en el menú (rubros con menú reducido, como el gimnasio) no se ofrece encender nada.
+  const hasFunctions = groups.some((group) => group.items.some((item) => item.key === "functions"));
+  const off = activeModules && hasFunctions ? CAPABILITIES.filter((c) => c.status !== "PLANNED" && c.id !== "dashboard" && !activeModules.includes(c.id)) : [];
 
   const idle = query.trim() === "";
 

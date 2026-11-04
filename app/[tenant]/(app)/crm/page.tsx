@@ -1,5 +1,9 @@
 import { createTenantDb } from "@/lib/core/tenancy/db";
 import { getVerticalTerms } from "@/lib/core/sectors/terms";
+import { profileFor } from "@/lib/business/customers/customer-fields";
+import { isRouteEnabled } from "@/lib/core/tenancy/context";
+import { createMembershipsDb } from "@/lib/industry/gym/memberships-repo";
+import { LiveRefresh } from "@/components/molecules/live-refresh";
 import CustomerToolbar from "./_components/customer-toolbar";
 import CustomerTable, { type CustomerRow } from "./_components/customer-table";
 import type { CustomerSort, CustomerStatus } from "./_components/customer-filters";
@@ -92,6 +96,14 @@ export default async function CrmPage({
     });
   }
 
+  // Gimnasio con el módulo de membresías: el CRM avisa quién quedó sin plan.
+  const showMembership =
+    profileFor(tenantRecord.vertical).planOnCreate &&
+    (await isRouteEnabled(tenantRecord.id, "/memberships"));
+  const activeMembers = showMembership
+    ? await createMembershipsDb(tenantRecord.id).activeCustomerIds(result.rows.map((row) => row.id))
+    : new Set<string>([]);
+
   const customerRows: CustomerRow[] = result.rows.map((row) => ({
     id: row.id,
     name: row.name,
@@ -102,12 +114,14 @@ export default async function CrmPage({
     photoId: row.photoId,
     tags: [...(row.tags ?? [])],
     documentId: row.documentId,
+    hasMembership: activeMembers.has(row.id),
   }));
 
   const terms = getVerticalTerms(tenantRecord.vertical);
 
   return (
     <div className="space-y-6">
+      <LiveRefresh everyMs={8000} />
       <PageHeader
         title={
           <span className="inline-flex items-baseline gap-2.5">
@@ -137,6 +151,7 @@ export default async function CrmPage({
         total={result.total}
         query={q}
         canRemove={can(pageCtx.role, "customers.delete")}
+        showMembership={showMembership && status === "active"}
       />
     </div>
   );

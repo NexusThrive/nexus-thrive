@@ -8,12 +8,13 @@
 
 export const PAYMENT_METHODS = [
   { value: "CASH", label: "Efectivo" },
-  { value: "NEQUI", label: "Nequi" },
-  { value: "WOMPI", label: "Wompi" },
   { value: "TRANSFER", label: "Transferencia" },
 ] as const;
 
-export type PaymentMethodValue = (typeof PAYMENT_METHODS)[number]["value"];
+/** Medios que ya no se ofrecen pero siguen en pagos antiguos: solo se muestran, no se eligen. */
+const LEGACY_METHOD_LABELS: Record<string, string> = { NEQUI: "Nequi", WOMPI: "Wompi" };
+
+export type PaymentMethodValue = (typeof PAYMENT_METHODS)[number]["value"] | "NEQUI" | "WOMPI";
 
 export const PAYMENT_STATUSES = [
   { value: "APPROVED", label: "Pagado" },
@@ -37,7 +38,7 @@ export type ExpenseCategory = (typeof EXPENSE_CATEGORIES)[number];
 /** Nombre para mostrar de un medio de pago. */
 export function paymentMethodLabel(method: PaymentMethodValue): string {
   return (
-    PAYMENT_METHODS.find((option) => option.value === method)?.label ?? method
+    PAYMENT_METHODS.find((option) => option.value === method)?.label ?? LEGACY_METHOD_LABELS[method] ?? method
   );
 }
 
