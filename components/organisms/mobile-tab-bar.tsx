@@ -2,8 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useUser } from "@clerk/nextjs";
-import { ChevronRight, Moon, Plus, Search, Sun, UserRound } from "lucide-react";
+import { ChevronRight, Menu, Moon, Plus, Search, Sun } from "lucide-react";
 import { IconTile } from "@/components/atoms/icon-tile";
 import { setTheme, useTheme } from "@/components/atoms/theme-toggle";
 import { AccountButton } from "@/components/molecules/account-button";
@@ -14,16 +13,6 @@ import { QuickCreateGrid } from "./quick-create-grid";
 import { ResponsiveSheet } from "./responsive-sheet";
 
 const PRIMARY_SLOTS = 3;
-
-/** Icono de «Más»: la foto de la persona (si la cuenta tiene) o una figura de usuario. */
-function MoreAvatar() {
-  const { user } = useUser();
-  if (user?.imageUrl) {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img src={user.imageUrl} alt="" aria-hidden="true" className="size-[22px] rounded-full object-cover ring-1 ring-border" />;
-  }
-  return <UserRound aria-hidden="true" strokeWidth={1.6} />;
-}
 
 /**
  * Barra inferior en móvil (< 768 px): tres secciones principales, el botón
@@ -150,7 +139,7 @@ export function MobileTabBar({ accountExtra }: { accountExtra?: React.ReactNode 
           data-press=""
           className={tabClass}
         >
-          <MoreAvatar />
+          <Menu aria-hidden="true" strokeWidth={1.6} />
           <span>Más</span>
         </button>
       </nav>
@@ -160,41 +149,53 @@ export function MobileTabBar({ accountExtra }: { accountExtra?: React.ReactNode 
       </ResponsiveSheet>
 
       <ResponsiveSheet open={moreOpen} onOpenChange={setMoreOpen} title="Más">
-        {/* Tu negocio, la prueba, tu cuenta y la apariencia: una sola tarjeta con filas ordenadas. */}
-        <div className="mb-4 divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface-muted">
-          <div className="flex items-center gap-3 px-3.5 py-3">
-            <span aria-hidden="true" className="grid size-9 shrink-0 place-items-center rounded-md bg-ink font-display text-sm font-bold text-accent">
-              {brandName.trim().charAt(0).toUpperCase() || "N"}
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block truncate font-display text-sm font-semibold">{brandName}</span>
-              <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <i aria-hidden="true" className="inline-block size-1.5 shrink-0 -skew-x-[24deg] bg-accent" />
-                <span className="truncate">Estás en <b className="font-semibold text-foreground">{title}</b></span>
-              </span>
-            </span>
-          </div>
-          {accountExtra}
-          <div className="flex min-h-14 items-center gap-3 px-3.5 py-2">
-            <AccountButton showName />
-          </div>
-          <button
-            type="button"
-            onClick={() => setTheme(dark ? "light" : "dark")}
-            aria-label={dark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
-            data-press=""
-            className="flex min-h-14 w-full items-center gap-3 px-3.5 py-2 text-left transition-colors hover:bg-surface-hover focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
-          >
-            <span className="grid size-9 shrink-0 place-items-center rounded-md bg-surface text-foreground ring-1 ring-border">
-              {dark ? <Sun aria-hidden="true" className="size-4" /> : <Moon aria-hidden="true" className="size-4" />}
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block text-ui font-semibold">Apariencia</span>
-              <span className="block text-xs text-muted-foreground">{dark ? "Modo oscuro · pasar a claro" : "Modo claro · pasar a oscuro"}</span>
-            </span>
-            <ChevronRight aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
-          </button>
+        {/* Tu negocio, tu plan, tu cuenta y la apariencia: tarjetas separadas con su título. */}
+        <div className="mb-5 grid gap-4">
+          <section aria-labelledby="more-business" className="grid gap-1.5">
+            <h3 id="more-business" className="px-1 text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">Tu negocio</h3>
+            <div className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface-muted">
+              <div className="flex items-center gap-3 px-3.5 py-3">
+                <span aria-hidden="true" className="grid size-10 shrink-0 place-items-center rounded-md bg-ink font-display text-base font-bold text-accent">
+                  {brandName.trim().charAt(0).toUpperCase() || "N"}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate font-display text-base font-semibold">{brandName}</span>
+                  <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <i aria-hidden="true" className="inline-block size-1.5 shrink-0 -skew-x-[24deg] bg-accent" />
+                    <span className="truncate">Estás en <b className="font-semibold text-foreground">{title}</b></span>
+                  </span>
+                </span>
+              </div>
+              {accountExtra}
+            </div>
+          </section>
+
+          <section aria-labelledby="more-account" className="grid gap-1.5">
+            <h3 id="more-account" className="px-1 text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">Tu cuenta</h3>
+            <div className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface-muted">
+              <div className="flex min-h-14 items-center gap-3 px-3.5 py-2">
+                <AccountButton showName />
+              </div>
+              <button
+                type="button"
+                onClick={() => setTheme(dark ? "light" : "dark")}
+                aria-label={dark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+                data-press=""
+                className="flex min-h-14 w-full items-center gap-3 px-3.5 py-2 text-left transition-colors hover:bg-surface-hover focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
+              >
+                <span className="grid size-9 shrink-0 place-items-center rounded-md bg-surface text-foreground ring-1 ring-border">
+                  {dark ? <Sun aria-hidden="true" className="size-4" /> : <Moon aria-hidden="true" className="size-4" />}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-ui font-semibold">Apariencia</span>
+                  <span className="block text-xs text-muted-foreground">{dark ? "Modo oscuro · pasar a claro" : "Modo claro · pasar a oscuro"}</span>
+                </span>
+                <ChevronRight aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
+              </button>
+            </div>
+          </section>
         </div>
+        {rest.length ? <h3 className="mb-1.5 px-1 text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">Secciones</h3> : null}
         <div className="grid gap-2">
           {rest.map((item) => (
             <Link

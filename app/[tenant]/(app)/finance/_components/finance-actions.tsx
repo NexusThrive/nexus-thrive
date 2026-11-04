@@ -62,19 +62,11 @@ export default function FinanceActions({
       <button
         type="button"
         onClick={() => setSheet("pago")}
-        className={cn(buttonVariants({ variant: "accent" }), "w-full sm:w-auto", tone === "light" && "sm:order-2")}
+        className={cn(buttonVariants({ variant: "accent" }), "w-full sm:w-auto")}
         data-mag=""
       >
         <Banknote aria-hidden="true" className="size-4" />
         Registrar pago
-      </button>
-      <button
-        type="button"
-        onClick={() => setSheet("escaneo")}
-        className={cn(buttonVariants({ variant: "outline" }), "w-full sm:order-1 sm:w-auto")}
-      >
-        <Camera aria-hidden="true" className="size-4" />
-        Escanear pago
       </button>
       <button
         type="button"
@@ -87,6 +79,14 @@ export default function FinanceActions({
       >
         <MinusCircle aria-hidden="true" className="size-4" />
         Registrar gasto
+      </button>
+      <button
+        type="button"
+        onClick={() => setSheet("escaneo")}
+        className={cn(buttonVariants({ variant: "outline" }), "w-full sm:w-auto")}
+      >
+        <Camera aria-hidden="true" className="size-4" />
+        Escanear pago
       </button>
 
       <ScanPaymentSheet

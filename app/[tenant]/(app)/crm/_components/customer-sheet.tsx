@@ -12,13 +12,13 @@ import { useToast } from "@/components/molecules/toast";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { bmi, profileFor, type FieldDef } from "@/lib/business/customers/customer-fields";
 import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
-import { formatCurrency } from "@/lib/foundation/format";
+import { formatCurrency, formatDateShort } from "@/lib/foundation/format";
 import { useVerticalTerms } from "../../vertical-terms-context";
 import { customerFormDataAction, getCustomerForEditAction, saveCustomerAction, type CustomerEdit } from "@/app/[tenant]/(app)/crm/profile-actions";
 import { Select } from "@/components/atoms/select";
 import { DateInput } from "@/components/molecules/date-input";
 
-const EMPTY: CustomerEdit = { id: "", name: "", email: "", phone: "", documentId: "", birthDate: "", city: "", tags: "", profile: {}, photoId: null };
+const EMPTY: CustomerEdit = { id: "", name: "", email: "", phone: "", documentId: "", birthDate: "", city: "", tags: "", profile: {}, photoId: null, membership: null };
 
 /**
  * Crear o editar un cliente con los campos de su rubro: el gym suma foto,
@@ -35,6 +35,8 @@ export default function CustomerSheet({ tenantSlug, customerId, onClose, onSaved
   const [preview, setPreview] = useState<string | null>(null);
   const [planId, setPlanId] = useState("");
   const [method, setMethod] = useState("CASH");
+  const [membershipChoice, setMembershipChoice] = useState("");
+  const [membershipMethod, setMembershipMethod] = useState("NONE");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [pending, start] = useTransition();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -48,6 +50,7 @@ export default function CustomerSheet({ tenantSlug, customerId, onClose, onSaved
       void getCustomerForEditAction(tenantSlug, customerId).then((c) => {
         if (!alive) return;
         if (c) setV(c);
+        setMembershipChoice(c?.membership ? "" : "none");
         setLoading(false);
       });
     return () => {
@@ -59,6 +62,7 @@ export default function CustomerSheet({ tenantSlug, customerId, onClose, onSaved
   const setP = (k: string, val: string) => setV((x) => ({ ...x, profile: { ...x.profile, [k]: val } }));
   const b = bmi(Number(String(v.profile.weightKg ?? "").replace(",", ".")) || undefined, Number(v.profile.heightCm) || undefined);
   const plan = meta?.plans.find((p) => p.id === planId);
+  const membershipPlan = meta?.plans.find((p) => p.id === membershipChoice);
 
   const save = () =>
     start(async () => {
@@ -71,6 +75,10 @@ export default function CustomerSheet({ tenantSlug, customerId, onClose, onSaved
       if (planId) {
         fd.set("planId", planId);
         fd.set("paymentMethod", method);
+      }
+      if (customerId) {
+        fd.set("membershipChoice", membershipChoice);
+        if (membershipPlan) fd.set("paymentMethod", membershipMethod === "NONE" ? "" : membershipMethod);
       }
       const r = await saveCustomerAction(fd);
       if (r.ok) {
@@ -230,6 +238,51 @@ export default function CustomerSheet({ tenantSlug, customerId, onClose, onSaved
                 </div>
               ) : (
                 <p className="text-ui text-muted-foreground">Crea tus planes en Catálogo → Planes para inscribir desde aquí.</p>
+              )}
+            </section>
+          ) : null}
+          {customerId && profile.planOnCreate ? (
+            <section className="grid gap-3 rounded-md bg-surface-muted p-3.5">
+              <h3 className="text-ui font-semibold">Membresía</h3>
+              <p className="text-xs text-muted-foreground">
+                {v.membership ? (
+                  <>Activa: <b className="text-foreground/80">{v.membership.planName}</b> · vence {formatDateShort(v.membership.endDate)}.</>
+                ) : (
+                  <>Este {terms.customer.toLowerCase()} no tiene una membresía activa.</>
+                )}
+              </p>
+              {meta?.plans.length ? (
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <Field label="Asignar o cambiar plan">
+                    {(c) => (
+                      <Select {...c} value={membershipChoice} onChange={(e) => setMembershipChoice(e.target.value)}>
+                        {v.membership ? <option value="">Mantener la actual</option> : null}
+                        <option value="none">Sin membresía</option>
+                        {meta.plans.map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {p.name} · {formatCurrency(p.price)} · {p.days} días
+                          </option>
+                        ))}
+                      </Select>
+                    )}
+                  </Field>
+                  {membershipPlan ? (
+                    <Field label="Cobro" hint="Opcional: el plan queda asignado aunque aún no pague.">
+                      {(c) => (
+                        <Select {...c} value={membershipMethod} onChange={(e) => setMembershipMethod(e.target.value)}>
+                          <option value="NONE">Aún no paga</option>
+                          {PAYMENT_METHODS.map((m) => (
+                            <option key={m.value} value={m.value}>
+                              {m.label}
+                            </option>
+                          ))}
+                        </Select>
+                      )}
+                    </Field>
+                  ) : null}
+                </div>
+              ) : (
+                <p className="text-ui text-muted-foreground">Crea los tipos de membresía en Membresías → Tipos para asignarlos desde aquí.</p>
               )}
             </section>
           ) : null}

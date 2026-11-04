@@ -1,24 +1,21 @@
-import { createTenantDb } from "@/lib/core/tenancy/db";
+import { createMembershipsDb } from "@/lib/industry/gym/memberships-repo";
+import { listProducts } from "@/lib/business/catalog/products-db";
 import {
   MEMBERSHIP_STATUSES,
   MEMBERSHIP_TYPES,
   type MembershipStatusValue,
   type MembershipTypeValue,
 } from "@/lib/industry/gym/memberships";
+import MembershipTypes, { type MembershipTypeRow } from "./_components/membership-types";
 import MembershipSummary from "./_components/membership-summary";
 import MembershipFilters from "./_components/membership-filters";
 import MembershipTable, {
   type MembershipViewRow,
 } from "./_components/membership-table";
-import {
-  NewMembershipButton,
-  type MembershipCustomerOption,
-} from "./_components/membership-form";
 import { PageHeader } from "@/components/molecules/page-header";
 import { requirePageContext } from "@/lib/core/tenancy/context";
 import { can } from "@/lib/core/auth/permissions";
 
-import { createMembershipsDb } from "@/lib/industry/gym/memberships-repo";
 const PAGE_SIZE = 10;
 
 function firstString(value: string | string[] | undefined): string {
@@ -66,10 +63,9 @@ export default async function MembershipsPage({
   const pageCtx = await requirePageContext(tenantSlug, "/memberships");
   const tenantRecord = pageCtx.tenant;
 
-  const tenantDb = createTenantDb(tenantRecord.id);
   const memberships = createMembershipsDb(tenantRecord.id);
 
-  const [metrics, membershipResult, activeCustomers] = await Promise.all([
+  const [metrics, membershipResult, plans] = await Promise.all([
     memberships.getMetrics(),
     memberships.list({
       q,
@@ -78,7 +74,7 @@ export default async function MembershipsPage({
       page,
       limit: PAGE_SIZE,
     }),
-    tenantDb.customers.search({ status: "active", pageSize: 200 }),
+    listProducts(tenantRecord.id, { kind: "PLAN" }),
   ]);
 
   const rows: MembershipViewRow[] = membershipResult.rows.map((row) => ({
@@ -100,33 +96,30 @@ export default async function MembershipsPage({
   );
   const safePage = Math.min(page, totalPages);
 
-  const customerOptions: MembershipCustomerOption[] =
-    activeCustomers.rows.map((row) => ({
-      id: row.id,
-      name: row.name,
-      email: row.email ?? "",
-    }));
+  const typeRows: MembershipTypeRow[] = plans.map((plan) => ({
+    id: plan.id,
+    name: plan.name,
+    price: plan.price,
+    durationDays: plan.durationDays,
+    active: plan.active,
+  }));
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* Encabezado */}
       <PageHeader
         title="Membresías"
-        description={<>Planes y renovaciones de{" "}
+        description={<>Tipos, socios y renovaciones de{" "}
             <span className="font-medium text-foreground/80">
               {tenantRecord.name}
             </span>
             .</>}
-        actions={
-          // Vender es cobrar: sin permiso de dinero no se ofrece (SEC-05).
-          can(pageCtx.role, "money.handle") ? (
-            <NewMembershipButton tenantSlug={tenantSlug} customers={customerOptions} />
-          ) : undefined
-        }
       />
 
       {/* Resumen */}
       <MembershipSummary metrics={metrics} />
+
+      <MembershipTypes tenantSlug={tenantSlug} types={typeRows} canEdit={can(pageCtx.role, "business.manage")} />
 
       {/* Filtros + listado */}
       <section aria-labelledby="memberships-list-title" className="space-y-4">

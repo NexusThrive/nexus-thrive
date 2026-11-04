@@ -28,24 +28,29 @@ export function HelpCenter({
   tenantSlug,
   businessName,
   activeModules,
+  showFunctions = true,
 }: {
   tenantSlug: string;
   businessName: string;
   activeModules: readonly string[];
+  /** El menú del negocio incluye «Funciones» (no en los rubros con menú reducido). */
+  showFunctions?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState<Tab>("search");
   const [query, setQuery] = useState("");
   const { toast } = useToast();
   const base = `/${tenantSlug}`;
+  // Sin «Funciones» en el menú (rubros con menú reducido) la ayuda solo habla de lo que el negocio ya tiene.
+  const hasFunctions = showFunctions;
 
   const results = useMemo(() => {
     const text = normalize(query.trim());
     if (text.length < 2) return [];
-    return CAPABILITIES.filter((c) => c.status !== "PLANNED" && c.id !== "dashboard")
+    return CAPABILITIES.filter((c) => c.status !== "PLANNED" && c.id !== "dashboard" && (hasFunctions || activeModules.includes(c.id)))
       .filter((c) => normalize(`${c.name} ${c.label} ${c.description} ${c.pitch} ${c.category}`).includes(text))
       .slice(0, 8);
-  }, [query]);
+  }, [query, hasFunctions, activeModules]);
 
   async function copyId() {
     try {
@@ -158,7 +163,7 @@ export function HelpCenter({
           ) : (
             <div className="grid gap-2">
               <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">Para empezar</p>
-              <ShortcutLink href={`${base}/functions`} icon={<Sparkles aria-hidden="true" className="size-4" />} onNavigate={() => setOpen(false)} title="Funciones de NEXUS" hint="Mira todo lo que puedes encender en tu negocio." />
+              {hasFunctions ? <ShortcutLink href={`${base}/functions`} icon={<Sparkles aria-hidden="true" className="size-4" />} onNavigate={() => setOpen(false)} title="Funciones de NEXUS" hint="Mira todo lo que puedes encender en tu negocio." /> : null}
               <ShortcutLink href={`${base}/settings`} icon={<ArrowUpRight aria-hidden="true" className="size-4" />} onNavigate={() => setOpen(false)} title="Ajustes del negocio" hint="Perfil, equipo, plan y datos de tu cuenta." />
             </div>
           )}

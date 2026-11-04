@@ -4,7 +4,7 @@
  * reúne los datos y aquí se arma la lista que pinta la campana.
  */
 
-export type NotificationKind = "payment" | "expense" | "booking" | "membership";
+export type NotificationKind = "payment" | "expense" | "booking" | "membership" | "customer";
 
 /**
  * Qué se espera de la persona (DR-40): `info` solo informa; `action` pide atención (algo por resolver pronto);
@@ -35,11 +35,13 @@ const cop = (n: number) => `$ ${Math.round(n).toLocaleString("es-CO")}`;
 export function buildNotifications(input: {
   movements: { id: string; type: "in" | "out"; title: string; subtitle: string; amount: number; at: string }[];
   bookings: { id: string; at: string; service: string; customer: string }[];
+  /** Altas del registro público (gimnasio), de la más reciente a la más antigua. */
+  registrations?: { id: string; customerId: string; name: string; at: string }[];
   expiring: number;
   expired: number;
   /** ISO del inicio de hoy (Bogotá): las alertas de membresía se fechan ahí. */
   todayStart: string;
-  modules: { finance: boolean; bookings: boolean; memberships: boolean };
+  modules: { finance: boolean; bookings: boolean; memberships: boolean; registrations?: boolean };
 }): AppNotification[] {
   const out: AppNotification[] = [];
   if (input.modules.finance) {
@@ -57,6 +59,19 @@ export function buildNotifications(input: {
   if (input.modules.bookings) {
     for (const b of input.bookings) {
       out.push({ id: `booking-${b.id}`, kind: "booking", title: `Cita hoy · ${b.service}`, detail: b.customer, at: b.at, href: "/bookings" });
+    }
+  }
+  if (input.modules.registrations) {
+    for (const r of input.registrations ?? []) {
+      out.push({
+        id: `registration-${r.id}`,
+        kind: "customer",
+        severity: "info",
+        title: `Nuevo cliente registrado · ${r.name}`,
+        detail: "Entró por el registro público. Asígnale su membresía.",
+        at: r.at,
+        href: r.customerId ? `/crm/${r.customerId}` : "/crm",
+      });
     }
   }
   if (input.modules.memberships) {

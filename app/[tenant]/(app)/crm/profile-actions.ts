@@ -3,7 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { cleanProfile, profileFor } from "@/lib/business/customers/customer-fields";
 import { getCustomer, saveCustomer, setCustomerPhoto } from "@/lib/business/customers/customers-db";
-import { enrollInPlan } from "@/lib/industry/gym/enrollment-db";
+import { activeMembershipFor, cancelActiveMemberships, enrollInPlan } from "@/lib/industry/gym/enrollment-db";
+import { typeLabel } from "@/lib/industry/gym/memberships";
 import { addAttachment, checkAttachment } from "@/lib/business/sales/finance-db";
 import { getProduct, planOptions } from "@/lib/business/catalog/products-db";
 import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
@@ -26,6 +27,8 @@ export type CustomerEdit = {
   tags: string;
   profile: Record<string, string | number>;
   photoId: string | null;
+  /** Membresía vigente (gym): plan y vencimiento, para asignar o retirar desde la ficha. */
+  membership: { productId: string | null; planName: string; endDate: string } | null;
 };
 
 export async function getCustomerForEditAction(slug: string, id: string): Promise<CustomerEdit | null> {
@@ -33,6 +36,8 @@ export async function getCustomerForEditAction(slug: string, id: string): Promis
   if (!ctx) return null;
   const c = await getCustomer(ctx.tenantId, id);
   if (!c) return null;
+  const active = profileFor(ctx.vertical).planOnCreate ? await activeMembershipFor(ctx.tenantId, id) : null;
+  const plan = active?.productId ? await getProduct(ctx.tenantId, active.productId) : null;
   return {
     id: c.id,
     name: c.name,
@@ -44,6 +49,7 @@ export async function getCustomerForEditAction(slug: string, id: string): Promis
     tags: (c.tags ?? []).join(", "),
     profile: (c.profile as Record<string, string | number> | null) ?? {},
     photoId: c.photoId,
+    membership: active ? { productId: active.productId, planName: plan?.name ?? typeLabel(active.status), endDate: active.endDate } : null,
   };
 }
 
@@ -96,8 +102,9 @@ export async function saveCustomerAction(form: FormData): Promise<CustomerSaveRe
 
   // Gimnasio: el plan con el que entra crea la membresía y, si se cobra, el pago con recibo.
   let extra = "";
+  const gym = profileFor(ctx.vertical).planOnCreate;
   const planId = String(form.get("planId") ?? "");
-  if (!id && planId && profileFor(ctx.vertical).planOnCreate) {
+  if (!id && planId && gym) {
     const plan = await getProduct(ctx.tenantId, planId);
     if (plan && plan.kind === "PLAN" && plan.durationDays) {
       const method = String(form.get("paymentMethod") ?? "");
@@ -113,10 +120,40 @@ export async function saveCustomerAction(form: FormData): Promise<CustomerSaveRe
       if (pay) extra += " y su pago";
     }
   }
+
+  // Gimnasio, ficha existente: asignar, cambiar o retirar la membresía. El
+  // selector manda "" (mantener), "none" (retirar) o el id del plan.
+  if (id && gym) {
+    const choice = String(form.get("membershipChoice") ?? "").trim();
+    if (choice) {
+      const current = await activeMembershipFor(ctx.tenantId, customerId);
+      const target = choice === "none" ? null : choice;
+      if (target !== (current?.productId ?? null)) {
+        if (current) await cancelActiveMemberships(ctx.tenantId, customerId, target ? "Cambio de plan desde la ficha" : "Retiro desde la ficha");
+        if (target) {
+          const plan = await getProduct(ctx.tenantId, target);
+          if (plan && plan.kind === "PLAN" && plan.durationDays) {
+            const method = String(form.get("paymentMethod") ?? "");
+            const pay = PAYMENT_METHODS.some((m) => m.value === method) && can(ctx.role, "money.handle");
+            await enrollInPlan(
+              ctx.tenantId,
+              { customerId, customerName: name, plan: { id: plan.id, name: plan.name, price: plan.price, durationDays: plan.durationDays }, method: pay ? method : null },
+              ctx.memberId,
+            );
+            extra = ` con ${plan.name}`;
+            if (pay) extra += " y su pago";
+          }
+        } else {
+          extra = ", sin membresía";
+        }
+      }
+    }
+  }
   revalidatePath(`/${slug}/crm`);
+  revalidatePath(`/${slug}/crm/${customerId}`);
   revalidatePath(`/${slug}/memberships`);
   revalidatePath(`/${slug}/finance`);
-  return { ok: true, id: customerId, message: id ? "Cambios guardados" : `Registrado${extra}` };
+  return { ok: true, id: customerId, message: id ? `Cambios guardados${extra}` : `Registrado${extra}` };
 }
 
 /** Lo que el formulario necesita: rubro y (gym) los planes para inscribir. */
@@ -127,4 +164,35 @@ export async function customerFormDataAction(slug: string) {
     ? await planOptions(ctx.tenantId)
     : [];
   return { vertical: ctx.vertical, plans };
+}
+
+export type AssignMembershipResult = { ok: true; message: string } | { ok: false; message: string };
+
+/**
+ * Asigna una membresía desde la ficha del cliente: crea la membresía del plan
+ * elegido (con su duración) y, si quien registra maneja dinero, el cobro con
+ * recibo. Si ya tenía una vigente, la reemplaza (queda en el histórico).
+ */
+export async function assignMembershipAction(slug: string, customerId: string, planId: string, method: string): Promise<AssignMembershipResult> {
+  const ctx = await requireTenantContext(slug, "/crm");
+  if (!ctx || !profileFor(ctx.vertical).planOnCreate) return { ok: false, message: "No tienes acceso a este negocio." };
+  const customer = await getCustomer(ctx.tenantId, customerId);
+  if (!customer) return { ok: false, message: "El cliente no existe en este negocio." };
+  const plan = planId ? await getProduct(ctx.tenantId, planId) : null;
+  if (!plan || plan.kind !== "PLAN" || !plan.active || !plan.durationDays) return { ok: false, message: "Elige un tipo de membresía válido." };
+
+  const pay = PAYMENT_METHODS.some((m) => m.value === method) && can(ctx.role, "money.handle");
+  const current = await activeMembershipFor(ctx.tenantId, customerId);
+  if (current) await cancelActiveMemberships(ctx.tenantId, customerId, "Cambio de plan desde la ficha");
+  await enrollInPlan(
+    ctx.tenantId,
+    { customerId, customerName: customer.name, plan: { id: plan.id, name: plan.name, price: plan.price, durationDays: plan.durationDays }, method: pay ? method : null },
+    ctx.memberId,
+  );
+
+  revalidatePath(`/${slug}/crm`);
+  revalidatePath(`/${slug}/crm/${customerId}`);
+  revalidatePath(`/${slug}/memberships`);
+  revalidatePath(`/${slug}/finance`);
+  return { ok: true, message: `${plan.name} asignada${pay ? " y cobrada" : ""}` };
 }

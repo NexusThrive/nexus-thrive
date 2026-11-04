@@ -51,6 +51,7 @@ export const AUDIT_ACTION_LABELS: Record<string, string> = {
   BIZ_GOOGLE: "Negocio · ficha de Google",
   BIZ_STORE_ORDER: "Negocio · pedido de la tienda",
   BIZ_SITE: "Negocio · mini-sitio web",
+  BIZ_REGISTRATION: "Negocio · registro público de clientes",
   BIZ_ACCOUNTING: "Negocio · contabilidad",
   BIZ_EINVOICE: "Negocio · factura electrónica",
   BIZ_ONLINE_PAYMENT: "Negocio · cobro en línea",

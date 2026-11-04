@@ -34,6 +34,7 @@ export type TenantAuditAction =
   | "BIZ_GOOGLE"
   | "BIZ_STORE_ORDER"
   | "BIZ_SITE"
+  | "BIZ_REGISTRATION"
   | "BIZ_ACCOUNTING"
   | "BIZ_EINVOICE"
   | "BIZ_ONLINE_PAYMENT"

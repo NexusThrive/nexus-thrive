@@ -101,6 +101,8 @@ enum Vertical {
 /// - `suspendedReason`: Suspensión administrativa (Panel CEO): motivo obligatorio + timestamp. Se
 ///   conserva aunque el tenant se reactive (historial de por qué se suspendió).
 /// - `settings`: Ajustes operativos del rubro (aforo del museo, franjas, horarios…).
+/// - `registrationEnabled`: Gimnasio: el enlace público de registro de clientes acepta altas nuevas.
+/// - `logoId`: Logotipo del negocio para el registro público (Attachment `TENANT_LOGO`).
 model Tenant {
   id           String   @id @default(uuid())
   name         String
@@ -144,6 +146,8 @@ model Tenant {
   suspendedAt     DateTime?
 
   settings          Json?
+  registrationEnabled Boolean @default(false)
+  logoId            String?
   createdAt DateTime @default(now())
   updatedAt temporal.updatedAt()
 

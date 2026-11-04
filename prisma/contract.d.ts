@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'191a1245f44131a6d6cbd0710b3e6f55e60e6f2e206552beaa3f69290ba03007'>;
+  StorageHashBase<'fbe4a87ab93b742a4693ff5c0c38c3298161bfc6048ebf61ac2309e6605547cf'>;
 export type ExecutionHash =
   ExecutionHashBase<'780b65cd4291ef2d83f36d9d8692990b1b6223156b9157c28c4a5b6821b37541'>;
 export type ProfileHash =
@@ -1686,6 +1686,7 @@ export type FieldOutputTypes = {
       readonly instagramHandle: CodecTypes['pg/text@1']['output'] | null;
       readonly latitude: CodecTypes['pg/float8@1']['output'] | null;
       readonly legalName: CodecTypes['pg/text@1']['output'] | null;
+      readonly logoId: CodecTypes['pg/text@1']['output'] | null;
       readonly longitude: CodecTypes['pg/float8@1']['output'] | null;
       readonly maxCustomers: CodecTypes['pg/int4@1']['output'] | null;
       readonly maxUsers: CodecTypes['pg/int4@1']['output'] | null;
@@ -1696,6 +1697,7 @@ export type FieldOutputTypes = {
       readonly plan: 'ESSENTIAL' | 'ELITE' | 'SIGNATURE';
       readonly planMonthlyUsdCents: CodecTypes['pg/int4@1']['output'];
       readonly planSelectedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly registrationEnabled: CodecTypes['pg/bool@1']['output'];
       readonly settings: CodecTypes['pg/json@1']['output'] | null;
       readonly slug: CodecTypes['pg/text@1']['output'];
       readonly suspendedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
@@ -3357,6 +3359,7 @@ export type FieldInputTypes = {
       readonly instagramHandle: CodecTypes['pg/text@1']['input'] | null;
       readonly latitude: CodecTypes['pg/float8@1']['input'] | null;
       readonly legalName: CodecTypes['pg/text@1']['input'] | null;
+      readonly logoId: CodecTypes['pg/text@1']['input'] | null;
       readonly longitude: CodecTypes['pg/float8@1']['input'] | null;
       readonly maxCustomers: CodecTypes['pg/int4@1']['input'] | null;
       readonly maxUsers: CodecTypes['pg/int4@1']['input'] | null;
@@ -3367,6 +3370,7 @@ export type FieldInputTypes = {
       readonly plan: 'ESSENTIAL' | 'ELITE' | 'SIGNATURE';
       readonly planMonthlyUsdCents: CodecTypes['pg/int4@1']['input'];
       readonly planSelectedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly registrationEnabled: CodecTypes['pg/bool@1']['input'];
       readonly settings: CodecTypes['pg/json@1']['input'] | null;
       readonly slug: CodecTypes['pg/text@1']['input'];
       readonly suspendedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
@@ -5028,6 +5032,7 @@ export type StorageColumnTypes = {
       readonly instagramHandle: CodecTypes['pg/text@1']['output'] | null;
       readonly latitude: CodecTypes['pg/float8@1']['output'] | null;
       readonly legalName: CodecTypes['pg/text@1']['output'] | null;
+      readonly logoId: CodecTypes['pg/text@1']['output'] | null;
       readonly longitude: CodecTypes['pg/float8@1']['output'] | null;
       readonly maxCustomers: CodecTypes['pg/int4@1']['output'] | null;
       readonly maxUsers: CodecTypes['pg/int4@1']['output'] | null;
@@ -5038,6 +5043,7 @@ export type StorageColumnTypes = {
       readonly plan: 'ESSENTIAL' | 'ELITE' | 'SIGNATURE';
       readonly planMonthlyUsdCents: CodecTypes['pg/int4@1']['output'];
       readonly planSelectedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly registrationEnabled: CodecTypes['pg/bool@1']['output'];
       readonly settings: CodecTypes['pg/json@1']['output'] | null;
       readonly slug: CodecTypes['pg/text@1']['output'];
       readonly suspendedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
@@ -6699,6 +6705,7 @@ export type StorageColumnInputTypes = {
       readonly instagramHandle: CodecTypes['pg/text@1']['input'] | null;
       readonly latitude: CodecTypes['pg/float8@1']['input'] | null;
       readonly legalName: CodecTypes['pg/text@1']['input'] | null;
+      readonly logoId: CodecTypes['pg/text@1']['input'] | null;
       readonly longitude: CodecTypes['pg/float8@1']['input'] | null;
       readonly maxCustomers: CodecTypes['pg/int4@1']['input'] | null;
       readonly maxUsers: CodecTypes['pg/int4@1']['input'] | null;
@@ -6709,6 +6716,7 @@ export type StorageColumnInputTypes = {
       readonly plan: 'ESSENTIAL' | 'ELITE' | 'SIGNATURE';
       readonly planMonthlyUsdCents: CodecTypes['pg/int4@1']['input'];
       readonly planSelectedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly registrationEnabled: CodecTypes['pg/bool@1']['input'];
       readonly settings: CodecTypes['pg/json@1']['input'] | null;
       readonly slug: CodecTypes['pg/text@1']['input'];
       readonly suspendedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
@@ -8724,6 +8732,7 @@ export namespace Models {
     instagramHandle: CodecTypes['pg/text@1']['output'] | null;
     latitude: CodecTypes['pg/float8@1']['output'] | null;
     legalName: CodecTypes['pg/text@1']['output'] | null;
+    logoId: CodecTypes['pg/text@1']['output'] | null;
     longitude: CodecTypes['pg/float8@1']['output'] | null;
     maxCustomers: CodecTypes['pg/int4@1']['output'] | null;
     maxUsers: CodecTypes['pg/int4@1']['output'] | null;
@@ -8734,6 +8743,7 @@ export namespace Models {
     plan: 'ESSENTIAL' | 'ELITE' | 'SIGNATURE';
     planMonthlyUsdCents: CodecTypes['pg/int4@1']['output'];
     planSelectedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+    registrationEnabled: CodecTypes['pg/bool@1']['output'];
     settings: CodecTypes['pg/json@1']['output'] | null;
     slug: CodecTypes['pg/text@1']['output'];
     suspendedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
@@ -20524,6 +20534,11 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
                 };
+                readonly logoId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
                 readonly longitude: {
                   readonly nativeType: 'float8';
                   readonly codecId: 'pg/float8@1';
@@ -20585,6 +20600,15 @@ type ContractBase = Omit<
                   readonly nativeType: 'timestamptz';
                   readonly codecId: 'pg/timestamptz-temporal@1';
                   readonly nullable: true;
+                };
+                readonly registrationEnabled: {
+                  readonly nativeType: 'bool';
+                  readonly codecId: 'pg/bool@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/bool@1', false>;
+                  };
                 };
                 readonly settings: {
                   readonly nativeType: 'json';
@@ -33345,6 +33369,10 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly logoId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly longitude: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/float8@1' };
@@ -33388,6 +33416,10 @@ type ContractBase = Omit<
                   readonly kind: 'scalar';
                   readonly codecId: 'pg/timestamptz-temporal@1';
                 };
+              };
+              readonly registrationEnabled: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
               };
               readonly settings: {
                 readonly nullable: true;
@@ -34506,6 +34538,7 @@ type ContractBase = Omit<
                 readonly instagramHandle: { readonly column: 'instagramHandle' };
                 readonly latitude: { readonly column: 'latitude' };
                 readonly legalName: { readonly column: 'legalName' };
+                readonly logoId: { readonly column: 'logoId' };
                 readonly longitude: { readonly column: 'longitude' };
                 readonly maxCustomers: { readonly column: 'maxCustomers' };
                 readonly maxUsers: { readonly column: 'maxUsers' };
@@ -34516,6 +34549,7 @@ type ContractBase = Omit<
                 readonly plan: { readonly column: 'plan' };
                 readonly planMonthlyUsdCents: { readonly column: 'planMonthlyUsdCents' };
                 readonly planSelectedAt: { readonly column: 'planSelectedAt' };
+                readonly registrationEnabled: { readonly column: 'registrationEnabled' };
                 readonly settings: { readonly column: 'settings' };
                 readonly slug: { readonly column: 'slug' };
                 readonly suspendedAt: { readonly column: 'suspendedAt' };

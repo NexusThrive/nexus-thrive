@@ -15,9 +15,22 @@ export const BUSINESS_ROLES: { value: Exclude<BusinessRole, "SUPERADMIN" | "STAF
   { value: "ADVISOR", label: "Asesor", hint: "Clientes, agenda y WhatsApp. Sin dinero." },
 ];
 
+/** Roles con la jerga del gimnasio: el asesor es el entrenador y administración, el administrador. */
+export const GYM_ROLES: typeof BUSINESS_ROLES = [
+  { value: "OWNER", label: "Dueño", hint: "Todo, incluido el plan y el equipo." },
+  { value: "ADMIN", label: "Administrador", hint: "Dinero, membresías, equipo y reportes." },
+  { value: "RECEPTION", label: "Recepción", hint: "Cobros, caja, socios, membresías y control de acceso." },
+  { value: "ADVISOR", label: "Entrenador", hint: "Atiende y acompaña a los socios. Sin dinero." },
+];
+
+/** Roles del negocio con el vocabulario de su rubro. */
+export function rolesFor(gym?: boolean): typeof BUSINESS_ROLES {
+  return gym ? GYM_ROLES : BUSINESS_ROLES;
+}
+
 /** Nombre para mostrar de un rol del negocio; «NEXUS» para el superadministrador y «Equipo» si no se reconoce. */
-export function roleLabel(role: string) {
-  return BUSINESS_ROLES.find((r) => r.value === role)?.label ?? (role === "SUPERADMIN" ? "NEXUS" : "Equipo");
+export function roleLabel(role: string, gym?: boolean) {
+  return rolesFor(gym).find((r) => r.value === role)?.label ?? (role === "SUPERADMIN" ? "NEXUS" : "Equipo");
 }
 
 // Atajos sobre la matriz única de permisos (`./permissions`).

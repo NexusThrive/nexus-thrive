@@ -417,7 +417,7 @@ export const CAPABILITIES = [
     priceUsd: 0,
     general: true,
     nav: [
-      { href: "/sitio", icon: Globe, label: () => "Mi sitio web" },
+      { href: "/sitio", icon: Globe, label: (terms) => terms.siteLabel ?? "Mi sitio web" },
       { href: "/pedidos-tienda", icon: PackageCheck, label: () => "Pedidos de la tienda" },
     ],
   },

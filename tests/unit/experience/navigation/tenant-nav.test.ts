@@ -13,13 +13,13 @@ describe("buildTenantNav", () => {
   });
 
   it("solo muestra funciones activas y siempre Funciones y Configuración", () => {
-    const groups = buildTenantNav("gym", ["dashboard", "crm"]);
+    const groups = buildTenantNav("retail", ["dashboard", "crm"]);
     expect(groups.map((g) => g.label)).toEqual(["General", "Clientes y agenda", "Sistema"]);
     expect(groups.flatMap((g) => g.items).map((i) => i.href)).toEqual(["", "/crm", "/functions", "/data", "/integrations", "/settings"]);
   });
 
   it("agrupa por trabajo, con todas las categorías desplegables, y omite los grupos vacíos", () => {
-    const groups = buildTenantNav("gym", ["dashboard", "crm", "memberships", "finance", "payments", "pos", "online_payments", "billing", "einvoicing", "receivables", "accounting", "taxes", "whatsapp"]);
+    const groups = buildTenantNav("retail", ["dashboard", "crm", "memberships", "finance", "payments", "pos", "online_payments", "billing", "einvoicing", "receivables", "accounting", "taxes", "whatsapp"]);
     expect(groups.map((g) => g.label)).toEqual(["General", "Clientes y agenda", "Ventas y cobros", "Compras y gastos", "Finanzas y contabilidad", "Canales", "Sistema"]);
     // Facturación, punto de venta y cobros van en Ingresos; Pagos vive dentro de Finanzas y no se repite.
     const ingresos = groups.find((g) => g.label === "Ventas y cobros")!;
@@ -37,11 +37,19 @@ describe("buildTenantNav", () => {
   });
 
   it("cada pantalla aparece solo si su función está encendida: Pagos no trae punto de venta ni Finanzas trae contabilidad", () => {
-    const labels = (mods: Parameters<typeof buildTenantNav>[1]) => buildTenantNav("gym", mods).flatMap((g) => g.items).map((i) => i.label);
+    const labels = (mods: Parameters<typeof buildTenantNav>[1]) => buildTenantNav("retail", mods).flatMap((g) => g.items).map((i) => i.label);
     const base = labels(["dashboard", "crm", "payments", "finance", "billing"]);
     for (const hidden of ["Punto de venta", "Cobros en línea", "Cartera", "Contabilidad", "Impuestos y numeración", "Factura electrónica", "Mi sitio web", "Ficha de Google", "Campañas y reseñas"]) expect(base).not.toContain(hidden);
     expect(labels(["dashboard", "pos", "website", "google", "growth"])).toEqual(expect.arrayContaining(["Punto de venta", "Mi sitio web", "Pedidos de la tienda", "Ficha de Google", "Campañas y reseñas"]));
-    expect(buildTenantNav("gym", ["dashboard", "website"]).map((g) => g.label)).toContain("Presencia en línea");
+    expect(buildTenantNav("retail", ["dashboard", "website"]).map((g) => g.label)).toContain("Presencia en línea");
+  });
+
+  it("el gimnasio trae un menú reducido: sin Funciones, datos, integraciones, Gastos ni tienda", () => {
+    const groups = buildTenantNav("gym", ["dashboard", "crm", "memberships", "finance", "website"]);
+    const items = groups.flatMap((g) => g.items);
+    expect(items.map((i) => i.href)).toEqual(["", "/crm", "/memberships", "/checkin", "/finance", "/sitio", "/settings"]);
+    expect(items.find((i) => i.href === "/sitio")?.label).toBe("Panel de registro de cliente");
+    expect(items.map((i) => i.href)).not.toContain("/pedidos-tienda");
   });
 
   it("sin facturación ni gastos no aparecen esas categorías", () => {

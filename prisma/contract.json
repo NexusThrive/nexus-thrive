@@ -18503,6 +18503,13 @@
                   "kind": "scalar"
                 }
               },
+              "logoId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "longitude": {
                 "nullable": true,
                 "type": {
@@ -18577,6 +18584,13 @@
                 "nullable": true,
                 "type": {
                   "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "registrationEnabled": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
                   "kind": "scalar"
                 }
               },
@@ -20160,6 +20174,9 @@
                 "legalName": {
                   "column": "legalName"
                 },
+                "logoId": {
+                  "column": "logoId"
+                },
                 "longitude": {
                   "column": "longitude"
                 },
@@ -20189,6 +20206,9 @@
                 },
                 "planSelectedAt": {
                   "column": "planSelectedAt"
+                },
+                "registrationEnabled": {
+                  "column": "registrationEnabled"
                 },
                 "settings": {
                   "column": "settings"
@@ -36975,6 +36995,11 @@
                   "nativeType": "text",
                   "nullable": true
                 },
+                "logoId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "longitude": {
                   "codecId": "pg/float8@1",
                   "nativeType": "float8",
@@ -37049,6 +37074,15 @@
                   "codecId": "pg/timestamptz-temporal@1",
                   "nativeType": "timestamptz",
                   "nullable": true
+                },
+                "registrationEnabled": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
                 },
                 "settings": {
                   "codecId": "pg/json@1",
@@ -39187,7 +39221,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "191a1245f44131a6d6cbd0710b3e6f55e60e6f2e206552beaa3f69290ba03007"
+    "storageHash": "fbe4a87ab93b742a4693ff5c0c38c3298161bfc6048ebf61ac2309e6605547cf"
   },
   "execution": {
     "executionHash": "780b65cd4291ef2d83f36d9d8692990b1b6223156b9157c28c4a5b6821b37541",

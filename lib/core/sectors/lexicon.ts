@@ -22,6 +22,8 @@ export type VerticalTerms = {
   /** Texto de la acción «Crear» para un proyecto nuevo; sin valor, «Nuevo proyecto». */
   newProject?: string;
   /** Título de la sección de datos propios del cliente en su ficha; sin valor, el del perfil del rubro. */
+  /** Nombre de la pantalla pública del negocio (`/sitio`) si el rubro la usa con otro fin. */
+  siteLabel?: string;
   profileTitle?: string;
 };
 

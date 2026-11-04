@@ -30,6 +30,8 @@ export type CustomerRow = {
   photoId: string | null;
   tags: string[];
   documentId: string | null;
+  /** Gimnasio: tiene una membresía vigente (si no, se marca en rojo). */
+  hasMembership: boolean;
 };
 
 /** Foto del cliente o sus iniciales. */
@@ -40,6 +42,16 @@ function Face({ row, className }: { row: CustomerRow; className: string }) {
   ) : (
     <span aria-hidden="true" className={className}>
       {initialsOf(row.name)}
+    </span>
+  );
+}
+
+/** Aviso de membresía: solo para gimnasios con el módulo y sin plan vigente. */
+function MembershipAlert({ className = "" }: { className?: string }) {
+  return (
+    <span className={`inline-flex items-center gap-1 rounded bg-destructive/10 px-1.5 py-0.5 text-2xs font-semibold uppercase text-destructive ${className}`}>
+      <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-destructive" />
+      Sin membresía
     </span>
   );
 }
@@ -66,6 +78,7 @@ export default function CustomerTable({
   total,
   query,
   canRemove = true,
+  showMembership = false,
 }: {
   tenantSlug: string;
   rows: CustomerRow[];
@@ -76,6 +89,8 @@ export default function CustomerTable({
   query: string;
   /** El rol puede archivar, restaurar y eliminar (el servidor lo vuelve a exigir). */
   canRemove?: boolean;
+  /** Gimnasio con membresías: marca en rojo a quien no tiene plan vigente. */
+  showMembership?: boolean;
 }) {
   const router = useRouter();
   const quick = useQuickCreate();
@@ -345,6 +360,7 @@ export default function CustomerTable({
                                 Archivado
                               </span>
                             ) : null}
+                            {showMembership && !row.hasMembership ? <MembershipAlert /> : null}
                           </p>
                           {row.email ? (
                             <p className="flex items-center gap-1 truncate text-xs text-muted-foreground">
@@ -483,6 +499,7 @@ export default function CustomerTable({
                         <Face row={row} className="grid size-[38px] shrink-0 place-items-center rounded-full bg-primary font-display text-xs font-bold text-primary-foreground" />
                         <span className="min-w-0 flex-1">
                           <b className="block truncate font-medium">{row.name}</b>
+                          {showMembership && !row.hasMembership ? <MembershipAlert className="mt-1" /> : null}
                           <small className="block truncate text-xs text-muted-foreground">{[row.phone || row.email || "Sin contacto", row.documentId].filter(Boolean).join(" · ")}</small>
                           {row.tags.length ? (
                             <span className="mt-1 flex flex-wrap gap-1">

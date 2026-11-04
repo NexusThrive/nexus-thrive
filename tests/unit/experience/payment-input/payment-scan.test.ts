@@ -47,9 +47,9 @@ describe("bestCopAmount", () => {
 
 describe("guessPaymentMethod", () => {
   test.each([
-    ["Pago Nequi exitoso", "NEQUI"],
+    ["Pago Nequi exitoso", "TRANSFER"],
     ["Transferencia bancolombia ahorros", "TRANSFER"],
-    ["Pago con Wompi - aprobado", "WOMPI"],
+    ["Pago con Wompi - aprobado", "TRANSFER"],
     ["Recibido en efectivo", "CASH"],
     ["Comprobante genérico", null],
   ] as const)("%j → %j", (text, expected) => {
@@ -60,7 +60,7 @@ describe("guessPaymentMethod", () => {
 describe("parseQrPaymentPayload", () => {
   test("payload estilo Nequi con query string", () => {
     const r = parseQrPaymentPayload("nequi://pay?amount=85000&ref=ABC123");
-    expect(r).toEqual({ amount: "85000", method: "NEQUI", reference: "ABC123" });
+    expect(r).toEqual({ amount: "85000", method: "TRANSFER", reference: "ABC123" });
   });
 
   test("payload JSON", () => {
@@ -72,7 +72,7 @@ describe("parseQrPaymentPayload", () => {
 
   test("texto llano de comprobante", () => {
     const r = parseQrPaymentPayload("Pago Nequi por $ 45.500");
-    expect(r).toEqual({ amount: "45500", method: "NEQUI", reference: null });
+    expect(r).toEqual({ amount: "45500", method: "TRANSFER", reference: null });
   });
 
   test("payload ilegible no inventa datos", () => {

@@ -31,7 +31,7 @@ export async function loadNotifications(tenantId: string, memberId: string, role
   const start = Temporal.Instant.fromEpochMilliseconds(startMs);
   const end = Temporal.Instant.fromEpochMilliseconds(startMs + 86_400_000);
 
-  const [movements, bookings, membership] = await Promise.all([
+  const [movements, bookings, membership, registrations] = await Promise.all([
     modules.finance ? tenantDb.finance.getMovements(20) : Promise.resolve([]),
     modules.bookings
       ? db.orm.public.Booking.where({ tenantId })
@@ -40,6 +40,15 @@ export async function loadNotifications(tenantId: string, memberId: string, role
           .all()
       : Promise.resolve([]),
     modules.memberships ? createMembershipsDb(tenantId).getMetrics() : Promise.resolve(null),
+    // Altas del registro público: evento `customer.registered` de la última semana.
+    active.has("crm")
+      ? db.orm.public.OutboxEvent.where({ tenantId, type: "customer.registered" })
+          .where((e) => e.createdAt.gte(Temporal.Instant.fromEpochMilliseconds(startMs - 7 * 86_400_000)))
+          .orderBy((e) => e.createdAt.desc())
+          .limit(20)
+          .select("id", "createdAt", "payload")
+          .all()
+      : Promise.resolve([]),
   ]);
 
   const customerIds = [...new Set(bookings.map((b) => b.customerId))];
@@ -56,8 +65,17 @@ export async function loadNotifications(tenantId: string, memberId: string, role
       .map((b) => ({ id: b.id, at: String(b.startDate), service: b.serviceName, customer: names.get(b.customerId) ?? "Cliente" })),
     expiring: membership?.expiringCount ?? 0,
     expired: membership?.expiredCount ?? 0,
+    registrations: registrations.map((event) => {
+      const payload = event.payload as { name?: unknown; customer_id?: unknown } | null;
+      return {
+        id: String(event.id),
+        customerId: typeof payload?.customer_id === "string" ? payload.customer_id : "",
+        name: typeof payload?.name === "string" ? payload.name : "Cliente",
+        at: String(event.createdAt),
+      };
+    }),
     todayStart: new Date(startMs).toISOString(),
-    modules,
+    modules: { ...modules, registrations: active.has("crm") },
   });
   return all.filter((n) => !dismissed.has(n.id));
 }

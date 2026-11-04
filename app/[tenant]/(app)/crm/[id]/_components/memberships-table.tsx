@@ -1,3 +1,5 @@
+"use client";
+
 import type { Customer360Membership } from "@/lib/industry/gym/memberships";
 import { formatCurrency, formatDateShort } from "@/lib/foundation/format";
 import { typeLabel } from "@/lib/industry/gym/memberships";

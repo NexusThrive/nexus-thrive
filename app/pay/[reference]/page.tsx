@@ -24,7 +24,7 @@ export default async function PayPage({ params }: { params: Promise<{ reference:
         <p role="status" className={`text-sm font-semibold ${tone}`}>{STATUS_LABELS[intent.status]}</p>
         {intent.payUrl ? (
           <a href={intent.payUrl} className="inline-flex h-12 items-center justify-center rounded-md bg-primary px-5 text-[15px] font-semibold text-primary-foreground">
-            Pagar con tarjeta, PSE o Nequi
+            Pagar con tarjeta o PSE
           </a>
         ) : null}
         {intent.status === "PENDING" ? (

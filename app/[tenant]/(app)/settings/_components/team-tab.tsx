@@ -10,7 +10,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
-import { BUSINESS_ROLES, roleLabel } from "@/lib/core/auth/roles";
+import { rolesFor, roleLabel } from "@/lib/core/auth/roles";
 import type { PendingInvite, TeamMember } from "@/lib/core/tenancy/team-db";
 import { cn } from "@/lib/utils";
 import { changeMemberRoleAction, inviteMemberAction, revokeInviteAction, setMemberActiveAction } from "../team-actions";
@@ -22,7 +22,9 @@ export type Seats = { limit: number | null; used: number; planName: string };
  * Equipo del negocio: quién entra, con qué rol, invitaciones pendientes y
  * cuántos usuarios quedan en el plan. Retirar a alguien no borra lo que hizo.
  */
-export default function TeamTab({ slug, members, invites, seats, canManage, meRole }: { slug: string; members: TeamMember[]; invites: PendingInvite[]; seats: Seats; canManage: boolean; meRole: string }) {
+export default function TeamTab({ slug, members, invites, seats, canManage, meRole, gym = false }: { slug: string; members: TeamMember[]; invites: PendingInvite[]; seats: Seats; canManage: boolean; meRole: string; gym?: boolean }) {
+  const BUSINESS_ROLES = rolesFor(gym);
+  const inviteLabel = gym ? "Añadir entrenador" : "Invitar persona";
   const [inviting, setInviting] = useState(false);
   const [form, setForm] = useState({ email: "", name: "", role: "RECEPTION" });
   const [showRemoved, setShowRemoved] = useState(false);
@@ -54,7 +56,7 @@ export default function TeamTab({ slug, members, invites, seats, canManage, meRo
         </b>
         <small className="block truncate text-xs text-muted-foreground">{m.email}</small>
       </span>
-      <Badge tone={m.role === "OWNER" ? "success" : m.role === "SUPERADMIN" ? "warning" : "neutral"}>{roleLabel(m.role)}</Badge>
+      <Badge tone={m.role === "OWNER" ? "success" : m.role === "SUPERADMIN" ? "warning" : "neutral"}>{roleLabel(m.role, gym)}</Badge>
       {canManage && !m.isMe && m.role !== "SUPERADMIN" ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -65,7 +67,7 @@ export default function TeamTab({ slug, members, invites, seats, canManage, meRo
           <DropdownMenuContent align="end" className="w-60">
             {m.active ? (
               <>
-                <DropdownMenuLabel>Cambiar rol</DropdownMenuLabel>
+                <DropdownMenuLabel>{gym ? "Cambiar cargo" : "Cambiar rol"}</DropdownMenuLabel>
                 {BUSINESS_ROLES.filter((r) => r.value !== m.role && (isOwner || (r.value !== "OWNER" && m.role !== "OWNER"))).map((r) => (
                   <DropdownMenuItem key={r.value} onSelect={() => run(() => changeMemberRoleAction(slug, m.id, r.value))}>
                     {r.label}
@@ -91,14 +93,14 @@ export default function TeamTab({ slug, members, invites, seats, canManage, meRo
     <section className="grid gap-3.5">
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-surface px-[18px] py-3.5">
         <div>
-          <h2 className="font-display text-[15px] font-semibold">Equipo</h2>
+          <h2 className="font-display text-base font-semibold">Equipo</h2>
           <p className="text-xs text-muted-foreground">
             {seats.limit == null ? `${seats.used} personas · tu plan ${seats.planName} no tiene límite` : `${seats.used} de ${seats.limit} usuarios del plan ${seats.planName}`}
           </p>
         </div>
         {canManage ? (
           <button type="button" disabled={full} onClick={() => setInviting(true)} className={buttonVariants({ size: "sm" })} title={full ? "Tu plan no tiene cupos libres" : undefined}>
-            <UserPlus aria-hidden="true" className="size-3.5" /> Invitar persona
+            <UserPlus aria-hidden="true" className="size-3.5" /> {inviteLabel}
           </button>
         ) : null}
       </div>
@@ -116,7 +118,7 @@ export default function TeamTab({ slug, members, invites, seats, canManage, meRo
                 <span className="min-w-0 flex-1">
                   <b className="block truncate text-ui font-medium">{i.name ?? i.email}</b>
                   <small className="block truncate text-xs text-muted-foreground">
-                    {i.email} · {roleLabel(i.role)} · vence {new Date(i.expiresAt).toLocaleDateString("es-CO")}
+                    {i.email} · {roleLabel(i.role, gym)} · vence {new Date(i.expiresAt).toLocaleDateString("es-CO")}
                   </small>
                 </span>
                 {canManage ? (
@@ -140,7 +142,7 @@ export default function TeamTab({ slug, members, invites, seats, canManage, meRo
       ) : null}
 
       <div className="grid gap-1.5 rounded-lg border border-border bg-surface p-[18px] text-ui">
-        <h3 className="font-semibold">Qué puede hacer cada rol</h3>
+        <h3 className="font-semibold">{gym ? "Qué puede hacer cada cargo" : "Qué puede hacer cada rol"}</h3>
         {BUSINESS_ROLES.map((r) => (
           <p key={r.value}>
             <b className="font-medium">{r.label}:</b> <span className="text-muted-foreground">{r.hint}</span>
@@ -152,15 +154,15 @@ export default function TeamTab({ slug, members, invites, seats, canManage, meRo
         <ResponsiveSheet
           open
           onOpenChange={(o) => !o && setInviting(false)}
-          title="Invitar persona"
-          description="Cuando entre a NEXUS con este correo, queda en tu equipo con el rol que elijas."
+          title={inviteLabel}
+          description={gym ? "Cuando entre a NEXUS con este correo, queda en tu gimnasio con el cargo que elijas (por ejemplo, entrenador)." : "Cuando entre a NEXUS con este correo, queda en tu equipo con el rol que elijas."}
           footer={
             <>
               <button type="button" onClick={() => setInviting(false)} className={buttonVariants({ variant: "outline" })}>
                 Cancelar
               </button>
               <button type="button" disabled={pending} onClick={() => run(() => inviteMemberAction(slug, form), () => { setInviting(false); setForm({ email: "", name: "", role: "RECEPTION" }); })} className={buttonVariants()}>
-                Invitar
+                {gym ? "Añadir" : "Invitar"}
               </button>
             </>
           }
@@ -168,7 +170,7 @@ export default function TeamTab({ slug, members, invites, seats, canManage, meRo
           <div className="grid gap-4">
             <Field label="Correo" required>{(c) => <input {...c} type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className={inputClasses} placeholder="correo@ejemplo.com" />}</Field>
             <Field label="Nombre">{(c) => <input {...c} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={inputClasses} />}</Field>
-            <Field label="Rol" hint={BUSINESS_ROLES.find((r) => r.value === form.role)?.hint}>
+            <Field label={gym ? "Cargo" : "Rol"} hint={BUSINESS_ROLES.find((r) => r.value === form.role)?.hint}>
               {(c) => (
                 <Select {...c} value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
                   {BUSINESS_ROLES.filter((r) => isOwner || r.value !== "OWNER").map((r) => (

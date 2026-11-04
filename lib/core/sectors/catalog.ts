@@ -46,8 +46,8 @@ export type VerticalRecipe = {
 
 export const VERTICAL_RECIPES: Record<VerticalValue, VerticalRecipe> = {
   gym: {
-    // Gimnasio [11]: clientes, pagos, membresías (con tarjeta NFC), WhatsApp, agenda de clases y catálogo.
-    modules: ["dashboard", "crm", "memberships", "finance", "payments", "whatsapp", "bookings", "inventory"],
+    // Gimnasio: inicio, clientes, membresías (con control de acceso), finanzas y el panel de registro de clientes.
+    modules: ["dashboard", "crm", "memberships", "finance", "website"],
     terms: {
       customer: "Socio",
       customers: "Socios",
@@ -56,6 +56,7 @@ export const VERTICAL_RECIPES: Record<VerticalValue, VerticalRecipe> = {
       item: "Membresía",
       items: "Membresías",
       profileTitle: "Datos físicos y objetivo",
+      siteLabel: "Panel de registro de cliente",
     },
     memberAccess: true,
   },

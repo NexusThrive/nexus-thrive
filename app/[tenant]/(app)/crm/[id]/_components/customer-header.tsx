@@ -22,6 +22,7 @@ export default function CustomerHeader({
   accountStatus,
   membership,
   showMemberships,
+  assignMembership = null,
 }: {
   tenantSlug: string;
   tenantName: string;
@@ -31,9 +32,11 @@ export default function CustomerHeader({
   accountStatus: CustomerAccountStatus;
   membership: Customer360Membership | null;
   showMemberships: boolean;
+  /** Gimnasio: permite agregar o cambiar la membresía desde la ficha. */
+  assignMembership?: { hasActive: boolean; canCharge: boolean } | null;
 }) {
   return (
-    <header className="rounded-lg border border-border bg-card p-5 sm:p-6">
+    <header className="rounded-lg border border-border bg-card p-4 sm:p-6">
       <Link
         href={`/${tenantSlug}/crm`}
         className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
@@ -42,18 +45,18 @@ export default function CustomerHeader({
         Volver a {terms.customers}
       </Link>
 
-      <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex min-w-0 items-center gap-4">
+      <div className="mt-4 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex min-w-0 items-start gap-4">
           {photoId ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={`/api/files/${photoId}`} alt={`Foto de ${customer.name}`} className="h-16 w-16 shrink-0 rounded-full object-cover" />
+            <img src={`/api/files/${photoId}`} alt={`Foto de ${customer.name}`} className="size-14 shrink-0 rounded-full object-cover sm:size-16" />
           ) : (
-            <span aria-hidden="true" className="grid h-14 w-14 shrink-0 place-items-center rounded-sm bg-accent-subtle text-lg font-semibold text-accent-text">
+            <span aria-hidden="true" className="grid size-14 shrink-0 place-items-center rounded-sm bg-accent-subtle text-lg font-semibold text-accent-text">
               {initialsOf(customer.name)}
             </span>
           )}
           <div className="min-w-0">
-            <h1 className="truncate font-display text-[clamp(22px,3.6vw,30px)] font-bold tracking-[-0.02em] text-foreground">
+            <h1 className="break-words font-display text-[clamp(22px,3.6vw,30px)] font-bold tracking-[-0.02em] text-foreground">
               {customer.name}
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -62,7 +65,7 @@ export default function CustomerHeader({
                 {formatDateShort(customer.createdAt)}
               </span>
             </p>
-            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
+            <div className="mt-2 grid gap-1 sm:flex sm:flex-wrap sm:items-center sm:gap-x-4">
               {customer.email ? (
                 <span className="flex items-center gap-1.5 truncate text-sm text-muted-foreground">
                   <Mail aria-hidden="true" className="h-4 w-4 shrink-0 text-muted-foreground" />
@@ -101,6 +104,7 @@ export default function CustomerHeader({
           customerId={customer.id}
           customerName={customer.name}
           phone={customer.phone}
+          assignMembership={assignMembership}
         />
       </div>
     </header>

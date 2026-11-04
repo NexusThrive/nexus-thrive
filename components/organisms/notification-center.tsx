@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
-import { Banknote, Bell, CalendarClock, Clock, MinusCircle, X } from "lucide-react";
+import { Banknote, Bell, CalendarClock, Clock, MinusCircle, UserRoundPlus, X } from "lucide-react";
 import { EASE_IN_OUT, armPopoverMorph, flash, motionOff, spring, type PopoverMorph } from "@/lib/experience/motion/index";
 import { newArrivals, SEVERITY_LABEL, unreadCount, type AppNotification, type NotificationKind } from "@/lib/experience/dashboard/notifications";
 import { NOTIFICATIONS_REFRESH, type NotificationArrival } from "@/lib/experience/dashboard/notifications-client";
@@ -13,6 +13,7 @@ const ICONS: Record<NotificationKind, typeof Bell> = {
   expense: MinusCircle,
   booking: CalendarClock,
   membership: Clock,
+  customer: UserRoundPlus,
 };
 
 const rel = new Intl.RelativeTimeFormat("es-CO", { numeric: "auto" });
@@ -23,7 +24,8 @@ function when(iso: string): string {
   return rel.format(Math.round(min / 60), "hour");
 }
 
-const POLL_MS = 60_000;
+// En vivo: una alta nueva (p. ej. del registro público) llega a la campana en pocos segundos.
+const POLL_MS = 10_000;
 /** Tras la acción que la genera, la notificación sale pasados unos segundos (no de inmediato). */
 const ARRIVAL_DELAY_MS = 5000;
 const SEEN_EVENT = "nx:notifications-seen";
@@ -196,9 +198,16 @@ export function NotificationCenter({
     const id = window.setInterval(() => {
       if (document.visibilityState === "visible") void refresh();
     }, POLL_MS);
+    const onVisible = () => {
+      if (document.visibilityState === "visible") void refresh();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("focus", onVisible);
     return () => {
       window.clearTimeout(first);
       window.clearInterval(id);
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("focus", onVisible);
     };
   }, [refresh]);
 

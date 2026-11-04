@@ -23,6 +23,7 @@ import NotesPanel from "./_components/notes-panel";
 import AccessCard from "./_components/access-card";
 import { memberStatus } from "@/lib/industry/gym/gym-db";
 import { requirePageContext } from "@/lib/core/tenancy/context";
+import { can } from "@/lib/core/auth/permissions";
 
 /**
  * FICHA DEL CLIENTE 360° — expediente centralizado de un cliente.
@@ -172,9 +173,6 @@ export default async function CustomerPage({
       alerts.push({ tone: "warning", text: `${terms.item} por vencer.` });
     }
   }
-  if (isGym && !extra?.accessCode) {
-    alerts.push({ tone: "muted", text: "Sin código de acceso (QR) asignado." });
-  }
   if (!customer.active) {
     alerts.push({ tone: "muted", text: "La ficha está archivada." });
   }
@@ -193,6 +191,7 @@ export default async function CustomerPage({
         accountStatus={metrics.accountStatus}
         membership={highlightedMembership}
         showMemberships={showMemberships}
+        assignMembership={isGym ? { hasActive: access?.state === "active" || access?.state === "frozen", canCharge: can(pageCtx.role, "money.handle") } : null}
       />
 
       <section
@@ -243,13 +242,7 @@ export default async function CustomerPage({
               <InfoCard title="Contacto de emergencia" rows={emergencyRows} />
             ) : null}
             {access ? (
-              <AccessCard
-                slug={tenantSlug}
-                customerId={customer.id}
-                code={extra?.accessCode ?? null}
-                nfcUid={extra?.nfcUid ?? null}
-                status={access}
-              />
+              <AccessCard status={access} />
             ) : null}
           </div>
 
