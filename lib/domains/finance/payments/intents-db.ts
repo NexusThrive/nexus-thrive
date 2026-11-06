@@ -1,11 +1,12 @@
 import { MoneyError, moneyTransaction, recordIncome, type MoneyTx } from "@/lib/business/sales/money-service";
+import { sandboxPaymentsAllowed } from "@/lib/foundation/environment";
 import { toNumber } from "@/lib/foundation/format";
 import { balanceOf } from "@/lib/foundation/kernel/aging";
 import { todayCO } from "@/lib/domains/finance/tax/tax";
 import { checkoutPort } from "./checkout-port";
 import { settleStoreOrder, storeOrderLines } from "@/lib/business/store/store-settle";
 import { db } from "@/prisma/db";
-import { effectiveStatus, newReference, reconcile, validateIntent, type IntentStatus, type Reconciliation, type ReportRow } from "./intents";
+import { effectiveStatus, newReference, pickGateway, reconcile, validateIntent, type IntentStatus, type Reconciliation, type ReportRow } from "./intents";
 
 /**
  * Cobros en línea (servidor). Una intención de cobro se vuelve ingreso solo con el estado
@@ -50,7 +51,8 @@ const toRow = (i: Record<string, unknown>, now = Date.now()): IntentRow => ({
 });
 
 /**
- * Crea una intención de cobro con su referencia: valida valor y vigencia, que la cuenta de cobro vinculada esté emitida y que el cobro no supere su saldo, y que el cliente exista.
+ * Crea una intención de cobro con su referencia. La pasarela es la pedida si el negocio la tiene conectada, si no la
+ * primera conectada y, sin ninguna, el cobro manual: nunca la de prueba por omisión. Valida valor y vigencia, que la cuenta de cobro vinculada esté emitida y que el cobro no supere su saldo, y que el cliente exista.
  */
 export async function createIntent(tenantId: string, input: { amount: number; description: string; expiresInHours?: number; customerId?: string | null; invoiceId?: string | null; channel?: "LINK" | "QR"; provider?: string }, userId: string): Promise<{ ok: true; id: string; reference: string } | { ok: false; message: string }> {
   const hours = input.expiresInHours ?? 48;
@@ -62,7 +64,8 @@ export async function createIntent(tenantId: string, input: { amount: number; de
     if (input.amount > balanceOf(toNumber(inv.total), toNumber(inv.paidTotal))) return { ok: false, message: "El cobro no puede ser mayor que el saldo de la cuenta." };
   }
   if (input.customerId && !(await db.orm.public.Customer.where({ tenantId, id: input.customerId }).select("id").first())) return { ok: false, message: "El cliente no existe." };
-  const created = await db.orm.public.PaymentIntent.create({ tenantId, reference: newReference(), amount: dec(input.amount), description: input.description.trim().slice(0, 160), channel: input.channel ?? "LINK", provider: input.provider ?? "sandbox", customerId: input.customerId ?? null, invoiceId: input.invoiceId ?? null, expiresAt: instant(Date.now() + hours * 3_600_000), createdById: userId });
+  const provider = pickGateway((await connectedGateways(tenantId)).map((g) => g.value), input.provider);
+  const created = await db.orm.public.PaymentIntent.create({ tenantId, reference: newReference(), amount: dec(input.amount), description: input.description.trim().slice(0, 160), channel: input.channel ?? "LINK", provider, customerId: input.customerId ?? null, invoiceId: input.invoiceId ?? null, expiresAt: instant(Date.now() + hours * 3_600_000), createdById: userId });
   return { ok: true, id: created.id, reference: created.reference };
 }
 
@@ -97,7 +100,8 @@ async function checkoutUrlOf(tenantId: string, row: IntentRow): Promise<string |
 /** Pasarelas de cobro que el negocio tiene conectadas (para elegir al crear un cobro). */
 export async function connectedGateways(tenantId: string): Promise<{ value: string; label: string }[]> {
   const rows = await db.orm.public.ExternalConnection.where({ tenantId, kind: "PAYMENT", status: "CONNECTED" }).all();
-  return rows.map((r) => ({ value: r.provider, label: r.provider === "wompi" ? "Wompi" : r.provider === "sandbox" ? "Pasarela de prueba" : r.provider }));
+  const allowSandbox = sandboxPaymentsAllowed();
+  return rows.filter((r) => allowSandbox || r.provider !== "sandbox").map((r) => ({ value: r.provider, label: r.provider === "wompi" ? "Wompi" : r.provider === "sandbox" ? "Pasarela de prueba" : r.provider }));
 }
 
 /** Baja el saldo de una cuenta de cobro dentro de la transacción del cobro. */

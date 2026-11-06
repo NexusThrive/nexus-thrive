@@ -33,6 +33,26 @@ export function validateIntent(input: { amount: number; description: string; exp
   return null;
 }
 
+/** Cobro sin pasarela: transferencia o efectivo, que se confirma a mano con evidencia. */
+export const MANUAL_PROVIDER = "manual";
+
+/**
+ * Con qué se crea un cobro: la pasarela pedida si el negocio la tiene conectada, si no la primera
+ * conectada y, sin ninguna, el cobro manual. Nunca cae en la pasarela de prueba por omisión.
+ */
+export function pickGateway(connected: readonly string[], wanted?: string | null): string {
+  if (wanted && connected.includes(wanted)) return wanted;
+  return connected[0] ?? MANUAL_PROVIDER;
+}
+
+/** Entorno de Wompi según su llave pública (`pub_prod_…` o `pub_test_…`); `null` si la llave no es de Wompi. */
+export function wompiEnvironment(publicKey: string): "production" | "sandbox" | null {
+  const key = publicKey.trim();
+  if (/^pub_prod_[A-Za-z0-9]+$/.test(key)) return "production";
+  if (/^pub_test_[A-Za-z0-9]+$/.test(key)) return "sandbox";
+  return null;
+}
+
 export type ReportRow = { externalId: string; amount: number };
 export type Difference = { kind: "missing_in_nexus" | "missing_in_provider" | "amount_mismatch"; externalId: string; expected: number | null; reported: number | null };
 export type Reconciliation = { expectedTotal: number; reportedTotal: number; matched: number; differences: Difference[] };

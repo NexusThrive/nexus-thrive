@@ -38,7 +38,6 @@ export async function placeOrder(siteSlug: string, input: { customer: CustomerDa
   const c = input.customer;
   for (let attempt = 0; ; attempt++) {
     try {
-      const gateway = (await paymentGatewayPort.use().connectedGateways(tenantId))[0]?.value ?? "sandbox";
       const order = await db.transaction(async (tx) => {
         const last = await tx.orm.public.StoreOrder.where({ tenantId }).orderBy((o) => o.number.desc()).first();
         const number = (last?.number ?? 0) + 1;
@@ -46,7 +45,7 @@ export async function placeOrder(siteSlug: string, input: { customer: CustomerDa
         await tx.orm.public.StoreOrderLine.createAll(lines.map((l) => ({ tenantId, orderId: created.id, productId: l.productId, name: l.name.slice(0, 160), quantity: l.quantity, unitPrice: l.unitPrice.toFixed(2), taxRatePct: l.taxRatePct.toFixed(2) }))).toArray();
         return created;
       });
-      const intent = await paymentGatewayPort.use().createIntent(tenantId, { amount: total, description: `Pedido ${orderCode(order.number)} · ${tenant.name}`, expiresInHours: 72, provider: gateway }, "tienda");
+      const intent = await paymentGatewayPort.use().createIntent(tenantId, { amount: total, description: `Pedido ${orderCode(order.number)} · ${tenant.name}`, expiresInHours: 72 }, "tienda");
       if (!intent.ok) {
         await db.orm.public.StoreOrder.where({ tenantId, id: order.id }).update({ status: "CANCELED", review: `No se pudo crear el cobro: ${intent.message}` });
         return { ok: false, message: "No pudimos generar el cobro de tu pedido. Escríbenos por WhatsApp." };

@@ -162,7 +162,7 @@ describe("M5.6 · domains/finance/payments", () => {
 
   test("solo depende de Foundation, del kernel, de Business (dinero y liquidación de la tienda), de tax y de sí mismo", () => {
     const permitidos = new RegExp(
-      "^(node:crypto|@/prisma/db|@/lib/foundation/ports|@/lib/foundation/format|@/lib/foundation/kernel/aging|@/lib/business/sales/money-service|@/lib/business/store/store-settle|@/lib/domains/finance/tax/tax|\\./(checkout-port|intents))$",
+      "^(node:crypto|@/prisma/db|@/lib/foundation/ports|@/lib/foundation/environment|@/lib/foundation/format|@/lib/foundation/kernel/aging|@/lib/business/sales/money-service|@/lib/business/store/store-settle|@/lib/domains/finance/tax/tax|\\./(checkout-port|intents))$",
     );
     for (const name of produccion) {
       for (const spec of importsOf(`${dir}/${name}`)) expect(spec, name).toMatch(permitidos);

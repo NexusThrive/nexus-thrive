@@ -1,6 +1,7 @@
 import { randomBytes } from "node:crypto";
 import { db } from "@/prisma/db";
 import { msOf, toInstant } from "@/lib/core/events/instant";
+import { sandboxPaymentsAllowed } from "@/lib/foundation/environment";
 import { decryptSecret, encryptSecret } from "@/lib/core/events/secrets";
 import { adapterFor } from "./registry";
 import type { Environment, ProviderCredentials } from "./types";
@@ -49,6 +50,7 @@ export async function connectProvider(
   const adapter = adapterFor(input.provider);
   if (!adapter) return { ok: false, message: `El proveedor «${input.provider}» no está disponible.` };
   if (adapter.provider === "sandbox" && input.environment !== "sandbox") return { ok: false, message: "La pasarela de prueba solo funciona en sandbox." };
+  if (adapter.provider === "sandbox" && !sandboxPaymentsAllowed()) return { ok: false, message: "La pasarela de prueba no está disponible en producción." };
 
   // La pasarela de prueba genera su propio secreto de webhook (se muestra una vez).
   const generated: ProviderCredentials = {};
@@ -61,7 +63,8 @@ export async function connectProvider(
   if (missing) return { ok: false, message: `Falta «${missing}».` };
 
   const existing = await db.orm.public.ExternalConnection.where({ tenantId, kind: adapter.kind, provider: adapter.provider, environment: input.environment }).first();
-  if (existing && existing.status !== "DISCONNECTED") return { ok: false, message: "Ya hay una conexión activa con este proveedor y entorno." };
+  // Una conexión con error se puede volver a intentar con otras credenciales; una conectada, no.
+  if (existing?.status === "CONNECTED") return { ok: false, message: "Ya hay una conexión activa con este proveedor y entorno." };
 
   const checked = await adapter.check(credentials);
   const fields = {

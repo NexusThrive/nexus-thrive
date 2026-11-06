@@ -13,6 +13,8 @@ import { activeModuleNames } from "@/lib/core/tenancy/settings-db";
 import { listingView } from "@/lib/integrations/google/google-db";
 import { listConnections, type ConnectionRow } from "@/lib/integrations/providers/connections";
 import { adapterFor } from "@/lib/integrations/providers/registry";
+import { getAppBaseUrl } from "@/lib/foundation/app-url";
+import { WompiConnection } from "./_components/wompi-connection";
 
 const MATURITY: Record<CapabilityStatus, Maturity> = { READY: "Disponible", BETA: "En prueba", PLANNED: "En plan" };
 const when = new Intl.DateTimeFormat("es-CO", { dateStyle: "medium", timeStyle: "short", timeZone: "America/Bogota" });
@@ -26,8 +28,8 @@ type Card = Omit<React.ComponentProps<typeof ConnectionCard>, "managedBy"> & { i
 /**
  * Integraciones (DR-18, DR-47, `10`): un solo lugar donde ver qué herramientas externas usa el negocio y en qué estado
  * están. Solo aparecen las que ya se pueden usar y cuya función está encendida (P3); el estado sale de la conexión real
- * (`ExternalConnection`), no de un texto. Cada ficha lleva a la pantalla donde se gestiona. No hay sincronización con
- * otros sistemas ni marketplace: no existen todavía y no se anuncian.
+ * (`ExternalConnection`), no de un texto. Cada ficha lleva a la pantalla donde se gestiona; Wompi se conecta aquí mismo
+ * (HU-wompi-negocio-01), con las credenciales de cada negocio.
  */
 export default async function IntegrationsPage({ params }: { params: Promise<{ tenant: string }> }) {
   const { tenant } = await params;
@@ -43,7 +45,7 @@ export default async function IntegrationsPage({ params }: { params: Promise<{ t
     );
   }
 
-  const [rows, activeNames, listing] = await Promise.all([listConnections(ctx.tenantId), activeModuleNames(ctx.tenantId), listingView(ctx.tenantId)]);
+  const [rows, activeNames, listing, appUrl] = await Promise.all([listConnections(ctx.tenantId), activeModuleNames(ctx.tenantId), listingView(ctx.tenantId), getAppBaseUrl()]);
   const active = new Set(activeNames);
   const base = `/${tenant}`;
   const capability = (id: string) => CAPABILITIES.find((c) => c.id === id);
@@ -52,11 +54,24 @@ export default async function IntegrationsPage({ params }: { params: Promise<{ t
   const cards: Card[] = [];
 
   if (active.has("online_payments")) {
-    const payments = rows.filter((r) => r.kind === "PAYMENT");
+    const payments = rows.filter((r) => r.kind === "PAYMENT" && r.status !== "DISCONNECTED");
     const base0 = { kind: "Cobros en línea", maturity: maturity("online_payments"), href: `${base}/cobros`, actionLabel: "Abrir Cobros en línea" } as const;
-    if (payments.length === 0)
-      cards.push({ ...base0, id: "payments-none", name: "Proveedor de pagos", description: "Aún no conectas un proveedor de pagos. Conéctalo para cobrar en línea; el ingreso se registra al confirmarse.", state: "disconnected", lastChecked: "Sin verificar" });
-    for (const r of payments) {
+    const wompi = payments.find((r) => r.provider === "wompi") ?? null;
+    // Wompi siempre tiene su ficha: sin conexión, el negocio cobra por transferencia o efectivo y no se bloquea nada.
+    cards.push({
+      ...base0,
+      id: wompi?.id ?? "wompi-none",
+      name: "Wompi",
+      description: wompi
+        ? "Tus clientes pagan con tarjeta o PSE y el dinero llega a tu cuenta Wompi; el ingreso se registra al confirmarse."
+        : "Conecta tu cuenta Wompi para cobrar con tarjeta o PSE. Mientras tanto, tus cobros y pedidos se pagan por transferencia o efectivo y los confirmas en Cobros en línea.",
+      state: wompi ? stateOf(wompi) : "disconnected",
+      environment: wompi?.environment,
+      lastChecked: wompi ? checked(wompi.lastCheckedAt) : "Sin verificar",
+      error: wompi?.status === "ERROR" ? errorText("Wompi", wompi.lastError) : null,
+      extra: <WompiConnection slug={tenant} connection={wompi ? { id: wompi.id, connected: wompi.status === "CONNECTED" } : null} eventsUrl={wompi ? `${appUrl}${wompi.webhookPath}` : null} />,
+    });
+    for (const r of payments.filter((p) => p.provider !== "wompi")) {
       const name = adapterFor(r.provider, "PAYMENT")?.label ?? r.provider;
       cards.push({ ...base0, id: r.id, name, description: "Cobra en línea con este proveedor; el ingreso se registra al confirmarse.", state: stateOf(r), environment: r.environment, lastChecked: checked(r.lastCheckedAt), error: r.status === "ERROR" ? errorText(name, r.lastError) : null });
     }

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { can } from "@/lib/core/auth/permissions";
-import { cancelIntent, connectedGateways, confirmIntent, createIntent, refundIntent, runReconciliation, type IntentRow } from "@/lib/domains/finance/payments/intents-db";
+import { cancelIntent, confirmIntent, createIntent, refundIntent, runReconciliation, type IntentRow } from "@/lib/domains/finance/payments/intents-db";
 import { parseReport } from "@/lib/domains/finance/payments/intents";
 import type { Reconciliation } from "@/lib/domains/finance/payments/intents";
 import { logTenantAction } from "@/lib/core/tenancy/audit";
@@ -19,9 +19,7 @@ async function ctxFor(slug: string, perm: "money.handle" | "business.manage") {
 export async function createIntentAction(slug: string, input: { amount: number; description: string; expiresInHours: number; provider?: string }): Promise<CobroResult> {
   const ctx = await ctxFor(slug, "money.handle");
   if (!ctx) return { ok: false, message: "Tu rol no crea cobros." };
-  const gateways = await connectedGateways(ctx.tenantId);
-  const provider = gateways.some((g) => g.value === input.provider) ? input.provider : (gateways[0]?.value ?? "sandbox");
-  const r = await createIntent(ctx.tenantId, { ...input, provider }, ctx.memberId);
+  const r = await createIntent(ctx.tenantId, input, ctx.memberId);
   if (!r.ok) return r;
   await logTenantAction(ctx, "BIZ_ONLINE_PAYMENT", { action: "create", amount: input.amount });
   refresh(slug);

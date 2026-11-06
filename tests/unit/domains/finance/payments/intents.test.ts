@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { effectiveStatus, newReference, parseReport, payButtonHtml, reconcile, validateIntent } from "@/lib/domains/finance/payments/intents";
+import { MANUAL_PROVIDER, effectiveStatus, newReference, parseReport, payButtonHtml, pickGateway, reconcile, validateIntent, wompiEnvironment } from "@/lib/domains/finance/payments/intents";
+import { sandboxPaymentsAllowed } from "@/lib/foundation/environment";
 
 describe("cobros en línea", () => {
   it("el código del enlace es largo, legible y distinto cada vez", () => {
@@ -39,5 +40,29 @@ describe("cobros en línea", () => {
   });
   it("el botón de pago apunta al enlace", () => {
     expect(payButtonHtml("https://x.co/pay/abc")).toContain('href="https://x.co/pay/abc"');
+  });
+});
+
+describe("pasarela de cada negocio (HU-wompi-negocio-01)", () => {
+  it("elige la pasarela pedida si está conectada, si no la primera y, sin ninguna, el cobro manual", () => {
+    expect(pickGateway(["wompi", "sandbox"], "sandbox")).toBe("sandbox");
+    expect(pickGateway(["wompi"], "nequi")).toBe("wompi");
+    expect(pickGateway(["wompi"])).toBe("wompi");
+    expect(pickGateway([])).toBe(MANUAL_PROVIDER);
+    expect(pickGateway([], "sandbox")).toBe(MANUAL_PROVIDER);
+  });
+  it("el entorno de Wompi sale de la llave pública", () => {
+    expect(wompiEnvironment("pub_prod_abc123")).toBe("production");
+    expect(wompiEnvironment(" pub_test_abc123 ")).toBe("sandbox");
+    expect(wompiEnvironment("prv_prod_abc")).toBeNull();
+    expect(wompiEnvironment("")).toBeNull();
+  });
+});
+
+describe("pasarela de prueba en producción", () => {
+  it("solo se permite fuera de producción o con la habilitación explícita", () => {
+    expect(sandboxPaymentsAllowed({ NODE_ENV: "development" })).toBe(true);
+    expect(sandboxPaymentsAllowed({ NODE_ENV: "production" })).toBe(false);
+    expect(sandboxPaymentsAllowed({ NODE_ENV: "production", ALLOW_SANDBOX_PAYMENTS: "true" })).toBe(true);
   });
 });

@@ -17,7 +17,10 @@ export type IntentResult = { ok: true; id: string; reference: string } | { ok: f
 export type PaymentGatewayPort = {
   /** Pasarelas de pago conectadas del negocio. */
   connectedGateways(tenantId: string): Promise<GatewayOption[]>;
-  /** Crea la intención de cobro. `userId` identifica quién la origina (p. ej. «tienda»). */
+  /**
+   * Crea la intención de cobro. `userId` identifica quién la origina (p. ej. «tienda»). Sin `provider`, Payments
+   * elige la pasarela conectada del negocio o, sin ninguna, el cobro manual (transferencia o efectivo).
+   */
   createIntent(tenantId: string, input: IntentRequest, userId: string): Promise<IntentResult>;
 };
 
