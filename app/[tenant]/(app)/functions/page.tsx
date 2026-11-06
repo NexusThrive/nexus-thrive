@@ -9,6 +9,7 @@ import { setupStates } from "@/lib/core/capabilities/discovery/setup-db";
 import { usageSignals } from "@/lib/core/capabilities/discovery/signals-db";
 import { suggestFromUsage } from "@/lib/core/capabilities/discovery/suggestions";
 import { loadPricingConfig } from "@/lib/core/entitlements/settings";
+import { isCompatible, solutionForVertical } from "@/lib/core/capabilities/solutions";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
 import { tenantWithModules } from "@/lib/core/tenancy/membership";
 import FunctionsView from "./_components/functions-view";
@@ -30,7 +31,7 @@ export default async function FunctionsPage({ params }: { params: Promise<{ tena
     const cfg = config.modules.find((m) => m.module === c.id);
     return { id: c.id as ModuleValue, label: cfg?.label ?? c.name, pitch: c.pitch, kind: c.kind, status: cfg?.status ?? c.status, category: c.category };
   });
-  const groups = groupFunctions(sources, active, profileSuggested, suggestFromUsage(signals, active), vertical ? VERTICAL_LABELS[vertical].toLowerCase() : "tu rubro");
+  const groups = groupFunctions(sources, active, profileSuggested, suggestFromUsage(signals, active), vertical ? VERTICAL_LABELS[vertical].toLowerCase() : "tu rubro", (id) => isCompatible(solutionForVertical(ctx.vertical), id));
   for (const item of [...groups.inUse, ...groups.suggested, ...groups.more]) item.setup = setup[item.id] ?? null;
   return (
     <div className="grid gap-5">

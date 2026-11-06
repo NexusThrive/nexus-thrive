@@ -1,13 +1,15 @@
 import type { VerticalValue } from "@/lib/core/sectors/verticals";
 import type { ModuleValue } from "@/lib/core/capabilities/modules";
+import { incompatibleMessage, isCompatible, solutionForVertical, type SolutionId } from "@/lib/core/capabilities/solutions";
 import { CORE_MODULE, moduleOf, type PricingConfig } from "./pricing";
 
 /**
  * ¿Se puede activar o desactivar esta función? Regla única para el Operations
  * Center y los Ajustes del negocio: el Inicio no se apaga y solo se activa lo
- * que ya funciona (nunca una función "planeada"). Ni el rubro ni el plan
- * limitan qué funciones se pueden encender: el plan limita el uso (usuarios y
- * clientes).
+ * que ya funciona (nunca una función "planeada"). La SOLUCIÓN del negocio (ADR 0007) decide qué capacidades son
+ * compatibles: encender una que su solución no admite se rechaza, salvo que el Operations Center lo autorice
+ * (`allowIncompatible`, la revisión manual de los negocios híbridos). Apagar nunca se rechaza por esto y lo que el negocio
+ * ya usa no se toca. El plan limita el uso (usuarios y clientes), no las funciones.
  */
 export function checkModuleToggle(
   config: PricingConfig,
@@ -16,6 +18,7 @@ export function checkModuleToggle(
   active: boolean,
   /** Se conserva por compatibilidad (`Tenant.contractedModules`); ya no limita: todo está incluido. */
   contracted?: readonly string[] | null,
+  options: { allowIncompatible?: boolean; solution?: SolutionId } = {},
 ): { ok: true } | { ok: false; message: string } {
   if (module === CORE_MODULE && !active) return { ok: false, message: "El Inicio siempre está activo." };
   if (!active) return { ok: true };
@@ -23,6 +26,8 @@ export function checkModuleToggle(
   void contracted;
   const m = moduleOf(config, module);
   if (m?.status === "PLANNED") return { ok: false, message: `${m.label} todavía no está operativo.` };
+  const solution = options.solution ?? solutionForVertical(_vertical);
+  if (!options.allowIncompatible && !isCompatible(solution, module)) return { ok: false, message: incompatibleMessage(solution, m?.label ?? module) };
   return { ok: true };
 }
 
