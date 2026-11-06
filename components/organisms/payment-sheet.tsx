@@ -111,6 +111,7 @@ export function PaymentSheet({
     setBusy(false);
     if (!result.ok) {
       setError(result.message);
+      toast({ title: "No se registró el cobro", description: result.message, variant: "error" });
       return;
     }
     setLink(result.link ?? null);
@@ -223,6 +224,7 @@ export function PaymentSheet({
         <ReceiptPrinter data={receipt} onPrinted={() => setPrinted(true)} className="py-2" />
       ) : (
         <div className="grid grid-cols-1 gap-4">
+          {error ? <Alert tone="danger">{error}</Alert> : null}
           <div>
             <AmountDisplay value={amount} />
             <p className="mt-0.5 text-center text-xs text-muted-foreground">Escribe el valor con el teclado</p>
@@ -267,7 +269,6 @@ export function PaymentSheet({
               />
             )}
           </Field>
-          {error ? <Alert tone="danger">{error}</Alert> : null}
         </div>
       )}
     </ResponsiveSheet>

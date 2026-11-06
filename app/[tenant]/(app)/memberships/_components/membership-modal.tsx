@@ -1,5 +1,6 @@
 "use client";
 
+import { useToast } from "@/components/molecules/toast";
 import { useEffect, useActionState } from "react";
 import { RefreshCw } from "lucide-react";
 import { NLoader } from "@/components/atoms/n-loader";
@@ -46,6 +47,11 @@ export default function MembershipModal({
     return () => clearTimeout(timer);
   }, [state, onClose]);
 
+  const { toast } = useToast();
+  useEffect(() => {
+    if (state.status === "error" && state.message) toast({ title: "No se renovó la membresía", description: state.message, variant: "error" });
+  }, [state, toast]);
+
   const errors = state.errors ?? {};
 
   return (
@@ -78,6 +84,15 @@ export default function MembershipModal({
         <form action={formAction} className="mt-5 space-y-4" noValidate>
           <input type="hidden" name="tenantSlug" value={tenantSlug} />
           <input type="hidden" name="membershipId" value={membership.id} />
+
+          {state.status === "error" && state.message ? (
+            <p
+              role="alert"
+              className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-ui text-danger"
+            >
+              {state.message}
+            </p>
+          ) : null}
 
           <label className="flex items-start gap-3 rounded-lg border border-border p-3">
             <input
@@ -127,15 +142,6 @@ export default function MembershipModal({
               </p>
             ) : null}
           </div>
-
-          {state.status === "error" && state.message ? (
-            <p
-              role="alert"
-              className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-ui text-danger"
-            >
-              {state.message}
-            </p>
-          ) : null}
 
           {state.status === "ok" ? (
             <p

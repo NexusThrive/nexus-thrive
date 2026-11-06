@@ -7,6 +7,8 @@ import { activeMembershipFor, cancelActiveMemberships, enrollInPlan } from "@/li
 import { typeLabel } from "@/lib/industry/gym/memberships";
 import { addAttachment, checkAttachment } from "@/lib/business/sales/finance-db";
 import { getProduct, planOptions } from "@/lib/business/catalog/products-db";
+import { moneyOutcome } from "@/lib/business/sales/money-error";
+import { amountProblem } from "@/lib/business/sales/money-service";
 import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
 import { can } from "@/lib/core/auth/permissions";
@@ -107,15 +109,20 @@ export async function saveCustomerAction(form: FormData): Promise<CustomerSaveRe
   if (!id && planId && gym) {
     const plan = await getProduct(ctx.tenantId, planId);
     if (plan && plan.kind === "PLAN" && plan.durationDays) {
+      const durationDays = plan.durationDays;
       const method = String(form.get("paymentMethod") ?? "");
       // Cobrar exige manejar dinero (SEC-05): sin ese permiso se inscribe sin cobro.
       const pay = PAYMENT_METHODS.some((m) => m.value === method) && can(ctx.role, "money.handle");
       // Membresía y cobro (recibo y caja) juntos o nada: lib/business/sales/money-service.ts.
-      await enrollInPlan(
-        ctx.tenantId,
-        { customerId: customerId, customerName: name, plan: { id: plan.id, name: plan.name, price: plan.price, durationDays: plan.durationDays }, method: pay ? method : null },
-        ctx.memberId,
+      const enrolled = await moneyOutcome(() =>
+        enrollInPlan(
+          ctx.tenantId,
+          { customerId: customerId, customerName: name, plan: { id: plan.id, name: plan.name, price: plan.price, durationDays }, method: pay ? method : null },
+          ctx.memberId,
+        ),
       );
+      // El cliente ya quedó guardado: se avisa que el plan no se registró y por qué, sin duplicar el registro al reintentar.
+      if (!enrolled.ok) return { ok: true, id: customerId, message: `Cliente registrado, pero no se registró el plan: ${enrolled.message}` };
       extra = ` con ${plan.name}`;
       if (pay) extra += " y su pago";
     }
@@ -129,17 +136,27 @@ export async function saveCustomerAction(form: FormData): Promise<CustomerSaveRe
       const current = await activeMembershipFor(ctx.tenantId, customerId);
       const target = choice === "none" ? null : choice;
       if (target !== (current?.productId ?? null)) {
+        if (target) {
+          const next = await getProduct(ctx.tenantId, target);
+          const willPay = PAYMENT_METHODS.some((m) => m.value === String(form.get("paymentMethod") ?? "")) && can(ctx.role, "money.handle");
+          const overLimit = next && willPay ? await amountProblem(ctx.tenantId, next.price) : null;
+          if (overLimit) return { ok: false, message: overLimit };
+        }
         if (current) await cancelActiveMemberships(ctx.tenantId, customerId, target ? "Cambio de plan desde la ficha" : "Retiro desde la ficha");
         if (target) {
           const plan = await getProduct(ctx.tenantId, target);
           if (plan && plan.kind === "PLAN" && plan.durationDays) {
+            const durationDays = plan.durationDays;
             const method = String(form.get("paymentMethod") ?? "");
             const pay = PAYMENT_METHODS.some((m) => m.value === method) && can(ctx.role, "money.handle");
-            await enrollInPlan(
-              ctx.tenantId,
-              { customerId, customerName: name, plan: { id: plan.id, name: plan.name, price: plan.price, durationDays: plan.durationDays }, method: pay ? method : null },
-              ctx.memberId,
+            const enrolled = await moneyOutcome(() =>
+              enrollInPlan(
+                ctx.tenantId,
+                { customerId, customerName: name, plan: { id: plan.id, name: plan.name, price: plan.price, durationDays }, method: pay ? method : null },
+                ctx.memberId,
+              ),
             );
+            if (!enrolled.ok) return { ok: false, message: `Los cambios se guardaron, pero no se registró el plan: ${enrolled.message}` };
             extra = ` con ${plan.name}`;
             if (pay) extra += " y su pago";
           }
@@ -182,13 +199,20 @@ export async function assignMembershipAction(slug: string, customerId: string, p
   if (!plan || plan.kind !== "PLAN" || !plan.active || !plan.durationDays) return { ok: false, message: "Elige un tipo de membresía válido." };
 
   const pay = PAYMENT_METHODS.some((m) => m.value === method) && can(ctx.role, "money.handle");
+  // Antes de cancelar el plan vigente: si el cobro no va a pasar, no se toca nada.
+  const overLimit = pay ? await amountProblem(ctx.tenantId, plan.price) : null;
+  if (overLimit) return { ok: false, message: overLimit };
+  const durationDays = plan.durationDays;
   const current = await activeMembershipFor(ctx.tenantId, customerId);
   if (current) await cancelActiveMemberships(ctx.tenantId, customerId, "Cambio de plan desde la ficha");
-  await enrollInPlan(
-    ctx.tenantId,
-    { customerId, customerName: customer.name, plan: { id: plan.id, name: plan.name, price: plan.price, durationDays: plan.durationDays }, method: pay ? method : null },
-    ctx.memberId,
+  const enrolled = await moneyOutcome(() =>
+    enrollInPlan(
+      ctx.tenantId,
+      { customerId, customerName: customer.name, plan: { id: plan.id, name: plan.name, price: plan.price, durationDays }, method: pay ? method : null },
+      ctx.memberId,
+    ),
   );
+  if (!enrolled.ok) return { ok: false, message: enrolled.message };
 
   revalidatePath(`/${slug}/crm`);
   revalidatePath(`/${slug}/crm/${customerId}`);

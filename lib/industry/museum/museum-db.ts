@@ -4,7 +4,7 @@ import { toNumber } from "@/lib/foundation/format";
 import { bogotaDayKey } from "@/lib/foundation/kernel/finance-series";
 import { addDaysKey, bogotaToMs } from "@/lib/business/scheduling/calendar";
 import { recordCharge } from "@/lib/business/sales/charge";
-import { payTicketSale as payTicketSaleOnce } from "@/lib/business/sales/money-service";
+import { amountProblem, payTicketSale as payTicketSaleOnce } from "@/lib/business/sales/money-service";
 import { voidPayment, withNextNumber } from "@/lib/business/sales/finance-db";
 import { listProducts } from "@/lib/business/catalog/products-db";
 import { museumSettings, saleKindLabel, slotLoads, ticketCode, validateTicketSale, type MuseumSettings, type SaleLike, type TicketLineInput } from "./museum";
@@ -101,6 +101,10 @@ export async function createTicketSale(tenantId: string, input: NewSale, userId:
   if (input.customerId && !(await db.orm.public.Customer.where({ tenantId, id: input.customerId }).select("id").first())) return { ok: false, message: "El cliente no es de este negocio." };
   const v = validateTicketSale(input, { settings, load, todayKey: bogotaDayKey(Date.now()), prices: new Map(types.map((t) => [t.id, { name: t.name, price: t.price }])) });
   if (!v.ok) return v;
+  if (input.pay) {
+    const overLimit = await amountProblem(tenantId, v.total);
+    if (overLimit) return { ok: false, message: overLimit };
+  }
 
   const at = bogotaToMs(input.day, input.slot);
   const group = input.groupName?.trim().slice(0, 120) || null;

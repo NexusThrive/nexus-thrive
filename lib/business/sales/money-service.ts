@@ -37,6 +37,15 @@ export { MoneyError };
 // documento de venta: la restricción única falla y se reintenta todo.
 const isReceiptCollision = (e: unknown) => /receiptNumber|Invoice_tenantId_kind_number|JournalEntry_tenantId_number/i.test(String((e as Error)?.message ?? e));
 
+/**
+ * ¿El monto cabe en los límites del negocio? Para validar ANTES de hacer cambios que no se pueden deshacer (cancelar el
+ * plan anterior, crear una venta) y devolver el problema legible, o `null` si está bien.
+ */
+export async function amountProblem(tenantId: string, amount: number): Promise<string | null> {
+  const tenant = await db.orm.public.Tenant.where({ id: tenantId }).select("settings").first();
+  return validateAmount(amount, resolveLimits(tenant?.settings));
+}
+
 /** Corre `fn` en una transacción; la reintenta completa si dos cobros toman el mismo recibo. */
 export async function moneyTransaction<T>(fn: (tx: MoneyTx) => Promise<T>): Promise<T> {
   for (let attempt = 0; ; attempt++) {

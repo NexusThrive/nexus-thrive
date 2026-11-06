@@ -2,7 +2,8 @@ import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
 import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
-import { MoneyError, recordIncomeNow } from "@/lib/business/sales/money-service";
+import { moneyOutcome } from "@/lib/business/sales/money-error";
+import { MoneyError, amountProblem, recordIncomeNow } from "@/lib/business/sales/money-service";
 
 /** HU-integridad-01: ningún monto absurdo ni cobro repetido entra al sistema. */
 const TEST_URL = process.env.TEST_DATABASE_URL;
@@ -53,5 +54,12 @@ describe.skipIf(!TEST_URL)("integridad del dinero (integración)", () => {
     const input = { amount: 3_000, method: "CASH", description: "Café" };
     await recordIncomeNow(b, { ...input, amount: 3_000 }, "u");
     await expect(recordIncomeNow(b, input, "u")).resolves.toBeTruthy();
+  });
+
+  test("amountProblem avisa antes de hacer cambios y moneyOutcome convierte el rechazo en mensaje", async () => {
+    expect(await amountProblem(b, 60_000_000)).toContain("máximo permitido");
+    expect(await amountProblem(b, 40_000)).toBeNull();
+    const rejected = await moneyOutcome(() => recordIncomeNow(b, { amount: 60_000_000, method: "CASH", description: "Absurdo" }, "u"));
+    expect(rejected).toMatchObject({ ok: false, message: expect.stringContaining("máximo permitido") });
   });
 });

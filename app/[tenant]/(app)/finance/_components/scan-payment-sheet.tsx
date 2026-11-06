@@ -275,7 +275,9 @@ export function ScanPaymentSheet({
         return;
       }
       const fieldError = state.errors ? Object.values(state.errors).find(Boolean) : undefined;
-      setError(state.message ?? fieldError ?? "No se pudo registrar el pago.");
+      const message = state.message ?? fieldError ?? "No se pudo registrar el pago.";
+      setError(message);
+      toast({ title: "No se registró el pago", description: message, variant: "error" });
     });
   };
 
@@ -320,6 +322,7 @@ export function ScanPaymentSheet({
         <ReceiptPrinter data={receipt} />
       ) : stage === "confirm" && photoUrl ? (
         <div className="nx-rise grid grid-cols-1 gap-4">
+          {error ? <Alert tone="danger">{error}</Alert> : null}
           <div ref={photoWrapRef} className="mx-auto w-full max-w-xs">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img ref={photoRef} src={photoUrl} alt="Comprobante fotografiado" className="aspect-[3/4] w-full rounded-lg border border-border bg-surface-muted object-contain" />
@@ -360,7 +363,6 @@ export function ScanPaymentSheet({
               <input {...control} value={description} onChange={(event) => setDescription(event.target.value)} maxLength={300} placeholder="Concepto del pago" className={inputClasses} />
             )}
           </Field>
-          {error ? <Alert tone="danger">{error}</Alert> : null}
         </div>
       ) : stage === "reading" && photoUrl ? (
         <div className="grid gap-4 py-6 text-center">

@@ -1,5 +1,6 @@
 "use server";
 
+import { moneyOutcome } from "@/lib/business/sales/money-error";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
 import { revalidatePath } from "next/cache";
 import { paymentRefTaken } from "@/lib/business/sales/finance-db";
@@ -105,11 +106,15 @@ export async function createPaymentAction(
 
   // Pago, recibo consecutivo y (en efectivo con caja abierta) la caja, en una
   // sola transacción: ver lib/business/sales/money-service.ts.
-  const created = await recordIncomeNow(
-    context.tenantId,
-    { amount, method: provider, status, providerRefId: providerRefId || null, description: description || null, customerId: customerId || null },
-    context.memberId,
+  const outcome = await moneyOutcome(() =>
+    recordIncomeNow(
+      context.tenantId,
+      { amount, method: provider, status, providerRefId: providerRefId || null, description: description || null, customerId: customerId || null },
+      context.memberId,
+    ),
   );
+  if (!outcome.ok) return { status: "error", message: outcome.message, errors: { amount: outcome.message }, values: validation.values };
+  const created = outcome.value;
   const number = created.receiptNumber;
 
   revalidatePath(`/${tenantSlug}/finance`);
@@ -184,11 +189,15 @@ export async function registerScannedPaymentAction(
     }
   }
 
-  const created = await recordIncomeNow(
-    context.tenantId,
-    { amount, method: provider, providerRefId: providerRefId || null, description: description || null, customerId: customerId || null },
-    context.memberId,
+  const outcome = await moneyOutcome(() =>
+    recordIncomeNow(
+      context.tenantId,
+      { amount, method: provider, providerRefId: providerRefId || null, description: description || null, customerId: customerId || null },
+      context.memberId,
+    ),
   );
+  if (!outcome.ok) return { status: "error", message: outcome.message, errors: { amount: outcome.message }, values: validation.values };
+  const created = outcome.value;
   const number = created.receiptNumber;
 
   // Soporte: la foto del comprobante (Nequi, transferencia, etc.).
