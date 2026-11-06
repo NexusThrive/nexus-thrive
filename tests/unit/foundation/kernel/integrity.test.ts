@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_LIMITS, canTransitionOrder, resolveLimits, validateAmount, validateQuantity } from "@/lib/foundation/kernel/integrity";
+import { DEFAULT_LIMITS, canTransitionOrder, isDuplicatePayment, resolveLimits, validateAmount, validateQuantity } from "@/lib/foundation/kernel/integrity";
 
 describe("integridad: montos y cantidades (HU-integridad-01)", () => {
   it("rechaza montos inválidos, negativos o sobre el tope", () => {
@@ -30,5 +30,21 @@ describe("integridad: montos y cantidades (HU-integridad-01)", () => {
     expect(canTransitionOrder("PAID", "CANCELED")).toBe(false);
     expect(canTransitionOrder("CANCELED", "PAID")).toBe(false);
     expect(canTransitionOrder("INVENTADO", "PAID")).toBe(false);
+  });
+});
+
+describe("integridad: cobros repetidos", () => {
+  const base = { customerId: "c1", amount: "50000.00", method: "CASH", description: "Mensualidad", sourceType: "MEMBERSHIP", sourceId: "m1" };
+  it("el mismo cobro de un cliente es repetido", () => {
+    expect(isDuplicatePayment(base, { ...base, amount: "50000" })).toBe(true);
+  });
+  it("cambiar monto, medio u origen lo vuelve un cobro distinto", () => {
+    expect(isDuplicatePayment(base, { ...base, amount: "60000" })).toBe(false);
+    expect(isDuplicatePayment(base, { ...base, method: "TRANSFER" })).toBe(false);
+    expect(isDuplicatePayment(base, { ...base, sourceId: "m2" })).toBe(false);
+  });
+  it("dos ventas iguales de mostrador, sin cliente ni origen, nunca son repetidas", () => {
+    const counter = { customerId: null, amount: "3000.00", method: "CASH", description: "Café", sourceType: null, sourceId: null };
+    expect(isDuplicatePayment(counter, counter)).toBe(false);
   });
 });

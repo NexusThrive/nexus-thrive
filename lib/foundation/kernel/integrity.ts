@@ -57,3 +57,24 @@ export const ORDER_TRANSITIONS: Record<string, readonly string[]> = {
 export function canTransitionOrder(from: string, to: string): boolean {
   return (ORDER_TRANSITIONS[from] ?? []).includes(to);
 }
+
+/** Ventana en la que dos cobros idénticos se consideran el mismo envío repetido (doble clic, reintento del navegador). */
+export const DUPLICATE_WINDOW_SECONDS = 10;
+
+export type PaymentFingerprint = { customerId: string | null; amount: string; method: string; description: string | null; sourceType: string | null; sourceId: string | null };
+
+/**
+ * ¿Es `candidate` el mismo cobro que `previous` enviado otra vez? Solo cuando el cobro está atado a un cliente o a un
+ * origen: dos ventas iguales de mostrador, sin cliente ni origen, son legítimas y nunca se tratan como repetidas.
+ */
+export function isDuplicatePayment(previous: PaymentFingerprint, candidate: PaymentFingerprint): boolean {
+  if (!candidate.customerId && !candidate.sourceId) return false;
+  return (
+    previous.customerId === candidate.customerId &&
+    Number(previous.amount) === Number(candidate.amount) &&
+    previous.method === candidate.method &&
+    (previous.description ?? "") === (candidate.description ?? "") &&
+    previous.sourceType === candidate.sourceType &&
+    previous.sourceId === candidate.sourceId
+  );
+}

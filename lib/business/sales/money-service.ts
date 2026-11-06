@@ -5,7 +5,7 @@ import { toNumber } from "@/lib/foundation/format";
 import type { PaymentStatusValue } from "@/lib/foundation/kernel/payment-vocabulary";
 import { applyStockMovement, StockError } from "@/lib/business/inventory/stock-service";
 import { balanceOf, validatePayment } from "@/lib/foundation/kernel/aging";
-import { resolveLimits, validateAmount } from "@/lib/foundation/kernel/integrity";
+import { DUPLICATE_WINDOW_SECONDS, isDuplicatePayment, resolveLimits, validateAmount } from "@/lib/foundation/kernel/integrity";
 import { accountingPort } from "./accounting-port";
 import { todayCO } from "@/lib/foundation/dates/plain-date";
 import { MoneyError } from "./money-error";
@@ -110,6 +110,15 @@ export async function recordIncome(tx: MoneyTx, tenantId: string, input: IncomeI
   if (problem) throw new MoneyError(problem);
   const amount = typeof input.amount === "string" ? raw.toFixed(2) : (Math.round(raw * 100) / 100).toFixed(2);
   const status = input.status ?? "APPROVED";
+
+  // Doble envío: el mismo cobro de un cliente u origen repetido en segundos no entra dos veces.
+  if (input.customerId || input.sourceId) {
+    const since = Temporal.Instant.fromEpochMilliseconds(Date.now() - DUPLICATE_WINDOW_SECONDS * 1000);
+    const recent = await tx.orm.public.Payment.where({ tenantId }).where((p) => p.createdAt.gte(since)).where((p) => p.status.neq("VOIDED")).select("customerId", "amount", "provider", "description", "sourceType", "sourceId").all();
+    const candidate = { customerId: input.customerId ?? null, amount, method: input.method, description: input.description ? input.description.slice(0, 200) : null, sourceType: input.sourceType ?? null, sourceId: input.sourceId ?? null };
+    if (recent.some((p) => isDuplicatePayment({ customerId: p.customerId, amount: String(p.amount), method: String(p.provider), description: p.description, sourceType: p.sourceType, sourceId: p.sourceId }, candidate)))
+      throw new MoneyError("Este cobro ya se registró hace unos segundos. Revisa el historial antes de repetirlo.");
+  }
 
   const { top } = await tx.orm.public.Payment.where({ tenantId }).aggregate((a) => ({ top: a.max("receiptNumber") }));
   const receiptNumber = (top ?? 0) + 1;
