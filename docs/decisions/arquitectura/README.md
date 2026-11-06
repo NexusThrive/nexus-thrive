@@ -2,8 +2,7 @@
 
 [← Decisiones](../README.md)
 
-Todas las decisiones están en estado **Propuesta**: ninguna fue aprobada ni
-implementada. Formato: contexto, decisión, alternativas, ventajas, desventajas y
+Salvo la 0007 (Aceptada), las decisiones están en estado **Propuesta**. Formato: contexto, decisión, alternativas, ventajas, desventajas y
 consecuencias.
 
 | ADR | Título | Estado |
@@ -14,6 +13,7 @@ consecuencias.
 | [0004](0004-aislamiento-en-aplicacion.md) | Aislamiento en la capa de aplicación + defensas mínimas en base | Propuesta |
 | [0005](0005-esquema-de-produccion.md) | Migraciones de Prisma como única fuente del esquema | Propuesta |
 | [0006](0006-servicio-de-dinero.md) | Servicio transaccional único para el dinero | Propuesta |
+| [0007](0007-soluciones-sobre-plataforma.md) | Soluciones especializadas sobre una plataforma de motores compartidos | Aceptada (2026-11-06) |
 
 Para aprobar una decisión: cambiar su estado a **Aceptada**, con fecha y
 responsable, y enlazar el PR que la implementa.
