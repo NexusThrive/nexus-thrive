@@ -868,6 +868,8 @@ Todas se aceptaron con su recomendación junto con el ADR 0007.
 
 ## 18. Relación con la documentación existente
 
+Referencias funcionales de Odoo (ideas, no código): [`referencias-odoo.md`](referencias-odoo.md).
+
 | Documento | Relación |
 |---|---|
 | [`wiki/02-producto/distribucion-por-rubro.md`](../../wiki/02-producto/distribucion-por-rubro.md) | **Queda reemplazado** cuando se apruebe el ADR de la etapa 0. Hasta entonces, sigue vigente |
