@@ -14,6 +14,9 @@ test.describe("Wompi por negocio", () => {
     await expect(dialog.getByText(/empieza por pub_prod_ o pub_test_/).first()).toBeVisible();
     await dialog.getByLabel(/Llave pública/).fill("pub_test_abc123");
     await dialog.getByRole("button", { name: "Conectar" }).click();
+    await expect(dialog.getByText(/empieza por test_integrity_/).first()).toBeVisible();
+    await dialog.getByLabel(/Secreto de integridad/).fill("test_integrity_abc");
+    await dialog.getByRole("button", { name: "Conectar" }).click();
     await expect(page.getByText(/Wompi conectado en pruebas/)).toBeVisible();
     await expectNoAxeViolations(page);
   });

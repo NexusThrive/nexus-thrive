@@ -36,6 +36,21 @@ export function wompiChecksum(body: WompiEvent, eventsSecret: string): string {
 /** Firma de integridad que exige el checkout alojado. */
 export const wompiIntegrity = (reference: string, amountInCents: number, currency: string, integritySecret: string) => sha256(`${reference}${amountInCents}${currency}${integritySecret}`);
 
+/**
+ * Wompi nombra cada credencial con un prefijo y el entorno: `test_integrity_…` / `prod_integrity_…` y
+ * `test_events_…` / `prod_events_…`. Pegar la llave privada (`prv_…`) o el secreto de otro entorno hace que el checkout
+ * rechace la firma ("La firma es inválida"), así que se detecta al conectar. Devuelve el campo con problema y el motivo.
+ */
+export function wompiSecretsProblem(environment: "production" | "sandbox", integritySecret: string, eventsSecret: string): { field: "integritySecret" | "eventsSecret"; message: string } | null {
+  const env = environment === "production" ? "prod" : "test";
+  const integrity = integritySecret.trim();
+  const events = eventsSecret.trim();
+  if (/^prv_/.test(integrity)) return { field: "integritySecret", message: "Esa es la llave privada. Copia el «Secreto de integridad» (empieza por " + env + "_integrity_) en Desarrolladores → Secretos para integración técnica." };
+  if (!integrity.startsWith(`${env}_integrity_`)) return { field: "integritySecret", message: `El secreto de integridad de ${environment === "production" ? "producción" : "pruebas"} empieza por ${env}_integrity_.` };
+  if (!events.startsWith(`${env}_events_`)) return { field: "eventsSecret", message: `El secreto de eventos de ${environment === "production" ? "producción" : "pruebas"} empieza por ${env}_events_.` };
+  return null;
+}
+
 /** Enlace del checkout alojado de Wompi para pagar un cobro nuestro. */
 export function wompiCheckoutUrl(input: { publicKey: string; integritySecret: string; reference: string; amount: number; redirectUrl?: string }): string {
   const cents = Math.round(input.amount * 100);

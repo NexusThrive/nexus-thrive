@@ -83,10 +83,10 @@ export function WompiConnection({ slug, connection, eventsUrl }: { slug: string;
             <Field label="Llave pública" required error={fieldErrors.publicKey} hint="Empieza por pub_prod_ o pub_test_.">
               {(c) => <input {...c} name="publicKey" autoComplete="off" spellCheck={false} className={inputClasses} placeholder="pub_prod_…" />}
             </Field>
-            <Field label="Secreto de integridad" required error={fieldErrors.integritySecret}>
+            <Field label="Secreto de integridad" required error={fieldErrors.integritySecret} hint="Empieza por test_integrity_ o prod_integrity_. No es la llave privada (prv_).">
               {(c) => <input {...c} name="integritySecret" type="password" autoComplete="off" className={inputClasses} />}
             </Field>
-            <Field label="Secreto de eventos" required error={fieldErrors.eventsSecret} hint="Con él comprobamos que cada aviso de pago viene de Wompi.">
+            <Field label="Secreto de eventos" required error={fieldErrors.eventsSecret} hint="Empieza por test_events_ o prod_events_. Con él comprobamos que cada aviso de pago viene de Wompi.">
               {(c) => <input {...c} name="eventsSecret" type="password" autoComplete="off" className={inputClasses} />}
             </Field>
           </div>
