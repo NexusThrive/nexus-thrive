@@ -6,6 +6,7 @@ import { logTenantAction } from "@/lib/core/tenancy/audit";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
 import { encryptionConfigured } from "@/lib/core/events/secrets";
 import { wompiEnvironment } from "@/lib/domains/finance/payments/intents";
+import { wompiSecretsProblem } from "@/lib/integrations/providers/wompi";
 import { connectProvider, disconnectProvider, listConnections } from "@/lib/integrations/providers/connections";
 
 export type WompiField = "publicKey" | "integritySecret" | "eventsSecret";
@@ -34,6 +35,8 @@ export async function connectWompiAction(slug: string, input: Record<WompiField,
   if (!environment) return { ok: false, field: "publicKey", message: "La llave pública de Wompi empieza por pub_prod_ o pub_test_." };
   if (!credentials.integritySecret) return { ok: false, field: "integritySecret", message: "Escribe el secreto de integridad." };
   if (!credentials.eventsSecret) return { ok: false, field: "eventsSecret", message: "Escribe el secreto de eventos." };
+  const mismatch = wompiSecretsProblem(environment, credentials.integritySecret, credentials.eventsSecret);
+  if (mismatch) return { ok: false, ...mismatch };
 
   // Un solo Wompi activo: cambiar de pruebas a producción pide desconectar primero el otro.
   const other = (await listConnections(ctx.tenantId)).find((c) => c.provider === "wompi" && c.status === "CONNECTED" && c.environment !== environment);
