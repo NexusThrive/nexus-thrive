@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { can } from "@/lib/core/auth/permissions";
 import { logTenantAction } from "@/lib/core/tenancy/audit";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
+import { encryptionConfigured } from "@/lib/core/events/secrets";
 import { wompiEnvironment } from "@/lib/domains/finance/payments/intents";
 import { connectProvider, disconnectProvider, listConnections } from "@/lib/integrations/providers/connections";
 
@@ -27,6 +28,7 @@ const refresh = (slug: string) => {
 export async function connectWompiAction(slug: string, input: Record<WompiField, string>): Promise<ConnectionResult> {
   const ctx = await manager(slug);
   if (!ctx) return DENIED;
+  if (!encryptionConfigured()) return { ok: false, message: "El servidor no tiene configurada la clave de cifrado (WEBHOOK_ENCRYPTION_KEY), así que no puede guardar credenciales. Avisa al equipo técnico de Nexus." };
   const credentials = { publicKey: input.publicKey.trim(), integritySecret: input.integritySecret.trim(), eventsSecret: input.eventsSecret.trim() };
   const environment = wompiEnvironment(credentials.publicKey);
   if (!environment) return { ok: false, field: "publicKey", message: "La llave pública de Wompi empieza por pub_prod_ o pub_test_." };
@@ -37,7 +39,13 @@ export async function connectWompiAction(slug: string, input: Record<WompiField,
   const other = (await listConnections(ctx.tenantId)).find((c) => c.provider === "wompi" && c.status === "CONNECTED" && c.environment !== environment);
   if (other) return { ok: false, message: `Ya tienes Wompi conectado en ${other.environment === "production" ? "producción" : "pruebas"}. Desconéctalo antes de conectar el otro entorno.` };
 
-  const r = await connectProvider(ctx.tenantId, { provider: "wompi", environment, credentials });
+  let r: Awaited<ReturnType<typeof connectProvider>>;
+  try {
+    r = await connectProvider(ctx.tenantId, { provider: "wompi", environment, credentials });
+  } catch (error) {
+    console.error("[integrations] no se pudo conectar Wompi:", error);
+    return { ok: false, message: "No pudimos guardar la conexión. Inténtalo de nuevo; si sigue igual, avisa al equipo técnico." };
+  }
   await logTenantAction(ctx, "BIZ_ONLINE_PAYMENT", { action: "connect", provider: "wompi", environment, ok: r.ok });
   refresh(slug);
   if (!r.ok) return { ok: false, field: "publicKey", message: r.message };
