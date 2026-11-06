@@ -1,5 +1,6 @@
 import { emitEvent } from "@/lib/core/events/outbox";
 import { toNumber } from "@/lib/foundation/format";
+import { canTransitionOrder, resolveLimits, validateAmount } from "@/lib/foundation/kernel/integrity";
 import { paymentGatewayPort } from "./payment-gateway-port";
 import { db } from "@/prisma/db";
 import { sanitizeOrigin } from "@/lib/business/growth/growth";
@@ -34,6 +35,9 @@ export async function placeOrder(siteSlug: string, input: { customer: CustomerDa
     lines.push({ productId: p.id, name: p.name, quantity: l.quantity, unitPrice: toNumber(p.price), taxRatePct: p.taxCategory === "GRAVADO" ? toNumber(p.taxRatePct) : 0 });
   }
   const total = orderTotals(lines.map((l) => ({ description: l.name, quantity: l.quantity, unitPrice: l.unitPrice, taxRatePct: l.taxRatePct }))).total;
+
+  const overLimit = validateAmount(total, resolveLimits(tenant.settings));
+  if (overLimit) return { ok: false, message: "El pedido supera el valor máximo permitido. Escríbenos por WhatsApp para coordinarlo." };
 
   const c = input.customer;
   for (let attempt = 0; ; attempt++) {
@@ -80,6 +84,7 @@ export async function cancelOrder(tenantId: string, id: string): Promise<{ ok: t
   const o = await db.orm.public.StoreOrder.where({ tenantId, id }).first();
   if (!o) return { ok: false, message: "No se encontró el pedido." };
   if (o.status === "PAID") return { ok: false, message: "Un pedido pagado no se cancela: se devuelve el dinero desde Cobros en línea." };
+  if (!canTransitionOrder(o.status, "CANCELED")) return { ok: false, message: "Este pedido ya no se puede cancelar." };
   await db.orm.public.StoreOrder.where({ tenantId, id }).update({ status: "CANCELED" });
   if (o.intentId) {
     const plan = db.sql.public.PaymentIntent.update({ status: "CANCELED" }).where((f, fns) => fns.and(fns.eq(f.id, o.intentId!), fns.eq(f.tenantId, tenantId), fns.eq(f.status, "PENDING"))).returning("id").build();

@@ -22,6 +22,7 @@ const PUROS = [
   "lib/foundation/kernel/finance-series.ts",
   "lib/foundation/kernel/aging.ts",
   "lib/foundation/kernel/cop-amount.ts",
+  "lib/foundation/kernel/integrity.ts",
 ];
 
 describe("módulos puros de Finance compartidos", () => {

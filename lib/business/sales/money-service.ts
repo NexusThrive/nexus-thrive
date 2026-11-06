@@ -5,6 +5,7 @@ import { toNumber } from "@/lib/foundation/format";
 import type { PaymentStatusValue } from "@/lib/foundation/kernel/payment-vocabulary";
 import { applyStockMovement, StockError } from "@/lib/business/inventory/stock-service";
 import { balanceOf, validatePayment } from "@/lib/foundation/kernel/aging";
+import { resolveLimits, validateAmount } from "@/lib/foundation/kernel/integrity";
 import { accountingPort } from "./accounting-port";
 import { todayCO } from "@/lib/foundation/dates/plain-date";
 import { MoneyError } from "./money-error";
@@ -103,8 +104,11 @@ export type Income = { paymentId: string; receiptNumber: number; receipt: string
  * es efectivo aprobado con un turno abierto, el movimiento de caja.
  */
 export async function recordIncome(tx: MoneyTx, tenantId: string, input: IncomeInput, userId: string): Promise<Income> {
-  const amount =
-    typeof input.amount === "string" ? toNumber(input.amount).toFixed(2) : (Math.round(input.amount * 100) / 100).toFixed(2);
+  const raw = typeof input.amount === "string" ? toNumber(input.amount) : input.amount;
+  const tenant = await tx.orm.public.Tenant.where({ id: tenantId }).select("settings").first();
+  const problem = validateAmount(raw, resolveLimits(tenant?.settings));
+  if (problem) throw new MoneyError(problem);
+  const amount = typeof input.amount === "string" ? raw.toFixed(2) : (Math.round(raw * 100) / 100).toFixed(2);
   const status = input.status ?? "APPROVED";
 
   const { top } = await tx.orm.public.Payment.where({ tenantId }).aggregate((a) => ({ top: a.max("receiptNumber") }));
