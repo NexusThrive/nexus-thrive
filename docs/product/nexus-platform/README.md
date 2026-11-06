@@ -596,7 +596,7 @@ liquidar, débito a banco y crédito a «por cobrar» por $97.000.
 | Intentos de pago | FALTANTE | No hay `PaymentAttempt`; un intento fallido no queda registrado aparte |
 | Devoluciones | EXISTE | `PaymentRefund` ligado a la intención; `refundedTotal` |
 | Webhooks firmados y deduplicados | EXISTE | Firma en `lib/integrations/providers/wompi.ts`; `ProviderEvent` único por `(tenantId, provider, externalId)` |
-| Wompi con credenciales del negocio | INCOMPLETO | El backend es por tenant: `ExternalConnection` (`kind: PAYMENT`, credenciales cifradas), `adapter.check()` valida las llaves, el checkout usa la conexión del negocio (`intents-db.ts`). **Pero** ninguna pantalla llama a `connectProvider` (`lib/integrations/providers/connections.ts`), y la tienda cae a la pasarela `sandbox` cuando el negocio no tiene una conectada (`lib/business/store/store-db.ts`) |
+| Wompi con credenciales del negocio | EXISTE | `ExternalConnection` (`kind: PAYMENT`, credenciales cifradas) por negocio; se conecta y desconecta desde `/integrations` (`app/[tenant]/(app)/integrations/actions.ts`, HU-wompi-negocio-01). Sin conexión, el cobro queda manual (`pickGateway`); la pasarela `sandbox` no se ofrece en producción. Falta probar contra el sandbox real de Wompi con llaves del negocio |
 | Cuentas por pagar | EXISTE | `SupplierInvoice`, `SupplierPayment`, `PurchaseOrder`, `Expense` |
 | Devoluciones POS | EXISTE | `lib/business/pos/returns-db.ts`: nota crédito parcial o total, reingreso al inventario y reembolso desde la caja del turno |
 | Documentos | EXISTE | `Invoice.kind`: `INVOICE`, `RECEIPT`, `CREDIT_NOTE`, `DEBIT_NOTE`; recibo con QR (`receipt-qr.ts`) |
