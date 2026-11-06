@@ -33,6 +33,9 @@ export type MoneyTx = DbTransaction;
 
 export { MoneyError };
 
+/** Publica un hecho del dinero en el outbox dentro de la transacción de quien llama (Finance no importa Core: pasa por aquí). */
+export { emitEvent as emitFinanceEvent };
+
 // Dos cobros a la vez pueden tomar el mismo recibo o el mismo número de
 // documento de venta: la restricción única falla y se reintenta todo.
 const isReceiptCollision = (e: unknown) => /receiptNumber|Invoice_tenantId_kind_number|JournalEntry_tenantId_number/i.test(String((e as Error)?.message ?? e));

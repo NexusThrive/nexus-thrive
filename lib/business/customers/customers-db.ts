@@ -1,5 +1,6 @@
 import { customerLimit } from "@/lib/core/tenancy/customer-limit";
 import { syncCustomerParty } from "@/lib/core/parties/parties-db";
+import { emitEvent } from "@/lib/core/events/outbox";
 import { db } from "@/prisma/db";
 import { withinLimit } from "@/lib/foundation/limits";
 
@@ -75,6 +76,7 @@ export async function saveCustomer(
     if (!exists) return { ok: false, message: "No se encontró." };
     await db.orm.public.Customer.where({ tenantId, id }).update(data);
     await syncCustomerParty(tenantId, id);
+    await db.transaction((tx) => emitEvent(tx, tenantId, { type: "customer.upserted", resourceType: "customer", resourceId: id, payload: { customer_id: id, created: false } }));
     return { ok: true, id };
   }
   const { limit, used } = await customerLimit(tenantId);
@@ -83,6 +85,7 @@ export async function saveCustomer(
   }
   const created = await db.orm.public.Customer.create({ tenantId, ...data, active: true });
   await syncCustomerParty(tenantId, created.id);
+  await db.transaction((tx) => emitEvent(tx, tenantId, { type: "customer.upserted", resourceType: "customer", resourceId: created.id, payload: { customer_id: created.id, created: true } }));
   return { ok: true, id: created.id };
 }
 

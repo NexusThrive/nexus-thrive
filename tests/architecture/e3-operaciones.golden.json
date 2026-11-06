@@ -22,6 +22,50 @@
   "title": "Buscar clientes"
  },
  {
+  "id": "customers.upsert",
+  "module": "crm",
+  "permission": null,
+  "risk": "write",
+  "rest": {
+   "method": "POST",
+   "path": "/customers"
+  },
+  "title": "Crear o actualizar un cliente"
+ },
+ {
+  "id": "orders.update_status",
+  "module": "website",
+  "permission": "money.handle",
+  "risk": "write",
+  "rest": {
+   "method": "POST",
+   "path": "/orders/{orderId}/status"
+  },
+  "title": "Cambiar el estado de un pedido de la tienda"
+ },
+ {
+  "id": "payments.create_intent",
+  "module": "online_payments",
+  "permission": "money.handle",
+  "risk": "write",
+  "rest": {
+   "method": "POST",
+   "path": "/payments/intents"
+  },
+  "title": "Crear un enlace de cobro"
+ },
+ {
+  "id": "payments.confirm",
+  "module": "online_payments",
+  "permission": "business.manage",
+  "risk": "money",
+  "rest": {
+   "method": "POST",
+   "path": "/payments/intents/{reference}/confirm"
+  },
+  "title": "Confirmar un pago a mano"
+ },
+ {
   "id": "products.search",
   "module": "inventory",
   "permission": null,

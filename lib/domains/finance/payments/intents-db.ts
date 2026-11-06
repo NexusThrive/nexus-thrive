@@ -1,4 +1,4 @@
-import { MoneyError, moneyTransaction, recordIncome, type MoneyTx } from "@/lib/business/sales/money-service";
+import { MoneyError, emitFinanceEvent, moneyTransaction, recordIncome, type MoneyTx } from "@/lib/business/sales/money-service";
 import { sandboxPaymentsAllowed } from "@/lib/foundation/environment";
 import { toNumber } from "@/lib/foundation/format";
 import { balanceOf } from "@/lib/foundation/kernel/aging";
@@ -66,6 +66,7 @@ export async function createIntent(tenantId: string, input: { amount: number; de
   if (input.customerId && !(await db.orm.public.Customer.where({ tenantId, id: input.customerId }).select("id").first())) return { ok: false, message: "El cliente no existe." };
   const provider = pickGateway((await connectedGateways(tenantId)).map((g) => g.value), input.provider);
   const created = await db.orm.public.PaymentIntent.create({ tenantId, reference: newReference(), amount: dec(input.amount), description: input.description.trim().slice(0, 160), channel: input.channel ?? "LINK", provider, customerId: input.customerId ?? null, invoiceId: input.invoiceId ?? null, expiresAt: instant(Date.now() + hours * 3_600_000), createdById: userId });
+  await db.transaction((tx) => emitFinanceEvent(tx, tenantId, { type: "payment.intent_created", resourceType: "payment_intent", resourceId: created.id, payload: { intent_id: created.id, reference: created.reference, amount: input.amount, currency: "COP", provider } }));
   return { ok: true, id: created.id, reference: created.reference };
 }
 

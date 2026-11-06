@@ -2,6 +2,9 @@ import { businessOperations } from "@/lib/core/operations/definitions/business";
 import { customerOperations } from "@/lib/core/operations/definitions/customers";
 import { eventOperations } from "@/lib/core/operations/definitions/events";
 import { financeOperations } from "@/lib/core/operations/definitions/finance";
+import { customerWriteOperations } from "@/lib/business/customers/operations";
+import { storeOperations } from "@/lib/business/store/operations";
+import { paymentOperations } from "./payment-operations";
 import { inventoryOperations } from "@/lib/business/inventory/operations";
 import { presenceOperations } from "@/lib/business/presence/operations";
 import { purchaseOperations } from "@/lib/business/purchasing/operations";
@@ -24,6 +27,9 @@ import type { OperationContext, OperationDefinition } from "@/lib/core/operation
 export const OPERATIONS: readonly OperationDefinition[] = Object.freeze([
   ...businessOperations,
   ...customerOperations,
+  ...customerWriteOperations,
+  ...storeOperations,
+  ...paymentOperations,
   ...inventoryOperations,
   ...presenceOperations,
   ...financeOperations,

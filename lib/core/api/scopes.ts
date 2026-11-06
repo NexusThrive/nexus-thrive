@@ -8,10 +8,14 @@ import type { OperationDefinition } from "@/lib/core/operations/types";
  *   `recurso.*`    todas las de un recurso (`customers.*`)
  *   `recurso.accion`  una sola (`customers.search`)
  *
+ * Las operaciones de riesgo `money` y `destructive` solo se conceden con su alcance exacto, nunca con `*` ni `recurso.*`.
+ *
  * Los alcances **recortan**: nunca dan más de lo que el rol de quien creó la
  * llave ya puede (eso lo comprueba el motor con `can()`).
  */
 export function scopeAllows(scopes: readonly string[], op: Pick<OperationDefinition, "id" | "risk">): boolean {
+  // Mover dinero o destruir datos nunca se concede por comodín (`*`, `recurso.*`): la llave debe nombrar la operación.
+  if (op.risk === "money" || op.risk === "destructive") return scopes.includes(op.id);
   const resource = op.id.split(".")[0];
   return scopes.some((s) => s === "*" || s === op.id || s === `${resource}.*` || (s === "read" && op.risk === "read"));
 }

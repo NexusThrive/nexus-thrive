@@ -85,7 +85,10 @@ export async function cancelOrder(tenantId: string, id: string): Promise<{ ok: t
   if (!o) return { ok: false, message: "No se encontró el pedido." };
   if (o.status === "PAID") return { ok: false, message: "Un pedido pagado no se cancela: se devuelve el dinero desde Cobros en línea." };
   if (!canTransitionOrder(o.status, "CANCELED")) return { ok: false, message: "Este pedido ya no se puede cancelar." };
-  await db.orm.public.StoreOrder.where({ tenantId, id }).update({ status: "CANCELED" });
+  await db.transaction(async (tx) => {
+    await tx.orm.public.StoreOrder.where({ tenantId, id }).update({ status: "CANCELED" });
+    await emitEvent(tx, tenantId, { type: "order.canceled", resourceType: "store_order", resourceId: id, payload: { order_id: id, code: orderCode(o.number), total: toNumber(o.total), currency: "COP" } });
+  });
   if (o.intentId) {
     const plan = db.sql.public.PaymentIntent.update({ status: "CANCELED" }).where((f, fns) => fns.and(fns.eq(f.id, o.intentId!), fns.eq(f.tenantId, tenantId), fns.eq(f.status, "PENDING"))).returning("id").build();
     await db.transaction((tx) => tx.query(plan));

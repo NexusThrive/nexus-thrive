@@ -3,6 +3,7 @@ import { z } from "zod";
 import { runOperation } from "@/lib/core/operations/engine";
 import { OperationError, type OperationContext, type OperationDefinition } from "@/lib/core/operations/types";
 import type { AuthenticatedKey, AuthResult } from "./keys";
+import { IDEMPOTENCY_KEY_PATTERN, requestHash, type IdempotencyStore } from "./idempotency";
 import { buildOpenApi } from "./openapi";
 import { problem, type ProblemCode } from "./problem";
 import { consume } from "./rate-limit";
@@ -37,6 +38,8 @@ export type ApiDeps = {
   usage?: (tenantId: string) => Promise<{ allowed: boolean; used: number; limit: number; resetSeconds: number }>;
   /** Deja en la bitácora quién ejecutó una operación que no es de lectura. */
   audit?: (ctx: OperationContext, op: OperationDefinition, input: unknown) => Promise<void> | void;
+  /** Respuestas guardadas por `Idempotency-Key`. Sin él, la cabecera sigue siendo obligatoria pero no se reproduce la respuesta. */
+  idempotency?: IdempotencyStore;
 };
 
 const BASE = "/api/v1";
@@ -213,11 +216,31 @@ export async function handleApi(request: Request, deps: ApiDeps): Promise<Respon
     input = { ...(typeof body === "object" && body ? (body as Record<string, unknown>) : {}), ...match.params };
   }
 
+  // Operaciones que escriben o mueven dinero: la llave de idempotencia es obligatoria y la operación corre una sola vez por llave.
+  let idem: { key: string } | null = null;
+  if (method !== "GET" && match.op.idempotent) {
+    const given = request.headers.get("idempotency-key")?.trim() ?? "";
+    if (!given) return finish(problem(422, "idempotency_key_required", `«${match.op.id}» exige la cabecera \`Idempotency-Key\` (8 a 128 caracteres, por ejemplo un UUID).`, requestId, { headers: rateHeaders }));
+    if (!IDEMPOTENCY_KEY_PATTERN.test(given)) return finish(problem(422, "invalid_input", "La `Idempotency-Key` debe tener de 8 a 128 caracteres: letras, números y _ . : -", requestId, { headers: rateHeaders }));
+    if (deps.idempotency) {
+      const claim = await deps.idempotency.claim({ tenantId: key.tenantId, apiKeyId: key.id, key: given, hash: requestHash(match.op.id, input) });
+      if (claim.state === "replay") return finish(json(claim.status, claim.body, { ...rateHeaders, "idempotent-replayed": "true" }));
+      if (claim.state === "conflict") return finish(problem(422, "idempotency_conflict", "Esa `Idempotency-Key` ya se usó con otros datos. Usa una llave nueva para una operación distinta.", requestId, { headers: rateHeaders }));
+      if (claim.state === "in_progress") return finish(problem(409, "idempotency_in_progress", "Esa petición todavía se está procesando. Reintenta en unos segundos.", requestId, { headers: { ...rateHeaders, "retry-after": "2" } }));
+      idem = { key: given };
+    }
+  }
+  const release = async () => {
+    if (idem) await deps.idempotency?.release({ tenantId: key.tenantId, apiKeyId: key.id, key: idem.key }).catch(() => undefined);
+  };
+
   try {
     const data = await runOperation(deps.operations, ctx, match.op.id, input);
     if (match.op.risk !== "read") await deps.audit?.(ctx, match.op, input);
+    if (idem) await deps.idempotency?.complete({ tenantId: key.tenantId, apiKeyId: key.id, key: idem.key, status: 200, body: { data } }).catch(() => undefined);
     return finish(json(200, { data }, rateHeaders));
   } catch (error) {
+    await release();
     if (error instanceof OperationError) {
       const code: ProblemCode = STATUS_CODE[error.status] ?? (error.code === "unknown_operation" ? "not_found" : (error.code as ProblemCode));
       return finish(problem(error.status, code, error.message, requestId, { headers: rateHeaders, errors: error.issues }));

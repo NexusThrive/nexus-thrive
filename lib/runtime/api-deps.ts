@@ -1,5 +1,6 @@
 import { after } from "next/server";
 import type { ApiDeps } from "@/lib/core/api/handler";
+import { idempotencyStore } from "@/lib/core/api/idempotency-db";
 import { authenticateApiKey, recordApiRequest } from "@/lib/core/api/keys";
 import { auditOperation } from "@/lib/core/operations/audit";
 import { OPERATIONS } from "@/lib/runtime/operations";
@@ -22,6 +23,7 @@ export const apiDeps: ApiDeps = {
     }
   },
   audit: (ctx, op, input) => auditOperation(ctx, op, input),
+  idempotency: idempotencyStore,
   authenticate: (authorization) => authenticateApiKey(authorization),
   loadTenant: async (tenantId) => {
     const tenant = await tenantWithModules(tenantId);

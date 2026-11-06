@@ -29,6 +29,9 @@ export function buildOpenApi(operations: readonly OperationDefinition[], serverU
     const pathParams = [...op.rest.path.matchAll(/\{(\w+)\}/g)].map((m) => m[1]);
     const parameters = [
       ...pathParams.map((name) => ({ name, in: "path", required: true, schema: properties[name] ?? { type: "string" } })),
+      ...(op.idempotent && op.rest.method !== "GET"
+        ? [{ name: "Idempotency-Key", in: "header", required: true, description: "Identifica esta petición (8 a 128 caracteres, p. ej. un UUID). Repetirla con los mismos datos devuelve la misma respuesta durante 24 h; con otros datos, 422.", schema: { type: "string", minLength: 8, maxLength: 128 } }]
+        : []),
       ...(op.rest.method === "GET"
         ? Object.entries(properties)
             .filter(([name]) => !pathParams.includes(name))
@@ -56,13 +59,15 @@ export function buildOpenApi(operations: readonly OperationDefinition[], serverU
         "401": problemResponse("Falta la llave, es inválida, venció o fue revocada."),
         "403": problemResponse("La llave no tiene el alcance, el rol no tiene el permiso o el módulo no está activo."),
         "404": problemResponse("No existe la ruta o el recurso en este negocio."),
-        "422": problemResponse("Datos inválidos (`errors` dice cuáles)."),
+        "409": problemResponse("Otra petición con la misma `Idempotency-Key` sigue en curso."),
+        "422": problemResponse("Datos inválidos (`errors` dice cuáles), falta la `Idempotency-Key`, regla de negocio incumplida o llave de idempotencia usada con otros datos."),
         "429": problemResponse("Se superó el límite de peticiones (`Retry-After`)."),
       },
       "x-nexus-risk": op.risk,
       "x-nexus-permission": op.permission,
       "x-nexus-module": op.module,
-      "x-nexus-scope": [op.id, `${op.id.split(".")[0]}.*`, ...(op.risk === "read" ? ["read"] : []), "*"],
+      // Dinero y operaciones destructivas solo se conceden con el alcance exacto.
+      "x-nexus-scope": op.risk === "money" || op.risk === "destructive" ? [op.id] : [op.id, `${op.id.split(".")[0]}.*`, ...(op.risk === "read" ? ["read"] : []), "*"],
     };
   }
   return {

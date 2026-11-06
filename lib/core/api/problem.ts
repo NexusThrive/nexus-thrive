@@ -13,6 +13,10 @@ export type ProblemCode =
   | "not_found"
   | "method_not_allowed"
   | "invalid_input"
+  | "rule_violation"
+  | "idempotency_key_required"
+  | "idempotency_conflict"
+  | "idempotency_in_progress"
   | "rate_limited"
   | "quota_exceeded"
   | "tenant_inactive"
@@ -29,6 +33,10 @@ const TITLES: Record<ProblemCode, string> = {
   not_found: "No encontrado",
   method_not_allowed: "Método no permitido",
   invalid_input: "Datos inválidos",
+  rule_violation: "Regla de negocio",
+  idempotency_key_required: "Falta la Idempotency-Key",
+  idempotency_conflict: "Idempotency-Key ya usada con otros datos",
+  idempotency_in_progress: "Petición en curso",
   rate_limited: "Demasiadas peticiones",
   quota_exceeded: "Cupo mensual agotado",
   tenant_inactive: "Negocio inactivo",

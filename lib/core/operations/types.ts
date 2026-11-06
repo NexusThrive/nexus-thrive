@@ -59,7 +59,7 @@ export type OperationDefinition<I extends z.ZodType = z.ZodType, O extends z.Zod
 };
 
 /** Códigos estables (van en `code` del error RFC 9457 de la API). */
-export type OperationErrorCode = "unknown_operation" | "module_inactive" | "forbidden" | "invalid_input" | "internal";
+export type OperationErrorCode = "unknown_operation" | "module_inactive" | "forbidden" | "invalid_input" | "not_found" | "rule_violation" | "internal";
 
 export class OperationError extends Error {
   constructor(
