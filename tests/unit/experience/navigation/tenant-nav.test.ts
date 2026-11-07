@@ -14,13 +14,13 @@ describe("buildTenantNav", () => {
 
   it("solo muestra funciones activas y siempre Funciones y Configuración", () => {
     const groups = buildTenantNav("retail", ["dashboard", "crm"]);
-    expect(groups.map((g) => g.label)).toEqual(["General", "Clientes y agenda", "Sistema"]);
+    expect(groups.map((g) => g.label)).toEqual(["General", "Clientes y agenda", "CRM", "Sistema"]);
     expect(groups.flatMap((g) => g.items).map((i) => i.href)).toEqual(["", "/crm", "/oportunidades", "/tareas", "/entregables", "/formularios", "/functions", "/data", "/integrations", "/settings"]);
   });
 
   it("agrupa por trabajo, con todas las categorías desplegables, y omite los grupos vacíos", () => {
     const groups = buildTenantNav("retail", ["dashboard", "crm", "memberships", "finance", "payments", "pos", "online_payments", "billing", "einvoicing", "receivables", "accounting", "taxes", "whatsapp"]);
-    expect(groups.map((g) => g.label)).toEqual(["General", "Clientes y agenda", "Ventas y cobros", "Compras y gastos", "Finanzas y contabilidad", "Canales", "Sistema"]);
+    expect(groups.map((g) => g.label)).toEqual(["General", "Clientes y agenda", "CRM", "Ventas y cobros", "Compras y gastos", "Finanzas y contabilidad", "Canales", "Sistema"]);
     // Facturación, punto de venta y cobros van en Ingresos; Pagos vive dentro de Finanzas y no se repite.
     const ingresos = groups.find((g) => g.label === "Ventas y cobros")!;
     expect(ingresos.collapsible).toBe(true);
@@ -184,5 +184,19 @@ describe("menú por rol (HU-navegacion-commerce-01)", () => {
   it("quien maneja dinero ve todo, y sin rol se muestra todo", () => {
     expect(hrefs("OWNER")).toEqual(expect.arrayContaining(["/orders", "/finance"]));
     expect(hrefs()).toEqual(expect.arrayContaining(["/orders", "/finance"]));
+  });
+});
+
+describe("reparto del menú por trabajo (etapa A6)", () => {
+  it("CRM tiene oportunidades, tareas, entregables y formularios; Clientes queda con los contactos", () => {
+    const groups = buildTenantNav("retail", ["dashboard", "crm"]);
+    const crm = groups.find((g) => g.label === "CRM")!;
+    expect(crm.items.map((i) => i.href)).toEqual(["/oportunidades", "/tareas", "/entregables", "/formularios"]);
+    expect(groups.find((g) => g.label === "Clientes y agenda")!.items.map((i) => i.href)).toEqual(["/crm"]);
+  });
+  it("cotizaciones y pedidos van en Ventas, no en obras", () => {
+    const groups = buildTenantNav("retail", ["dashboard", "quotes", "orders"]);
+    expect(groups.find((g) => g.label === "Ventas y cobros")!.items.map((i) => i.href)).toEqual(expect.arrayContaining(["/cotizaciones", "/orders"]));
+    expect(groups.find((g) => g.label === "Obras y proyectos")).toBeUndefined();
   });
 });

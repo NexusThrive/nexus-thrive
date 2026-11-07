@@ -3,10 +3,10 @@
  * relativa al negocio, el elemento activo y la categoría de una ruta.
  */
 import { can, type BusinessPermission } from "@/lib/core/auth/permissions";
-import { Blocks, FileSpreadsheet, Globe, HardHat, MessageCircle, Package, Plug, Receipt, Settings, ShoppingCart, Truck, Users, Wallet, type LucideIcon } from "lucide-react";
+import { Blocks, FileSpreadsheet, Globe, HardHat, MessageCircle, Package, Plug, Receipt, Settings, ShoppingCart, Truck, Users, Wallet, type LucideIcon, Target } from "lucide-react";
 import { type VerticalValue } from "@/lib/core/sectors/verticals";
 import { MODULES, type ModuleValue } from "@/lib/core/capabilities/modules";
-import { CAPABILITIES, CAPABILITY_CATEGORIES, type CapabilityCategory } from "@/lib/core/capabilities/registry";
+import { CAPABILITIES, CAPABILITY_CATEGORIES, NAV_CATEGORY, type CapabilityCategory } from "@/lib/core/capabilities/registry";
 import { MODULE_NAV } from "@/lib/core/capabilities/route-modules";
 import { getVerticalTerms, hasMemberAccess } from "@/lib/core/sectors/terms";
 import type { NavGroup, NavItem } from "../../core/capabilities/nav-types";
@@ -61,7 +61,8 @@ type GroupName = CapabilityCategory;
 /** Icono de cada categoría: el grupo se muestra como una opción que despliega sus ítems. */
 const GROUP_ICONS: Record<GroupName, LucideIcon> = {
   "Clientes y agenda": Users,
-  "Productos y pedidos": Package,
+  CRM: Target,
+  Producto: Package,
   "Obras y proyectos": HardHat,
   "Ventas y cobros": ShoppingCart,
   "Compras y gastos": Truck,
@@ -102,10 +103,12 @@ export function buildTenantNav(vertical: VerticalValue, activeModules: readonly 
   };
   const enabled = MODULES.filter((moduleName) => active.has(moduleName));
   // «Pagos» vive dentro de Finanzas: con Finanzas activa no se repite (las demás pantallas de Pagos, como el punto de venta, sí).
+  // El grupo de cada entrada: el de su ruta si lo tiene (p. ej. CRM dentro del módulo de clientes), si no el de su función.
+  const groupOf = (m: ModuleValue, href: string): GroupName => NAV_CATEGORY.get(href.split("?")[0] ?? "") ?? MODULE_GROUP[m] ?? "Clientes y agenda";
   const forGroup = (label: GroupName): NavItem[] =>
     enabled
-      .filter((m) => m !== "dashboard" && (MODULE_GROUP[m] ?? "Clientes y operación") === label)
-      .flatMap((m) => items(m).filter((item) => !(m === "payments" && active.has("finance") && item.href.startsWith("/finance")) && !(m === "website" && item.href === "/orders" && active.has("orders"))));
+      .filter((m) => m !== "dashboard")
+      .flatMap((m) => items(m).filter((item) => groupOf(m, item.href) === label).filter((item) => !(m === "payments" && active.has("finance") && item.href.startsWith("/finance")) && !(m === "website" && item.href === "/orders" && active.has("orders"))));
   const gym = lean;
   const expenses: NavItem[] = active.has("finance") && !gym && allowedFor(role, "/finance") ? [{ key: "/finance?tab=gastos", module: "finance", href: "/finance?tab=gastos", icon: Receipt, label: "Gastos" }] : [];
   return [

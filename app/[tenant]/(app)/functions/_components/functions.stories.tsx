@@ -30,7 +30,7 @@ const groups: FunctionGroups = {
     item("whatsapp", "WhatsApp", "Plantillas y mensajes a tus clientes.", { category: "Canales" }),
     item("construction", "Obras y presupuestos", "Obras, presupuestos y catálogo APU.", { specialty: true, category: "Obras y proyectos" }),
   ],
-  planned: [item("orders", "Pedidos", "Pedidos y ventas.", { planned: true, category: "Productos y pedidos" })],
+  planned: [item("orders", "Pedidos", "Pedidos y ventas.", { planned: true, category: "Producto" })],
 };
 
 const meta = {

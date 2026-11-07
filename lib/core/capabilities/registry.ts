@@ -70,12 +70,14 @@ export type CapabilityNav = {
   label: (terms: VerticalTerms, vertical: VerticalValue) => string;
   /** Solo para estos rubros (pantallas propias del rubro). */
   verticals?: readonly VerticalValue[];
+  /** Grupo de la barra lateral si no es el de la función (una función puede repartirse entre grupos). */
+  category?: CapabilityCategory;
 };
 
 /** Categoría de la función: la misma en la barra lateral y en la página Funciones. */
-export type CapabilityCategory = "Clientes y agenda" | "Productos y pedidos" | "Obras y proyectos" | "Ventas y cobros" | "Compras y gastos" | "Finanzas y contabilidad" | "Presencia en línea" | "Canales";
+export type CapabilityCategory = "Clientes y agenda" | "CRM" | "Ventas y cobros" | "Producto" | "Obras y proyectos" | "Compras y gastos" | "Finanzas y contabilidad" | "Presencia en línea" | "Canales";
 /** Orden de la barra lateral y de «Funciones»: del trato con el cliente, a vender y cobrar, a gastar y contabilizar, a darse a conocer. */
-export const CAPABILITY_CATEGORIES: readonly CapabilityCategory[] = ["Clientes y agenda", "Productos y pedidos", "Obras y proyectos", "Ventas y cobros", "Compras y gastos", "Finanzas y contabilidad", "Presencia en línea", "Canales"];
+export const CAPABILITY_CATEGORIES: readonly CapabilityCategory[] = ["Clientes y agenda", "CRM", "Ventas y cobros", "Producto", "Obras y proyectos", "Compras y gastos", "Finanzas y contabilidad", "Presencia en línea", "Canales"];
 
 export type CapabilityDefinition = {
   id: string;
@@ -121,10 +123,10 @@ export const CAPABILITIES = [
     included: true,
     nav: [
       { href: "/crm", icon: Users, label: (terms) => terms.customers },
-      { href: "/oportunidades", icon: Target, label: () => "Oportunidades" },
-      { href: "/tareas", icon: CheckSquare, label: () => "Tareas" },
-      { href: "/entregables", icon: FileCheck2, label: () => "Entregables" },
-      { href: "/formularios", icon: Link2, label: () => "Formularios web" },
+      { href: "/oportunidades", icon: Target, label: () => "Oportunidades", category: "CRM" },
+      { href: "/tareas", icon: CheckSquare, label: () => "Tareas", category: "CRM" },
+      { href: "/entregables", icon: FileCheck2, label: () => "Entregables", category: "CRM" },
+      { href: "/formularios", icon: Link2, label: () => "Formularios web", category: "CRM" },
     ],
   },
   {
@@ -178,7 +180,7 @@ export const CAPABILITIES = [
   },
   {
     id: "inventory",
-    category: "Productos y pedidos",
+    category: "Producto",
     kind: "base",
     label: "Inventario",
     name: "Catálogo e inventario",
@@ -277,7 +279,7 @@ export const CAPABILITIES = [
   },
   {
     id: "orders",
-    category: "Productos y pedidos",
+    category: "Ventas y cobros",
     kind: "specialized",
     label: "Pedidos",
     name: "Pedidos",
@@ -292,7 +294,7 @@ export const CAPABILITIES = [
     // Cotización comercial genérica: llega con el documento comercial
     // unificado (Bloque B, paso 2). Hasta entonces no tiene pantallas.
     id: "quotes",
-    category: "Obras y proyectos",
+    category: "Ventas y cobros",
     kind: "specialized",
     label: "Cotizaciones",
     name: "Cotizaciones",
@@ -479,3 +481,8 @@ export const CHILDREN_OF: Readonly<Record<string, readonly string[]>> = CAPABILI
   if (parent) (acc[parent] ??= []).push(c.id);
   return acc;
 }, {});
+
+/** Grupo de la barra lateral de cada ruta que lo cambia respecto de su función. */
+export const NAV_CATEGORY: ReadonlyMap<string, CapabilityCategory> = new Map(
+  CAPABILITIES.flatMap((c) => (c.nav as readonly CapabilityNav[]).filter((n) => n.category).map((n) => [n.href.split("?")[0]!, n.category!] as const)),
+);
