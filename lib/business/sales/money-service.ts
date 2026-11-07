@@ -163,9 +163,14 @@ export async function recordIncome(tx: MoneyTx, tenantId: string, input: IncomeI
   // Aplicación del pago (D-8): a qué cubrió. Una cuenta de cobro recibe el pago completo; una membresía lo reparte entre sus deudas abiertas.
   if (status === "APPROVED") {
     if (input.invoiceId) await allocatePayment(tx, tenantId, { paymentId: payment.id, paymentAmount: Number(amount), targetType: "INVOICE", targetId: input.invoiceId, amount: Number(amount) });
-    else if (input.sourceType === "MEMBERSHIP" && input.sourceId) {
-      for (const part of await applyToObligation(tx, tenantId, "MEMBERSHIP", input.sourceId, Number(amount))) {
+    else if ((input.sourceType === "MEMBERSHIP" || input.sourceType === "STORE_ORDER") && input.sourceId) {
+      for (const part of await applyToObligation(tx, tenantId, input.sourceType, input.sourceId, Number(amount))) {
         await allocatePayment(tx, tenantId, { paymentId: payment.id, paymentAmount: Number(amount), targetType: "OBLIGATION", targetId: part.obligationId, amount: part.amount });
+      }
+      // Un pedido con anticipo y saldo queda pagado cuando ya no le queda deuda abierta.
+      if (input.sourceType === "STORE_ORDER") {
+        const open = await tx.orm.public.Obligation.where({ tenantId, originType: "STORE_ORDER", status: "OPEN" }).where((o) => o.originId.ilike(`${input.sourceId}%`)).select("id", "originId").all();
+        if (!open.some((o) => o.originId === input.sourceId || o.originId.startsWith(`${input.sourceId}:`))) await tx.orm.public.StoreOrder.where({ tenantId, id: input.sourceId, status: "PENDING_PAYMENT" }).update({ status: "PAID", paidAt: Temporal.Instant.fromEpochMilliseconds(Date.now()) });
       }
     }
   }

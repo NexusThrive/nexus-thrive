@@ -41,7 +41,10 @@ export async function confirmDelivery(tenantId: string, orderId: string, receive
   const existing = await db.orm.public.Delivery.where({ tenantId, orderId }).first();
   if (existing) await db.orm.public.Delivery.where({ tenantId, orderId }).update(done);
   else await db.orm.public.Delivery.create({ tenantId, orderId, method: "PICKUP", ...done });
-  return { ok: true, balanceDue: balanceDueOnDelivery(order.status, toNumber(order.total as never)) };
+  // Saldo real: lo que queda abierto en sus obligaciones (anticipo y saldo); sin obligaciones, el total si no está pagado.
+  const open = await db.orm.public.Obligation.where({ tenantId, originType: "STORE_ORDER", status: "OPEN" }).where((o) => o.originId.ilike(`${orderId}%`)).all();
+  const owed = open.filter((o) => o.originId === orderId || o.originId.startsWith(`${orderId}:`)).reduce((sum, o) => sum + toNumber(o.amount) - toNumber(o.paidTotal), 0);
+  return { ok: true, balanceDue: open.length > 0 ? Math.round(owed * 100) / 100 : balanceDueOnDelivery(order.status, toNumber(order.total as never)) };
 }
 
 export { isMethod };
