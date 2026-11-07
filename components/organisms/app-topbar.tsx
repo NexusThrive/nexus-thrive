@@ -54,9 +54,9 @@ export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; 
       <Link
         href={hrefFor("")}
         aria-label={`${brandName}: inicio`}
-        className={cn(styles.brand, "pl-[max(16px,env(safe-area-inset-left,0px))] outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring md:pl-3", atHome && "!w-auto border-0 bg-transparent !pl-4 !pr-0 text-foreground")}
+        className={cn(styles.brand, "pl-[max(16px,env(safe-area-inset-left,0px))] outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring md:pl-3", atHome && "!w-auto !border-0 bg-transparent !pl-4 !pr-0 text-foreground")}
       >
-        <span className={cn(styles.logo, styles.mark)} style={atHome ? { ["--w" as string]: "34px" } : undefined}>
+        <span className={cn(styles.logo, styles.mark)} style={atHome ? { ["--w" as string]: "40px" } : undefined}>
           <svg role="img" aria-label="NEXUS THRIVE" viewBox="387.6 239.9 744.4 779.5" shapeRendering="geometricPrecision">
             <path d={N_PATH} fill="currentColor" />
             <g className={styles.letters}>
@@ -66,7 +66,7 @@ export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; 
             </g>
           </svg>
         </span>
-        <span className={cn(styles.ident, atHome && "hidden", "flex min-w-0 flex-col leading-tight")}>
+        <span className={cn(styles.ident, atHome ? "!hidden" : "flex min-w-0 flex-col leading-tight")}>
           <b className="truncate font-display text-sm font-semibold">{brandName}</b>
           <small className="flex items-center gap-1.5 text-2xs text-muted-foreground">
             <i aria-hidden="true" className="inline-block size-1.5 -skew-x-[24deg] bg-accent" />
