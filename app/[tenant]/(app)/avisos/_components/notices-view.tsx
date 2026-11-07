@@ -18,7 +18,7 @@ import { META_STATUS_TEXT, NOTICE_EVENTS } from "@/lib/integrations/channels/not
 import type { NoticeRow, TemplateRow } from "@/lib/integrations/channels/notices-db";
 
 type Tab = "templates" | "notices";
-const EVENT_TEXT: Record<string, string> = { "order.created": "Se recibe un pedido", "order.paid": "Se paga un pedido", "cart.abandoned": "Un pedido queda sin pagar" };
+const EVENT_TEXT: Record<string, string> = { "order.created": "Se recibe un pedido", "order.paid": "Se paga un pedido", "cart.abandoned": "Un pedido queda sin pagar", "order.confirmed": "Se confirma un pedido", "order.ready": "Un pedido queda listo", "order.shipped": "Se envía un pedido", "order.delivered": "Se entrega un pedido" };
 const STATUS_TEXT = { PENDING: "Pendiente", SENT: "Enviado", MANUAL: "Listo para enviar con un toque", BLOCKED: "Bloqueado por baja", FAILED: "Con error" } as const;
 const TONE = { PENDING: "secondary", SENT: "success", MANUAL: "warning", BLOCKED: "destructive", FAILED: "destructive" } as const;
 type Dialog = { kind: "template"; row: TemplateRow | null } | { kind: "meta"; row: TemplateRow } | null;

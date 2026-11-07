@@ -4,7 +4,7 @@
  * reúne los datos y aquí se arma la lista que pinta la campana.
  */
 
-export type NotificationKind = "payment" | "expense" | "booking" | "membership" | "customer" | "task";
+export type NotificationKind = "payment" | "expense" | "booking" | "membership" | "customer" | "task" | "order";
 
 /**
  * Qué se espera de la persona (DR-40): `info` solo informa; `action` pide atención (algo por resolver pronto);
@@ -39,6 +39,8 @@ export function buildNotifications(input: {
   registrations?: { id: string; customerId: string; name: string; at: string }[];
   /** Tareas abiertas ya vencidas de quien mira la campana (HU-actividades-01). */
   overdueTasks?: number;
+  /** Pedidos que pasaron a «listo» y aún esperan entrega o envío (HU-avisos-01). */
+  readyOrders?: { id: string; code: string; customer: string; at: string }[];
   expiring: number;
   expired: number;
   /** ISO del inicio de hoy (Bogotá): las alertas de membresía se fechan ahí. */
@@ -75,6 +77,9 @@ export function buildNotifications(input: {
         href: r.customerId ? `/crm/${r.customerId}` : "/crm",
       });
     }
+  }
+  for (const o of input.readyOrders ?? []) {
+    out.push({ id: `order-ready-${o.id}`, kind: "order", severity: "action", title: `Pedido ${o.code} listo para entregar`, detail: o.customer, at: o.at, href: "/orders" });
   }
   if ((input.overdueTasks ?? 0) > 0) {
     const n = input.overdueTasks!;

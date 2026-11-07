@@ -80,3 +80,10 @@ describe("altas del registro público", () => {
     expect(list).toEqual([]);
   });
 });
+
+describe("pedidos listos para entregar (HU-avisos-01)", () => {
+  it("el responsable ve un aviso por cada pedido listo, con acción y enlace a Pedidos", () => {
+    const list = buildNotifications({ movements: [], bookings: [], expiring: 0, expired: 0, todayStart: "2026-11-07T05:00:00.000Z", modules: { finance: false, bookings: false, memberships: false }, readyOrders: [{ id: "o1", code: "T-0005", customer: "María", at: "2026-11-07T10:00:00.000Z" }] });
+    expect(list).toEqual([expect.objectContaining({ id: "order-ready-o1", kind: "order", severity: "action", title: "Pedido T-0005 listo para entregar", href: "/orders" })]);
+  });
+});

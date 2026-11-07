@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_TEMPLATES, decideSend, hasMissingVariables, isOptOut, renderTemplate, validateTemplate, variablesOf } from "@/lib/integrations/channels/notices";
+import { DEFAULT_TEMPLATES, decideSend, hasMissingVariables, isOptOut, renderTemplate, validateTemplate, variablesOf, noticeEventFor } from "@/lib/integrations/channels/notices";
 
 describe("plantillas y avisos de WhatsApp (HU-whatsapp-negocio-02)", () => {
   const base = { optedOut: false, consent: true, connected: true, windowOpen: false, templateStatus: "APPROVED" as const };
@@ -52,5 +52,16 @@ describe("plantillas y avisos de WhatsApp (HU-whatsapp-negocio-02)", () => {
       expect(variablesOf(t.body)).toContain("negocio");
       expect(t.body.toLowerCase()).not.toMatch(/oferta|descuento|promoci/);
     }
+  });
+});
+
+describe("avisos de cumplimiento (HU-avisos-01)", () => {
+  it("solo confirmado, listo, enviado y entregado avisan al cliente", () => {
+    expect(noticeEventFor("order.status_changed", { to: "READY" })).toBe("order.ready");
+    expect(noticeEventFor("order.status_changed", { to: "DELIVERED" })).toBe("order.delivered");
+    expect(noticeEventFor("order.status_changed", { to: "IN_PRODUCTION" })).toBeNull();
+    expect(noticeEventFor("order.status_changed", { to: "CANCELED" })).toBeNull();
+    expect(noticeEventFor("order.paid", null)).toBe("order.paid");
+    expect(noticeEventFor("sale.completed", null)).toBeNull();
   });
 });

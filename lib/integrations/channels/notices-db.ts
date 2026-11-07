@@ -4,7 +4,7 @@ import type { EventSubscriber } from "@/lib/core/events/dispatcher";
 import { db } from "@/prisma/db";
 import { manualLink, messagingWindow, sendTemplate, sendText } from "./whatsapp-cloud";
 import { whatsappConnection } from "./conversations-db";
-import { DEFAULT_TEMPLATES, NOTICE_EVENTS, decideSend, hasMissingVariables, renderTemplate, validateTemplate, variablesOf, type MetaStatus, type NoticeEvent } from "./notices";
+import { DEFAULT_TEMPLATES, NOTICE_SOURCES, decideSend, noticeEventFor, hasMissingVariables, renderTemplate, validateTemplate, variablesOf, type MetaStatus, type NoticeEvent } from "./notices";
 
 /** Plantillas y avisos de WhatsApp del negocio (HU-whatsapp-negocio-02). Todo por `tenantId`. */
 export type TemplateRow = { id: string; key: string; title: string; body: string; event: string | null; metaName: string | null; metaStatus: MetaStatus; language: string; enabled: boolean; variables: string[] };
@@ -62,13 +62,15 @@ export async function queueNotice(tx: DbWriter, tenantId: string, event: NoticeE
 export async function collectNotices(tenantId: string, now = Date.now()): Promise<number> {
   await ensureDefaultTemplates(tenantId);
   const since = instant(now - 2 * 86_400_000);
-  const events = await db.orm.public.OutboxEvent.where({ tenantId }).where((e) => e.createdAt.gte(since)).where((e) => e.type.in([...NOTICE_EVENTS])).orderBy((e) => e.createdAt.asc()).limit(200).all();
+  const events = await db.orm.public.OutboxEvent.where({ tenantId }).where((e) => e.createdAt.gte(since)).where((e) => e.type.in([...NOTICE_SOURCES])).orderBy((e) => e.createdAt.asc()).limit(200).all();
   const tenant = await db.orm.public.Tenant.where({ id: tenantId }).select("name").first();
   let queued = 0;
   for (const e of events) {
-    const payload = (e.payload ?? {}) as { order_id?: string; code?: string; total?: number };
+    const payload = (e.payload ?? {}) as { order_id?: string; code?: string; total?: number; to?: string };
+    const event = noticeEventFor(e.type, payload);
+    if (!event) continue;
     const order = payload.order_id ? await db.orm.public.StoreOrder.where({ tenantId, id: payload.order_id }).select("customerId", "customerName").first() : null;
-    if (await queueNotice(db, tenantId, e.type as NoticeEvent, e.id, order?.customerId, { codigo: payload.code ?? "", total: formatCurrency(payload.total ?? 0), negocio: tenant?.name ?? "" })) queued++;
+    if (await queueNotice(db, tenantId, event, e.id, order?.customerId, { codigo: payload.code ?? "", total: formatCurrency(payload.total ?? 0), negocio: tenant?.name ?? "" })) queued++;
   }
   return queued;
 }
@@ -76,7 +78,7 @@ export async function collectNotices(tenantId: string, now = Date.now()): Promis
 /** Suscriptor del despachador: tras cada corrida, convierte los hechos nuevos en avisos y procesa los pendientes. */
 export const noticeSubscriber: EventSubscriber = {
   name: "avisos-whatsapp",
-  matches: (type) => (NOTICE_EVENTS as readonly string[]).includes(type),
+  matches: (type) => (NOTICE_SOURCES as readonly string[]).includes(type),
   handle: async (tenantId) => {
     await collectNotices(tenantId);
     await processNotices(tenantId);

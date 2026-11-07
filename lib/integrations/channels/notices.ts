@@ -5,8 +5,19 @@
 export type MetaStatus = "NONE" | "PENDING" | "APPROVED" | "REJECTED";
 export const META_STATUS_TEXT: Record<MetaStatus, string> = { NONE: "Sin enviar a Meta", PENDING: "En revisión en Meta", APPROVED: "Aprobada por Meta", REJECTED: "Rechazada por Meta" };
 
-export const NOTICE_EVENTS = ["order.paid", "order.created", "cart.abandoned"] as const;
+export const NOTICE_EVENTS = ["order.paid", "order.created", "cart.abandoned", "order.confirmed", "order.ready", "order.shipped", "order.delivered"] as const;
 export type NoticeEvent = (typeof NOTICE_EVENTS)[number];
+
+/** Hechos del outbox que pueden originar avisos. `order.status_changed` se reparte por su estado nuevo (ver `noticeEventFor`). */
+export const NOTICE_SOURCES = ["order.paid", "order.created", "cart.abandoned", "order.status_changed"] as const;
+
+const BY_STATE: Record<string, NoticeEvent> = { CONFIRMED: "order.confirmed", READY: "order.ready", SHIPPED: "order.shipped", DELIVERED: "order.delivered" };
+
+/** Aviso que corresponde a un hecho del outbox, o `null` si no avisa (p. ej. pasar a producción o cancelar no se le dice al cliente). */
+export function noticeEventFor(type: string, payload: { to?: string } | null): NoticeEvent | null {
+  if (type === "order.status_changed") return BY_STATE[payload?.to ?? ""] ?? null;
+  return (NOTICE_EVENTS as readonly string[]).includes(type) ? (type as NoticeEvent) : null;
+}
 
 const VARIABLE = /\{\{\s*([a-z_]+)\s*\}\}/g;
 
@@ -58,5 +69,9 @@ export function decideSend(i: { optedOut: boolean; consent: boolean; connected: 
 export const DEFAULT_TEMPLATES: readonly { key: string; title: string; event: NoticeEvent; body: string }[] = [
   { key: "pedido_creado", title: "Pedido recibido", event: "order.created", body: "Hola {{nombre}}, recibimos tu pedido {{codigo}} por {{total}}. Te avisamos cuando lo confirmemos. — {{negocio}}" },
   { key: "pedido_pagado", title: "Pago recibido", event: "order.paid", body: "Hola {{nombre}}, recibimos el pago de tu pedido {{codigo}} por {{total}}. ¡Gracias por tu compra! — {{negocio}}" },
+  { key: "pedido_confirmado", title: "Pedido confirmado", event: "order.confirmed", body: "Hola {{nombre}}, confirmamos tu pedido {{codigo}}. Ya lo estamos preparando. — {{negocio}}" },
+  { key: "pedido_listo", title: "Pedido listo", event: "order.ready", body: "Hola {{nombre}}, tu pedido {{codigo}} está listo. — {{negocio}}" },
+  { key: "pedido_enviado", title: "Pedido enviado", event: "order.shipped", body: "Hola {{nombre}}, tu pedido {{codigo}} va en camino. — {{negocio}}" },
+  { key: "pedido_entregado", title: "Pedido entregado", event: "order.delivered", body: "Hola {{nombre}}, entregamos tu pedido {{codigo}}. ¡Gracias por tu compra! — {{negocio}}" },
   { key: "carrito_abandonado", title: "Pedido sin pagar", event: "cart.abandoned", body: "Hola {{nombre}}, tu pedido {{codigo}} por {{total}} sigue sin pagar. Si necesitas ayuda, responde este mensaje. — {{negocio}}" },
 ];

@@ -51,7 +51,7 @@ describe.skipIf(!TEST_URL)("plantillas y avisos de WhatsApp (integración, Meta 
     await ensureDefaultTemplates(a);
     await ensureDefaultTemplates(a);
     const list = await listTemplates(a);
-    expect(list.map((t) => t.key)).toEqual(["carrito_abandonado", "pedido_creado", "pedido_pagado"]);
+    expect(list.map((t) => t.key)).toEqual(["carrito_abandonado", "pedido_confirmado", "pedido_creado", "pedido_entregado", "pedido_enviado", "pedido_listo", "pedido_pagado"]);
     const paid = list.find((t) => t.key === "pedido_pagado")!;
     expect(await setMetaStatus(a, paid.id, "APPROVED", "")).toMatchObject({ ok: false });
     expect(await setMetaStatus(a, paid.id, "APPROVED", "pedido_pagado_v1")).toEqual({ ok: true });
@@ -62,7 +62,7 @@ describe.skipIf(!TEST_URL)("plantillas y avisos de WhatsApp (integración, Meta 
     expect((await listTemplates(a)).find((t) => t.key === "pedido_pagado")).toMatchObject({ metaStatus: "NONE", metaName: "pedido_pagado_v1" });
     await setMetaStatus(a, paid.id, "APPROVED", "pedido_pagado_v2");
     expect(await saveTemplate(a, { key: "x", title: "ab", body: "hola" })).toMatchObject({ ok: false });
-    expect(await listTemplates(b)).toHaveLength(3);
+    expect(await listTemplates(b)).toHaveLength(7);
     expect(await setMetaStatus(b, paid.id, "APPROVED", "ajena_v1")).toMatchObject({ ok: false });
   });
 
@@ -78,6 +78,21 @@ describe.skipIf(!TEST_URL)("plantillas y avisos de WhatsApp (integración, Meta 
     expect(sent.template.components[0].parameters.map((p: { text: string }) => p.text)).toEqual(["Camila", expect.stringMatching(/^T-/), "Avisos A"]);
     expect((await listNotices(a))[0]).toMatchObject({ status: "SENT", customerName: "Camila Torres" });
     expect(await processNotices(a)).toEqual({ sent: 0, manual: 0, blocked: 0, failed: 0 });
+  });
+
+  test("los cambios de cumplimiento avisan al cliente solo en los pasos que le importan", async () => {
+    const o = await order(camila, "");
+    const status = (to: string, from: string) => db.transaction((tx) => emitFinanceEvent(tx, a, { type: "order.status_changed", resourceType: "store_order", resourceId: o.id, payload: { order_id: o.id, code: "T-0099", total: 1000, from, to } }));
+    await status("IN_PRODUCTION", "CONFIRMED"); // no se le avisa
+    await status("CANCELED", "RECEIVED"); // tampoco
+    await status("READY", "IN_PRODUCTION");
+    await status("SHIPPED", "READY");
+    const before = (await listNotices(a)).length;
+    expect(await collectNotices(a)).toBe(2);
+    const events = (await listNotices(a)).slice(0, (await listNotices(a)).length - before).map((n) => n.event);
+    expect(events).toEqual(expect.arrayContaining(["order.ready", "order.shipped"]));
+    expect(events).not.toContain("order.status_changed");
+    await processNotices(a); // deja la cola vacía para las pruebas siguientes
   });
 
   test("sin plantilla aprobada, el aviso queda listo para enviar con un toque", async () => {
