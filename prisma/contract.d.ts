@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'b115839d78e08ee65bc68952fc4c3565ab00c122dc57a6c3b712c3f296542cde'>;
+  StorageHashBase<'3aca39e5ff3919caa942258f02c8eeee94f91e826925129490c8fa6e40c1059b'>;
 export type ExecutionHash =
-  ExecutionHashBase<'4892769aa1af8a9ae8f0cef2e1eef8957b3b174c515f60c5ec25dd0c191fc0e8'>;
+  ExecutionHashBase<'c37c6f3012918d024bf923e17ea7d85b264889fbc6c00754d8ab28bdfc5f701b'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -1389,6 +1389,20 @@ export type FieldOutputTypes = {
       readonly symbology: CodecTypes['pg/text@1']['output'];
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly variantId: CodecTypes['pg/text@1']['output'] | null;
+    };
+    readonly ProductionOrder: {
+      readonly assigneeId: CodecTypes['pg/text@1']['output'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly doneAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly note: CodecTypes['pg/text@1']['output'] | null;
+      readonly orderId: CodecTypes['pg/text@1']['output'];
+      readonly orderLineId: CodecTypes['pg/text@1']['output'];
+      readonly productName: CodecTypes['pg/text@1']['output'];
+      readonly quantity: CodecTypes['pg/int4@1']['output'];
+      readonly stage: CodecTypes['pg/text@1']['output'];
+      readonly startedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
     };
     readonly ProductVariant: {
       readonly active: CodecTypes['pg/bool@1']['output'];
@@ -3300,6 +3314,20 @@ export type FieldInputTypes = {
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly variantId: CodecTypes['pg/text@1']['input'] | null;
     };
+    readonly ProductionOrder: {
+      readonly assigneeId: CodecTypes['pg/text@1']['input'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly doneAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly note: CodecTypes['pg/text@1']['input'] | null;
+      readonly orderId: CodecTypes['pg/text@1']['input'];
+      readonly orderLineId: CodecTypes['pg/text@1']['input'];
+      readonly productName: CodecTypes['pg/text@1']['input'];
+      readonly quantity: CodecTypes['pg/int4@1']['input'];
+      readonly stage: CodecTypes['pg/text@1']['input'];
+      readonly startedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+    };
     readonly ProductVariant: {
       readonly active: CodecTypes['pg/bool@1']['input'];
       readonly attributes: CodecTypes['pg/json@1']['input'] | null;
@@ -5210,6 +5238,20 @@ export type StorageColumnTypes = {
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly variantId: CodecTypes['pg/text@1']['output'] | null;
     };
+    readonly ProductionOrder: {
+      readonly assigneeId: CodecTypes['pg/text@1']['output'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly doneAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly note: CodecTypes['pg/text@1']['output'] | null;
+      readonly orderId: CodecTypes['pg/text@1']['output'];
+      readonly orderLineId: CodecTypes['pg/text@1']['output'];
+      readonly productName: CodecTypes['pg/text@1']['output'];
+      readonly quantity: CodecTypes['pg/int4@1']['output'];
+      readonly stage: CodecTypes['pg/text@1']['output'];
+      readonly startedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+    };
     readonly ProductVariant: {
       readonly active: CodecTypes['pg/bool@1']['output'];
       readonly attributes: CodecTypes['pg/json@1']['output'] | null;
@@ -7119,6 +7161,20 @@ export type StorageColumnInputTypes = {
       readonly symbology: CodecTypes['pg/text@1']['input'];
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly variantId: CodecTypes['pg/text@1']['input'] | null;
+    };
+    readonly ProductionOrder: {
+      readonly assigneeId: CodecTypes['pg/text@1']['input'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly doneAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly note: CodecTypes['pg/text@1']['input'] | null;
+      readonly orderId: CodecTypes['pg/text@1']['input'];
+      readonly orderLineId: CodecTypes['pg/text@1']['input'];
+      readonly productName: CodecTypes['pg/text@1']['input'];
+      readonly quantity: CodecTypes['pg/int4@1']['input'];
+      readonly stage: CodecTypes['pg/text@1']['input'];
+      readonly startedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
     };
     readonly ProductVariant: {
       readonly active: CodecTypes['pg/bool@1']['input'];
@@ -9312,6 +9368,23 @@ export namespace Models {
     tenant: public_Tenant;
     readonly [RelationKeys]?: 'barcodes' | 'priceItems' | 'product' | 'stockLevels' | 'tenant';
   };
+  export type public_ProductionOrder = {
+    assigneeId: CodecTypes['pg/text@1']['output'] | null;
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    doneAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+    id: CodecTypes['pg/text@1']['output'];
+    note: CodecTypes['pg/text@1']['output'] | null;
+    orderId: CodecTypes['pg/text@1']['output'];
+    orderLineId: CodecTypes['pg/text@1']['output'];
+    productName: CodecTypes['pg/text@1']['output'];
+    quantity: CodecTypes['pg/int4@1']['output'];
+    stage: CodecTypes['pg/text@1']['output'];
+    startedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+    tenantId: CodecTypes['pg/text@1']['output'];
+    order: public_StoreOrder;
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'order' | 'tenant';
+  };
   export type public_Project = {
     code: CodecTypes['pg/text@1']['output'];
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -9792,9 +9865,10 @@ export namespace Models {
     tenantId: CodecTypes['pg/text@1']['output'];
     total: CodecTypes['pg/numeric@1']['output'];
     lines: public_StoreOrderLine[];
+    productionOrders: public_ProductionOrder[];
     statusChanges: public_OrderStatusChange[];
     tenant: public_Tenant;
-    readonly [RelationKeys]?: 'lines' | 'statusChanges' | 'tenant';
+    readonly [RelationKeys]?: 'lines' | 'productionOrders' | 'statusChanges' | 'tenant';
   };
   export type public_StoreOrderLine = {
     id: CodecTypes['pg/text@1']['output'];
@@ -10051,6 +10125,7 @@ export namespace Models {
     priceLists: public_PriceList[];
     productBarcodes: public_ProductBarcode[];
     productVariants: public_ProductVariant[];
+    productionOrders: public_ProductionOrder[];
     products: public_Product[];
     projectBudgets: public_ProjectBudget[];
     projectFollowUps: public_ProjectFollowUp[];
@@ -10163,6 +10238,7 @@ export namespace Models {
       | 'priceLists'
       | 'productBarcodes'
       | 'productVariants'
+      | 'productionOrders'
       | 'products'
       | 'projectBudgets'
       | 'projectFollowUps'
@@ -10545,6 +10621,7 @@ export declare const models: {
     Product: Models.public_Product;
     ProductBarcode: Models.public_ProductBarcode;
     ProductVariant: Models.public_ProductVariant;
+    ProductionOrder: Models.public_ProductionOrder;
     Project: Models.public_Project;
     ProjectBudget: Models.public_ProjectBudget;
     ProjectFollowUp: Models.public_ProjectFollowUp;
@@ -19275,6 +19352,129 @@ type ContractBase = Omit<
                 },
               ];
             };
+            readonly ProductionOrder: {
+              columns: {
+                readonly assigneeId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly doneAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: true;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly note: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly orderId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly orderLineId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly productName: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly quantity: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                };
+                readonly stage: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'QUEUED'>;
+                  };
+                };
+                readonly startedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: true;
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['tenantId', 'orderLineId'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'ProductionOrder_orderId_idx_d284871b';
+                  readonly prefix: 'ProductionOrder_orderId_idx';
+                  readonly columns: readonly ['orderId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'ProductionOrder_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'ProductionOrder_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'ProductionOrder_tenantId_orderId_idx_095ca8c4';
+                  readonly prefix: 'ProductionOrder_tenantId_orderId_idx';
+                  readonly columns: readonly ['tenantId', 'orderId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'ProductionOrder_tenantId_stage_createdAt_idx_99f08344';
+                  readonly prefix: 'ProductionOrder_tenantId_stage_createdAt_idx';
+                  readonly columns: readonly ['tenantId', 'stage', 'createdAt'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ProductionOrder';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'ProductionOrder';
+                    readonly columns: readonly ['orderId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'StoreOrder';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
             readonly ProductVariant: {
               columns: {
                 readonly active: {
@@ -25589,6 +25789,10 @@ type ContractBase = Omit<
     readonly ProductVariant: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'ProductVariant';
+    };
+    readonly ProductionOrder: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'ProductionOrder';
     };
     readonly Project: { readonly namespace: 'public' & NamespaceId; readonly model: 'Project' };
     readonly ProjectBudget: {
@@ -34032,6 +34236,111 @@ type ContractBase = Omit<
               };
             };
           };
+          readonly ProductionOrder: {
+            readonly fields: {
+              readonly assigneeId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly doneAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly note: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly orderId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly orderLineId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly productName: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly quantity: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly stage: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly startedAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly order: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'StoreOrder';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['orderId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'ProductionOrder';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly assigneeId: { readonly column: 'assigneeId' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly doneAt: { readonly column: 'doneAt' };
+                readonly id: { readonly column: 'id' };
+                readonly note: { readonly column: 'note' };
+                readonly orderId: { readonly column: 'orderId' };
+                readonly orderLineId: { readonly column: 'orderLineId' };
+                readonly productName: { readonly column: 'productName' };
+                readonly quantity: { readonly column: 'quantity' };
+                readonly stage: { readonly column: 'stage' };
+                readonly startedAt: { readonly column: 'startedAt' };
+                readonly tenantId: { readonly column: 'tenantId' };
+              };
+            };
+          };
           readonly ProductVariant: {
             readonly fields: {
               readonly active: {
@@ -37100,6 +37409,17 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['orderId'];
                 };
               };
+              readonly productionOrders: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ProductionOrder';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['orderId'];
+                };
+              };
               readonly statusChanges: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -38844,6 +39164,17 @@ type ContractBase = Omit<
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
                   readonly model: 'ProductVariant';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly productionOrders: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ProductionOrder';
                 };
                 readonly cardinality: '1:N';
                 readonly on: {
@@ -42084,6 +42415,14 @@ type ContractBase = Omit<
           readonly ref: {
             readonly entry: 'ProductVariant';
             readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'ProductionOrder';
+            readonly field: 'id';
             readonly namespace: 'public';
           };
         },

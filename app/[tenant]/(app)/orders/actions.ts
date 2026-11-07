@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { can } from "@/lib/core/auth/permissions";
 import { advanceOrder } from "@/lib/business/store/fulfillment-db";
 import { FULFILLMENT_TEXT, isFulfillment } from "@/lib/business/store/fulfillment";
+import { moveProduction } from "@/lib/business/store/production-db";
 import { cancelOrder } from "@/lib/business/store/store-db";
 import { logTenantAction } from "@/lib/core/tenancy/audit";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
@@ -29,4 +30,15 @@ export async function advanceOrderAction(slug: string, id: string, to: string, n
   await logTenantAction(ctx, "BIZ_STORE_ORDER", { action: to === "CANCELED" ? "cancel" : "advance", id, to });
   refresh(slug);
   return { ok: true, message: `Pedido ${FULFILLMENT_TEXT[to].toLowerCase()}` };
+}
+
+/** Mueve una orden de producción de etapa; si era la última del pedido, el pedido queda listo. */
+export async function moveProductionAction(slug: string, id: string, to: string): Promise<OrderResult> {
+  const ctx = await ctxFor(slug);
+  if (!ctx) return { ok: false, message: "Tu rol no maneja pedidos." };
+  const r = await moveProduction(ctx.tenantId, id, to, ctx.memberId);
+  if (!r.ok) return r;
+  await logTenantAction(ctx, "BIZ_STORE_ORDER", { action: "production", id, to });
+  refresh(slug);
+  return { ok: true, message: r.orderReady ? "Terminada: el pedido quedó listo" : to === "DONE" ? "Orden terminada" : "Orden actualizada" };
 }

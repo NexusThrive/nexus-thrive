@@ -3,6 +3,7 @@ import { toNumber } from "@/lib/foundation/format";
 import type { DbTransaction } from "@/lib/foundation/db/db-transaction";
 import { db } from "@/prisma/db";
 import { orderCode } from "./cart";
+import { createProductionOrders } from "./production-create";
 import { FULFILLMENT_TEXT, isFulfillment, transitionProblem, type Fulfillment } from "./fulfillment";
 
 /** Cumplimiento de los pedidos (HU-pedidos-01). El cambio se reclama con un UPDATE condicional sobre el estado actual: dos clics no duplican el historial. Todo por `tenantId`. */
@@ -33,6 +34,7 @@ export async function advanceOrder(tenantId: string, orderId: string, to: string
       .build();
     if ((await tx.query(claim)).length === 0) return { ok: false as const, message: "El pedido cambió mientras lo movías. Vuelve a intentarlo." };
     await record(tx, tenantId, order, order.fulfillment, to, byId, note?.trim().slice(0, 200) || null);
+    if (to === "IN_PRODUCTION") await createProductionOrders(tx, tenantId, orderId);
     return { ok: true as const, from: order.fulfillment as Fulfillment, to };
   });
 }

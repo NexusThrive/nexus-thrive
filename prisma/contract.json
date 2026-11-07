@@ -340,6 +340,10 @@
       "model": "ProductVariant",
       "namespace": "public"
     },
+    "ProductionOrder": {
+      "model": "ProductionOrder",
+      "namespace": "public"
+    },
     "Project": {
       "model": "Project",
       "namespace": "public"
@@ -14888,6 +14892,170 @@
               "table": "ProductVariant"
             }
           },
+          "ProductionOrder": {
+            "fields": {
+              "assigneeId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "doneAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "note": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "orderId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "orderLineId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "productName": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "quantity": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "stage": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "startedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "order": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "orderId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "StoreOrder",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "assigneeId": {
+                  "column": "assigneeId"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "doneAt": {
+                  "column": "doneAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "note": {
+                  "column": "note"
+                },
+                "orderId": {
+                  "column": "orderId"
+                },
+                "orderLineId": {
+                  "column": "orderLineId"
+                },
+                "productName": {
+                  "column": "productName"
+                },
+                "quantity": {
+                  "column": "quantity"
+                },
+                "stage": {
+                  "column": "stage"
+                },
+                "startedAt": {
+                  "column": "startedAt"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "ProductionOrder"
+            }
+          },
           "Project": {
             "fields": {
               "code": {
@@ -19570,6 +19738,21 @@
                   "namespace": "public"
                 }
               },
+              "productionOrders": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "orderId"
+                  ]
+                },
+                "to": {
+                  "model": "ProductionOrder",
+                  "namespace": "public"
+                }
+              },
               "statusChanges": {
                 "cardinality": "1:N",
                 "on": {
@@ -22255,6 +22438,21 @@
                 },
                 "to": {
                   "model": "ProductVariant",
+                  "namespace": "public"
+                }
+              },
+              "productionOrders": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "ProductionOrder",
                   "namespace": "public"
                 }
               },
@@ -25708,6 +25906,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "ProductVariant"
+            },
+            "ProductionOrder": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "ProductionOrder"
             },
             "Project": {
               "kind": "rls",
@@ -36916,6 +37119,164 @@
               },
               "uniques": []
             },
+            "ProductionOrder": {
+              "columns": {
+                "assigneeId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "doneAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "note": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "orderId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "orderLineId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "productName": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "quantity": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "stage": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "QUEUED"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "startedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ProductionOrder"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "orderId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "ProductionOrder"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "StoreOrder"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "orderId"
+                  ],
+                  "name": "ProductionOrder_orderId_idx_d284871b",
+                  "prefix": "ProductionOrder_orderId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "ProductionOrder_tenantId_idx_c93ed4f1",
+                  "prefix": "ProductionOrder_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "orderId"
+                  ],
+                  "name": "ProductionOrder_tenantId_orderId_idx_095ca8c4",
+                  "prefix": "ProductionOrder_tenantId_orderId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "stage",
+                    "createdAt"
+                  ],
+                  "name": "ProductionOrder_tenantId_stage_createdAt_idx_99f08344",
+                  "prefix": "ProductionOrder_tenantId_stage_createdAt_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "orderLineId"
+                  ]
+                }
+              ]
+            },
             "Project": {
               "checks": [
                 {
@@ -44390,10 +44751,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "b115839d78e08ee65bc68952fc4c3565ab00c122dc57a6c3b712c3f296542cde"
+    "storageHash": "3aca39e5ff3919caa942258f02c8eeee94f91e826925129490c8fa6e40c1059b"
   },
   "execution": {
-    "executionHash": "4892769aa1af8a9ae8f0cef2e1eef8957b3b174c515f60c5ec25dd0c191fc0e8",
+    "executionHash": "c37c6f3012918d024bf923e17ea7d85b264889fbc6c00754d8ab28bdfc5f701b",
     "mutations": {
       "defaults": [
         {
@@ -45862,6 +46223,17 @@
           "ref": {
             "entry": "ProductVariant",
             "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "ProductionOrder",
+            "field": "id",
             "namespace": "public"
           }
         },

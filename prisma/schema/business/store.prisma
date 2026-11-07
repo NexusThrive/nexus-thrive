@@ -37,6 +37,7 @@ model StoreOrder {
   createdAt          DateTime  @default(now())
   lines              StoreOrderLine[]
   statusChanges      OrderStatusChange[]
+  productionOrders   ProductionOrder[]
 
   @@unique([tenantId, number])
   @@index([tenantId, status])
@@ -78,5 +79,34 @@ model OrderStatusChange {
   createdAt  DateTime   @default(now())
 
   @@index([tenantId, orderId, createdAt])
+  @@rls
+}
+
+/// Orden de producción (HU-produccion-01): lo que se fabrica de un pedido, una por línea, con su etapa y responsable. Nace cuando el pedido
+/// pasa a «en producción»; cuando todas sus líneas están terminadas, el pedido pasa a «listo».
+///
+/// Campos:
+/// - `stage`: QUEUED (en cola) | IN_PROGRESS (en curso) | DONE (terminada). Etapas mínimas a propósito; no se configuran todavía.
+/// - `assigneeId`: Integrante responsable (`User.id`); vacío = sin asignar.
+/// - `orderLineId`: Línea del pedido; una sola orden por línea.
+model ProductionOrder {
+  id          String     @id @default(uuid())
+  tenantId    String
+  tenant      Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  orderId     String
+  order       StoreOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderLineId String
+  productName String
+  quantity    Int
+  stage       String     @default("QUEUED")
+  assigneeId  String?
+  note        String?
+  startedAt   DateTime?
+  doneAt      DateTime?
+  createdAt   DateTime   @default(now())
+
+  @@unique([tenantId, orderLineId])
+  @@index([tenantId, stage, createdAt])
+  @@index([tenantId, orderId])
   @@rls
 }

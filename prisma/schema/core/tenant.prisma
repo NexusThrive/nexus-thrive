@@ -237,6 +237,7 @@ model Tenant {
   businessMessages   BusinessMessage[]
   messageTemplates   MessageTemplate[]
   orderStatusChanges OrderStatusChange[]
+  productionOrders   ProductionOrder[]
   whatsappNotices    WhatsappNotice[]
   salesQuotes        SalesQuote[]
   salesQuoteLines    SalesQuoteLine[]

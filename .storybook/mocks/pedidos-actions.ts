@@ -5,3 +5,7 @@ export async function advanceOrderAction(_s: string, _id: string, to: string) {
   await wait();
   return TEXT[to] ? { ok: true as const, message: `Pedido ${TEXT[to]}` } : { ok: false as const, message: "Ese estado no existe." };
 }
+export async function moveProductionAction(_s: string, _id: string, to: string) {
+  await wait();
+  return { ok: true as const, message: to === "DONE" ? "Terminada: el pedido quedó listo" : "Orden actualizada" };
+}

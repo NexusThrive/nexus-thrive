@@ -5,7 +5,9 @@ import { PermissionNotice } from "@/components/molecules/permission-notice";
 import { listOrders } from "@/lib/business/store/store-db";
 import { can } from "@/lib/core/auth/permissions";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
+import { listProduction } from "@/lib/business/store/production-db";
 import OrdersView from "./_components/orders-view";
+import { ProductionBoard } from "./_components/production-board";
 
 export const metadata: Metadata = { title: "Pedidos" };
 
@@ -27,6 +29,10 @@ export default async function OrdersPage({ params }: { params: Promise<{ tenant:
     <div className="grid gap-5">
       {header}
       <OrdersView slug={tenant} orders={await listOrders(ctx.tenantId, 200)} />
+      <section aria-labelledby="produccion" className="grid gap-2">
+        <h2 id="produccion" className="text-base font-semibold">Producción</h2>
+        <ProductionBoard slug={tenant} rows={await listProduction(ctx.tenantId)} />
+      </section>
     </div>
   );
 }

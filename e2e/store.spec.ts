@@ -66,3 +66,14 @@ test.describe("Tienda en línea", () => {
     await expect(page.getByText("Aún no hay pedidos")).toBeVisible();
   });
 });
+
+test.describe("Producción", () => {
+  test("avanzar una orden con un toque y ver el vacío", async ({ page }) => {
+    await openStory(page, "páginas-ventas-producción--default");
+    await page.getByRole("button", { name: "Empezar Camiseta estampada del pedido T-0001" }).click();
+    await expect(page.getByText("Orden actualizada")).toBeVisible();
+    await expectNoAxeViolations(page);
+    await openStory(page, "páginas-ventas-producción--vacio");
+    await expect(page.getByText("Nada en producción")).toBeVisible();
+  });
+});

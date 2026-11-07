@@ -2,6 +2,7 @@ import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
 import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
+import { assignProduction, listProduction, moveProduction } from "@/lib/business/store/production-db";
 import { advanceOrder, orderHistory } from "@/lib/business/store/fulfillment-db";
 import { cancelOrder, placeOrder } from "@/lib/business/store/store-db";
 import { confirmIntent } from "@/lib/domains/finance/payments/intents-db";
@@ -95,5 +96,29 @@ describe.skipIf(!TEST_URL)("cumplimiento de pedidos (integración)", () => {
     const o = await newOrder("3007778899");
     expect(await advanceOrder(b, o.id, "CONFIRMED", "intruso")).toMatchObject({ ok: false, message: "No se encontró el pedido." });
     expect(await orderHistory(b, o.id)).toEqual([]);
+  });
+
+  test("pasar a producción crea una orden por línea y terminarlas todas deja el pedido listo", async () => {
+    const o = await newOrder("3008889900");
+    await advanceOrder(a, o.id, "CONFIRMED", "ana");
+    expect((await advanceOrder(a, o.id, "IN_PRODUCTION", "ana")).ok).toBe(true);
+    const rows = (await listProduction(a)).filter((p) => p.orderId === o.id);
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({ stage: "QUEUED", productName: "Camiseta" });
+    expect(await assignProduction(a, rows[0]!.id, "luis")).toEqual({ ok: true });
+    expect(await moveProduction(a, rows[0]!.id, "IN_PROGRESS", "luis")).toMatchObject({ ok: true, orderReady: false });
+    expect(await moveProduction(a, rows[0]!.id, "DONE", "luis")).toMatchObject({ ok: true, orderReady: true });
+    expect((await db.orm.public.StoreOrder.where({ tenantId: a, id: o.id }).first())?.fulfillment).toBe("READY");
+    expect(await moveProduction(a, rows[0]!.id, "QUEUED", "luis")).toMatchObject({ ok: false });
+    expect((await listProduction(a)).some((p) => p.orderId === o.id)).toBe(false);
+  });
+
+  test("producción de otro negocio no se ve ni se mueve", async () => {
+    const o = await newOrder("3009990011");
+    await advanceOrder(a, o.id, "CONFIRMED", "ana");
+    await advanceOrder(a, o.id, "IN_PRODUCTION", "ana");
+    const row = (await listProduction(a)).find((p) => p.orderId === o.id)!;
+    expect(await listProduction(b)).toEqual([]);
+    expect(await moveProduction(b, row.id, "DONE", "x")).toMatchObject({ ok: false });
   });
 });
