@@ -93,7 +93,7 @@ export default function CustomerToolbar({
         </div>
 
         {/* Centro: una sola caja de búsqueda de 543px, centrada en la pantalla, con el filtro dentro */}
-        <div className="relative h-[34px] w-full justify-self-center max-w-[543px] [&_input]:h-full [&_input]:w-full [&_input]:rounded-lg [&_input]:border-border [&_input]:bg-card">
+        <div className="relative h-[34px] w-full justify-self-center max-w-[543px] [&>div]:max-w-none [&_input]:h-full [&_input]:w-full [&_input]:rounded-lg [&_input]:border-border [&_input]:bg-card [&_input]:pr-10">
           <CustomerSearch />
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
