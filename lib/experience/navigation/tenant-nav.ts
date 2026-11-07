@@ -2,6 +2,7 @@
  * Menú lateral del negocio: arma los grupos de navegación según el rubro y los módulos activos, resuelve la ruta
  * relativa al negocio, el elemento activo y la categoría de una ruta.
  */
+import { can, type BusinessPermission } from "@/lib/core/auth/permissions";
 import { Blocks, FileSpreadsheet, Globe, HardHat, MessageCircle, Package, Plug, Receipt, Settings, ShoppingCart, Truck, Users, Wallet, type LucideIcon } from "lucide-react";
 import { type VerticalValue } from "@/lib/core/sectors/verticals";
 import { MODULES, type ModuleValue } from "@/lib/core/capabilities/modules";
@@ -69,6 +70,13 @@ const GROUP_ICONS: Record<GroupName, LucideIcon> = {
   Canales: MessageCircle,
 };
 /** Pantallas que el menú reducido de un rubro con control de acceso (gimnasio) no muestra: el seguimiento de ventas y, de Mi sitio web, los pedidos de la tienda. */
+/** Pantallas que piden un permiso: sin él, el enlace no se muestra (la página igual lo comprueba en el servidor). Sin rol, se muestra todo. */
+const NAV_PERMISSION: Record<string, BusinessPermission> = { "/finance": "money.handle", "/cobros": "money.handle", "/dinero": "money.handle", "/cartera": "money.handle", "/orders": "orders.work" };
+const allowedFor = (role: string | undefined, href: string): boolean => {
+  const permission = NAV_PERMISSION[href.split("?")[0] ?? ""];
+  return !role || !permission || can(role, permission);
+};
+
 const LEAN_HIDDEN: readonly string[] = ["/oportunidades", "/tareas", "/formularios"];
 /** Grupo de cada función: su categoría en el registro (la misma que ve en «Funciones»). */
 const MODULE_GROUP: Partial<Record<string, GroupName>> = Object.fromEntries(CAPABILITIES.map((c) => [c.id, c.category]));
@@ -78,13 +86,13 @@ const MODULE_GROUP: Partial<Record<string, GroupName>> = Object.fromEntries(CAPA
  * con el vocabulario de la vertical (Socios, Pacientes, Obras…). Grupos:
  * General (inicio, siempre), los de `MODULE_GROUP` y Sistema (configuración).
  */
-export function buildTenantNav(vertical: VerticalValue, activeModules: readonly ModuleValue[]): NavGroup[] {
+export function buildTenantNav(vertical: VerticalValue, activeModules: readonly ModuleValue[], role?: string): NavGroup[] {
   const terms = getVerticalTerms(vertical);
   const active = new Set(activeModules);
   // Rubros con control de acceso de socios (gimnasio): menú reducido, sin tienda en línea, funciones, datos ni integraciones.
   const lean = hasMemberAccess(vertical);
   const items = (moduleName: ModuleValue): NavItem[] => {
-    return MODULE_NAV[moduleName].filter((nav) => !nav.verticals || nav.verticals.includes(vertical)).filter((nav) => !(lean && (LEAN_HIDDEN.includes(nav.href) || (moduleName === "website" && nav.href === "/orders")))).map((nav) => ({
+    return MODULE_NAV[moduleName].filter((nav) => !nav.verticals || nav.verticals.includes(vertical)).filter((nav) => allowedFor(role, nav.href)).filter((nav) => !(lean && (LEAN_HIDDEN.includes(nav.href) || (moduleName === "website" && nav.href === "/orders")))).map((nav) => ({
       key: nav.href || "home",
       module: moduleName,
       href: nav.href,
@@ -99,7 +107,7 @@ export function buildTenantNav(vertical: VerticalValue, activeModules: readonly 
       .filter((m) => m !== "dashboard" && (MODULE_GROUP[m] ?? "Clientes y operación") === label)
       .flatMap((m) => items(m).filter((item) => !(m === "payments" && active.has("finance") && item.href.startsWith("/finance")) && !(m === "website" && item.href === "/orders" && active.has("orders"))));
   const gym = lean;
-  const expenses: NavItem[] = active.has("finance") && !gym ? [{ key: "/finance?tab=gastos", module: "finance", href: "/finance?tab=gastos", icon: Receipt, label: "Gastos" }] : [];
+  const expenses: NavItem[] = active.has("finance") && !gym && allowedFor(role, "/finance") ? [{ key: "/finance?tab=gastos", module: "finance", href: "/finance?tab=gastos", icon: Receipt, label: "Gastos" }] : [];
   return [
     // El inicio existe siempre (es la raíz del negocio), con o sin el módulo.
     { label: "General", items: items("dashboard") },

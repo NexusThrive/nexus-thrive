@@ -17,18 +17,18 @@ export default async function OrdersPage({ params }: { params: Promise<{ tenant:
   const ctx = await requireTenantContext(tenant, "/orders");
   if (!ctx) notFound();
   const header = <PageHeader title="Pedidos" description="Lo que piden tus clientes y en qué paso va cada uno, desde que lo recibes hasta que lo entregas." />;
-  if (!can(ctx.role, "money.handle")) {
+  if (!can(ctx.role, "orders.work")) {
     return (
       <div className="grid gap-5">
         {header}
-        <PermissionNotice permission="money.handle" action="manejar los pedidos" />
+        <PermissionNotice permission="orders.work" action="manejar los pedidos" />
       </div>
     );
   }
   return (
     <div className="grid gap-5">
       {header}
-      <OrdersView slug={tenant} orders={await listOrders(ctx.tenantId, 200)} />
+      <OrdersView slug={tenant} canCharge={can(ctx.role, "money.handle")} orders={await listOrders(ctx.tenantId, 200)} />
       <section aria-labelledby="produccion" className="grid gap-2">
         <h2 id="produccion" className="text-base font-semibold">Producción</h2>
         <ProductionBoard slug={tenant} rows={await listProduction(ctx.tenantId)} />

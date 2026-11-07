@@ -25,7 +25,7 @@ const PRIMARY: Partial<Record<Fulfillment, Fulfillment>> = { RECEIVED: "CONFIRME
 const VERB: Record<string, string> = { CONFIRMED: "Confirmar", IN_PRODUCTION: "A producción", READY: "Marcar listo", SHIPPED: "Marcar enviado", DELIVERED: "Marcar entregado", CANCELED: "Cancelar" };
 
 /** Lista de pedidos por cumplimiento, con la acción siguiente a un toque y el resto en un selector. El pago no se mezcla con el cumplimiento. */
-export default function OrdersView({ slug, orders }: { slug: string; orders: OrderRow[] }) {
+export default function OrdersView({ slug, orders, canCharge = true }: { slug: string; orders: OrderRow[]; /** Quien produce no maneja dinero: sin cobros, sin cancelar y sin totales. */ canCharge?: boolean }) {
   const router = useRouter();
   const { toast } = useToast();
   const [confirm, confirmDialog] = useConfirm();
@@ -67,9 +67,9 @@ export default function OrdersView({ slug, orders }: { slug: string; orders: Ord
               <div className="flex flex-wrap items-center gap-2">
                 <b className="font-mono">{o.code}</b>
                 <Badge variant={o.fulfillment === "DELIVERED" ? "success" : o.fulfillment === "CANCELED" ? "secondary" : "default"}>{FULFILLMENT_TEXT[o.fulfillment as Fulfillment] ?? o.fulfillment}</Badge>
-                <Badge variant={PAY[o.status as keyof typeof PAY]?.tone ?? "secondary"}>{PAY[o.status as keyof typeof PAY]?.label ?? o.status}</Badge>
+                {canCharge ? <Badge variant={PAY[o.status as keyof typeof PAY]?.tone ?? "secondary"}>{PAY[o.status as keyof typeof PAY]?.label ?? o.status}</Badge> : null}
                 {o.fromQuote ? <Badge variant="outline">De cotización</Badge> : null}
-                <b className="ml-auto font-mono tabular-nums">{formatCurrency(o.total)}</b>
+                {canCharge ? <b className="ml-auto font-mono tabular-nums">{formatCurrency(o.total)}</b> : null}
               </div>
               <p className="break-words text-ui"><b>{o.customerName}</b> · <a href={`https://wa.me/${o.phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">{o.phone}</a></p>
               <ul className="text-ui text-muted-foreground">
@@ -77,7 +77,7 @@ export default function OrdersView({ slug, orders }: { slug: string; orders: Ord
               </ul>
               {o.address || o.city ? <p className="break-words text-ui text-muted-foreground">Entrega: {[o.address, o.city].filter(Boolean).join(", ")}</p> : null}
               {o.notes ? <p className="break-words text-ui text-muted-foreground">Nota: {o.notes}</p> : null}
-              {o.review ? <Alert tone="warning">{o.review}</Alert> : null}
+              {canCharge && o.review ? <Alert tone="warning">{o.review}</Alert> : null}
               {!isFinal(o.fulfillment) ? (
                 <div className="flex flex-wrap items-center gap-2">
                   {primary ? <button type="button" onClick={() => move(o, primary)} className={buttonVariants({ size: "sm" })}>{VERB[primary]}</button> : null}
@@ -88,8 +88,8 @@ export default function OrdersView({ slug, orders }: { slug: string; orders: Ord
                       {others.map((s) => <option key={s} value={s}>{FULFILLMENT_TEXT[s]}</option>)}
                     </Select>
                   ) : null}
-                  {o.status === "PENDING_PAYMENT" || o.status === "ABANDONED" ? <Link href={`/${slug}/cobros`} className={buttonVariants({ variant: "outline", size: "sm" })}>Confirmar pago</Link> : null}
-                  {next.includes("CANCELED") ? <button type="button" aria-label={`Cancelar el pedido ${o.code}`} onClick={() => move(o, "CANCELED")} className={buttonVariants({ variant: "ghost", size: "sm" })}>Cancelar</button> : null}
+                  {canCharge && (o.status === "PENDING_PAYMENT" || o.status === "ABANDONED") ? <Link href={`/${slug}/cobros`} className={buttonVariants({ variant: "outline", size: "sm" })}>Confirmar pago</Link> : null}
+                  {canCharge && next.includes("CANCELED") ? <button type="button" aria-label={`Cancelar el pedido ${o.code}`} onClick={() => move(o, "CANCELED")} className={buttonVariants({ variant: "ghost", size: "sm" })}>Cancelar</button> : null}
                 </div>
               ) : null}
             </li>

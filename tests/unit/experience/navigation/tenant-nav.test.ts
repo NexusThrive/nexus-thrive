@@ -174,3 +174,15 @@ describe("quickSheetFor", () => {
   });
 });
 
+describe("menú por rol (HU-navegacion-commerce-01)", () => {
+  const hrefs = (role?: string) => buildTenantNav("retail", ["dashboard", "orders", "finance", "payments", "crm"], role).flatMap((g) => g.items.map((i) => i.href));
+  it("quien produce ve Pedidos pero no cobros ni finanzas", () => {
+    const advisor = hrefs("ADVISOR");
+    expect(advisor).toContain("/orders");
+    for (const h of ["/finance", "/finance?tab=gastos", "/cobros", "/dinero", "/cartera"]) expect(advisor).not.toContain(h);
+  });
+  it("quien maneja dinero ve todo, y sin rol se muestra todo", () => {
+    expect(hrefs("OWNER")).toEqual(expect.arrayContaining(["/orders", "/finance"]));
+    expect(hrefs()).toEqual(expect.arrayContaining(["/orders", "/finance"]));
+  });
+});

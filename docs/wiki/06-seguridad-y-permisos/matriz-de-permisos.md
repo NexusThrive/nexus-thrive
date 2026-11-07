@@ -10,6 +10,7 @@ Cómo se usa en código: [autenticación, permisos y aislamiento](autenticacion-
 | `team.manage` | Invitar y retirar personas, plan y facturación de NEXUS. | ✓ | ✓ | ✓ |  |  |  |
 | `business.setup` | Configurar el negocio en el onboarding: plan, módulos y enlace. | ✓ | ✓ |  |  |  |  |
 | `money.handle` | Cobrar (incluye vender y renovar membresías), gastos y turnos de caja. | ✓ | ✓ | ✓ | ✓ | ✓ |  |
+| `orders.work` | Mover pedidos y producción (confirmar, fabricar, enviar, entregar). No incluye dinero: quien produce no ve cobros ni finanzas. | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | `data.exchange` | Importar y exportar clientes y catálogo (los datos del negocio entran y salen en masa). | ✓ | ✓ | ✓ |  |  |  |
 | `customers.delete` | Borrar o archivar clientes. | ✓ | ✓ | ✓ |  |  |  |
 | `budget.govern` | Bloquear/desbloquear, AIU y aprobar la línea base. | ✓ | ✓ | ✓ |  |  |  |

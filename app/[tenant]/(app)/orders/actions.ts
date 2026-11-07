@@ -18,7 +18,7 @@ const refresh = (slug: string) => {
 
 async function ctxFor(slug: string) {
   const ctx = await requireTenantContext(slug, "/orders");
-  return ctx && can(ctx.role, "money.handle") ? ctx : null;
+  return ctx && can(ctx.role, "orders.work") ? ctx : null;
 }
 
 /** Mueve el cumplimiento de un pedido (confirmar, producción, listo, enviado, entregado). Cancelar pasa por `cancelOrderAction`. */
@@ -26,6 +26,8 @@ export async function advanceOrderAction(slug: string, id: string, to: string, n
   const ctx = await ctxFor(slug);
   if (!ctx) return { ok: false, message: "Tu rol no maneja pedidos." };
   if (!isFulfillment(to)) return { ok: false, message: "Ese estado no existe." };
+  // Cancelar anula el cobro pendiente: es de quien maneja dinero.
+  if (to === "CANCELED" && !can(ctx.role, "money.handle")) return { ok: false, message: "Cancelar un pedido lo hace quien maneja los cobros." };
   const r = to === "CANCELED" ? await cancelOrder(ctx.tenantId, id) : await advanceOrder(ctx.tenantId, id, to, ctx.memberId, note);
   if (!r.ok) return r;
   await logTenantAction(ctx, "BIZ_STORE_ORDER", { action: to === "CANCELED" ? "cancel" : "advance", id, to });

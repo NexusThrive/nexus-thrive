@@ -95,9 +95,9 @@ export function ShellProvider({
   const modulesKey = activeModules.join(",");
 
   const groups = useMemo(
-    () => buildTenantNav(vertical, activeModules),
+    () => buildTenantNav(vertical, activeModules, role),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [vertical, modulesKey],
+    [vertical, modulesKey, role],
   );
   const quickActions = useMemo(
     () => quickCreateActions(vertical, activeModules, 4, role),

@@ -69,6 +69,18 @@ test.describe("Tienda en línea", () => {
   });
 });
 
+test.describe("Pedidos sin dinero", () => {
+  test("quien produce mueve pedidos pero no ve totales, cobros ni cancelar", async ({ page }) => {
+    await openStory(page, "páginas-ventas-pedidos--sin-dinero");
+    await expect(page.getByText("Esperando pago")).toHaveCount(0);
+    await expect(page.getByText(/\$\s?278/)).toHaveCount(0);
+    await expect(page.getByRole("link", { name: "Confirmar pago" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /^Cancelar el pedido/ })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Confirmar", exact: true }).first()).toBeVisible();
+    await expectNoAxeViolations(page);
+  });
+});
+
 test.describe("Entregas", () => {
   test("enviar con transportadora pide la guía y luego confirma", async ({ page }) => {
     await openStory(page, "páginas-ventas-pedidos--default");

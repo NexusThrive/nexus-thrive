@@ -17,3 +17,5 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 export const SinPedidos: Story = { args: { orders: [] } };
+/** Quien produce (sin manejar dinero): mueve pedidos pero no ve totales, cobros ni puede cancelar. */
+export const SinDinero: Story = { args: { canCharge: false } };
