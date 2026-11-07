@@ -17,3 +17,9 @@ export const Dashboard: Story = { args: { variant: "dashboard" } };
 export const Detail: Story = { args: { variant: "detail" } };
 export const Form: Story = { args: { variant: "form" } };
 export const Profile: Story = { args: { variant: "profile" } };
+/** Cajón de aplicaciones de la raíz: saludo y grilla de iconos sobre el fondo de cuadros. */
+export const Apps: Story = { args: { variant: "apps", label: "Cargando aplicaciones" }, parameters: { layout: "fullscreen" } };
+/** Lista a todo el ancho (Clientes): panel de control de tres zonas y filas de 38 px. */
+export const List: Story = { args: { variant: "list", label: "Cargando clientes" }, parameters: { layout: "fullscreen" } };
+/** Registro (ficha y alta de cliente): panel de control, tarjetas y columna lateral. */
+export const Record: Story = { args: { variant: "record", label: "Cargando cliente" }, parameters: { layout: "fullscreen" } };

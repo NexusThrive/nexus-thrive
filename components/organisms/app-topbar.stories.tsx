@@ -1,4 +1,8 @@
+import { startTransition, useState } from "react";
+import { Bell } from "lucide-react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { AppShellProvider } from "@/components/providers/shell-context";
+import { buildTenantNav } from "@/lib/experience/navigation/tenant-nav";
 import { withShell } from "../../.storybook/decorators";
 import { AppTopbar } from "./app-topbar";
 import { CommandPalette } from "./command-palette";
@@ -46,4 +50,37 @@ export const Rail: Story = {
     </div>
   ),
   globals: { viewport: { value: "tablet" } },
+};
+
+const groups = buildTenantNav("retail", ["dashboard", "crm", "bookings", "memberships"]);
+
+/**
+ * Cambio de barra como en una navegación (dentro de `startTransition`): logo, negocio, tema y cuenta viajan a su nuevo lugar; el módulo,
+ * sus pestañas y los avisos aparecen. Con movimiento reducido el cambio es inmediato.
+ */
+function BarSwitch() {
+  const [inModule, setInModule] = useState(false);
+  // La barra es de Inicio cuando la ruta actual es la raíz del negocio: se cambia la raíz para pasar de una barra a la otra.
+  const hrefFor = (href: string) => `${inModule ? "/otro" : "/demo"}${href}`;
+  return (
+    <AppShellProvider value={{ brandName: "Simpleapp", brandSub: "simpleapp", groups, activeKey: "/contactos", title: "Clientes", hrefFor, quickActions: [], openSearch: () => {} }}>
+      <AppTopbar
+        notifications={
+          <button type="button" aria-label="Notificaciones" className="grid place-items-center rounded-md text-muted-foreground hover:bg-surface-muted">
+            <Bell aria-hidden="true" />
+          </button>
+        }
+      />
+      <div className="min-h-dvh bg-background pt-24 text-center">
+        <button type="button" onClick={() => startTransition(() => setInModule((v) => !v))} className="rounded-md border border-border px-4 py-2 text-sm">
+          {inModule ? "Volver al inicio" : "Entrar a Clientes"}
+        </button>
+      </div>
+    </AppShellProvider>
+  );
+}
+
+export const CambioDeBarra: Story = {
+  parameters: { nextjs: { navigation: { pathname: "/demo" } } },
+  render: () => <BarSwitch />,
 };

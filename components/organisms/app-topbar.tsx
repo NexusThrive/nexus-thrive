@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState, type ReactNode } from "react";
+import { ViewTransition, useCallback, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ChevronLeft, Plus, Search } from "lucide-react";
@@ -58,20 +58,21 @@ export function AppTopbar({ actions, notifications, search, switcher }: { action
       <Link
         href={hrefFor("")}
         aria-label={`${brandName}: inicio`}
-        className={cn(styles.brand, "pl-[max(16px,env(safe-area-inset-left,0px))] outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring md:pl-3", atHome && "!w-auto !border-0 bg-transparent !pl-6 !pr-0 text-foreground")}
+        className={cn(styles.brand, "pl-[max(16px,env(safe-area-inset-left,0px))] outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring md:pl-3", atHome && "!w-auto !border-0 !bg-transparent !pl-6 !pr-0 text-foreground")}
       >
-        <span className={cn(styles.logo, styles.mark)} style={atHome ? { ["--w" as string]: "40px" } : undefined}>
-          <svg role="img" aria-label="NEXUS THRIVE" viewBox="387.6 239.9 744.4 779.5" shapeRendering="geometricPrecision">
-            <path d={N_PATH} fill="currentColor" />
-            <g className={styles.letters}>
-              {THRIVE_LETTERS.map((l, i) => (
-                <path key={i} transform={`translate(${l.x} ${l.y})`} d={l.d} fill="currentColor" />
-              ))}
-            </g>
-          </svg>
-        </span>
+        <Shared name="logo">
+          <span className={cn(styles.logo, styles.mark)} style={atHome ? { ["--w" as string]: "40px" } : undefined}>
+            <svg role="img" aria-label="NEXUS THRIVE" viewBox="387.6 239.9 744.4 779.5" shapeRendering="geometricPrecision">
+              <path d={N_PATH} fill="currentColor" />
+              <g className={styles.letters}>
+                {THRIVE_LETTERS.map((l, i) => (
+                  <path key={i} transform={`translate(${l.x} ${l.y})`} d={l.d} fill="currentColor" />
+                ))}
+              </g>
+            </svg>
+          </span>
+        </Shared>
         <span className={cn(styles.ident, atHome ? "!hidden" : "flex min-w-0 flex-col leading-tight")}>
-          <b className="truncate font-display text-sm font-semibold">{brandName}</b>
           <small className="flex items-center gap-1.5 text-2xs text-muted-foreground">
             <i aria-hidden="true" className="inline-block size-1.5 -skew-x-[24deg] bg-accent" />
             {title}
@@ -81,9 +82,7 @@ export function AppTopbar({ actions, notifications, search, switcher }: { action
 
       {atHome ? (
         <div className="relative flex flex-1 items-center justify-end gap-3 pe-3">
-          <span className="truncate text-sm font-medium text-muted-foreground">{brandName}</span>
-            <ThemeToggle />
-            <AccountButton />
+          <TopbarEnd brandName={brandName} notifications={notifications} />
         </div>
       ) : (
       <div className="relative flex min-w-fit flex-1 items-center justify-end gap-2 md:min-w-0 lg:grid lg:grid-cols-[minmax(max-content,1fr)_minmax(0,440px)_minmax(max-content,1fr)] border-b border-[var(--sidebar-border)] bg-[var(--sidebar-bg)] px-3 text-[var(--sidebar-fg)] md:gap-4 md:px-6 xl:px-8">
@@ -154,12 +153,8 @@ export function AppTopbar({ actions, notifications, search, switcher }: { action
           {/* Móvil: lupa, lo que falta por completar y las notificaciones; el tema y la cuenta viven en «Más». */}
           <div className="flex items-center gap-1 md:gap-0.5">
             {actions}
-            {notifications}
-            <ThemeToggle className="max-md:hidden" />
           </div>
-          <span aria-hidden="true" className="mx-1 hidden h-6 w-px bg-[var(--sidebar-border)] md:block" />
-          {/* En móvil la cuenta vive en «Más» (barra inferior). */}
-          <span className="max-md:hidden"><AccountButton /></span>
+          <TopbarEnd brandName={brandName} notifications={notifications} />
         </div>
 
       </div>
@@ -209,11 +204,14 @@ function ModuleBar({
         aria-label="Volver al inicio"
         className="group grid size-9 shrink-0 place-items-center rounded-lg text-foreground outline-none hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       >
-        <svg aria-hidden="true" viewBox="387.6 239.9 744.4 779.5" className="size-5 group-hover:hidden group-focus-visible:hidden">
-          <path d={N_PATH} fill="currentColor" />
-        </svg>
+        <Shared name="logo" className="group-hover:hidden group-focus-visible:hidden">
+          <svg aria-hidden="true" viewBox="387.6 239.9 744.4 779.5" className="size-5">
+            <path d={N_PATH} fill="currentColor" />
+          </svg>
+        </Shared>
         <ChevronLeft aria-hidden="true" className="hidden size-5 group-hover:block group-focus-visible:block" />
       </Link>
+      <ViewTransition enter="nx-appear" default="none">
       <div className="flex min-w-0 shrink-0 items-center gap-2">
         <Icon aria-hidden="true" className="size-5 text-accent-text" />
         <span className="truncate text-base font-semibold text-foreground">{group.label === "General" ? group.items[0]!.label : group.label}</span>
@@ -245,14 +243,46 @@ function ModuleBar({
           );
         })}
       </nav>
-      <div className="flex shrink-0 items-center gap-2">
-        <span className="flex items-center [&_button]:size-8 [&_svg]:size-4">{notifications}</span>
-        <ThemeToggle className="size-8 pointer-coarse:size-10 [&_svg]:size-4" />
-        <span className="flex items-center gap-2">
-          <span className="text-xs font-medium text-muted-foreground max-md:hidden">{brandName}</span>
-          <AccountButton compact />
-        </span>
-      </div>
+      </ViewTransition>
+      <TopbarEnd brandName={brandName} notifications={notifications} />
     </header>
+  );
+}
+
+/**
+ * Pieza que está en todas las barras (logo, nombre del negocio, tema y cuenta). Al cambiar de barra (Inicio ↔ módulo ↔ Sistema) no se
+ * quita y vuelve a aparecer: React la lleva con una View Transition desde su lugar anterior al nuevo (dueño único de ese movimiento; el
+ * resto de la barra solo aparece). En cambios dentro de la misma barra no se anima (`default="none"`).
+ */
+/**
+ * Final de la barra, igual en todas (Inicio, módulo y Sistema) y en el mismo orden: avisos, tema, nombre del negocio y cuenta. Al
+ * cambiar de barra cada pieza se desliza a su lugar sin cruzarse con otra.
+ */
+function TopbarEnd({ brandName, notifications }: { brandName: string; notifications?: ReactNode }) {
+  return (
+    <div className="flex shrink-0 items-center gap-2">
+      {notifications ? (
+        <Shared name="notifications" className="[&_button]:size-8 [&_svg]:size-4">
+          {notifications}
+        </Shared>
+      ) : null}
+      <Shared name="theme">
+        <ThemeToggle className="size-8 pointer-coarse:size-10 [&_svg]:size-4" />
+      </Shared>
+      <Shared name="brand" className="max-md:hidden">
+        <span className="truncate text-xs font-medium text-muted-foreground">{brandName}</span>
+      </Shared>
+      <Shared name="account">
+        <AccountButton compact />
+      </Shared>
+    </div>
+  );
+}
+
+function Shared({ name, className, children }: { name: string; className?: string; children: ReactNode }) {
+  return (
+    <ViewTransition name={`nx-topbar-${name}`} share="nx-morph" default="none">
+      <span className={cn("inline-flex min-w-0 items-center", className)}>{children}</span>
+    </ViewTransition>
   );
 }

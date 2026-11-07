@@ -35,6 +35,39 @@ html[data-motion="off"] *::after {
   mix-blend-mode: normal;
 }
 
+/* Barra superior al cambiar de barra (Inicio ↔ módulo ↔ Sistema): logo, negocio, tema y cuenta viajan a su nuevo lugar (`share`
+   nx-morph); módulo, pestañas y avisos aparecen (`enter` nx-appear). Dueño: <ViewTransition> de React en app-topbar.tsx. */
+::view-transition {
+  pointer-events: none;
+}
+::view-transition-group(.nx-morph) {
+  animation-duration: var(--d3);
+  animation-timing-function: var(--nx-ease-out);
+}
+::view-transition-new(.nx-appear):only-child {
+  animation: nx-vt-appear var(--d2) var(--nx-ease-out) 80ms both;
+}
+@keyframes nx-vt-appear {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
+html[data-motion="off"]::view-transition-group(*),
+html[data-motion="off"]::view-transition-old(*),
+html[data-motion="off"]::view-transition-new(*) {
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+}
+
 /* --- Foco de luz que sigue al puntero (tarjetas .nx-spot) --- */
 @media (hover: hover) and (pointer: fine) {
   .nx-spot::after {

@@ -266,14 +266,16 @@ Reglas:
    | Menús, popovers, ayuda, buscador | CSS (`tw-animate-css` de Radix / `nx-drop`) |
    | Cifras, barras, gráficos | Web Animations (`lib/motion`) |
 
-   **View Transitions: no se usan.** La documentación de Next 16 las ofrece
-   con `<ViewTransition>` de React, pero hoy (React 19.2 estable) esa pieza
-   solo existe en canary, la entrada de vistas ya tiene dueño (CSS) y dos
-   dueños sobre la misma navegación se pisan. Se reevalúa cuando sea estable y
-   haya un caso real de elemento compartido (p. ej. tarjeta → ficha de una
-   obra), con `prefers-reduced-motion` y fallback sin la API.
+   | Barra superior al cambiar de barra (Inicio ↔ módulo ↔ Sistema) | View Transitions: `<ViewTransition>` de React en `app-topbar.tsx` |
+
+   **View Transitions: solo la barra superior.** Next 16.3 trae `<ViewTransition>` en el React del App Router. Caso real: la barra de
+   Inicio y la de módulo son componentes distintos, así que el logo, los avisos, el tema, el nombre del negocio y la cuenta se quitaban
+   y volvían a aparecer. Ahora cada pieza lleva un nombre compartido (`nx-topbar-*`, clase `nx-morph`, `--d3`) y viaja a su lugar; el
+   módulo y sus pestañas solo aparecen (`nx-appear`, `--d2`). El final de la barra es el mismo en todas y en el mismo orden (avisos,
+   tema, negocio, cuenta) para que nada se cruce. `default="none"`: nada más anima con esta API, y la entrada de vistas sigue siendo de
+   CSS. No se agregan otros nombres sin un caso de elemento compartido y su justificación en el PR.
 7. **Movimiento reducido:** `prefers-reduced-motion` o Ajustes → Reducir
-   movimiento (`<html data-motion="off">`) llevan toda animación a 1 ms.
+   movimiento (`<html data-motion="off">`) llevan toda animación a 1 ms (también las de View Transitions: el cambio es inmediato).
    El cambio de estado se sigue entendiendo (texto, color, icono).
 
 ---
