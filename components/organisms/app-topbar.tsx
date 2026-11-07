@@ -54,7 +54,7 @@ export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; 
       <Link
         href={hrefFor("")}
         aria-label={`${brandName}: inicio`}
-        className={cn(styles.brand, "pl-[max(16px,env(safe-area-inset-left,0px))] outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring md:pl-3")}
+        className={cn(styles.brand, "pl-[max(16px,env(safe-area-inset-left,0px))] outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring md:pl-3", atHome && "!w-auto border-0 bg-transparent !pl-4 !pr-0 text-foreground")}
       >
         <span className={cn(styles.logo, styles.mark)} style={atHome ? { ["--w" as string]: "34px" } : undefined}>
           <svg role="img" aria-label="NEXUS THRIVE" viewBox="387.6 239.9 744.4 779.5" shapeRendering="geometricPrecision">
