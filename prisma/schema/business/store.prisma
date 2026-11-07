@@ -38,6 +38,7 @@ model StoreOrder {
   lines              StoreOrderLine[]
   statusChanges      OrderStatusChange[]
   productionOrders   ProductionOrder[]
+  delivery           Delivery?
 
   @@unique([tenantId, number])
   @@index([tenantId, status])
@@ -108,5 +109,31 @@ model ProductionOrder {
   @@unique([tenantId, orderLineId])
   @@index([tenantId, stage, createdAt])
   @@index([tenantId, orderId])
+  @@rls
+}
+
+/// Entrega de un pedido (HU-entregas-01): cómo y cuándo llega al cliente. Una por pedido.
+///
+/// Campos:
+/// - `method`: PICKUP (recoge en el negocio) | COURIER (transportadora, con guía) | OWN (reparto propio).
+/// - `trackingCode`: guía de la transportadora; vacío si no aplica.
+/// - `scheduledFor`: fecha prometida; `deliveredAt` la fecha real, solo al confirmar.
+/// - `receivedBy`: quién recibió, si se anotó.
+model Delivery {
+  id           String     @id @default(uuid())
+  tenantId     String
+  tenant       Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  orderId      String     @unique
+  order        StoreOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  method       String
+  carrier      String?
+  trackingCode String?
+  scheduledFor DateTime?
+  deliveredAt  DateTime?
+  receivedBy   String?
+  note         String?
+  createdAt    DateTime   @default(now())
+
+  @@index([tenantId, scheduledFor])
   @@rls
 }

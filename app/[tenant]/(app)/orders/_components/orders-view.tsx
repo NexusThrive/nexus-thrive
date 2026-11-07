@@ -7,10 +7,14 @@ import { Alert } from "@/components/molecules/alert";
 import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { Select } from "@/components/atoms/select";
+import { inputClasses } from "@/components/atoms/input";
+import { DateInput } from "@/components/molecules/date-input";
+import { Field } from "@/components/molecules/field";
+import { FormDialog } from "@/components/organisms/form-sheet";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { useToast } from "@/components/molecules/toast";
 import { useConfirm } from "@/components/organisms/confirm-dialog";
-import { advanceOrderAction, type OrderResult } from "@/app/[tenant]/(app)/orders/actions";
+import { confirmDeliveryAction, dispatchOrderAction, advanceOrderAction, type OrderResult } from "@/app/[tenant]/(app)/orders/actions";
 import { FULFILLMENT_TEXT, allowedNext, isFinal, type Fulfillment } from "@/lib/business/store/fulfillment";
 import type { OrderRow } from "@/lib/business/store/store-db";
 import { formatCurrency } from "@/lib/foundation/format";
@@ -25,11 +29,15 @@ export default function OrdersView({ slug, orders }: { slug: string; orders: Ord
   const router = useRouter();
   const { toast } = useToast();
   const [confirm, confirmDialog] = useConfirm();
+  const [dialog, setDialog] = useState<{ order: OrderRow; kind: "dispatch" | "receive" } | null>(null);
+  const [method, setMethod] = useState("COURIER");
   const [filter, setFilter] = useState<"all" | Fulfillment>("all");
   const count = (f: Fulfillment) => orders.filter((o) => o.fulfillment === f).length;
   const list = orders.filter((o) => filter === "all" || o.fulfillment === filter);
 
   const move = async (o: OrderRow, to: Fulfillment) => {
+    // Enviar y entregar piden datos (guía, quién recibió): se resuelven en su diálogo.
+    if (to === "SHIPPED" || to === "DELIVERED") return setDialog({ order: o, kind: to === "SHIPPED" ? "dispatch" : "receive" });
     if (to === "CANCELED" && !(await confirm({ title: `¿Cancelar el pedido ${o.code}?`, description: o.status === "PAID" ? "El pedido ya está pagado: cancelarlo no devuelve el dinero, eso se hace desde Cobros en línea." : "Se anula su cobro pendiente.", confirmLabel: "Cancelar pedido", tone: "danger" }))) return;
     const r: OrderResult = await advanceOrderAction(slug, o.id, to);
     toast(r.message, r.ok ? "success" : "error");
@@ -53,7 +61,7 @@ export default function OrdersView({ slug, orders }: { slug: string; orders: Ord
         {list.map((o) => {
           const next = allowedNext(o.fulfillment);
           const primary = PRIMARY[o.fulfillment as Fulfillment];
-          const others = next.filter((s) => s !== primary && s !== "CANCELED");
+          const others = next.filter((s) => s !== primary && s !== "CANCELED" && s !== "SHIPPED");
           return (
             <li key={o.id} className="grid gap-2 rounded-lg border border-border bg-surface p-4">
               <div className="flex flex-wrap items-center gap-2">
@@ -73,6 +81,7 @@ export default function OrdersView({ slug, orders }: { slug: string; orders: Ord
               {!isFinal(o.fulfillment) ? (
                 <div className="flex flex-wrap items-center gap-2">
                   {primary ? <button type="button" onClick={() => move(o, primary)} className={buttonVariants({ size: "sm" })}>{VERB[primary]}</button> : null}
+                  {o.fulfillment === "READY" ? <button type="button" onClick={() => move(o, "SHIPPED")} className={buttonVariants({ variant: "outline", size: "sm" })}>Enviar</button> : null}
                   {others.length > 0 ? (
                     <Select aria-label={`Mover ${o.code} a otro paso`} value="" onChange={(e) => e.target.value && move(o, e.target.value as Fulfillment)}>
                       <option value="">Otro paso…</option>
@@ -87,6 +96,57 @@ export default function OrdersView({ slug, orders }: { slug: string; orders: Ord
           );
         })}
       </ul>
+      <FormDialog
+        open={dialog?.kind === "dispatch"}
+        onOpenChange={(v) => !v && setDialog(null)}
+        title={`Enviar ${dialog?.order.code ?? ""}`}
+        description="Anota cómo sale el pedido. El cliente puede ver la guía en su aviso."
+        submitLabel="Marcar enviado"
+        pendingLabel="Guardando…"
+        onSubmit={async (d) => {
+          const r = await dispatchOrderAction(slug, dialog!.order.id, { method: String(d.get("method") ?? ""), carrier: String(d.get("carrier") ?? ""), trackingCode: String(d.get("trackingCode") ?? ""), scheduledFor: String(d.get("scheduledFor") ?? ""), note: String(d.get("note") ?? "") });
+          return r.ok ? { ok: true, message: r.message } : { ok: false, message: r.message, fieldErrors: r.fields ?? {} };
+        }}
+        onSuccess={({ message }) => { if (message) toast(message, "success"); setDialog(null); router.refresh(); }}
+      >
+        {({ fieldErrors }) => (
+          <div className="grid gap-3">
+            <Field label="Cómo se envía" required error={fieldErrors.method}>
+              {(c) => (
+                <Select {...c} name="method" value={method} onChange={(e) => setMethod(e.target.value)}>
+                  <option value="COURIER">Transportadora</option>
+                  <option value="OWN">Reparto propio</option>
+                </Select>
+              )}
+            </Field>
+            {method === "COURIER" ? (
+              <>
+                <Field label="Transportadora" required error={fieldErrors.carrier}>{(c) => <input {...c} name="carrier" autoComplete="off" className={inputClasses} />}</Field>
+                <Field label="Número de guía" required error={fieldErrors.trackingCode}>{(c) => <input {...c} name="trackingCode" autoComplete="off" className={inputClasses} />}</Field>
+              </>
+            ) : null}
+            <Field label="Fecha prometida" error={fieldErrors.scheduledFor}>{(c) => <DateInput {...c} name="scheduledFor" className={inputClasses} />}</Field>
+            <Field label="Nota">{(c) => <input {...c} name="note" maxLength={200} autoComplete="off" className={inputClasses} />}</Field>
+          </div>
+        )}
+      </FormDialog>
+      <FormDialog
+        open={dialog?.kind === "receive"}
+        onOpenChange={(v) => !v && setDialog(null)}
+        title={`Confirmar entrega de ${dialog?.order.code ?? ""}`}
+        description={dialog && dialog.order.status !== "PAID" ? "Este pedido aún no está pagado: al entregar te recordaremos el saldo por cobrar." : "Deja constancia de quién recibió el pedido."}
+        submitLabel="Marcar entregado"
+        pendingLabel="Guardando…"
+        onSubmit={async (d) => {
+          const r = await confirmDeliveryAction(slug, dialog!.order.id, String(d.get("receivedBy") ?? ""));
+          return r.ok ? { ok: true, message: r.message } : { ok: false, message: r.message, fieldErrors: {} };
+        }}
+        onSuccess={({ message }) => { if (message) toast(message, "success"); setDialog(null); router.refresh(); }}
+      >
+        {({ fieldErrors }) => (
+          <Field label="Quién recibió" error={fieldErrors.receivedBy} hint="Opcional.">{(c) => <input {...c} name="receivedBy" autoComplete="off" className={inputClasses} />}</Field>
+        )}
+      </FormDialog>
       {confirmDialog}
     </div>
   );

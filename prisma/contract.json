@@ -160,6 +160,10 @@
       "model": "CustomerTierSetting",
       "namespace": "public"
     },
+    "Delivery": {
+      "model": "Delivery",
+      "namespace": "public"
+    },
     "Departure": {
       "model": "Departure",
       "namespace": "public"
@@ -7462,6 +7466,160 @@
               },
               "namespaceId": "public",
               "table": "CustomerTierSetting"
+            }
+          },
+          "Delivery": {
+            "fields": {
+              "carrier": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "deliveredAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "method": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "note": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "orderId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "receivedBy": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "scheduledFor": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "trackingCode": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "order": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "orderId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "StoreOrder",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "carrier": {
+                  "column": "carrier"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "deliveredAt": {
+                  "column": "deliveredAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "method": {
+                  "column": "method"
+                },
+                "note": {
+                  "column": "note"
+                },
+                "orderId": {
+                  "column": "orderId"
+                },
+                "receivedBy": {
+                  "column": "receivedBy"
+                },
+                "scheduledFor": {
+                  "column": "scheduledFor"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "trackingCode": {
+                  "column": "trackingCode"
+                }
+              },
+              "namespaceId": "public",
+              "table": "Delivery"
             }
           },
           "Departure": {
@@ -19723,6 +19881,22 @@
               }
             },
             "relations": {
+              "delivery": {
+                "cardinality": "1:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "orderId"
+                  ]
+                },
+                "to": {
+                  "model": "Delivery",
+                  "namespace": "public"
+                }
+              },
               "lines": {
                 "cardinality": "1:N",
                 "on": {
@@ -21853,6 +22027,21 @@
                 },
                 "to": {
                   "model": "Customer",
+                  "namespace": "public"
+                }
+              },
+              "deliveries": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "Delivery",
                   "namespace": "public"
                 }
               },
@@ -25681,6 +25870,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "CustomerTierSetting"
+            },
+            "Delivery": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "Delivery"
             },
             "Departure": {
               "kind": "rls",
@@ -31083,6 +31277,136 @@
                 ]
               },
               "uniques": []
+            },
+            "Delivery": {
+              "columns": {
+                "carrier": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "deliveredAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "method": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "note": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "orderId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "receivedBy": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "scheduledFor": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "trackingCode": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Delivery"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "orderId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Delivery"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "StoreOrder"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "Delivery_tenantId_idx_c93ed4f1",
+                  "prefix": "Delivery_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "scheduledFor"
+                  ],
+                  "name": "Delivery_tenantId_scheduledFor_idx_c01a0bda",
+                  "prefix": "Delivery_tenantId_scheduledFor_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "orderId"
+                  ]
+                }
+              ]
             },
             "Departure": {
               "columns": {
@@ -44751,10 +45075,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "3aca39e5ff3919caa942258f02c8eeee94f91e826925129490c8fa6e40c1059b"
+    "storageHash": "35f49d1db560ddae70a4f93360841ef22a1c5b80ff57c763c78ce1a901fedb0a"
   },
   "execution": {
-    "executionHash": "c37c6f3012918d024bf923e17ea7d85b264889fbc6c00754d8ab28bdfc5f701b",
+    "executionHash": "9741558c30a083adedd1276151e02850c5c78d7c15cf0011f57b9f0385eb689c",
     "mutations": {
       "defaults": [
         {
@@ -45375,6 +45699,17 @@
           "ref": {
             "entry": "CustomerTierSetting",
             "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "Delivery",
+            "field": "id",
             "namespace": "public"
           }
         },

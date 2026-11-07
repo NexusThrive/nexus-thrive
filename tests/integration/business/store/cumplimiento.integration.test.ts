@@ -2,6 +2,7 @@ import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
 import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
+import { confirmDelivery, dispatchOrder, getDelivery } from "@/lib/business/store/delivery-db";
 import { assignProduction, listProduction, moveProduction } from "@/lib/business/store/production-db";
 import { advanceOrder, orderHistory } from "@/lib/business/store/fulfillment-db";
 import { cancelOrder, placeOrder } from "@/lib/business/store/store-db";
@@ -120,5 +121,21 @@ describe.skipIf(!TEST_URL)("cumplimiento de pedidos (integración)", () => {
     const row = (await listProduction(a)).find((p) => p.orderId === o.id)!;
     expect(await listProduction(b)).toEqual([]);
     expect(await moveProduction(b, row.id, "DONE", "x")).toMatchObject({ ok: false });
+  });
+
+  test("despachar y confirmar la entrega, con saldo pendiente si no está pagado", async () => {
+    const o = await newOrder("3001230000");
+    expect(await dispatchOrder(a, o.id, { method: "OWN" }, "ana")).toMatchObject({ ok: false, message: "Solo se envía un pedido que está listo." });
+    for (const to of ["CONFIRMED", "READY"]) await advanceOrder(a, o.id, to, "ana");
+    expect(await dispatchOrder(a, o.id, { method: "COURIER" }, "ana")).toMatchObject({ ok: false, fields: { carrier: expect.any(String), trackingCode: expect.any(String) } });
+    expect((await db.orm.public.StoreOrder.where({ tenantId: a, id: o.id }).first())?.fulfillment).toBe("READY");
+    expect(await dispatchOrder(a, o.id, { method: "COURIER", carrier: "Servientrega", trackingCode: "SV123", scheduledFor: "2026-11-12" }, "ana")).toEqual({ ok: true });
+    expect(await getDelivery(a, o.id)).toMatchObject({ method: "COURIER", carrier: "Servientrega", trackingCode: "SV123", deliveredAt: null });
+    const done = await confirmDelivery(a, o.id, "Camila", "ana");
+    expect(done).toMatchObject({ ok: true, balanceDue: 40000 });
+    expect(await getDelivery(a, o.id)).toMatchObject({ receivedBy: "Camila", deliveredAt: expect.any(String) });
+    expect((await orderHistory(a, o.id)).at(-1)).toMatchObject({ toStatus: "DELIVERED", note: "Recibió Camila" });
+    expect(await confirmDelivery(a, o.id, "Otro", "ana")).toMatchObject({ ok: false });
+    expect(await confirmDelivery(b, o.id, "x", "intruso")).toMatchObject({ ok: false });
   });
 });

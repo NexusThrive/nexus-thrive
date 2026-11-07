@@ -238,6 +238,7 @@ model Tenant {
   messageTemplates   MessageTemplate[]
   orderStatusChanges OrderStatusChange[]
   productionOrders   ProductionOrder[]
+  deliveries         Delivery[]
   whatsappNotices    WhatsappNotice[]
   salesQuotes        SalesQuote[]
   salesQuoteLines    SalesQuoteLine[]

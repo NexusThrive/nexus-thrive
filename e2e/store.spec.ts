@@ -53,7 +53,9 @@ test.describe("Tienda en línea", () => {
     await page.setViewportSize({ width: 360, height: 800 });
     await openStory(page, "páginas-ventas-pedidos--default");
     const card = page.getByRole("listitem").filter({ hasText: "T-0002" }).first();
-    await card.getByRole("button", { name: "Marcar entregado" }).click(); // un solo toque (listo → entregado)
+    await card.getByRole("button", { name: "Marcar entregado" }).click();
+    const d = page.getByRole("dialog", { name: "Confirmar entrega de T-0002" });
+    await d.getByRole("button", { name: "Marcar entregado" }).click(); // segundo toque: confirma
     await expect(page.getByText("Pedido entregado")).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
     // Un paso que no es el habitual se elige en el selector de la misma tarjeta (otro pedido listo para enviar).
@@ -64,6 +66,21 @@ test.describe("Tienda en línea", () => {
   test("sin pedidos explica qué pasará", async ({ page }) => {
     await openStory(page, "páginas-ventas-pedidos--sin-pedidos");
     await expect(page.getByText("Aún no hay pedidos")).toBeVisible();
+  });
+});
+
+test.describe("Entregas", () => {
+  test("enviar con transportadora pide la guía y luego confirma", async ({ page }) => {
+    await openStory(page, "páginas-ventas-pedidos--default");
+    await page.getByRole("listitem").filter({ hasText: "T-0002" }).first().getByRole("button", { name: "Enviar", exact: true }).click();
+    const d = page.getByRole("dialog", { name: "Enviar T-0002" });
+    await d.getByLabel(/Transportadora/).fill("Servientrega");
+    await d.getByRole("button", { name: "Marcar enviado" }).click();
+    await expect(d.getByText("Escribe el número de guía.")).toBeVisible();
+    await d.getByLabel(/Número de guía/).fill("SV123");
+    await expectNoAxeViolations(page);
+    await d.getByRole("button", { name: "Marcar enviado" }).click();
+    await expect(page.getByText("Pedido enviado")).toBeVisible();
   });
 });
 
