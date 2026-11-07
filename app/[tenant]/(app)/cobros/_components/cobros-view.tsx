@@ -81,6 +81,7 @@ export default function CobrosView({ slug, baseUrl, intents, runs, canAdmin, tod
                   <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                     <span>Vence {r.expiresAt.slice(0, 10)}</span>
                     {r.confirmedBy ? <span>· confirmado por {r.confirmedBy === "PROVIDER" ? "la pasarela" : "una persona"}</span> : null}
+                    {r.feeEstimated != null && r.netExpected != null ? <span>· comisión estimada {formatCurrency(r.feeEstimated)} · neto esperado {formatCurrency(r.netExpected)}</span> : null}
                     {r.failedAttempts > 0 && r.status !== "PAID" ? <span>· {r.failedAttempts === 1 ? "1 intento fallido" : `${r.failedAttempts} intentos fallidos`} en la pasarela; el cobro sigue abierto</span> : null}
                     {r.status === "VERIFYING" && r.proofNote ? <span>· el cliente avisó: «{r.proofNote}»</span> : null}
                     {r.status === "PENDING" && r.rejectionReason ? <span>· comprobante rechazado: {r.rejectionReason}</span> : null}

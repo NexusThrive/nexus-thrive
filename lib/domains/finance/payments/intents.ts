@@ -72,6 +72,29 @@ export function wompiEnvironment(publicKey: string): "production" | "sandbox" | 
   return null;
 }
 
+export type FeeTariff = { feePct: number; feeFixed: number; feeVatPct: number };
+
+/**
+ * Comisión estimada de la pasarela por un cobro: porcentaje sobre el valor más un fijo por transacción, más el IVA de la
+ * comisión. Es una ESTIMACIÓN con la tarifa que configuró el negocio; la liquidación del proveedor confirma la real.
+ * Sin tarifa (todo en cero) no hay comisión estimada. El neto nunca es negativo.
+ */
+export function estimateFee(gross: number, tariff: FeeTariff): { fee: number; net: number } {
+  if (!(gross > 0)) return { fee: 0, net: 0 };
+  const base = (gross * Math.max(0, tariff.feePct)) / 100 + Math.max(0, tariff.feeFixed);
+  const withVat = base * (1 + Math.max(0, tariff.feeVatPct) / 100);
+  const fee = Math.min(gross, Math.round(withVat * 100) / 100);
+  return { fee, net: Math.round((gross - fee) * 100) / 100 };
+}
+
+/** Valida una tarifa: porcentajes entre 0 y 30, fijo entre 0 y 50.000. */
+export function validateTariff(t: FeeTariff): string | null {
+  if (![t.feePct, t.feeFixed, t.feeVatPct].every((n) => Number.isFinite(n) && n >= 0)) return "La tarifa no es válida.";
+  if (t.feePct > 30 || t.feeVatPct > 30) return "Los porcentajes no pueden pasar de 30 %.";
+  if (t.feeFixed > 50_000) return "El valor fijo por transacción no puede pasar de $ 50.000.";
+  return null;
+}
+
 export type ReportRow = { externalId: string; amount: number };
 export type Difference = { kind: "missing_in_nexus" | "missing_in_provider" | "amount_mismatch"; externalId: string; expected: number | null; reported: number | null };
 export type Reconciliation = { expectedTotal: number; reportedTotal: number; matched: number; differences: Difference[] };

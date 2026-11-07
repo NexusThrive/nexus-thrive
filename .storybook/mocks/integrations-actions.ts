@@ -9,3 +9,7 @@ export async function connectWompiAction(_s: string, input: { publicKey: string;
   return { ok: true as const, message: "Wompi conectado en pruebas: los cobros no mueven dinero real" };
 }
 export async function disconnectPaymentAction() { await wait(); return { ok: true as const, message: "Pasarela desconectada" }; }
+export async function saveWompiTariffAction(_s: string, t: { feePct: number; feeFixed: number; feeVatPct: number }) {
+  await wait();
+  return t.feePct > 30 ? { ok: false as const, message: "Los porcentajes no pueden pasar de 30 %." } : { ok: true as const, message: "Tarifa guardada: los cobros nuevos muestran su comisión estimada" };
+}

@@ -109,6 +109,8 @@ export type IncomeInput = {
   cashSessionId?: string | null;
   /** El documento de venta lo crea quien llama (venta con varios pagos): este cobro no crea otro. */
   skipDocument?: boolean;
+  /** Cobro por pasarela: comisión estimada (el neto sale de restarla). El asiento queda «por cobrar a la pasarela». */
+  gatewayFee?: number;
 };
 
 export type Income = { paymentId: string; receiptNumber: number; receipt: string; createdAt: string; documentId: string | null };
@@ -166,12 +168,12 @@ export async function recordIncome(tx: MoneyTx, tenantId: string, input: IncomeI
   }
   if (status === "APPROVED") {
     const payer = input.customerId ? await tx.orm.public.Customer.where({ tenantId, id: input.customerId }).select("partyId").first() : null;
-    await accountingPort.use().record(
-      tx,
-      tenantId,
-      { event: "PAYMENT_RECEIVED", amounts: { payment: Number(amount) }, date: todayCO(), description: `Cobro ${receipt}`, sourceType: "PAYMENT", sourceId: payment.id, partyId: payer?.partyId ?? null, paymentMethod: input.method },
-      userId,
-    );
+    const base = { date: todayCO(), description: `Cobro ${receipt}`, sourceType: "PAYMENT", sourceId: payment.id, partyId: payer?.partyId ?? null, paymentMethod: input.method };
+    const fee = input.gatewayFee && input.gatewayFee > 0 ? Math.min(input.gatewayFee, Number(amount)) : 0;
+    // Con comisión estimada el cobro queda «por cobrar a la pasarela» (neto) y la comisión como gasto. Si el negocio aún
+    // no tiene esa regla, se asienta como un cobro normal: nada se pierde.
+    const gateway = fee > 0 ? await accountingPort.use().record(tx, tenantId, { ...base, event: "PAYMENT_RECEIVED_GATEWAY", amounts: { payment: Number(amount), fee, net: Math.round((Number(amount) - fee) * 100) / 100 } }, userId) : null;
+    if (!gateway) await accountingPort.use().record(tx, tenantId, { ...base, event: "PAYMENT_RECEIVED", amounts: { payment: Number(amount) } }, userId);
   }
   if (sessionId) {
     await tx.orm.public.CashMovement.create({

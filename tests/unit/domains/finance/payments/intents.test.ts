@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CONFIRMABLE_STATUSES, MANUAL_PROVIDER, STATUS_LABELS, effectiveStatus, validateProof, validateRejection, newReference, parseReport, payButtonHtml, pickGateway, reconcile, validateIntent, wompiEnvironment } from "@/lib/domains/finance/payments/intents";
+import { CONFIRMABLE_STATUSES, estimateFee, validateTariff, MANUAL_PROVIDER, STATUS_LABELS, effectiveStatus, validateProof, validateRejection, newReference, parseReport, payButtonHtml, pickGateway, reconcile, validateIntent, wompiEnvironment } from "@/lib/domains/finance/payments/intents";
 import { sandboxPaymentsAllowed } from "@/lib/foundation/environment";
 
 describe("cobros en línea", () => {
@@ -81,5 +81,26 @@ describe("transferencia en verificación (HU-verificacion-01)", () => {
     expect(CONFIRMABLE_STATUSES).toEqual(["PENDING", "VERIFYING"]);
     expect(effectiveStatus("VERIFYING", "2020-01-01T00:00:00Z", Date.parse("2026-11-01T00:00:00Z"))).toBe("VERIFYING");
     expect(STATUS_LABELS.VERIFYING).toBe("En verificación");
+  });
+});
+
+describe("comisión estimada de la pasarela (HU-tesoreria-01)", () => {
+  it("porcentaje, fijo e IVA de la comisión: bruto, comisión y neto cuadran", () => {
+    const t = { feePct: 2.65, feeFixed: 700, feeVatPct: 19 };
+    const r = estimateFee(100_000, t);
+    // (2.650 + 700) × 1,19 = 3.986,50
+    expect(r).toEqual({ fee: 3986.5, net: 96013.5 });
+    expect(r.fee + r.net).toBe(100_000);
+  });
+  it("sin tarifa no hay comisión estimada, y la comisión nunca supera el cobro", () => {
+    expect(estimateFee(100_000, { feePct: 0, feeFixed: 0, feeVatPct: 0 })).toEqual({ fee: 0, net: 100_000 });
+    expect(estimateFee(500, { feePct: 2, feeFixed: 40_000, feeVatPct: 0 })).toEqual({ fee: 500, net: 0 });
+    expect(estimateFee(0, { feePct: 3, feeFixed: 0, feeVatPct: 0 })).toEqual({ fee: 0, net: 0 });
+  });
+  it("valida la tarifa", () => {
+    expect(validateTariff({ feePct: 2.65, feeFixed: 700, feeVatPct: 19 })).toBeNull();
+    expect(validateTariff({ feePct: 45, feeFixed: 0, feeVatPct: 0 })).toContain("30");
+    expect(validateTariff({ feePct: -1, feeFixed: 0, feeVatPct: 0 })).toContain("válida");
+    expect(validateTariff({ feePct: 1, feeFixed: 60_000, feeVatPct: 0 })).toContain("50.000");
   });
 });

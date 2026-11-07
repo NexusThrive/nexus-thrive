@@ -13,6 +13,7 @@ import { activeModuleNames } from "@/lib/core/tenancy/settings-db";
 import { listingView } from "@/lib/integrations/google/google-db";
 import { listConnections, type ConnectionRow } from "@/lib/integrations/providers/connections";
 import { adapterFor } from "@/lib/integrations/providers/registry";
+import { gatewayAccount } from "@/lib/domains/finance/payments/accounts-db";
 import { getAppBaseUrl } from "@/lib/foundation/app-url";
 import { WompiConnection } from "./_components/wompi-connection";
 
@@ -45,7 +46,7 @@ export default async function IntegrationsPage({ params }: { params: Promise<{ t
     );
   }
 
-  const [rows, activeNames, listing, appUrl] = await Promise.all([listConnections(ctx.tenantId), activeModuleNames(ctx.tenantId), listingView(ctx.tenantId), getAppBaseUrl()]);
+  const [rows, activeNames, listing, appUrl, wompiAccount] = await Promise.all([listConnections(ctx.tenantId), activeModuleNames(ctx.tenantId), listingView(ctx.tenantId), getAppBaseUrl(), gatewayAccount(ctx.tenantId, "wompi")]);
   const active = new Set(activeNames);
   const base = `/${tenant}`;
   const capability = (id: string) => CAPABILITIES.find((c) => c.id === id);
@@ -69,7 +70,7 @@ export default async function IntegrationsPage({ params }: { params: Promise<{ t
       environment: wompi?.environment,
       lastChecked: wompi ? checked(wompi.lastCheckedAt) : "Sin verificar",
       error: wompi?.status === "ERROR" ? errorText("Wompi", wompi.lastError) : null,
-      extra: <WompiConnection slug={tenant} connection={wompi ? { id: wompi.id, connected: wompi.status === "CONNECTED" } : null} eventsUrl={wompi ? `${appUrl}${wompi.webhookPath}` : null} />,
+      extra: <WompiConnection slug={tenant} connection={wompi ? { id: wompi.id, connected: wompi.status === "CONNECTED" } : null} eventsUrl={wompi ? `${appUrl}${wompi.webhookPath}` : null} tariff={wompiAccount?.tariff ?? { feePct: 0, feeFixed: 0, feeVatPct: 0 }} />,
     });
     for (const r of payments.filter((p) => p.provider !== "wompi")) {
       const name = adapterFor(r.provider, "PAYMENT")?.label ?? r.provider;

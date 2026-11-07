@@ -73,3 +73,32 @@ model PaymentAttempt {
   @@index([tenantId, intentId])
   @@rls
 }
+
+/// Cuenta financiera (HU-tesoreria-01, D-9): dónde está el dinero del negocio. Una caja, un banco o una pasarela de pagos.
+/// `CashBox` sigue siendo la caja física con sus turnos; esta tabla es la vista de tesorería y lleva la tarifa de la pasarela.
+///
+/// Campos:
+/// - `kind`: CASH | BANK | GATEWAY.
+/// - `provider`: Solo para pasarelas (p. ej. `wompi`). Una pasarela por proveedor y negocio.
+/// - `feePct`, `feeFixed`, `feeVatPct`: Tarifa de la pasarela para estimar la comisión de cada cobro: porcentaje sobre el valor,
+///   valor fijo por transacción e IVA sobre la comisión. En 0 no se estima comisión. La tarifa real la confirma la liquidación.
+/// - `ledgerAccount`: Código del plan de cuentas donde vive su saldo (1105 caja, 1110 bancos, 1340 pasarelas).
+model FinancialAccount {
+  id            String   @id @default(uuid())
+  tenantId      String
+  tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  kind          String
+  name          String
+  provider      String?
+  feePct        Decimal  @default(0)
+  feeFixed      Decimal  @default(0)
+  feeVatPct     Decimal  @default(0)
+  ledgerAccount String
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     temporal.updatedAt()
+
+  @@unique([tenantId, kind, name])
+  @@index([tenantId, kind])
+  @@rls
+}

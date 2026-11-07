@@ -8,16 +8,17 @@ import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
 import { useConfirm } from "@/components/organisms/confirm-dialog";
 import { FormDialog } from "@/components/organisms/form-sheet";
-import { connectWompiAction, disconnectPaymentAction, type ConnectionResult } from "@/app/[tenant]/(app)/integrations/actions";
+import { connectWompiAction, disconnectPaymentAction, saveWompiTariffAction, type ConnectionResult } from "@/app/[tenant]/(app)/integrations/actions";
 
 /**
  * Conexión de la cuenta Wompi del negocio desde Integraciones: conectar con la llave pública y los dos secretos,
  * ver la URL de eventos que se pega en Wompi y desconectar. Los secretos solo viajan al servidor; nunca se muestran.
  */
-export function WompiConnection({ slug, connection, eventsUrl }: { slug: string; connection: { id: string; connected: boolean } | null; eventsUrl: string | null }) {
+export function WompiConnection({ slug, connection, eventsUrl, tariff }: { slug: string; connection: { id: string; connected: boolean } | null; eventsUrl: string | null; tariff: { feePct: number; feeFixed: number; feeVatPct: number } }) {
   const router = useRouter();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
+  const [tariffOpen, setTariffOpen] = useState(false);
   const [pending, start] = useTransition();
   const [confirm, confirmDialog] = useConfirm();
 
@@ -51,6 +52,11 @@ export function WompiConnection({ slug, connection, eventsUrl }: { slug: string;
             {connection ? "Volver a conectar Wompi" : "Conectar Wompi"}
           </button>
         )}
+        {connection?.connected ? (
+          <button type="button" onClick={() => setTariffOpen(true)} className={buttonVariants({ variant: "outline", size: "sm" })}>
+            {tariff.feePct > 0 || tariff.feeFixed > 0 ? "Cambiar comisión" : "Configurar comisión"}
+          </button>
+        ) : null}
         {connection ? (
           <button type="button" disabled={pending} onClick={disconnect} className={buttonVariants({ variant: "outline", size: "sm" })}>
             {pending ? "Desconectando…" : "Desconectar"}
@@ -88,6 +94,37 @@ export function WompiConnection({ slug, connection, eventsUrl }: { slug: string;
             </Field>
             <Field label="Secreto de eventos" required error={fieldErrors.eventsSecret} hint="Empieza por test_events_ o prod_events_. Con él comprobamos que cada aviso de pago viene de Wompi.">
               {(c) => <input {...c} name="eventsSecret" type="password" autoComplete="off" className={inputClasses} />}
+            </Field>
+          </div>
+        )}
+      </FormDialog>
+      <FormDialog
+        open={tariffOpen}
+        onOpenChange={setTariffOpen}
+        title="Comisión de Wompi"
+        description="Con tu tarifa, cada cobro muestra su comisión estimada y el neto que esperas recibir. Es una estimación: la liquidación de Wompi confirma la real."
+        submitLabel="Guardar tarifa"
+        pendingLabel="Guardando…"
+        onSubmit={async (d) => {
+          const n = (key: string) => Number(String(d.get(key) ?? "0").replace(",", ".")) || 0;
+          const r = await saveWompiTariffAction(slug, { feePct: n("feePct"), feeFixed: n("feeFixed"), feeVatPct: n("feeVatPct") });
+          return r.ok ? { ok: true, message: r.message } : { ok: false, message: r.message, fieldErrors: { feePct: r.message } };
+        }}
+        onSuccess={({ message }) => {
+          if (message) toast(message, "success");
+          router.refresh();
+        }}
+      >
+        {({ fieldErrors }) => (
+          <div className="grid gap-3">
+            <Field label="Porcentaje sobre el valor (%)" required error={fieldErrors.feePct} hint="Lo encuentras en el contrato o en tu panel de Wompi.">
+              {(c) => <input {...c} name="feePct" inputMode="decimal" autoComplete="off" defaultValue={String(tariff.feePct)} className={inputClasses} />}
+            </Field>
+            <Field label="Valor fijo por transacción (COP)" required>
+              {(c) => <input {...c} name="feeFixed" inputMode="decimal" autoComplete="off" defaultValue={String(tariff.feeFixed)} className={inputClasses} />}
+            </Field>
+            <Field label="IVA sobre la comisión (%)" required hint="0 si no aplica.">
+              {(c) => <input {...c} name="feeVatPct" inputMode="decimal" autoComplete="off" defaultValue={String(tariff.feeVatPct)} className={inputClasses} />}
             </Field>
           </div>
         )}

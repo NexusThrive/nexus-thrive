@@ -6,6 +6,9 @@ import { receiveProviderWebhook } from "@/lib/integrations/providers/inbound";
 import { wompiChecksum } from "@/lib/integrations/providers/wompi";
 import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
 import { todayCO } from "@/lib/domains/finance/tax/tax";
+import { setGatewayTariff } from "@/lib/domains/finance/payments/accounts-db";
+import { seedAccounting } from "@/lib/domains/finance/accounting/accounting-db";
+import { composePorts } from "@/lib/runtime/ports";
 import { createIntent, listAttempts, listIntents, publicIntent, runReconciliation } from "@/lib/domains/finance/payments/intents-db";
 
 /** Wompi de punta a punta (webhook firmado → cobro confirmado → conciliación), contra Postgres real. */
@@ -74,5 +77,39 @@ describe.skipIf(!TEST_URL)("pago de prueba con Wompi (integración)", () => {
     // Un aviso fallido tardío sobre un cobro ya pagado no se registra.
     await wompiEvent("tx-6", "DECLINED", i.reference, 5_500_000);
     expect(await listAttempts(a, i.id)).toHaveLength(2);
+  });
+
+  test("una venta de $100.000 por Wompi muestra bruto, comisión y neto, con asiento equilibrado", async () => {
+    composePorts();
+    await db.orm.public.Tenant.where({ id: a }).update({ accountingEnabled: true } as never);
+    await seedAccounting(a);
+    expect(await setGatewayTariff(a, "wompi", { feePct: 2.65, feeFixed: 700, feeVatPct: 19 })).toEqual({ ok: true });
+    expect(await setGatewayTariff(a, "wompi", { feePct: 40, feeFixed: 0, feeVatPct: 0 })).toMatchObject({ ok: false });
+    const i = await createIntent(a, { amount: 100_000, description: "Con comisión", provider: "wompi" }, "u");
+    if (!i.ok) throw new Error(i.message);
+    await wompiEvent("tx-fee", "APPROVED", i.reference, 10_000_000);
+    const row = (await listIntents(a)).find((x) => x.id === i.id)!;
+    expect(row).toMatchObject({ status: "PAID", feeEstimated: 3986.5, netExpected: 96013.5 });
+    expect(row.feeEstimated! + row.netExpected!).toBe(100_000);
+
+    const payment = await db.orm.public.Payment.where({ tenantId: a, id: (await db.orm.public.PaymentIntent.where({ tenantId: a, id: i.id }).first())!.paymentId! }).first();
+    const entry = await db.orm.public.JournalEntry.where({ tenantId: a, sourceType: "PAYMENT", sourceId: payment!.id }).first();
+    expect(entry?.event).toBe("PAYMENT_RECEIVED_GATEWAY");
+    const lines = await db.orm.public.JournalLine.where({ tenantId: a, entryId: entry!.id }).all();
+    const debit = lines.reduce((s, l) => s + Number(l.debit), 0);
+    const credit = lines.reduce((s, l) => s + Number(l.credit), 0);
+    expect(debit).toBe(credit);
+    expect(lines.find((l) => l.accountCode === "1340")).toMatchObject({ debit: expect.anything() });
+    expect(Number(lines.find((l) => l.accountCode === "1340")!.debit)).toBe(96013.5);
+    expect(Number(lines.find((l) => l.accountCode === "5305")!.debit)).toBe(3986.5);
+    expect(Number(lines.find((l) => l.accountCode === "1305")!.credit)).toBe(100_000);
+  });
+
+  test("sin tarifa configurada el cobro se asienta normal y no muestra comisión", async () => {
+    await setGatewayTariff(a, "wompi", { feePct: 0, feeFixed: 0, feeVatPct: 0 });
+    const i = await createIntent(a, { amount: 30_000, description: "Sin tarifa", provider: "wompi" }, "u");
+    if (!i.ok) throw new Error(i.message);
+    await wompiEvent("tx-nofee", "APPROVED", i.reference, 3_000_000);
+    expect((await listIntents(a)).find((x) => x.id === i.id)).toMatchObject({ status: "PAID", feeEstimated: null, netExpected: null });
   });
 });

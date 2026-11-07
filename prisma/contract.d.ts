@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'59fdc0abebafd593ad3630fbe2448f921141c3f7155c7b77a74d2fcf9e502398'>;
+  StorageHashBase<'953cde49823fad6a8729c7eeb33c8233e1d6df02658b323794e1a0f2356cdcac'>;
 export type ExecutionHash =
-  ExecutionHashBase<'8cfdcc476aca70950a872572102b6487ea57e2bd77cd9780e93e1bd01a7b7097'>;
+  ExecutionHashBase<'568a8d514aefc51fb7aa04c7bf3ce1fc3a37f8de3e3c47c4fe8d1c54db3b6a51'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -793,6 +793,20 @@ export type FieldOutputTypes = {
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly weather: 'SUNNY' | 'CLOUDY' | 'RAIN_LIGHT' | 'RAIN_HEAVY';
     };
+    readonly FinancialAccount: {
+      readonly active: CodecTypes['pg/bool@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly feeFixed: CodecTypes['pg/numeric@1']['output'];
+      readonly feePct: CodecTypes['pg/numeric@1']['output'];
+      readonly feeVatPct: CodecTypes['pg/numeric@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly kind: CodecTypes['pg/text@1']['output'];
+      readonly ledgerAccount: CodecTypes['pg/text@1']['output'];
+      readonly name: CodecTypes['pg/text@1']['output'];
+      readonly provider: CodecTypes['pg/text@1']['output'] | null;
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
     readonly FiscalDocument: {
       readonly attempts: CodecTypes['pg/int4@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -1122,8 +1136,11 @@ export type FieldOutputTypes = {
       readonly description: CodecTypes['pg/text@1']['output'];
       readonly evidence: CodecTypes['pg/text@1']['output'] | null;
       readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly feeEstimated: CodecTypes['pg/numeric@1']['output'] | null;
+      readonly financialAccountId: CodecTypes['pg/text@1']['output'] | null;
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly invoiceId: CodecTypes['pg/text@1']['output'] | null;
+      readonly netExpected: CodecTypes['pg/numeric@1']['output'] | null;
       readonly paidAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly paymentId: CodecTypes['pg/text@1']['output'] | null;
       readonly proofAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
@@ -2503,6 +2520,20 @@ export type FieldInputTypes = {
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly weather: 'SUNNY' | 'CLOUDY' | 'RAIN_LIGHT' | 'RAIN_HEAVY';
     };
+    readonly FinancialAccount: {
+      readonly active: CodecTypes['pg/bool@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly feeFixed: CodecTypes['pg/numeric@1']['input'];
+      readonly feePct: CodecTypes['pg/numeric@1']['input'];
+      readonly feeVatPct: CodecTypes['pg/numeric@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly kind: CodecTypes['pg/text@1']['input'];
+      readonly ledgerAccount: CodecTypes['pg/text@1']['input'];
+      readonly name: CodecTypes['pg/text@1']['input'];
+      readonly provider: CodecTypes['pg/text@1']['input'] | null;
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
     readonly FiscalDocument: {
       readonly attempts: CodecTypes['pg/int4@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -2832,8 +2863,11 @@ export type FieldInputTypes = {
       readonly description: CodecTypes['pg/text@1']['input'];
       readonly evidence: CodecTypes['pg/text@1']['input'] | null;
       readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly feeEstimated: CodecTypes['pg/numeric@1']['input'] | null;
+      readonly financialAccountId: CodecTypes['pg/text@1']['input'] | null;
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly invoiceId: CodecTypes['pg/text@1']['input'] | null;
+      readonly netExpected: CodecTypes['pg/numeric@1']['input'] | null;
       readonly paidAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly paymentId: CodecTypes['pg/text@1']['input'] | null;
       readonly proofAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
@@ -4213,6 +4247,20 @@ export type StorageColumnTypes = {
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly weather: 'SUNNY' | 'CLOUDY' | 'RAIN_LIGHT' | 'RAIN_HEAVY';
     };
+    readonly FinancialAccount: {
+      readonly active: CodecTypes['pg/bool@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly feeFixed: CodecTypes['pg/numeric@1']['output'];
+      readonly feePct: CodecTypes['pg/numeric@1']['output'];
+      readonly feeVatPct: CodecTypes['pg/numeric@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly kind: CodecTypes['pg/text@1']['output'];
+      readonly ledgerAccount: CodecTypes['pg/text@1']['output'];
+      readonly name: CodecTypes['pg/text@1']['output'];
+      readonly provider: CodecTypes['pg/text@1']['output'] | null;
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
     readonly FiscalDocument: {
       readonly attempts: CodecTypes['pg/int4@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -4542,8 +4590,11 @@ export type StorageColumnTypes = {
       readonly description: CodecTypes['pg/text@1']['output'];
       readonly evidence: CodecTypes['pg/text@1']['output'] | null;
       readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly feeEstimated: CodecTypes['pg/numeric@1']['output'] | null;
+      readonly financialAccountId: CodecTypes['pg/text@1']['output'] | null;
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly invoiceId: CodecTypes['pg/text@1']['output'] | null;
+      readonly netExpected: CodecTypes['pg/numeric@1']['output'] | null;
       readonly paidAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly paymentId: CodecTypes['pg/text@1']['output'] | null;
       readonly proofAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
@@ -5923,6 +5974,20 @@ export type StorageColumnInputTypes = {
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly weather: 'SUNNY' | 'CLOUDY' | 'RAIN_LIGHT' | 'RAIN_HEAVY';
     };
+    readonly FinancialAccount: {
+      readonly active: CodecTypes['pg/bool@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly feeFixed: CodecTypes['pg/numeric@1']['input'];
+      readonly feePct: CodecTypes['pg/numeric@1']['input'];
+      readonly feeVatPct: CodecTypes['pg/numeric@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly kind: CodecTypes['pg/text@1']['input'];
+      readonly ledgerAccount: CodecTypes['pg/text@1']['input'];
+      readonly name: CodecTypes['pg/text@1']['input'];
+      readonly provider: CodecTypes['pg/text@1']['input'] | null;
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
     readonly FiscalDocument: {
       readonly attempts: CodecTypes['pg/int4@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -6252,8 +6317,11 @@ export type StorageColumnInputTypes = {
       readonly description: CodecTypes['pg/text@1']['input'];
       readonly evidence: CodecTypes['pg/text@1']['input'] | null;
       readonly expiresAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly feeEstimated: CodecTypes['pg/numeric@1']['input'] | null;
+      readonly financialAccountId: CodecTypes['pg/text@1']['input'] | null;
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly invoiceId: CodecTypes['pg/text@1']['input'] | null;
+      readonly netExpected: CodecTypes['pg/numeric@1']['input'] | null;
       readonly paidAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly paymentId: CodecTypes['pg/text@1']['input'] | null;
       readonly proofAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
@@ -7770,6 +7838,22 @@ export namespace Models {
     tenant: public_Tenant;
     readonly [RelationKeys]?: 'budgetItem' | 'log' | 'tenant';
   };
+  export type public_FinancialAccount = {
+    active: CodecTypes['pg/bool@1']['output'];
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    feeFixed: CodecTypes['pg/numeric@1']['output'];
+    feePct: CodecTypes['pg/numeric@1']['output'];
+    feeVatPct: CodecTypes['pg/numeric@1']['output'];
+    id: CodecTypes['pg/text@1']['output'];
+    kind: CodecTypes['pg/text@1']['output'];
+    ledgerAccount: CodecTypes['pg/text@1']['output'];
+    name: CodecTypes['pg/text@1']['output'];
+    provider: CodecTypes['pg/text@1']['output'] | null;
+    tenantId: CodecTypes['pg/text@1']['output'];
+    updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'tenant';
+  };
   export type public_FiscalDocument = {
     attempts: CodecTypes['pg/int4@1']['output'];
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -8160,8 +8244,11 @@ export namespace Models {
     description: CodecTypes['pg/text@1']['output'];
     evidence: CodecTypes['pg/text@1']['output'] | null;
     expiresAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    feeEstimated: CodecTypes['pg/numeric@1']['output'] | null;
+    financialAccountId: CodecTypes['pg/text@1']['output'] | null;
     id: CodecTypes['pg/text@1']['output'];
     invoiceId: CodecTypes['pg/text@1']['output'] | null;
+    netExpected: CodecTypes['pg/numeric@1']['output'] | null;
     paidAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
     paymentId: CodecTypes['pg/text@1']['output'] | null;
     proofAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
@@ -8997,6 +9084,7 @@ export namespace Models {
     expenses: public_Expense[];
     externalConnections: public_ExternalConnection[];
     fieldLogs: public_FieldLog[];
+    financialAccounts: public_FinancialAccount[];
     fiscalDocuments: public_FiscalDocument[];
     googleListings: public_GoogleListing[];
     idempotencyRecords: public_IdempotencyRecord[];
@@ -9096,6 +9184,7 @@ export namespace Models {
       | 'expenses'
       | 'externalConnections'
       | 'fieldLogs'
+      | 'financialAccounts'
       | 'fiscalDocuments'
       | 'googleListings'
       | 'idempotencyRecords'
@@ -9445,6 +9534,7 @@ export declare const models: {
     ExternalConnection: Models.public_ExternalConnection;
     FieldLog: Models.public_FieldLog;
     FieldLogEntry: Models.public_FieldLogEntry;
+    FinancialAccount: Models.public_FinancialAccount;
     FiscalDocument: Models.public_FiscalDocument;
     GoogleListing: Models.public_GoogleListing;
     IdempotencyRecord: Models.public_IdempotencyRecord;
@@ -13674,6 +13764,117 @@ type ContractBase = Omit<
                 },
               ];
             };
+            readonly FinancialAccount: {
+              columns: {
+                readonly active: {
+                  readonly nativeType: 'bool';
+                  readonly codecId: 'pg/bool@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/bool@1', true>;
+                  };
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly feeFixed: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/numeric@1', '0'>;
+                  };
+                };
+                readonly feePct: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/numeric@1', '0'>;
+                  };
+                };
+                readonly feeVatPct: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/numeric@1', '0'>;
+                  };
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly kind: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly ledgerAccount: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly name: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly provider: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly updatedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['tenantId', 'kind', 'name'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'FinancialAccount_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'FinancialAccount_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'FinancialAccount_tenantId_kind_idx_1e76dd5c';
+                  readonly prefix: 'FinancialAccount_tenantId_kind_idx';
+                  readonly columns: readonly ['tenantId', 'kind'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'FinancialAccount';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
             readonly FiscalDocument: {
               columns: {
                 readonly attempts: {
@@ -16119,6 +16320,16 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/timestamptz-temporal@1';
                   readonly nullable: false;
                 };
+                readonly feeEstimated: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: true;
+                };
+                readonly financialAccountId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
                 readonly id: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
@@ -16127,6 +16338,11 @@ type ContractBase = Omit<
                 readonly invoiceId: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly netExpected: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
                   readonly nullable: true;
                 };
                 readonly paidAt: {
@@ -22870,6 +23086,10 @@ type ContractBase = Omit<
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'FieldLogEntry';
     };
+    readonly FinancialAccount: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'FinancialAccount';
+    };
     readonly FiscalDocument: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'FiscalDocument';
@@ -27201,6 +27421,96 @@ type ContractBase = Omit<
               };
             };
           };
+          readonly FinancialAccount: {
+            readonly fields: {
+              readonly active: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly feeFixed: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly feePct: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly feeVatPct: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly kind: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly ledgerAccount: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly name: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly provider: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+            };
+            readonly relations: {
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'FinancialAccount';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly active: { readonly column: 'active' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly feeFixed: { readonly column: 'feeFixed' };
+                readonly feePct: { readonly column: 'feePct' };
+                readonly feeVatPct: { readonly column: 'feeVatPct' };
+                readonly id: { readonly column: 'id' };
+                readonly kind: { readonly column: 'kind' };
+                readonly ledgerAccount: { readonly column: 'ledgerAccount' };
+                readonly name: { readonly column: 'name' };
+                readonly provider: { readonly column: 'provider' };
+                readonly tenantId: { readonly column: 'tenantId' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+              };
+            };
+          };
           readonly FiscalDocument: {
             readonly fields: {
               readonly attempts: {
@@ -29483,6 +29793,14 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/timestamptz-temporal@1';
                 };
               };
+              readonly feeEstimated: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly financialAccountId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly id: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -29490,6 +29808,10 @@ type ContractBase = Omit<
               readonly invoiceId: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly netExpected: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
               };
               readonly paidAt: {
                 readonly nullable: true;
@@ -29580,8 +29902,11 @@ type ContractBase = Omit<
                 readonly description: { readonly column: 'description' };
                 readonly evidence: { readonly column: 'evidence' };
                 readonly expiresAt: { readonly column: 'expiresAt' };
+                readonly feeEstimated: { readonly column: 'feeEstimated' };
+                readonly financialAccountId: { readonly column: 'financialAccountId' };
                 readonly id: { readonly column: 'id' };
                 readonly invoiceId: { readonly column: 'invoiceId' };
+                readonly netExpected: { readonly column: 'netExpected' };
                 readonly paidAt: { readonly column: 'paidAt' };
                 readonly paymentId: { readonly column: 'paymentId' };
                 readonly proofAt: { readonly column: 'proofAt' };
@@ -34571,6 +34896,17 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['tenantId'];
                 };
               };
+              readonly financialAccounts: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'FinancialAccount';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
               readonly fiscalDocuments: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -37488,6 +37824,23 @@ type ContractBase = Omit<
           readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
           readonly ref: {
             readonly entry: 'FieldLogEntry';
+            readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'FinancialAccount';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'FinancialAccount';
             readonly field: 'updatedAt';
             readonly namespace: 'public';
           };

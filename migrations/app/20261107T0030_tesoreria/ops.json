@@ -1,0 +1,368 @@
+[
+  {
+    "id": "table.FinancialAccount",
+    "label": "Create table \"FinancialAccount\"",
+    "summary": "Creates table \"FinancialAccount\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "FinancialAccount"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"FinancialAccount\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FinancialAccount\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"FinancialAccount\"",
+        "sql": "CREATE TABLE \"public\".\"FinancialAccount\" (\n  \"active\" bool DEFAULT true NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"feeFixed\" numeric DEFAULT '0'::numeric NOT NULL,\n  \"feePct\" numeric DEFAULT '0'::numeric NOT NULL,\n  \"feeVatPct\" numeric DEFAULT '0'::numeric NOT NULL,\n  \"id\" text NOT NULL,\n  \"kind\" text NOT NULL,\n  \"ledgerAccount\" text NOT NULL,\n  \"name\" text NOT NULL,\n  \"provider\" text,\n  \"tenantId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"FinancialAccount\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FinancialAccount\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.PaymentIntent.feeEstimated",
+    "label": "Add column \"feeEstimated\" to \"PaymentIntent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "feeEstimated",
+        "table": "PaymentIntent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"feeEstimated\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentIntent",
+          "feeEstimated"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"feeEstimated\"",
+        "sql": "ALTER TABLE \"public\".\"PaymentIntent\" ADD COLUMN \"feeEstimated\" numeric"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"feeEstimated\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentIntent",
+          "feeEstimated"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.PaymentIntent.financialAccountId",
+    "label": "Add column \"financialAccountId\" to \"PaymentIntent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "financialAccountId",
+        "table": "PaymentIntent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"financialAccountId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentIntent",
+          "financialAccountId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"financialAccountId\"",
+        "sql": "ALTER TABLE \"public\".\"PaymentIntent\" ADD COLUMN \"financialAccountId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"financialAccountId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentIntent",
+          "financialAccountId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.PaymentIntent.netExpected",
+    "label": "Add column \"netExpected\" to \"PaymentIntent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "netExpected",
+        "table": "PaymentIntent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"netExpected\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentIntent",
+          "netExpected"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"netExpected\"",
+        "sql": "ALTER TABLE \"public\".\"PaymentIntent\" ADD COLUMN \"netExpected\" numeric"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"netExpected\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentIntent",
+          "netExpected"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.FinancialAccount.FinancialAccount_tenantId_kind_name_key",
+    "label": "Add unique constraint on \"FinancialAccount\" (tenantId, kind, name)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "FinancialAccount_tenantId_kind_name_key",
+        "table": "FinancialAccount"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"FinancialAccount_tenantId_kind_name_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "FinancialAccount_tenantId_kind_name_key",
+          "public",
+          "\"public\".\"FinancialAccount\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"FinancialAccount_tenantId_kind_name_key\"",
+        "sql": "ALTER TABLE \"public\".\"FinancialAccount\" ADD CONSTRAINT \"FinancialAccount_tenantId_kind_name_key\" UNIQUE (\"tenantId\", \"kind\", \"name\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"FinancialAccount_tenantId_kind_name_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "FinancialAccount_tenantId_kind_name_key",
+          "public",
+          "\"public\".\"FinancialAccount\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.FinancialAccount.FinancialAccount_tenantId_idx_c93ed4f1",
+    "label": "Create index \"FinancialAccount_tenantId_idx_c93ed4f1\" on \"FinancialAccount\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "FinancialAccount_tenantId_idx_c93ed4f1",
+        "table": "FinancialAccount"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"FinancialAccount_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FinancialAccount_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"FinancialAccount_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"FinancialAccount_tenantId_idx_c93ed4f1\" ON \"public\".\"FinancialAccount\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"FinancialAccount_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FinancialAccount_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.FinancialAccount.FinancialAccount_tenantId_kind_idx_1e76dd5c",
+    "label": "Create index \"FinancialAccount_tenantId_kind_idx_1e76dd5c\" on \"FinancialAccount\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "FinancialAccount_tenantId_kind_idx_1e76dd5c",
+        "table": "FinancialAccount"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"FinancialAccount_tenantId_kind_idx_1e76dd5c\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FinancialAccount_tenantId_kind_idx_1e76dd5c\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"FinancialAccount_tenantId_kind_idx_1e76dd5c\"",
+        "sql": "CREATE INDEX \"FinancialAccount_tenantId_kind_idx_1e76dd5c\" ON \"public\".\"FinancialAccount\" (\"tenantId\", \"kind\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"FinancialAccount_tenantId_kind_idx_1e76dd5c\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"FinancialAccount_tenantId_kind_idx_1e76dd5c\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.FinancialAccount.FinancialAccount_tenantId_fkey",
+    "label": "Add foreign key \"FinancialAccount_tenantId_fkey\" on \"FinancialAccount\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "FinancialAccount_tenantId_fkey",
+        "table": "FinancialAccount"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"FinancialAccount_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "FinancialAccount_tenantId_fkey",
+          "public",
+          "\"public\".\"FinancialAccount\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"FinancialAccount_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"FinancialAccount\"\nADD CONSTRAINT \"FinancialAccount_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"FinancialAccount_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "FinancialAccount_tenantId_fkey",
+          "public",
+          "\"public\".\"FinancialAccount\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.FinancialAccount",
+    "label": "Enable row-level security on \"FinancialAccount\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "FinancialAccount"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"FinancialAccount\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "FinancialAccount"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"FinancialAccount\"",
+        "sql": "ALTER TABLE \"public\".\"FinancialAccount\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"FinancialAccount\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "FinancialAccount"
+        ]
+      }
+    ]
+  }
+]

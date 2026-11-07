@@ -172,6 +172,10 @@
       "model": "FieldLogEntry",
       "namespace": "public"
     },
+    "FinancialAccount": {
+      "model": "FinancialAccount",
+      "namespace": "public"
+    },
     "FiscalDocument": {
       "model": "FiscalDocument",
       "namespace": "public"
@@ -7755,6 +7759,154 @@
               "table": "FieldLogEntry"
             }
           },
+          "FinancialAccount": {
+            "fields": {
+              "active": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "feeFixed": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "feePct": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "feeVatPct": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "kind": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "ledgerAccount": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "provider": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "active": {
+                  "column": "active"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "feeFixed": {
+                  "column": "feeFixed"
+                },
+                "feePct": {
+                  "column": "feePct"
+                },
+                "feeVatPct": {
+                  "column": "feeVatPct"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "kind": {
+                  "column": "kind"
+                },
+                "ledgerAccount": {
+                  "column": "ledgerAccount"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "provider": {
+                  "column": "provider"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "FinancialAccount"
+            }
+          },
           "FiscalDocument": {
             "fields": {
               "attempts": {
@@ -11485,6 +11637,20 @@
                   "kind": "scalar"
                 }
               },
+              "feeEstimated": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "financialAccountId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "id": {
                 "nullable": false,
                 "type": {
@@ -11496,6 +11662,13 @@
                 "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "netExpected": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/numeric@1",
                   "kind": "scalar"
                 }
               },
@@ -11639,11 +11812,20 @@
                 "expiresAt": {
                   "column": "expiresAt"
                 },
+                "feeEstimated": {
+                  "column": "feeEstimated"
+                },
+                "financialAccountId": {
+                  "column": "financialAccountId"
+                },
                 "id": {
                   "column": "id"
                 },
                 "invoiceId": {
                   "column": "invoiceId"
+                },
+                "netExpected": {
+                  "column": "netExpected"
                 },
                 "paidAt": {
                   "column": "paidAt"
@@ -19586,6 +19768,21 @@
                   "namespace": "public"
                 }
               },
+              "financialAccounts": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "FinancialAccount",
+                  "namespace": "public"
+                }
+              },
               "fiscalDocuments": {
                 "cardinality": "1:N",
                 "on": {
@@ -23053,6 +23250,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "FieldLogEntry"
+            },
+            "FinancialAccount": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "FinancialAccount"
             },
             "FiscalDocument": {
               "kind": "rls",
@@ -28655,6 +28857,142 @@
               },
               "uniques": []
             },
+            "FinancialAccount": {
+              "columns": {
+                "active": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "feeFixed": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "feePct": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "feeVatPct": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "kind": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "ledgerAccount": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "provider": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "FinancialAccount"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "FinancialAccount_tenantId_idx_c93ed4f1",
+                  "prefix": "FinancialAccount_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "kind"
+                  ],
+                  "name": "FinancialAccount_tenantId_kind_idx_1e76dd5c",
+                  "prefix": "FinancialAccount_tenantId_kind_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "kind",
+                    "name"
+                  ]
+                }
+              ]
+            },
             "FiscalDocument": {
               "columns": {
                 "attempts": {
@@ -31698,6 +32036,16 @@
                   "nativeType": "timestamptz",
                   "nullable": false
                 },
+                "feeEstimated": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": true
+                },
+                "financialAccountId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "id": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -31706,6 +32054,11 @@
                 "invoiceId": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
+                  "nullable": true
+                },
+                "netExpected": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
                   "nullable": true
                 },
                 "paidAt": {
@@ -40033,10 +40386,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "59fdc0abebafd593ad3630fbe2448f921141c3f7155c7b77a74d2fcf9e502398"
+    "storageHash": "953cde49823fad6a8729c7eeb33c8233e1d6df02658b323794e1a0f2356cdcac"
   },
   "execution": {
-    "executionHash": "8cfdcc476aca70950a872572102b6487ea57e2bd77cd9780e93e1bd01a7b7097",
+    "executionHash": "568a8d514aefc51fb7aa04c7bf3ce1fc3a37f8de3e3c47c4fe8d1c54db3b6a51",
     "mutations": {
       "defaults": [
         {
@@ -40764,6 +41117,32 @@
           },
           "ref": {
             "entry": "FieldLogEntry",
+            "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "FinancialAccount",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "FinancialAccount",
             "field": "updatedAt",
             "namespace": "public"
           }

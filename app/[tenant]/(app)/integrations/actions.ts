@@ -5,6 +5,7 @@ import { can } from "@/lib/core/auth/permissions";
 import { logTenantAction } from "@/lib/core/tenancy/audit";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
 import { encryptionConfigured } from "@/lib/core/events/secrets";
+import { ensureGatewayAccount, setGatewayTariff } from "@/lib/domains/finance/payments/accounts-db";
 import { wompiEnvironment } from "@/lib/domains/finance/payments/intents";
 import { wompiSecretsProblem } from "@/lib/integrations/providers/wompi";
 import { connectProvider, disconnectProvider, listConnections } from "@/lib/integrations/providers/connections";
@@ -52,6 +53,7 @@ export async function connectWompiAction(slug: string, input: Record<WompiField,
   await logTenantAction(ctx, "BIZ_ONLINE_PAYMENT", { action: "connect", provider: "wompi", environment, ok: r.ok });
   refresh(slug);
   if (!r.ok) return { ok: false, field: "publicKey", message: r.message };
+  await ensureGatewayAccount(ctx.tenantId, "wompi");
   return { ok: true, message: environment === "production" ? "Wompi conectado: tus cobros llegan a tu cuenta" : "Wompi conectado en pruebas: los cobros no mueven dinero real" };
 }
 
@@ -64,4 +66,15 @@ export async function disconnectPaymentAction(slug: string, id: string): Promise
   await logTenantAction(ctx, "BIZ_ONLINE_PAYMENT", { action: "disconnect", provider: found.provider, environment: found.environment });
   refresh(slug);
   return { ok: true, message: "Pasarela desconectada" };
+}
+
+/** Tarifa de Wompi para estimar la comisión de cada cobro: porcentaje, valor fijo por transacción e IVA de la comisión. La liquidación confirma la real. */
+export async function saveWompiTariffAction(slug: string, tariff: { feePct: number; feeFixed: number; feeVatPct: number }): Promise<ConnectionResult> {
+  const ctx = await manager(slug);
+  if (!ctx) return DENIED;
+  const r = await setGatewayTariff(ctx.tenantId, "wompi", tariff);
+  if (!r.ok) return r;
+  await logTenantAction(ctx, "BIZ_ONLINE_PAYMENT", { action: "set_tariff", provider: "wompi" });
+  refresh(slug);
+  return { ok: true, message: "Tarifa guardada: los cobros nuevos muestran su comisión estimada" };
 }

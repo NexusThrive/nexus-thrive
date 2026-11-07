@@ -22,7 +22,7 @@ import type { EntryRow } from "@/lib/domains/finance/accounting/ledger-db";
 import { formatCurrency } from "@/lib/foundation/format";
 
 type Tab = "entries" | "reports" | "puc" | "rules" | "centers" | "periods";
-const AMOUNT_TEXT = { total: "total", subtotal: "subtotal", tax: "IVA", cost: "costo", payment: "valor cobrado/pagado", withholding: "retención", tip: "propina" } as const;
+const AMOUNT_TEXT = { total: "total", subtotal: "subtotal", tax: "IVA", cost: "costo", payment: "valor cobrado/pagado", withholding: "retención", tip: "propina", fee: "comisión", net: "neto esperado" } as const;
 
 export default function AccountingView({ slug, accounts, rules, centers, periods, entries = [], auto = false, today, canReopen }: { slug: string; accounts: AccountRow[]; rules: RuleRow[]; centers: CostCenterRow[]; periods: PeriodRow[]; entries?: EntryRow[]; auto?: boolean; today: string; canReopen: boolean }) {
   const [tab, setTab] = useState<Tab>("entries");

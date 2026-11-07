@@ -1,3 +1,4 @@
+import { gatewayAccount } from "./accounts-db";
 import { MoneyError, emitFinanceEvent, moneyTransaction, recordIncome, type MoneyTx } from "@/lib/business/sales/money-service";
 import { sandboxPaymentsAllowed } from "@/lib/foundation/environment";
 import { toNumber } from "@/lib/foundation/format";
@@ -6,7 +7,7 @@ import { todayCO } from "@/lib/domains/finance/tax/tax";
 import { checkoutPort } from "./checkout-port";
 import { settleStoreOrder, storeOrderLines } from "@/lib/business/store/store-settle";
 import { db } from "@/prisma/db";
-import { effectiveStatus, newReference, pickGateway, reconcile, validateIntent, validateProof, validateRejection, type IntentStatus, type Reconciliation, type ReportRow } from "./intents";
+import { effectiveStatus, estimateFee, newReference, pickGateway, reconcile, validateIntent, validateProof, validateRejection, type IntentStatus, type Reconciliation, type ReportRow } from "./intents";
 
 /**
  * Cobros en línea (servidor). Una intención de cobro se vuelve ingreso solo con el estado
@@ -37,6 +38,8 @@ export type IntentRow = {
   proofAt: string | null;
   rejectionReason: string | null;
   /** Intentos fallidos que reportó la pasarela y cómo terminó el último. */
+  feeEstimated: number | null;
+  netExpected: number | null;
   failedAttempts: number;
   lastAttemptResult: "DECLINED" | "ERROR" | "VOIDED" | null;
 };
@@ -58,6 +61,8 @@ const toRow = (i: Record<string, unknown>, now = Date.now()): IntentRow => ({
   proofNote: (i.proofNote as string | null) ?? null,
   proofAt: i.proofAt ? String(i.proofAt) : null,
   rejectionReason: (i.rejectionReason as string | null) ?? null,
+  feeEstimated: i.feeEstimated == null ? null : toNumber(i.feeEstimated as never),
+  netExpected: i.netExpected == null ? null : toNumber(i.netExpected as never),
   failedAttempts: 0,
   lastAttemptResult: null,
 });
@@ -162,8 +167,11 @@ export async function confirmIntent(tenantId: string, reference: string, by: { k
       if (intent.invoiceId) await applyToInvoice(tx, tenantId, intent.invoiceId, amount);
       // Un cobro de la tienda deja SU documento de venta con las líneas del pedido y descuenta existencias.
       const store = await storeOrderLines(tx, tenantId, intent.id);
-      const income = await recordIncome(tx, tenantId, { documentLines: store?.lines, amount, method: by.kind === "PROVIDER" ? "WOMPI" : "TRANSFER", customerId: intent.customerId, invoiceId: intent.invoiceId, description: `Cobro en línea · ${intent.description}`, providerRefId: by.kind === "PROVIDER" ? by.externalId : null, sourceType: intent.invoiceId ? "INVOICE" : "ONLINE", sourceId: intent.invoiceId ?? intent.id }, by.kind === "MANUAL" ? by.userId : "proveedor");
-      await tx.orm.public.PaymentIntent.where({ tenantId, id: intent.id }).update({ paymentId: income.paymentId });
+      // Cobro por pasarela: comisión estimada con la tarifa del negocio (la liquidación confirma la real).
+      const gateway = by.kind === "PROVIDER" ? await gatewayAccount(tenantId, intent.provider) : null;
+      const estimate = gateway ? estimateFee(amount, gateway.tariff) : null;
+      const income = await recordIncome(tx, tenantId, { gatewayFee: estimate?.fee, documentLines: store?.lines, amount, method: by.kind === "PROVIDER" ? "WOMPI" : "TRANSFER", customerId: intent.customerId, invoiceId: intent.invoiceId, description: `Cobro en línea · ${intent.description}`, providerRefId: by.kind === "PROVIDER" ? by.externalId : null, sourceType: intent.invoiceId ? "INVOICE" : "ONLINE", sourceId: intent.invoiceId ?? intent.id }, by.kind === "MANUAL" ? by.userId : "proveedor");
+      await tx.orm.public.PaymentIntent.where({ tenantId, id: intent.id }).update({ paymentId: income.paymentId, ...(gateway && estimate && estimate.fee > 0 ? { feeEstimated: dec(estimate.fee), netExpected: dec(estimate.net), financialAccountId: gateway.id } : {}) });
       if (store) await settleStoreOrder(tx, tenantId, store.orderId, income.documentId, by.kind === "MANUAL" ? by.userId : null, { id: income.paymentId, amount });
       return { ok: true as const, already: false };
     });

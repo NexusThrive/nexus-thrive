@@ -32,4 +32,17 @@ test.describe("Wompi por negocio", () => {
     await expect(page.getByText("Pasarela desconectada")).toBeVisible();
     await expectNoAxeViolations(page);
   });
+
+  test("configurar la comisión valida la tarifa y avisa el resultado", async ({ page }) => {
+    await openStory(page, "páginas-sistema-integraciones-wompi--conectado");
+    await page.getByRole("button", { name: "Configurar comisión" }).click();
+    const d = page.getByRole("dialog", { name: "Comisión de Wompi" });
+    await d.getByLabel(/Porcentaje sobre el valor/).fill("45");
+    await d.getByRole("button", { name: "Guardar tarifa" }).click();
+    await expect(d.getByText(/no pueden pasar de 30/).first()).toBeVisible();
+    await d.getByLabel(/Porcentaje sobre el valor/).fill("2.65");
+    await d.getByRole("button", { name: "Guardar tarifa" }).click();
+    await expect(page.getByText(/Tarifa guardada/)).toBeVisible();
+    await expectNoAxeViolations(page);
+  });
 });

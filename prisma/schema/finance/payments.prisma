@@ -67,6 +67,8 @@ model Payment {
 /// - `channel`: LINK | QR
 /// - `invoiceId`: Cuenta de cobro que paga (el cobro baja su saldo).
 /// - `proofNote`: Referencia o comprobante que el cliente escribió al avisar su pago (queda como historia).
+/// - `feeEstimated`, `netExpected`: Comisión estimada de la pasarela al confirmar el cobro y el neto que se espera recibir
+///   (la liquidación del proveedor confirma la real). `financialAccountId` es la pasarela que lo cobró.
 /// - `rejectionReason`: Por qué una persona rechazó el comprobante; el cobro vuelve a PENDING.
 /// - `confirmedBy`: Cómo se confirmó: PROVIDER (webhook) | MANUAL (transferencia con evidencia).
 model PaymentIntent {
@@ -88,6 +90,9 @@ model PaymentIntent {
   proofNote     String?
   proofAt       DateTime?
   rejectionReason String?
+  feeEstimated  Decimal?
+  netExpected   Decimal?
+  financialAccountId String?
   providerRefId String?
   paymentId     String?
   refundedTotal Decimal  @default(0)
