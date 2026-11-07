@@ -1,7 +1,7 @@
 "use client";
 
 import { formatCurrency } from "@/lib/foundation/format";
-import { useEffect, useState, useTransition, type ReactNode } from "react";
+import { useEffect, useRef, useState, useTransition, type ReactNode } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -131,6 +131,15 @@ export default function CustomerTable({
   const router = useRouter();
   const quick = useQuickCreate();
   const columns = useColumnPrefs();
+  const [boxWidth, setBoxWidth] = useState(0);
+  const boxRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const box = boxRef.current;
+    if (!box) return;
+    const observer = new ResizeObserver(([entry]) => setBoxWidth(Math.floor(entry!.contentRect.width)));
+    observer.observe(box);
+    return () => observer.disconnect();
+  }, []);
   const setSort = (next: "recent" | "name_asc" | "name_desc") => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("sort", next);
@@ -284,7 +293,12 @@ export default function CustomerTable({
   const stickyAvatar = selectable ? 44 : 0;
   const stickyName = stickyAvatar + 36;
   const stickyBg = (isSelected: boolean) => (isSelected ? "bg-accent-subtle" : "bg-background group-hover:bg-surface-muted");
-  const tableMinWidth = (selectable ? 44 : 0) + 36 + columns.widthOf("name") + columns.visible.reduce((sum, column) => sum + columns.widthOf(column.key), 0) + 44;
+  const fixedWidth = (selectable ? 44 : 0) + 36 + columns.widthOf("name") + 44;
+  const dataWidth = columns.visible.reduce((sum, column) => sum + columns.widthOf(column.key), 0);
+  // Las columnas de datos visibles llenan el ancho disponible; la casilla, el avatar y el nombre no se estiran.
+  const scale = boxWidth > fixedWidth + dataWidth && dataWidth > 0 ? (boxWidth - fixedWidth) / dataWidth : 1;
+  const shown = (key: ColumnKey) => Math.floor(columns.widthOf(key) * scale);
+  const tableMinWidth = fixedWidth + columns.visible.reduce((sum, column) => sum + shown(column.key), 0);
 
   return (
     <div className="flex flex-col">
@@ -323,8 +337,8 @@ export default function CustomerTable({
       ) : (
         <>
           {/* ---------- Tabla (desktop) ---------- */}
-          <div className="hidden overflow-x-auto sm:block">
-            <table className="w-full table-fixed text-left text-sm" style={{ minWidth: tableMinWidth }}>
+          <div ref={boxRef} className="hidden overflow-x-auto sm:block">
+            <table className="table-fixed text-left text-sm" style={{ width: tableMinWidth }}>
               <caption className="sr-only">
                 {terms.customers} de {tenantSlug}
               </caption>
@@ -333,10 +347,8 @@ export default function CustomerTable({
                 <col style={{ width: 36 }} />
                 <col style={{ width: columns.widthOf("name") }} />
                 {columns.visible.map((column) => (
-                  <col key={column.key} style={{ width: columns.widthOf(column.key) }} />
+                  <col key={column.key} style={{ width: shown(column.key) }} />
                 ))}
-                {/* Relleno: absorbe el espacio sobrante para que las columnas no se estiren ni se corran al ocultar otras. */}
-                <col />
                 <col style={{ width: 44 }} />
               </colgroup>
               <thead className="sticky top-0 z-(--z-sticky) border-b border-border bg-background text-xs font-medium text-muted-foreground">
@@ -382,10 +394,9 @@ export default function CustomerTable({
                       ) : (
                         <span className="block truncate">{column.label}</span>
                       )}
-                      <ResizeHandle columnKey={column.key} label={column.label} prefs={columns} />
+                      <ResizeHandle columnKey={column.key} label={column.label} prefs={columns} scale={scale} />
                     </th>
                   ))}
-                  <td aria-hidden="true" />
                   <th scope="col" className="sticky right-0 z-(--z-raised) bg-background px-2">
                     <ColumnChooser prefs={columns} />
                   </th>
@@ -432,7 +443,6 @@ export default function CustomerTable({
                         {cellFor(column.key, row)}
                       </td>
                     ))}
-                    <td aria-hidden="true" />
                     <td aria-hidden="true" className={cn("sticky right-0 z-(--z-raised)", stickyBg(selected.has(row.id)))} />
                   </tr>
                 ))}

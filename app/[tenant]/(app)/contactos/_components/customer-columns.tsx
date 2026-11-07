@@ -129,19 +129,20 @@ export function ColumnChooser({ prefs }: { prefs: ReturnType<typeof useColumnPre
  * Asa para cambiar el ancho de una columna, en el borde derecho de su encabezado. Con el mouse se arrastra; con el teclado,
  * las flechas izquierda y derecha cambian el ancho de 16 en 16 px.
  */
-export function ResizeHandle({ columnKey, label, prefs }: { columnKey: ColumnKey | "name"; label: string; prefs: ReturnType<typeof useColumnPrefs> }) {
-  const width = prefs.widthOf(columnKey);
+export function ResizeHandle({ columnKey, label, prefs, scale = 1 }: { columnKey: ColumnKey | "name"; label: string; prefs: ReturnType<typeof useColumnPrefs>; /** Factor con que se muestra la columna (llenar el ancho); el ancho guardado es el base. */ scale?: number }) {
+  const width = Math.round(prefs.widthOf(columnKey) * scale);
   const onPointerDown = (event: PointerEvent<HTMLSpanElement>) => {
     event.preventDefault();
     event.stopPropagation();
     const startX = event.clientX;
     const start = width;
-    const move = (e: globalThis.PointerEvent) => prefs.setDrag({ key: columnKey, width: clamp(start + e.clientX - startX) });
+    const toBase = (displayed: number) => displayed / scale;
+    const move = (e: globalThis.PointerEvent) => prefs.setDrag({ key: columnKey, width: clamp(toBase(start + e.clientX - startX)) });
     const up = (e: globalThis.PointerEvent) => {
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerup", up);
       prefs.setDrag(null);
-      prefs.setWidth(columnKey, start + e.clientX - startX);
+      prefs.setWidth(columnKey, toBase(start + e.clientX - startX));
     };
     window.addEventListener("pointermove", move);
     window.addEventListener("pointerup", up);
@@ -149,7 +150,7 @@ export function ResizeHandle({ columnKey, label, prefs }: { columnKey: ColumnKey
   const onKeyDown = (event: KeyboardEvent<HTMLSpanElement>) => {
     if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
       event.preventDefault();
-      prefs.setWidth(columnKey, width + (event.key === "ArrowRight" ? 16 : -16));
+      prefs.setWidth(columnKey, (width + (event.key === "ArrowRight" ? 16 : -16)) / scale);
     }
   };
   return (
