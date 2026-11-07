@@ -15,19 +15,20 @@ import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useToast } from "@/components/molecules/toast";
 import { FormDialog } from "@/components/organisms/form-sheet";
 import { AdaptiveTable } from "@/components/organisms/adaptive-table";
-import { cancelIntentAction, confirmManualAction, createIntentAction, reconcileAction, refundAction, rejectProofAction } from "@/app/[tenant]/(app)/cobros/actions";
+import { cancelIntentAction, confirmManualAction, createIntentAction, reconcileAction, refundAction, registerSettlementAction, rejectProofAction } from "@/app/[tenant]/(app)/cobros/actions";
 import { STATUS_LABELS, payButtonHtml, type Reconciliation } from "@/lib/domains/finance/payments/intents";
 import type { IntentRow } from "@/lib/domains/finance/payments/intents-db";
+import type { SettlementRow } from "@/lib/domains/finance/payments/settlements-db";
 import { formatCurrency } from "@/lib/foundation/format";
 import { DateInput } from "@/components/molecules/date-input";
 
 type Run = { id: string; provider: string; day: string; expected: number; reported: number; matched: number; differences: Reconciliation["differences"] };
-type Tab = "links" | "recon";
+type Tab = "links" | "settlements" | "recon";
 type Small = { kind: "confirm" | "reject" | "refund" | "share"; row: IntentRow } | null;
 const TONE = { PENDING: "warning", VERIFYING: "warning", PAID: "success", EXPIRED: "secondary", FAILED: "destructive", CANCELED: "secondary" } as const;
 const KIND_TEXT = { missing_in_nexus: "El proveedor lo reporta y NEXUS no lo tiene", missing_in_provider: "NEXUS lo confirmó y el proveedor no lo reporta", amount_mismatch: "El monto no coincide" } as const;
 
-export default function CobrosView({ slug, baseUrl, intents, runs, canAdmin, today, gateways = [] }: { slug: string; baseUrl: string; intents: IntentRow[]; runs: Run[]; canAdmin: boolean; today: string; gateways?: { value: string; label: string }[] }) {
+export default function CobrosView({ slug, baseUrl, intents, runs, canAdmin, today, gateways = [], settlements = [] }: { slug: string; baseUrl: string; intents: IntentRow[]; runs: Run[]; canAdmin: boolean; today: string; gateways?: { value: string; label: string }[]; settlements?: SettlementRow[] }) {
   const [tab, setTab] = useState<Tab>("links");
   const [creating, setCreating] = useState(false);
   const [small, setSmall] = useState<Small>(null);
@@ -50,7 +51,7 @@ export default function CobrosView({ slug, baseUrl, intents, runs, canAdmin, tod
     <div className="grid gap-4">
       {canAdmin ? (
         <div className="max-w-full overflow-x-auto pb-1">
-          <SegmentedControl ariaLabel="Sección" value={tab} onChange={setTab} options={[{ value: "links", label: "Enlaces de cobro", count: intents.filter((i) => i.status === "PENDING" || i.status === "VERIFYING").length || undefined }, { value: "recon", label: "Conciliación" }]} />
+          <SegmentedControl ariaLabel="Sección" value={tab} onChange={setTab} options={[{ value: "links", label: "Enlaces de cobro", count: intents.filter((i) => i.status === "PENDING" || i.status === "VERIFYING").length || undefined }, { value: "settlements", label: "Liquidaciones", count: undefined }, { value: "recon", label: "Conciliación" }]} />
         </div>
       ) : null}
 
@@ -107,6 +108,8 @@ export default function CobrosView({ slug, baseUrl, intents, runs, canAdmin, tod
             </ul>
           )}
         </div>
+      ) : tab === "settlements" ? (
+        <Settlements slug={slug} rows={settlements} today={today} onDone={done} />
       ) : (
         <Reconciliation slug={slug} runs={runs} today={today} />
       )}
@@ -218,6 +221,60 @@ export default function CobrosView({ slug, baseUrl, intents, runs, canAdmin, tod
           <div className="grid gap-3">
             <Field label="Valor a reembolsar" required error={fieldErrors.amount} hint="Total o parcial.">{(c) => <input {...c} name="amount" inputMode="numeric" autoComplete="off" defaultValue={small ? String(small.row.amount - small.row.refundedTotal) : ""} className={inputClasses} />}</Field>
             <Field label="Motivo" required>{(c) => <input {...c} name="reason" autoComplete="off" maxLength={200} className={inputClasses} />}</Field>
+          </div>
+        )}
+      </FormDialog>
+    </div>
+  );
+}
+
+function Settlements({ slug, rows, today, onDone }: { slug: string; rows: SettlementRow[]; today: string; onDone: (message?: string) => void }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="grid gap-3">
+      <p className="text-ui text-muted-foreground">Lo que la pasarela depositó en tu banco por un grupo de cobros. Se registra con su comisión real; la diferencia contra la estimada queda como ajuste contable.</p>
+      <div className="flex">
+        <button type="button" onClick={() => setOpen(true)} className={buttonVariants({ className: "ml-auto" })}><Plus aria-hidden="true" className="size-4" /> Registrar liquidación</button>
+      </div>
+      {rows.length === 0 ? (
+        <EmptyState title="Aún no registras liquidaciones" description="Cuando Wompi te deposite, registra aquí la liquidación para saber cuánto pagaste de comisión y que tu contabilidad cuadre." />
+      ) : (
+        <AdaptiveTable
+          caption="Liquidaciones de la pasarela"
+          rows={rows}
+          getRowId={(r) => r.id}
+          columns={[
+            { key: "ref", header: "Liquidación", role: "primary", cell: (r) => <span className="font-mono font-semibold">{r.externalRef}</span> },
+            { key: "day", header: "Depósito", role: "secondary", cell: (r) => r.day },
+            { key: "items", header: "Cobros", role: "detail", align: "right", cell: (r) => r.itemCount },
+            { key: "gross", header: "Bruto", role: "detail", align: "right", cell: (r) => <span className="font-mono tabular-nums">{formatCurrency(r.gross)}</span> },
+            { key: "fee", header: "Comisión real", role: "detail", align: "right", cell: (r) => <span className="font-mono tabular-nums">{formatCurrency(r.feeReal)}</span> },
+            { key: "diff", header: "Diferencia vs. estimada", role: "detail", align: "right", cell: (r) => <span className={r.difference > 0 ? "font-mono tabular-nums text-danger" : "font-mono tabular-nums"}>{r.difference === 0 ? "Sin diferencia" : `${r.difference > 0 ? "+" : "−"}${formatCurrency(Math.abs(r.difference))}`}</span> },
+            { key: "net", header: "Depositado", role: "figure", cell: (r) => <span className="font-mono font-semibold">{formatCurrency(r.netReceived)}</span> },
+          ]}
+        />
+      )}
+      <FormDialog
+        open={open}
+        onOpenChange={setOpen}
+        title="Registrar liquidación"
+        description="Copia del reporte de Wompi las transacciones de este depósito. Todas deben estar cobradas en NEXUS por esa pasarela."
+        submitLabel="Registrar"
+        pendingLabel="Registrando…"
+        onSubmit={async (d) => {
+          const n = (key: string) => Number(String(d.get(key) ?? "").replace(/[^\d,]/g, "").replace(",", "."));
+          const r = await registerSettlementAction(slug, { externalRef: String(d.get("ref") ?? ""), day: String(d.get("day") ?? today), report: String(d.get("report") ?? ""), feeReal: n("fee"), netReceived: n("net") });
+          return r.ok ? { ok: true, message: r.message } : { ok: false, message: r.message };
+        }}
+        onSuccess={({ message }) => onDone(message)}
+      >
+        {() => (
+          <div className="grid gap-3">
+            <Field label="Referencia de la liquidación" required>{(c) => <input {...c} name="ref" autoComplete="off" maxLength={120} className={inputClasses} placeholder="Número de la liquidación en Wompi" />}</Field>
+            <Field label="Fecha del depósito" required>{(c) => <DateInput {...c} name="day" defaultValue={today} />}</Field>
+            <Field label="Transacciones («id, valor»)" required hint="Una por línea.">{(c) => <textarea {...c} name="report" rows={5} className={inputClasses} placeholder={"11883-1700-3541, 100000\n11883-1700-3542, 45000"} />}</Field>
+            <Field label="Comisión real (COP)" required>{(c) => <input {...c} name="fee" inputMode="decimal" autoComplete="off" className={inputClasses} />}</Field>
+            <Field label="Valor depositado (COP)" required hint="Bruto menos comisión real.">{(c) => <input {...c} name="net" inputMode="decimal" autoComplete="off" className={inputClasses} />}</Field>
           </div>
         )}
       </FormDialog>

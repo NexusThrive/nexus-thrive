@@ -6,7 +6,7 @@ import type { PaymentStatusValue } from "@/lib/foundation/kernel/payment-vocabul
 import { applyStockMovement, StockError } from "@/lib/business/inventory/stock-service";
 import { balanceOf, validatePayment } from "@/lib/foundation/kernel/aging";
 import { DUPLICATE_WINDOW_SECONDS, isDuplicatePayment, resolveLimits, validateAmount } from "@/lib/foundation/kernel/integrity";
-import { accountingPort } from "./accounting-port";
+import { accountingPort, type AccountingPort } from "./accounting-port";
 import { todayCO } from "@/lib/foundation/dates/plain-date";
 import { MoneyError } from "./money-error";
 import { allocatePayment, releaseAllocations } from "./allocations";
@@ -37,6 +37,9 @@ export { MoneyError };
 
 /** Publica un hecho del dinero en el outbox dentro de la transacción de quien llama (Finance no importa Core: pasa por aquí). */
 export { emitEvent as emitFinanceEvent };
+
+/** Informa a la contabilidad un hecho del dinero (Finance/payments no importa la contabilidad: pasa por aquí). Devuelve el asiento o `null` si no hubo que asentar. */
+export const recordFinanceFact = (...args: Parameters<AccountingPort["record"]>) => accountingPort.use().record(...args);
 
 // Dos cobros a la vez pueden tomar el mismo recibo o el mismo número de
 // documento de venta: la restricción única falla y se reintenta todo.

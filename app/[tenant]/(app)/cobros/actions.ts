@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { can } from "@/lib/core/auth/permissions";
 import { cancelIntent, confirmIntent, createIntent, refundIntent, rejectProof, runReconciliation, type IntentRow } from "@/lib/domains/finance/payments/intents-db";
 import { parseReport } from "@/lib/domains/finance/payments/intents";
+import { registerSettlement } from "@/lib/domains/finance/payments/settlements-db";
 import type { Reconciliation } from "@/lib/domains/finance/payments/intents";
 import { logTenantAction } from "@/lib/core/tenancy/audit";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
@@ -77,6 +78,19 @@ export async function reconcileAction(slug: string, day: string, report: string,
   await logTenantAction(ctx, "BIZ_ONLINE_PAYMENT", { action: "reconcile", day, differences: r.result.differences.length });
   refresh(slug);
   return { ok: true, result: r.result, bad: parsed.bad };
+}
+
+/** Registra la liquidación que depositó la pasarela: pega sus transacciones («id, valor»), la comisión real y lo depositado. */
+export async function registerSettlementAction(slug: string, input: { externalRef: string; day: string; report: string; feeReal: number; netReceived: number }): Promise<CobroResult> {
+  const ctx = await ctxFor(slug, "business.manage");
+  if (!ctx) return { ok: false, message: "Solo el dueño o administración registra liquidaciones." };
+  const parsed = parseReport(input.report);
+  if (parsed.bad.length) return { ok: false, message: `Revisa las líneas ${parsed.bad.join(", ")}: cada una es «id, valor».` };
+  const r = await registerSettlement(ctx.tenantId, { provider: "wompi", externalRef: input.externalRef, day: input.day, rows: parsed.rows, feeReal: input.feeReal, netReceived: input.netReceived }, ctx.memberId);
+  if (!r.ok) return { ok: false, message: r.message };
+  await logTenantAction(ctx, "BIZ_ONLINE_PAYMENT", { action: "settlement", externalRef: input.externalRef, difference: r.difference });
+  refresh(slug);
+  return { ok: true, message: r.difference === 0 ? "Liquidación registrada: la comisión real coincide con la estimada" : r.difference > 0 ? `Liquidación registrada: la comisión real fue ${Math.abs(r.difference).toLocaleString("es-CO")} mayor que la estimada` : `Liquidación registrada: la comisión real fue ${Math.abs(r.difference).toLocaleString("es-CO")} menor que la estimada` };
 }
 
 export type { IntentRow };

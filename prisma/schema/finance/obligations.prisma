@@ -102,3 +102,35 @@ model FinancialAccount {
   @@index([tenantId, kind])
   @@rls
 }
+
+/// Liquidación del proveedor (HU-liquidaciones-01): lo que la pasarela depositó al negocio por un grupo de cobros, con su
+/// comisión REAL. La diferencia contra la comisión estimada genera un ajuste contable. Los cobros liquidados quedan ligados
+/// por `PaymentIntent.settlementId`.
+///
+/// Campos:
+/// - `externalRef`: Referencia de la liquidación en el proveedor (única por negocio y proveedor: no se registra dos veces).
+/// - `gross`: Suma de los cobros liquidados. `feeEstimated` es la que se calculó al confirmar cada uno; `feeReal`, la que cobró el proveedor.
+/// - `netReceived`: Lo que llegó al banco (bruto menos comisión real). `difference` = comisión real − estimada.
+/// - Una liquidación se registra completa o no se registra: si el reporte trae una transacción que NEXUS no tiene como cobrada
+///   por esa pasarela, se rechaza con la lista para resolverla en la conciliación.
+model ProviderSettlement {
+  id           String   @id @default(uuid())
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  provider     String
+  externalRef  String
+  day          String
+  gross        Decimal
+  feeEstimated Decimal
+  feeReal      Decimal
+  netReceived  Decimal
+  difference   Decimal
+  itemCount    Int
+  accounted    Boolean  @default(false)
+  createdById  String?
+  createdAt    DateTime @default(now())
+
+  @@unique([tenantId, provider, externalRef])
+  @@index([tenantId, createdAt])
+  @@rls
+}

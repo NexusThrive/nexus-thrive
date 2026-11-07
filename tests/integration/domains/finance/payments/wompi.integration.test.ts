@@ -9,6 +9,7 @@ import { todayCO } from "@/lib/domains/finance/tax/tax";
 import { setGatewayTariff } from "@/lib/domains/finance/payments/accounts-db";
 import { seedAccounting } from "@/lib/domains/finance/accounting/accounting-db";
 import { composePorts } from "@/lib/runtime/ports";
+import { listSettlements, registerSettlement, settlementItems } from "@/lib/domains/finance/payments/settlements-db";
 import { createIntent, listAttempts, listIntents, publicIntent, runReconciliation } from "@/lib/domains/finance/payments/intents-db";
 
 /** Wompi de punta a punta (webhook firmado → cobro confirmado → conciliación), contra Postgres real. */
@@ -111,5 +112,38 @@ describe.skipIf(!TEST_URL)("pago de prueba con Wompi (integración)", () => {
     if (!i.ok) throw new Error(i.message);
     await wompiEvent("tx-nofee", "APPROVED", i.reference, 3_000_000);
     expect((await listIntents(a)).find((x) => x.id === i.id)).toMatchObject({ status: "PAID", feeEstimated: null, netExpected: null });
+  });
+
+  test("una liquidación liga todas sus transacciones, registra la comisión real y asienta la diferencia", async () => {
+    await setGatewayTariff(a, "wompi", { feePct: 2.65, feeFixed: 700, feeVatPct: 19 });
+    const pay = async (id: string, amount: number) => {
+      const i = await createIntent(a, { amount, description: `Liquidable ${id}`, provider: "wompi" }, "u");
+      if (!i.ok) throw new Error(i.message);
+      await wompiEvent(id, "APPROVED", i.reference, amount * 100);
+      return i;
+    };
+    const one = await pay("tx-liq-1", 100_000);
+    await pay("tx-liq-2", 45_000);
+    const rows = [{ externalId: "tx-liq-1", amount: 100_000 }, { externalId: "tx-liq-2", amount: 45_000 }];
+    // Estimada: 3.986,50 + 1.937,89 (45.000 × 2,65 % + 700, + IVA) · real: 5.950 → deposito 139.050
+    expect(await registerSettlement(a, { provider: "wompi", externalRef: "LQ-1", day: "2026-11-07", rows: [...rows, { externalId: "tx-nuevo", amount: 1_000 }], feeReal: 5_950, netReceived: 140_050 }, "u")).toMatchObject({ ok: false, missing: ["tx-nuevo"] });
+    expect(await registerSettlement(a, { provider: "wompi", externalRef: "LQ-1", day: "2026-11-07", rows, feeReal: 5_950, netReceived: 100_000 }, "u")).toMatchObject({ ok: false });
+    const ok = await registerSettlement(a, { provider: "wompi", externalRef: "LQ-1", day: "2026-11-07", rows, feeReal: 5_950, netReceived: 139_050 }, "u");
+    if (!ok.ok) throw new Error(ok.message);
+    const [settlement] = await listSettlements(a);
+    expect(settlement).toMatchObject({ externalRef: "LQ-1", itemCount: 2, gross: 145_000, feeReal: 5_950, netReceived: 139_050, accounted: true });
+    expect(settlement!.feeEstimated + settlement!.difference).toBeCloseTo(5_950, 2);
+    expect((await settlementItems(a, ok.id)).map((x) => x.providerRefId).sort()).toEqual(["tx-liq-1", "tx-liq-2"]);
+    // El asiento cuadra: depósito + ajuste de comisión = lo que estaba por cobrar a la pasarela.
+    const entry = await db.orm.public.JournalEntry.where({ tenantId: a, sourceType: "SETTLEMENT", sourceId: ok.id }).first();
+    const lines = await db.orm.public.JournalLine.where({ tenantId: a, entryId: entry!.id }).all();
+    expect(lines.reduce((s, l) => s + Number(l.debit), 0)).toBe(lines.reduce((s, l) => s + Number(l.credit), 0));
+    expect(Number(lines.find((l) => l.accountCode === "1110")!.debit)).toBe(139_050);
+    // No se liquida dos veces la misma referencia ni los mismos cobros.
+    expect(await registerSettlement(a, { provider: "wompi", externalRef: "LQ-1", day: "2026-11-07", rows, feeReal: 5_950, netReceived: 139_050 }, "u")).toMatchObject({ ok: false, message: "Esa liquidación ya está registrada." });
+    expect(await registerSettlement(a, { provider: "wompi", externalRef: "LQ-2", day: "2026-11-07", rows: [rows[0]!], feeReal: 3_000, netReceived: 97_000 }, "u")).toMatchObject({ ok: false });
+    expect((await db.orm.public.PaymentIntent.where({ tenantId: a, id: one.id }).first())?.settlementId).toBe(ok.id);
+    // Otro negocio no ve ni usa esos cobros.
+    expect(await listSettlements("00000000-0000-0000-0000-000000000000")).toEqual([]);
   });
 });

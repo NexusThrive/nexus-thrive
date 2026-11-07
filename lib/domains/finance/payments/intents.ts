@@ -95,6 +95,36 @@ export function validateTariff(t: FeeTariff): string | null {
   return null;
 }
 
+export type SettlementCandidate = { id: string; providerRefId: string; amount: number; /** `null` = el cobro se asentó sin comisión estimada (no había tarifa). */ feeEstimated: number | null };
+export type SettlementPlan =
+  | { ok: true; ids: string[]; gross: number; feeEstimated: number; feeReal: number; netReceived: number; difference: number }
+  | { ok: false; message: string; missing?: string[] };
+
+const r2 = (n: number) => Math.round(n * 100) / 100;
+
+/**
+ * Arma una liquidación del proveedor (HU-liquidaciones-01): cruza las transacciones del reporte con los cobros que NEXUS
+ * confirmó por esa pasarela y valida que el depósito cuadre (bruto − comisión real = neto recibido). Se registra completa o no se
+ * registra: una transacción del reporte que NEXUS no tiene (o con otro valor) se devuelve para resolverla en la conciliación.
+ * `difference` = comisión real − estimada: positiva es un gasto adicional; negativa, un menor gasto.
+ */
+export function planSettlement(candidates: readonly SettlementCandidate[], rows: readonly ReportRow[], feeReal: number, netReceived: number): SettlementPlan {
+  if (!rows.length) return { ok: false, message: "Pega las transacciones de la liquidación: una por línea («id, valor»)." };
+  if (!(feeReal >= 0) || !(netReceived > 0)) return { ok: false, message: "Escribe la comisión real y lo que se depositó." };
+  const ids = rows.map((r) => r.externalId);
+  if (new Set(ids).size !== ids.length) return { ok: false, message: "Hay transacciones repetidas en el reporte." };
+  const byRef = new Map(candidates.map((c) => [c.providerRefId, c]));
+  const missing = rows.filter((r) => { const c = byRef.get(r.externalId); return !c || r2(c.amount) !== r2(r.amount); }).map((r) => r.externalId);
+  if (missing.length) return { ok: false, message: `${missing.length === 1 ? "1 transacción del reporte no está" : `${missing.length} transacciones del reporte no están`} cobradas en NEXUS por esta pasarela, o su valor no coincide. Resuélvelas en la conciliación antes de liquidar.`, missing };
+  const matched = rows.map((r) => byRef.get(r.externalId)!);
+  const noFee = matched.filter((c) => c.feeEstimated == null);
+  if (noFee.length) return { ok: false, message: `${noFee.length === 1 ? "1 cobro se asentó" : `${noFee.length} cobros se asentaron`} sin comisión estimada porque la pasarela no tenía tarifa. Configura la tarifa; los cobros nuevos la usarán, y estos se conciliarán aparte.`, missing: noFee.map((c) => c.providerRefId) };
+  const gross = r2(matched.reduce((s, c) => s + c.amount, 0));
+  const feeEstimated = r2(matched.reduce((s, c) => s + (c.feeEstimated ?? 0), 0));
+  if (Math.abs(r2(gross - feeReal) - r2(netReceived)) > 1) return { ok: false, message: `El depósito no cuadra: ${gross.toLocaleString("es-CO")} de bruto menos ${feeReal.toLocaleString("es-CO")} de comisión da ${r2(gross - feeReal).toLocaleString("es-CO")}, no ${netReceived.toLocaleString("es-CO")}.` };
+  return { ok: true, ids: matched.map((c) => c.id), gross, feeEstimated, feeReal: r2(feeReal), netReceived: r2(netReceived), difference: r2(feeReal - feeEstimated) };
+}
+
 export type ReportRow = { externalId: string; amount: number };
 export type Difference = { kind: "missing_in_nexus" | "missing_in_provider" | "amount_mismatch"; externalId: string; expected: number | null; reported: number | null };
 export type Reconciliation = { expectedTotal: number; reportedTotal: number; matched: number; differences: Difference[] };

@@ -13,7 +13,7 @@ import { definePort } from "@/lib/foundation/ports";
  * `null` si la contabilidad del negocio está apagada o no hay regla para ese hecho.
  */
 
-export type AccountingEvent = "SALE" | "CREDIT_NOTE" | "DEBIT_NOTE" | "PAYMENT_RECEIVED" | "PAYMENT_RECEIVED_GATEWAY" | "SALE_COST" | "SALE_COST_RETURN" | "PURCHASE_RECEIVED";
+export type AccountingEvent = "SALE" | "CREDIT_NOTE" | "DEBIT_NOTE" | "PAYMENT_RECEIVED" | "PAYMENT_RECEIVED_GATEWAY" | "SETTLEMENT" | "SETTLEMENT_REFUND" | "SALE_COST" | "SALE_COST_RETURN" | "PURCHASE_RECEIVED";
 
 /** Importes del hecho, con los nombres que usan las reglas contables. */
 export type AccountingAmounts = Partial<Record<"total" | "subtotal" | "tax" | "cost" | "payment" | "withholding" | "tip" | "fee" | "net", number>>;

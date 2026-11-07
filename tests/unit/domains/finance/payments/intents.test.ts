@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CONFIRMABLE_STATUSES, estimateFee, validateTariff, MANUAL_PROVIDER, STATUS_LABELS, effectiveStatus, validateProof, validateRejection, newReference, parseReport, payButtonHtml, pickGateway, reconcile, validateIntent, wompiEnvironment } from "@/lib/domains/finance/payments/intents";
+import { CONFIRMABLE_STATUSES, planSettlement, estimateFee, validateTariff, MANUAL_PROVIDER, STATUS_LABELS, effectiveStatus, validateProof, validateRejection, newReference, parseReport, payButtonHtml, pickGateway, reconcile, validateIntent, wompiEnvironment } from "@/lib/domains/finance/payments/intents";
 import { sandboxPaymentsAllowed } from "@/lib/foundation/environment";
 
 describe("cobros en línea", () => {
@@ -102,5 +102,35 @@ describe("comisión estimada de la pasarela (HU-tesoreria-01)", () => {
     expect(validateTariff({ feePct: 45, feeFixed: 0, feeVatPct: 0 })).toContain("30");
     expect(validateTariff({ feePct: -1, feeFixed: 0, feeVatPct: 0 })).toContain("válida");
     expect(validateTariff({ feePct: 1, feeFixed: 60_000, feeVatPct: 0 })).toContain("50.000");
+  });
+});
+
+describe("liquidación del proveedor (HU-liquidaciones-01)", () => {
+  const cand = [
+    { id: "i1", providerRefId: "tx-1", amount: 100_000, feeEstimated: 3_986.5 },
+    { id: "i2", providerRefId: "tx-2", amount: 45_000, feeEstimated: 1_900 },
+  ];
+  const rows = [{ externalId: "tx-1", amount: 100_000 }, { externalId: "tx-2", amount: 45_000 }];
+  it("liga todas las transacciones y calcula la diferencia contra la comisión estimada", () => {
+    const p = planSettlement(cand, rows, 5_900, 139_100);
+    expect(p).toMatchObject({ ok: true, ids: ["i1", "i2"], gross: 145_000, feeEstimated: 5_886.5, feeReal: 5_900, netReceived: 139_100, difference: 13.5 });
+  });
+  it("una comisión real menor da diferencia negativa", () => {
+    expect(planSettlement(cand, rows, 5_000, 140_000)).toMatchObject({ ok: true, difference: -886.5 });
+  });
+  it("rechaza si el depósito no cuadra (bruto − comisión ≠ neto)", () => {
+    const p = planSettlement(cand, rows, 5_900, 130_000);
+    expect(p).toMatchObject({ ok: false });
+    expect((p as { message: string }).message).toContain("no cuadra");
+  });
+  it("se registra completa o no se registra: lo que NEXUS no tiene se devuelve", () => {
+    const p = planSettlement(cand, [...rows, { externalId: "tx-9", amount: 10_000 }], 6_000, 149_000);
+    expect(p).toMatchObject({ ok: false, missing: ["tx-9"] });
+    expect(planSettlement(cand, [{ externalId: "tx-1", amount: 99_000 }], 3_000, 96_000)).toMatchObject({ ok: false, missing: ["tx-1"] });
+  });
+  it("sin comisión estimada no se puede liquidar y no hay reportes vacíos ni repetidos", () => {
+    expect(planSettlement([{ id: "i3", providerRefId: "tx-3", amount: 50_000, feeEstimated: null }], [{ externalId: "tx-3", amount: 50_000 }], 2_000, 48_000)).toMatchObject({ ok: false, missing: ["tx-3"] });
+    expect(planSettlement(cand, [], 0, 1)).toMatchObject({ ok: false });
+    expect(planSettlement(cand, [rows[0]!, rows[0]!], 1_000, 199_000)).toMatchObject({ ok: false });
   });
 });

@@ -146,7 +146,7 @@ describe("M5.5 · domains/finance/receivables", () => {
 
 describe("M5.6 · domains/finance/payments", () => {
   const dir = "lib/domains/finance/payments";
-  const produccion = ["accounts-db.ts", "checkout-port.ts", "intents-db.ts", "intents.ts"];
+  const produccion = ["accounts-db.ts", "checkout-port.ts", "intents-db.ts", "intents.ts", "settlements-db.ts"];
 
   test("contiene exactamente los módulos de producción, y lib/payments ya no existe", () => {
     const hoy = readdirSync(join(ROOT, dir)).filter((n) => n.endsWith(".ts") && !n.endsWith(".test.ts"));

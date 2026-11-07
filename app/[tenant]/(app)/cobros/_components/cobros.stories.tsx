@@ -20,6 +20,7 @@ export const Default: Story = {};
 export const EnVerificacion: Story = { args: { intents: [row("4", "Pedido P-0042", 140_000, "VERIFYING", { proofNote: "Bancolombia 88231", proofAt: "2026-10-24T13:00:00.000Z" }), row("5", "Plan trimestral", 99_000, "PENDING", { rejectionReason: "El monto no coincide" })] } };
 export const ConIntentosFallidos: Story = { args: { intents: [row("6", "Pedido P-0050", 80_000, "PENDING", { failedAttempts: 2, lastAttemptResult: "DECLINED" })] } };
 export const ConComision: Story = { args: { intents: [row("7", "Pedido P-0051", 100_000, "PAID", { confirmedBy: "PROVIDER", feeEstimated: 3_994, netExpected: 96_006 })] } };
+export const Liquidaciones: Story = { args: { settlements: [{ id: "s1", provider: "wompi", externalRef: "LQ-2026-114", day: "2026-10-23", gross: 145_000, feeEstimated: 5_780, feeReal: 5_790, netReceived: 139_210, difference: 10, itemCount: 2, accounted: true, createdAt: "2026-10-23T15:00:00.000Z" }] } };
 export const SinCobros: Story = { args: { intents: [] } };
 export const SoloCrear: Story = { args: { canAdmin: false } };
 export const DosPasarelas: Story = { args: { gateways: [{ value: "wompi", label: "Wompi" }, { value: "sandbox", label: "Pasarela de prueba" }] } };

@@ -92,4 +92,23 @@ test.describe("Cobros en línea", () => {
     await expect(page.getByText(/2 intentos fallidos en la pasarela; el cobro sigue abierto/)).toBeVisible();
     await expect(page.getByText("Pendiente")).toBeVisible();
   });
+
+  test("liquidaciones: lista la diferencia de comisión y valida el registro", async ({ page }) => {
+    await openStory(page, "páginas-dinero-cobros-en-línea--liquidaciones");
+    await page.getByRole("tab", { name: /Liquidaciones/ }).or(page.getByRole("button", { name: /Liquidaciones/ })).first().click();
+    await expect(page.getByText("LQ-2026-114")).toBeVisible();
+    await expect(page.getByText(/\+\s?\$\s?10/)).toBeVisible();
+    await page.getByRole("button", { name: "Registrar liquidación" }).click();
+    const d = page.getByRole("dialog", { name: "Registrar liquidación" });
+    await d.getByLabel(/Referencia de la liquidación/).fill("LQ-2026-115");
+    await d.getByLabel(/Comisión real/).fill("3994");
+    await d.getByLabel(/Valor depositado/).fill("96100");
+    await d.getByLabel(/Transacciones/).fill("tx-1, 100000");
+    await d.getByRole("button", { name: "Registrar" }).click();
+    await expect(d.getByText(/El depósito no cuadra/).first()).toBeVisible();
+    await d.getByLabel(/Valor depositado/).fill("96006");
+    await d.getByRole("button", { name: "Registrar" }).click();
+    await expect(page.getByText(/Liquidación registrada/)).toBeVisible();
+    await expectNoAxeViolations(page);
+  });
 });

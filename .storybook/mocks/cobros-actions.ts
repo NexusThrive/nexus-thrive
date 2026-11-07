@@ -21,3 +21,8 @@ export async function reconcileAction() {
   await wait();
   return { ok: true as const, bad: [], result: { expectedTotal: 75_000, reportedTotal: 53_000, matched: 1, differences: [{ kind: "amount_mismatch" as const, externalId: "evt_dif", expected: 45_000, reported: 44_000 }, { kind: "missing_in_nexus" as const, externalId: "evt_extra", expected: null, reported: 9_000 }] } };
 }
+export async function registerSettlementAction(_s: string, input: { externalRef: string; report: string; feeReal: number; netReceived: number }) {
+  await wait();
+  if (!input.report.trim()) return { ok: false as const, message: "Pega las transacciones de la liquidación: una por línea («id, valor»)." };
+  return input.netReceived !== 96_006 ? { ok: false as const, message: `El depósito no cuadra: 100.000 de bruto menos 3.994 de comisión da 96.006, no ${input.netReceived}.` } : { ok: true as const, message: "Liquidación registrada: la comisión real fue 8 mayor que la estimada" };
+}
