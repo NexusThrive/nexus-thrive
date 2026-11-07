@@ -80,7 +80,7 @@ export function AppHome({ trial }: { trial?: AppHomeTrial | null }) {
     const first = group.items[0]!;
     const Icon = group.icon ?? first.icon;
     const fav = favorites.includes(group.label);
-    const label = group.label === "General" ? "Inicio" : group.label;
+    const label = group.label === "General" ? "Resumen" : group.label;
     return (
       <li key={group.label} className="relative flex justify-center">
         <Link

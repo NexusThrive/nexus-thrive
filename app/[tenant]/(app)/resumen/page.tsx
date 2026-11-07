@@ -75,7 +75,7 @@ export default async function TenantDashboard({
   const granularity: Granularity = GRANULARITIES.includes(g as Granularity) ? (g as Granularity) : "dia";
 
   // Sesión + negocio activo + membresía activa (SEC-03): no basta el layout.
-  const pageCtx = await requirePageContext(tenantSlug, "/inicio");
+  const pageCtx = await requirePageContext(tenantSlug, "/resumen");
   const tenantRecord = await tenantWithModules(pageCtx.tenantId);
   if (!tenantRecord) {
     notFound();

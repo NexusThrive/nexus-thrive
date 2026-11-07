@@ -7,15 +7,15 @@ import { activeNavItem, buildTenantNav, isNavActive, modulesForRoute, tenantRela
 import { quickCreateActions, quickSheetFor } from "@/lib/experience/navigation/quick-create";
 
 describe("buildTenantNav", () => {
-  it("siempre muestra Inicio aunque el módulo de panel no esté activo", () => {
+  it("siempre muestra Resumen aunque el módulo de panel no esté activo", () => {
     const groups = buildTenantNav("construction", ["construction"]);
-    expect(groups[0].items.map((i) => i.label)).toEqual(["Inicio"]);
+    expect(groups[0].items.map((i) => i.label)).toEqual(["Resumen"]);
   });
 
   it("solo muestra funciones activas y siempre Funciones y Configuración", () => {
     const groups = buildTenantNav("retail", ["dashboard", "crm"]);
     expect(groups.map((g) => g.label)).toEqual(["General", "Clientes y agenda", "CRM", "Sistema"]);
-    expect(groups.flatMap((g) => g.items).map((i) => i.href)).toEqual(["/inicio", "/contactos", "/crm", "/crm/tareas", "/proyectos/entregables", "/crm/formularios", "/functions", "/data", "/integrations", "/settings"]);
+    expect(groups.flatMap((g) => g.items).map((i) => i.href)).toEqual(["/resumen", "/contactos", "/crm", "/crm/tareas", "/proyectos/entregables", "/crm/formularios", "/functions", "/data", "/integrations", "/settings"]);
   });
 
   it("agrupa por trabajo, con todas las categorías desplegables, y omite los grupos vacíos", () => {
@@ -47,7 +47,7 @@ describe("buildTenantNav", () => {
   it("el gimnasio trae un menú reducido: sin Funciones, datos, integraciones, Gastos ni tienda", () => {
     const groups = buildTenantNav("gym", ["dashboard", "crm", "memberships", "finance", "website"]);
     const items = groups.flatMap((g) => g.items);
-    expect(items.map((i) => i.href)).toEqual(["/inicio", "/contactos", "/memberships", "/checkin", "/finanzas", "/finanzas/dinero", "/presencia/sitio", "/settings"]);
+    expect(items.map((i) => i.href)).toEqual(["/resumen", "/contactos", "/memberships", "/checkin", "/finanzas", "/finanzas/dinero", "/presencia/sitio", "/settings"]);
     expect(items.find((i) => i.href === "/presencia/sitio")?.label).toBe("Panel de registro de cliente");
     for (const hidden of ["/ventas/pedidos", "/crm", "/crm/tareas", "/crm/formularios", "/proyectos/entregables"]) expect(items.map((i) => i.href)).not.toContain(hidden);
   });
@@ -62,7 +62,7 @@ describe("buildTenantNav", () => {
     const labels = buildTenantNav("construction", ["construction"])
       .flatMap((g) => g.items)
       .map((i) => i.label);
-    expect(labels).toEqual(["Inicio", "Obras", "Cotizaciones", "Catálogo APU", "Funciones", "Importar y exportar", "Integraciones", "Configuración"]);
+    expect(labels).toEqual(["Resumen", "Obras", "Cotizaciones", "Catálogo APU", "Funciones", "Importar y exportar", "Integraciones", "Configuración"]);
   });
 });
 

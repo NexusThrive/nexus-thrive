@@ -5,7 +5,7 @@ import { AppHome } from "@/components/organisms/app-home";
 
 export const metadata: Metadata = { title: "Inicio" };
 
-/** Entrada del negocio: la pantalla de aplicaciones (App Home). El dashboard de cifras vive en Inicio (/inicio). */
+/** Entrada del negocio: la pantalla de aplicaciones (App Home). El panel de cifras es la app Resumen (/resumen). */
 export default async function AppHomePage({ params }: { params: Promise<{ tenant: string }> }) {
   const { tenant } = await params;
   const ctx = await requirePageContext(tenant);

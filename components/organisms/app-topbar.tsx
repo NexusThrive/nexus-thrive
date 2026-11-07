@@ -206,7 +206,7 @@ function ModuleBar({
       <span aria-hidden="true" className="hidden h-6 w-px shrink-0 bg-border sm:block" />
       <div className="flex min-w-0 shrink-0 items-center gap-2">
         <Icon aria-hidden="true" className="size-5 text-accent-text" />
-        <span className="truncate text-[15px] font-semibold text-foreground">{group.label}</span>
+        <span className="truncate text-base font-semibold text-foreground">{group.label}</span>
       </div>
       <nav aria-label={`Secciones de ${group.label}`} className="ms-2 flex min-w-0 flex-1 items-center gap-1 overflow-x-auto">
         {group.items.map((item) => {
