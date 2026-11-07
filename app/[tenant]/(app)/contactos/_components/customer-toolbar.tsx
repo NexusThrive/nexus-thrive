@@ -1,21 +1,26 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { MoreHorizontal, Plus } from "lucide-react";
 import CustomerSearch from "./customer-search";
 import CustomerFilters, { type CustomerSort, type CustomerStatus } from "./customer-filters";
 import CustomerQuickCreate from "./customer-quick-create";
 import { useVerticalTerms } from "../../vertical-terms-context";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { cn } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/molecules/dropdown-menu";
 
 /**
- * Barra superior del CRM: búsqueda + filtros + contador + botón de alta.
- * El modal de formulario vive aquí (se monta/desmonta sobre la tabla).
- *
- * En móvil el botón de alta va junto al orden ("Más recientes") y el contador
- * se muestra junto al título de la página; en escritorio se conserva el botón
- * a la derecha y el contador en la barra.
+ * Panel de control de la lista de contactos (base de Odoo, con diseño de Nexus), debajo de la barra del módulo:
+ *  - Izquierda: «Nuevo», el título de la sección y el menú «⋮» (importar y exportar).
+ *  - Centro: la búsqueda.
+ *  - Derecha: filtros, orden y el contador.
+ * El modal de alta vive aquí (se monta sobre la tabla). La paginación está al pie de la tabla.
  */
 export default function CustomerToolbar({
   tenantSlug,
@@ -31,36 +36,47 @@ export default function CustomerToolbar({
   const [isFormOpen, setIsFormOpen] = useState(false);
   const terms = useVerticalTerms();
 
-  const newButton = (className: string) => (
-    <button
-      type="button"
-      onClick={() => setIsFormOpen(true)}
-      className={cn(buttonVariants(), className)}
-    >
-      <Plus aria-hidden="true" className="h-4 w-4" />
-      {`Nuevo ${terms.customer.toLowerCase()}`}
-    </button>
-  );
-
   return (
     <>
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center">
-          <CustomerSearch />
-          <CustomerFilters
-            status={status}
-            sort={sort}
-            trailing={newButton("flex-1 lg:hidden")}
-          />
-          <p
-            aria-live="polite"
-            className="hidden text-xs font-medium text-muted-foreground sm:ml-1 lg:block"
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-3 px-5 py-4">
+        <div className="flex shrink-0 items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setIsFormOpen(true)}
+            className={buttonVariants({ variant: "accent", size: "sm" })}
           >
+            <Plus aria-hidden="true" className="size-4" />
+            Nuevo
+          </button>
+          <h1 className="text-lg font-medium text-foreground">{terms.customers}</h1>
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                aria-label="Más acciones"
+                className={buttonVariants({ variant: "ghost", size: "icon" })}
+              >
+                <MoreHorizontal aria-hidden="true" className="size-4" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" sideOffset={8}>
+              <DropdownMenuItem asChild>
+                <Link href={`/${tenantSlug}/data`}>Importar y exportar</Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
+        <div className="mx-auto min-w-0 flex-1 basis-60 max-w-[543px]">
+          <CustomerSearch />
+        </div>
+
+        <div className="flex shrink-0 items-center gap-3">
+          <CustomerFilters status={status} sort={sort} />
+          <p aria-live="polite" className="whitespace-nowrap text-xs font-medium text-muted-foreground">
             {total} {total === 1 ? terms.customer.toLowerCase() : terms.customers.toLowerCase()}
           </p>
         </div>
-
-        <span className="hidden lg:block">{newButton("")}</span>
       </div>
 
       {isFormOpen ? (
@@ -69,4 +85,3 @@ export default function CustomerToolbar({
     </>
   );
 }
-

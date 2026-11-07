@@ -7,7 +7,6 @@ import { LiveRefresh } from "@/components/molecules/live-refresh";
 import CustomerToolbar from "./_components/customer-toolbar";
 import CustomerTable, { type CustomerRow } from "./_components/customer-table";
 import type { CustomerSort, CustomerStatus } from "./_components/customer-filters";
-import { PageHeader } from "@/components/molecules/page-header";
 import { requirePageContext } from "@/lib/core/tenancy/context";
 import { can } from "@/lib/core/auth/permissions";
 
@@ -117,24 +116,10 @@ export default async function CrmPage({
     hasMembership: activeMembers.has(row.id),
   }));
 
-  const terms = getVerticalTerms(tenantRecord.vertical);
 
   return (
     <div className="space-y-6">
       <LiveRefresh everyMs={8000} />
-      <PageHeader
-        title={
-          <span className="inline-flex items-baseline gap-2.5">
-            {terms.customers}
-            <span className="text-sm font-semibold text-muted-foreground lg:hidden">
-              {result.total}
-            </span>
-          </span>
-        }
-        description={<>Administra los {terms.customers.toLowerCase()} de{" "}
-          <span className="font-medium text-foreground/80">{tenantRecord.name}</span>.</>}
-      />
-
       <CustomerToolbar
         tenantSlug={tenantSlug}
         status={status}
