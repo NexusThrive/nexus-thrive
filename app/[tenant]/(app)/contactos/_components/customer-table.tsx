@@ -335,6 +335,8 @@ export default function CustomerTable({
                 {columns.visible.map((column) => (
                   <col key={column.key} style={{ width: columns.widthOf(column.key) }} />
                 ))}
+                {/* Relleno: absorbe el espacio sobrante para que las columnas no se estiren ni se corran al ocultar otras. */}
+                <col />
                 <col style={{ width: 44 }} />
               </colgroup>
               <thead className="sticky top-0 z-(--z-sticky) border-b border-border bg-background text-xs font-medium text-muted-foreground">
@@ -383,6 +385,7 @@ export default function CustomerTable({
                       <ResizeHandle columnKey={column.key} label={column.label} prefs={columns} />
                     </th>
                   ))}
+                  <td aria-hidden="true" />
                   <th scope="col" className="sticky right-0 z-(--z-raised) bg-background px-2">
                     <ColumnChooser prefs={columns} />
                   </th>
@@ -429,6 +432,7 @@ export default function CustomerTable({
                         {cellFor(column.key, row)}
                       </td>
                     ))}
+                    <td aria-hidden="true" />
                     <td aria-hidden="true" className={cn("sticky right-0 z-(--z-raised)", stickyBg(selected.has(row.id)))} />
                   </tr>
                 ))}
