@@ -238,6 +238,7 @@ export const CAPABILITIES = [
     nav: [
       { href: "/whatsapp", icon: MessageCircle, label: () => "WhatsApp" },
       { href: "/conversaciones", icon: MessageCircle, label: () => "Conversaciones" },
+      { href: "/avisos", icon: MessageCircle, label: () => "Plantillas y avisos" },
     ],
   },
   {

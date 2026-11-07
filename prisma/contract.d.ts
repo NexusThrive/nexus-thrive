@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'7ca85a657075cbc98dd866cda4f1c89583287f6f9b9844cc562ad2d1d0247e00'>;
+  StorageHashBase<'94d21b5a060af17494f5e25390e85b2cb3e5fc03b396d2d5cb7206425cf07c55'>;
 export type ExecutionHash =
-  ExecutionHashBase<'a25bf2ff941bc2e597956b808607a76496cc93f039051eb3e694fcf83dbf5d0e'>;
+  ExecutionHashBase<'97d94784b5b3ba64ed3f8ddbc2202628caf08864367b8dc33cc78a251621454e'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -735,6 +735,7 @@ export type FieldOutputTypes = {
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly name: CodecTypes['pg/text@1']['output'];
       readonly nfcUid: CodecTypes['pg/text@1']['output'] | null;
+      readonly optOutAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly ownerId: CodecTypes['pg/text@1']['output'] | null;
       readonly partyId: CodecTypes['pg/text@1']['output'] | null;
       readonly phone: CodecTypes['pg/text@1']['output'] | null;
@@ -1067,6 +1068,20 @@ export type FieldOutputTypes = {
       readonly status: 'active' | 'expiring' | 'expired';
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly type: 'mensual' | 'trimestral' | 'anual';
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
+    readonly MessageTemplate: {
+      readonly body: CodecTypes['pg/text@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly enabled: CodecTypes['pg/bool@1']['output'];
+      readonly event: CodecTypes['pg/text@1']['output'] | null;
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly key: CodecTypes['pg/text@1']['output'];
+      readonly language: CodecTypes['pg/text@1']['output'];
+      readonly metaName: CodecTypes['pg/text@1']['output'] | null;
+      readonly metaStatus: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly title: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly ModuleSetting: {
@@ -2115,6 +2130,20 @@ export type FieldOutputTypes = {
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly weekNumber: CodecTypes['pg/int4@1']['output'];
       readonly year: CodecTypes['pg/int4@1']['output'];
+    };
+    readonly WhatsappNotice: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly customerId: CodecTypes['pg/text@1']['output'];
+      readonly event: CodecTypes['pg/text@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly messageId: CodecTypes['pg/text@1']['output'] | null;
+      readonly processedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly reason: CodecTypes['pg/text@1']['output'] | null;
+      readonly sourceId: CodecTypes['pg/text@1']['output'] | null;
+      readonly status: CodecTypes['pg/text@1']['output'];
+      readonly templateKey: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly variables: CodecTypes['pg/json@1']['output'];
     };
   };
 };
@@ -2605,6 +2634,7 @@ export type FieldInputTypes = {
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly name: CodecTypes['pg/text@1']['input'];
       readonly nfcUid: CodecTypes['pg/text@1']['input'] | null;
+      readonly optOutAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly ownerId: CodecTypes['pg/text@1']['input'] | null;
       readonly partyId: CodecTypes['pg/text@1']['input'] | null;
       readonly phone: CodecTypes['pg/text@1']['input'] | null;
@@ -2937,6 +2967,20 @@ export type FieldInputTypes = {
       readonly status: 'active' | 'expiring' | 'expired';
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly type: 'mensual' | 'trimestral' | 'anual';
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
+    readonly MessageTemplate: {
+      readonly body: CodecTypes['pg/text@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly enabled: CodecTypes['pg/bool@1']['input'];
+      readonly event: CodecTypes['pg/text@1']['input'] | null;
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly key: CodecTypes['pg/text@1']['input'];
+      readonly language: CodecTypes['pg/text@1']['input'];
+      readonly metaName: CodecTypes['pg/text@1']['input'] | null;
+      readonly metaStatus: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly title: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
     readonly ModuleSetting: {
@@ -3986,6 +4030,20 @@ export type FieldInputTypes = {
       readonly weekNumber: CodecTypes['pg/int4@1']['input'];
       readonly year: CodecTypes['pg/int4@1']['input'];
     };
+    readonly WhatsappNotice: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly customerId: CodecTypes['pg/text@1']['input'];
+      readonly event: CodecTypes['pg/text@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly messageId: CodecTypes['pg/text@1']['input'] | null;
+      readonly processedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly reason: CodecTypes['pg/text@1']['input'] | null;
+      readonly sourceId: CodecTypes['pg/text@1']['input'] | null;
+      readonly status: CodecTypes['pg/text@1']['input'];
+      readonly templateKey: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly variables: CodecTypes['pg/json@1']['input'];
+    };
   };
 };
 export type StorageColumnTypes = {
@@ -4475,6 +4533,7 @@ export type StorageColumnTypes = {
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly name: CodecTypes['pg/text@1']['output'];
       readonly nfcUid: CodecTypes['pg/text@1']['output'] | null;
+      readonly optOutAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly ownerId: CodecTypes['pg/text@1']['output'] | null;
       readonly partyId: CodecTypes['pg/text@1']['output'] | null;
       readonly phone: CodecTypes['pg/text@1']['output'] | null;
@@ -4807,6 +4866,20 @@ export type StorageColumnTypes = {
       readonly status: 'active' | 'expiring' | 'expired';
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly type: 'mensual' | 'trimestral' | 'anual';
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
+    readonly MessageTemplate: {
+      readonly body: CodecTypes['pg/text@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly enabled: CodecTypes['pg/bool@1']['output'];
+      readonly event: CodecTypes['pg/text@1']['output'] | null;
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly key: CodecTypes['pg/text@1']['output'];
+      readonly language: CodecTypes['pg/text@1']['output'];
+      readonly metaName: CodecTypes['pg/text@1']['output'] | null;
+      readonly metaStatus: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly title: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly ModuleSetting: {
@@ -5856,6 +5929,20 @@ export type StorageColumnTypes = {
       readonly weekNumber: CodecTypes['pg/int4@1']['output'];
       readonly year: CodecTypes['pg/int4@1']['output'];
     };
+    readonly WhatsappNotice: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly customerId: CodecTypes['pg/text@1']['output'];
+      readonly event: CodecTypes['pg/text@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly messageId: CodecTypes['pg/text@1']['output'] | null;
+      readonly processedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly reason: CodecTypes['pg/text@1']['output'] | null;
+      readonly sourceId: CodecTypes['pg/text@1']['output'] | null;
+      readonly status: CodecTypes['pg/text@1']['output'];
+      readonly templateKey: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly variables: CodecTypes['pg/json@1']['output'];
+    };
   };
 };
 export type StorageColumnInputTypes = {
@@ -6345,6 +6432,7 @@ export type StorageColumnInputTypes = {
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly name: CodecTypes['pg/text@1']['input'];
       readonly nfcUid: CodecTypes['pg/text@1']['input'] | null;
+      readonly optOutAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly ownerId: CodecTypes['pg/text@1']['input'] | null;
       readonly partyId: CodecTypes['pg/text@1']['input'] | null;
       readonly phone: CodecTypes['pg/text@1']['input'] | null;
@@ -6677,6 +6765,20 @@ export type StorageColumnInputTypes = {
       readonly status: 'active' | 'expiring' | 'expired';
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly type: 'mensual' | 'trimestral' | 'anual';
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
+    readonly MessageTemplate: {
+      readonly body: CodecTypes['pg/text@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly enabled: CodecTypes['pg/bool@1']['input'];
+      readonly event: CodecTypes['pg/text@1']['input'] | null;
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly key: CodecTypes['pg/text@1']['input'];
+      readonly language: CodecTypes['pg/text@1']['input'];
+      readonly metaName: CodecTypes['pg/text@1']['input'] | null;
+      readonly metaStatus: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly title: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
     readonly ModuleSetting: {
@@ -7725,6 +7827,20 @@ export type StorageColumnInputTypes = {
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly weekNumber: CodecTypes['pg/int4@1']['input'];
       readonly year: CodecTypes['pg/int4@1']['input'];
+    };
+    readonly WhatsappNotice: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly customerId: CodecTypes['pg/text@1']['input'];
+      readonly event: CodecTypes['pg/text@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly messageId: CodecTypes['pg/text@1']['input'] | null;
+      readonly processedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly reason: CodecTypes['pg/text@1']['input'] | null;
+      readonly sourceId: CodecTypes['pg/text@1']['input'] | null;
+      readonly status: CodecTypes['pg/text@1']['input'];
+      readonly templateKey: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly variables: CodecTypes['pg/json@1']['input'];
     };
   };
 };
@@ -8330,6 +8446,7 @@ export namespace Models {
     id: CodecTypes['pg/text@1']['output'];
     name: CodecTypes['pg/text@1']['output'];
     nfcUid: CodecTypes['pg/text@1']['output'] | null;
+    optOutAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
     ownerId: CodecTypes['pg/text@1']['output'] | null;
     partyId: CodecTypes['pg/text@1']['output'] | null;
     phone: CodecTypes['pg/text@1']['output'] | null;
@@ -8732,6 +8849,22 @@ export namespace Models {
     customer: public_Customer;
     tenant: public_Tenant;
     readonly [RelationKeys]?: 'charges' | 'customer' | 'tenant';
+  };
+  export type public_MessageTemplate = {
+    body: CodecTypes['pg/text@1']['output'];
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    enabled: CodecTypes['pg/bool@1']['output'];
+    event: CodecTypes['pg/text@1']['output'] | null;
+    id: CodecTypes['pg/text@1']['output'];
+    key: CodecTypes['pg/text@1']['output'];
+    language: CodecTypes['pg/text@1']['output'];
+    metaName: CodecTypes['pg/text@1']['output'] | null;
+    metaStatus: CodecTypes['pg/text@1']['output'];
+    tenantId: CodecTypes['pg/text@1']['output'];
+    title: CodecTypes['pg/text@1']['output'];
+    updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'tenant';
   };
   export type public_ModuleSetting = {
     description: CodecTypes['pg/text@1']['output'];
@@ -9837,6 +9970,7 @@ export namespace Models {
     leads: public_Lead[];
     lookaheadTasks: public_LookaheadTask[];
     memberships: public_Membership[];
+    messageTemplates: public_MessageTemplate[];
     modules: public_TenantModule[];
     numberingResolutions: public_NumberingResolution[];
     obligations: public_Obligation[];
@@ -9896,6 +10030,7 @@ export namespace Models {
     webhookDeliveries: public_WebhookDelivery[];
     webhookEndpoints: public_WebhookEndpoint[];
     weeklyCommitments: public_WeeklyCommitment[];
+    whatsappNotices: public_WhatsappNotice[];
     readonly [RelationKeys]?:
       | 'accountingPeriods'
       | 'accountingRules'
@@ -9946,6 +10081,7 @@ export namespace Models {
       | 'leads'
       | 'lookaheadTasks'
       | 'memberships'
+      | 'messageTemplates'
       | 'modules'
       | 'numberingResolutions'
       | 'obligations'
@@ -10004,7 +10140,8 @@ export namespace Models {
       | 'warehouses'
       | 'webhookDeliveries'
       | 'webhookEndpoints'
-      | 'weeklyCommitments';
+      | 'weeklyCommitments'
+      | 'whatsappNotices';
   };
   export type public_TenantContact = {
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -10243,6 +10380,22 @@ export namespace Models {
     tenant: public_Tenant;
     readonly [RelationKeys]?: 'budgetItem' | 'plan' | 'tenant';
   };
+  export type public_WhatsappNotice = {
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    customerId: CodecTypes['pg/text@1']['output'];
+    event: CodecTypes['pg/text@1']['output'];
+    id: CodecTypes['pg/text@1']['output'];
+    messageId: CodecTypes['pg/text@1']['output'] | null;
+    processedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+    reason: CodecTypes['pg/text@1']['output'] | null;
+    sourceId: CodecTypes['pg/text@1']['output'] | null;
+    status: CodecTypes['pg/text@1']['output'];
+    templateKey: CodecTypes['pg/text@1']['output'];
+    tenantId: CodecTypes['pg/text@1']['output'];
+    variables: CodecTypes['pg/json@1']['output'];
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'tenant';
+  };
 }
 
 export declare const models: {
@@ -10307,6 +10460,7 @@ export declare const models: {
     LeadForm: Models.public_LeadForm;
     LookaheadTask: Models.public_LookaheadTask;
     Membership: Models.public_Membership;
+    MessageTemplate: Models.public_MessageTemplate;
     ModuleSetting: Models.public_ModuleSetting;
     NumberingResolution: Models.public_NumberingResolution;
     Obligation: Models.public_Obligation;
@@ -10378,6 +10532,7 @@ export declare const models: {
     WebhookDelivery: Models.public_WebhookDelivery;
     WebhookEndpoint: Models.public_WebhookEndpoint;
     WeeklyCommitment: Models.public_WeeklyCommitment;
+    WhatsappNotice: Models.public_WhatsappNotice;
   };
 };
 
@@ -14049,6 +14204,11 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
                 };
+                readonly optOutAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: true;
+                };
                 readonly ownerId: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
@@ -16579,6 +16739,113 @@ type ContractBase = Omit<
                   readonly target: {
                     readonly namespaceId: 'public' & NamespaceId;
                     readonly tableName: 'Customer';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly MessageTemplate: {
+              columns: {
+                readonly body: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly enabled: {
+                  readonly nativeType: 'bool';
+                  readonly codecId: 'pg/bool@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/bool@1', true>;
+                  };
+                };
+                readonly event: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly key: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly language: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'es'>;
+                  };
+                };
+                readonly metaName: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly metaStatus: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'NONE'>;
+                  };
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly title: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly updatedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['tenantId', 'key'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'MessageTemplate_tenantId_event_idx_a78823f0';
+                  readonly prefix: 'MessageTemplate_tenantId_event_idx';
+                  readonly columns: readonly ['tenantId', 'event'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'MessageTemplate_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'MessageTemplate_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'MessageTemplate';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
                     readonly columns: readonly ['id'];
                   };
                 },
@@ -24558,6 +24825,111 @@ type ContractBase = Omit<
                 },
               ];
             };
+            readonly WhatsappNotice: {
+              columns: {
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly customerId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly event: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly messageId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly processedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: true;
+                };
+                readonly reason: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly sourceId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly status: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'PENDING'>;
+                  };
+                };
+                readonly templateKey: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly variables: {
+                  readonly nativeType: 'json';
+                  readonly codecId: 'pg/json@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['tenantId', 'event', 'sourceId'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'WhatsappNotice_tenantId_customerId_idx_302ad259';
+                  readonly prefix: 'WhatsappNotice_tenantId_customerId_idx';
+                  readonly columns: readonly ['tenantId', 'customerId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'WhatsappNotice_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'WhatsappNotice_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'WhatsappNotice_tenantId_status_createdAt_idx_c3c853c4';
+                  readonly prefix: 'WhatsappNotice_tenantId_status_createdAt_idx';
+                  readonly columns: readonly ['tenantId', 'status', 'createdAt'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'WhatsappNotice';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
           };
           readonly valueSet: {
             readonly AccountStage: {
@@ -24973,6 +25345,10 @@ type ContractBase = Omit<
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'Membership';
     };
+    readonly MessageTemplate: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'MessageTemplate';
+    };
     readonly ModuleSetting: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'ModuleSetting';
@@ -25211,6 +25587,10 @@ type ContractBase = Omit<
     readonly WeeklyCommitment: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'WeeklyCommitment';
+    };
+    readonly WhatsappNotice: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'WhatsappNotice';
     };
   };
   readonly domain: {
@@ -28749,6 +29129,13 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly optOutAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
               readonly ownerId: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -28894,6 +29281,7 @@ type ContractBase = Omit<
                 readonly id: { readonly column: 'id' };
                 readonly name: { readonly column: 'name' };
                 readonly nfcUid: { readonly column: 'nfcUid' };
+                readonly optOutAt: { readonly column: 'optOutAt' };
                 readonly ownerId: { readonly column: 'ownerId' };
                 readonly partyId: { readonly column: 'partyId' };
                 readonly phone: { readonly column: 'phone' };
@@ -31163,6 +31551,96 @@ type ContractBase = Omit<
                 readonly status: { readonly column: 'status' };
                 readonly tenantId: { readonly column: 'tenantId' };
                 readonly type: { readonly column: 'type' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+              };
+            };
+          };
+          readonly MessageTemplate: {
+            readonly fields: {
+              readonly body: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly enabled: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+              };
+              readonly event: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly key: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly language: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly metaName: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly metaStatus: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly title: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+            };
+            readonly relations: {
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'MessageTemplate';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly body: { readonly column: 'body' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly enabled: { readonly column: 'enabled' };
+                readonly event: { readonly column: 'event' };
+                readonly id: { readonly column: 'id' };
+                readonly key: { readonly column: 'key' };
+                readonly language: { readonly column: 'language' };
+                readonly metaName: { readonly column: 'metaName' };
+                readonly metaStatus: { readonly column: 'metaStatus' };
+                readonly tenantId: { readonly column: 'tenantId' };
+                readonly title: { readonly column: 'title' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
               };
             };
@@ -37868,6 +38346,17 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['tenantId'];
                 };
               };
+              readonly messageTemplates: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'MessageTemplate';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
               readonly modules: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -38505,6 +38994,17 @@ type ContractBase = Omit<
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
                   readonly model: 'WeeklyCommitment';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly whatsappNotices: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'WhatsappNotice';
                 };
                 readonly cardinality: '1:N';
                 readonly on: {
@@ -39890,6 +40390,96 @@ type ContractBase = Omit<
               };
             };
           };
+          readonly WhatsappNotice: {
+            readonly fields: {
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly customerId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly event: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly messageId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly processedAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly reason: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly sourceId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly status: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly templateKey: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly variables: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/json@1' };
+              };
+            };
+            readonly relations: {
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'WhatsappNotice';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly customerId: { readonly column: 'customerId' };
+                readonly event: { readonly column: 'event' };
+                readonly id: { readonly column: 'id' };
+                readonly messageId: { readonly column: 'messageId' };
+                readonly processedAt: { readonly column: 'processedAt' };
+                readonly reason: { readonly column: 'reason' };
+                readonly sourceId: { readonly column: 'sourceId' };
+                readonly status: { readonly column: 'status' };
+                readonly templateKey: { readonly column: 'templateKey' };
+                readonly tenantId: { readonly column: 'tenantId' };
+                readonly variables: { readonly column: 'variables' };
+              };
+            };
+          };
         };
         readonly enum: {
           readonly AccountStage: {
@@ -40931,6 +41521,23 @@ type ContractBase = Omit<
           };
         },
         {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'MessageTemplate';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'MessageTemplate';
+            readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
           readonly onCreate: { readonly id: 'instantNow'; readonly kind: 'generator' };
           readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
           readonly ref: {
@@ -41804,6 +42411,14 @@ type ContractBase = Omit<
           readonly ref: {
             readonly entry: 'WeeklyCommitment';
             readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'WhatsappNotice';
+            readonly field: 'id';
             readonly namespace: 'public';
           };
         },

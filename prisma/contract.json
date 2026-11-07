@@ -244,6 +244,10 @@
       "model": "Membership",
       "namespace": "public"
     },
+    "MessageTemplate": {
+      "model": "MessageTemplate",
+      "namespace": "public"
+    },
     "ModuleSetting": {
       "model": "ModuleSetting",
       "namespace": "public"
@@ -526,6 +530,10 @@
     },
     "WeeklyCommitment": {
       "model": "WeeklyCommitment",
+      "namespace": "public"
+    },
+    "WhatsappNotice": {
+      "model": "WhatsappNotice",
       "namespace": "public"
     }
   },
@@ -6976,6 +6984,13 @@
                   "kind": "scalar"
                 }
               },
+              "optOutAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
               "ownerId": {
                 "nullable": true,
                 "type": {
@@ -7198,6 +7213,9 @@
                 },
                 "nfcUid": {
                   "column": "nfcUid"
+                },
+                "optOutAt": {
+                  "column": "optOutAt"
                 },
                 "ownerId": {
                   "column": "ownerId"
@@ -10910,6 +10928,154 @@
               },
               "namespaceId": "public",
               "table": "Membership"
+            }
+          },
+          "MessageTemplate": {
+            "fields": {
+              "body": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "enabled": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "event": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "key": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "language": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "metaName": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "metaStatus": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "title": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "body": {
+                  "column": "body"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "enabled": {
+                  "column": "enabled"
+                },
+                "event": {
+                  "column": "event"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "key": {
+                  "column": "key"
+                },
+                "language": {
+                  "column": "language"
+                },
+                "metaName": {
+                  "column": "metaName"
+                },
+                "metaStatus": {
+                  "column": "metaStatus"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "title": {
+                  "column": "title"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "MessageTemplate"
             }
           },
           "ModuleSetting": {
@@ -21609,6 +21775,21 @@
                   "namespace": "public"
                 }
               },
+              "messageTemplates": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "MessageTemplate",
+                  "namespace": "public"
+                }
+              },
               "modules": {
                 "cardinality": "1:N",
                 "on": {
@@ -22492,6 +22673,21 @@
                 },
                 "to": {
                   "model": "WeeklyCommitment",
+                  "namespace": "public"
+                }
+              },
+              "whatsappNotices": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "WhatsappNotice",
                   "namespace": "public"
                 }
               }
@@ -24767,6 +24963,154 @@
               "namespaceId": "public",
               "table": "WeeklyCommitment"
             }
+          },
+          "WhatsappNotice": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "customerId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "event": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "messageId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "processedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "reason": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "sourceId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "templateKey": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "variables": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/json@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "customerId": {
+                  "column": "customerId"
+                },
+                "event": {
+                  "column": "event"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "messageId": {
+                  "column": "messageId"
+                },
+                "processedAt": {
+                  "column": "processedAt"
+                },
+                "reason": {
+                  "column": "reason"
+                },
+                "sourceId": {
+                  "column": "sourceId"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "templateKey": {
+                  "column": "templateKey"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "variables": {
+                  "column": "variables"
+                }
+              },
+              "namespaceId": "public",
+              "table": "WhatsappNotice"
+            }
           }
         }
       }
@@ -25076,6 +25420,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "Membership"
+            },
+            "MessageTemplate": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "MessageTemplate"
             },
             "ModuleSetting": {
               "kind": "rls",
@@ -25431,6 +25780,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "WeeklyCommitment"
+            },
+            "WhatsappNotice": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "WhatsappNotice"
             }
           },
           "table": {
@@ -30028,6 +30382,11 @@
                   "nativeType": "text",
                   "nullable": true
                 },
+                "optOutAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
                 "ownerId": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -33208,6 +33567,137 @@
                 ]
               },
               "uniques": []
+            },
+            "MessageTemplate": {
+              "columns": {
+                "body": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "enabled": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "event": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "key": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "language": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "es"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "metaName": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "metaStatus": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "NONE"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "title": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "MessageTemplate"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "event"
+                  ],
+                  "name": "MessageTemplate_tenantId_event_idx_a78823f0",
+                  "prefix": "MessageTemplate_tenantId_event_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "MessageTemplate_tenantId_idx_c93ed4f1",
+                  "prefix": "MessageTemplate_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "key"
+                  ]
+                }
+              ]
             },
             "ModuleSetting": {
               "columns": {
@@ -43147,6 +43637,140 @@
                 ]
               },
               "uniques": []
+            },
+            "WhatsappNotice": {
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "customerId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "event": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "messageId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "processedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "reason": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "sourceId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "PENDING"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "templateKey": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "variables": {
+                  "codecId": "pg/json@1",
+                  "nativeType": "json",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "WhatsappNotice"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "customerId"
+                  ],
+                  "name": "WhatsappNotice_tenantId_customerId_idx_302ad259",
+                  "prefix": "WhatsappNotice_tenantId_customerId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "WhatsappNotice_tenantId_idx_c93ed4f1",
+                  "prefix": "WhatsappNotice_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "status",
+                    "createdAt"
+                  ],
+                  "name": "WhatsappNotice_tenantId_status_createdAt_idx_c3c853c4",
+                  "prefix": "WhatsappNotice_tenantId_status_createdAt_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "event",
+                    "sourceId"
+                  ]
+                }
+              ]
             }
           },
           "valueSet": {
@@ -43466,10 +44090,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "7ca85a657075cbc98dd866cda4f1c89583287f6f9b9844cc562ad2d1d0247e00"
+    "storageHash": "94d21b5a060af17494f5e25390e85b2cb3e5fc03b396d2d5cb7206425cf07c55"
   },
   "execution": {
-    "executionHash": "a25bf2ff941bc2e597956b808607a76496cc93f039051eb3e694fcf83dbf5d0e",
+    "executionHash": "97d94784b5b3ba64ed3f8ddbc2202628caf08864367b8dc33cc78a251621454e",
     "mutations": {
       "defaults": [
         {
@@ -44500,6 +45124,32 @@
           },
           "ref": {
             "entry": "Membership",
+            "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "MessageTemplate",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "MessageTemplate",
             "field": "updatedAt",
             "namespace": "public"
           }
@@ -45804,6 +46454,17 @@
           "ref": {
             "entry": "WeeklyCommitment",
             "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "WhatsappNotice",
+            "field": "id",
             "namespace": "public"
           }
         }

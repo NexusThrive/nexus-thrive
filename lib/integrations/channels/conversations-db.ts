@@ -1,6 +1,7 @@
 import { findOrCreateContact } from "@/lib/business/customers/contacts-db";
 import { decryptCredentials } from "@/lib/integrations/providers/connections";
 import { db } from "@/prisma/db";
+import { isOptOut } from "./notices";
 import { manualLink, messagingWindow, sendText, whatsappHandle, type InboundMessage, type StatusUpdate, type WhatsappCredentials } from "./whatsapp-cloud";
 
 /**
@@ -37,6 +38,8 @@ export async function ingestInbound(tenantId: string, connectionId: string, m: I
       await tx.orm.public.BusinessConversation.where({ tenantId, id: convo.id }).update({ unread: convo.unread + 1, lastMessageAt: at, lastInboundAt: at, status: "OPEN", ...(convo.customerId || !contact ? {} : { customerId: contact.id }), ...(m.name && !convo.contactName ? { contactName: m.name } : {}) });
     }
     await tx.orm.public.BusinessMessage.create({ tenantId, conversationId: convo.id, direction: "IN", body: m.body, status: "RECEIVED", externalId: m.externalId });
+    // Escribir «BAJA» detiene los avisos: queda registrado en la ficha y ningún envío le sale desde ese momento.
+    if (isOptOut(m.body) && (convo.customerId ?? contact?.id)) await tx.orm.public.Customer.where({ tenantId, id: (convo.customerId ?? contact!.id) }).update({ optOutAt: instant(m.at) });
     return { stored: true, conversationId: convo.id };
   });
 }

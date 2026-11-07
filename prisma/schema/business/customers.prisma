@@ -12,6 +12,7 @@
 /// - `ownerId`: Integrante del equipo responsable (TenantMember.id).
 /// - `phoneNorm`: Teléfono canónico (57 + 10 dígitos) para encontrar a la misma persona venga de donde venga.
 /// - `consentAt`: Cuándo aceptó que lo contacten (tratamiento de datos); vacío = sin registro.
+/// - `optOutAt`: Cuándo pidió no recibir más avisos por WhatsApp (BAJA); desde entonces ningún envío le sale.
 /// - `partyId`: Tercero único al que pertenece este cliente (la misma persona o empresa, con sus
 ///   roles).
 /// - `@@index([tenantId,`: Un código o una tarjeta identifica a UN socio del negocio (DATA-04).
@@ -36,6 +37,7 @@ model Customer {
   ownerId    String?
   phoneNorm  String?
   consentAt  DateTime?
+  optOutAt   DateTime?
   createdAt DateTime @default(now())
   updatedAt temporal.updatedAt()
 

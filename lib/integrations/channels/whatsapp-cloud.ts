@@ -91,6 +91,22 @@ export async function sendText(credentials: Pick<WhatsappCredentials, "phoneNumb
   }
 }
 
+/** Envía una plantilla aprobada (la única forma de escribir fuera de la ventana de 24 h). Los parámetros van en el orden de las variables. */
+export async function sendTemplate(credentials: Pick<WhatsappCredentials, "phoneNumberId" | "accessToken">, to: string, template: { name: string; language: string; params: string[] }): Promise<SendResult> {
+  try {
+    const r = await fetch(`${GRAPH}/${encodeURIComponent(credentials.phoneNumberId)}/messages`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${credentials.accessToken}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ messaging_product: "whatsapp", to, type: "template", template: { name: template.name, language: { code: template.language }, components: template.params.length ? [{ type: "body", parameters: template.params.map((text) => ({ type: "text", text })) }] : [] } }),
+      signal: AbortSignal.timeout(10_000),
+    });
+    const j = (await r.json().catch(() => ({}))) as { messages?: { id: string }[]; error?: { message?: string } };
+    return r.ok ? { delivery: "sent", externalId: j.messages?.[0]?.id ?? null } : { delivery: "failed", error: j.error?.message ?? `HTTP ${r.status}` };
+  } catch (e) {
+    return { delivery: "failed", error: (e as Error).message };
+  }
+}
+
 /** Adaptador de la conexión: comprueba con Meta que el token sirve para ese número. El webhook de mensajes lo atiende `webhook-handler.ts`. */
 export const whatsappCloud: ProviderAdapter = {
   provider: "whatsapp_cloud",

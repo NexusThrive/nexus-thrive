@@ -57,3 +57,58 @@ model BusinessMessage {
   @@index([tenantId, conversationId, createdAt])
   @@rls
 }
+
+/// Plantilla de mensaje del negocio (HU-whatsapp-negocio-02): el texto de un aviso con variables ({{nombre}}, {{codigo}}…). Fuera de la
+/// ventana de 24 h WhatsApp solo admite plantillas APROBADAS por Meta; la aprobación se hace en Meta y aquí se registra su estado.
+///
+/// Campos:
+/// - `key`: Identificador estable por negocio (`pedido_pagado`).
+/// - `event`: Hecho que dispara el aviso (`order.paid`, `cart.abandoned`…); vacío = solo manual.
+/// - `metaName`, `metaStatus`: Nombre de la plantilla en Meta y su estado: NONE | PENDING | APPROVED | REJECTED.
+model MessageTemplate {
+  id         String   @id @default(uuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  key        String
+  title      String
+  body       String
+  event      String?
+  metaName   String?
+  metaStatus String   @default("NONE")
+  language   String   @default("es")
+  enabled    Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  temporal.updatedAt()
+
+  @@unique([tenantId, key])
+  @@index([tenantId, event])
+  @@rls
+}
+
+/// Aviso automático a un contacto (HU-whatsapp-negocio-02). Nace en la misma transacción que el hecho que lo causa y se procesa después,
+/// aplicando las reglas de Meta y del consentimiento. Nunca se marca enviado lo que no salió.
+///
+/// Campos:
+/// - `status`: PENDING | SENT | MANUAL (listo para enviar con un toque) | BLOCKED (baja del contacto) | FAILED.
+/// - `reason`: Por qué quedó MANUAL, BLOCKED o FAILED.
+/// - `sourceId`: Evento (`OutboxEvent.id`) que lo originó; con `event` es único por negocio, así un mismo hecho avisa una sola vez.
+model WhatsappNotice {
+  id          String    @id @default(uuid())
+  tenantId    String
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customerId  String
+  templateKey String
+  event       String
+  variables   Json
+  status      String    @default("PENDING")
+  reason      String?
+  messageId   String?
+  sourceId    String?
+  createdAt   DateTime  @default(now())
+  processedAt DateTime?
+
+  @@unique([tenantId, event, sourceId])
+  @@index([tenantId, status, createdAt])
+  @@index([tenantId, customerId])
+  @@rls
+}

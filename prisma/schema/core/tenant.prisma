@@ -235,6 +235,8 @@ model Tenant {
   leadForms          LeadForm[]
   businessConversations BusinessConversation[]
   businessMessages   BusinessMessage[]
+  messageTemplates   MessageTemplate[]
+  whatsappNotices    WhatsappNotice[]
   salesQuotes        SalesQuote[]
   salesQuoteLines    SalesQuoteLine[]
   reconciliationRuns ReconciliationRun[]

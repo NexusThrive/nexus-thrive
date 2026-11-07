@@ -3,6 +3,7 @@ import { markAbandonedOrders } from "@/lib/business/store/store-db";
 import { sendWeeklyReports } from "@/lib/business/presence/pillars-db";
 import { dispatchPending } from "@/lib/core/events/dispatcher";
 import { presenceSubscriber } from "@/lib/business/presence/subscribers";
+import { noticeSubscriber } from "@/lib/integrations/channels/notices-db";
 import { processPendingProviderEvents } from "@/lib/integrations/providers/inbound";
 
 /**
@@ -21,5 +22,5 @@ export async function GET(request: Request) {
   const reprocessed = await processPendingProviderEvents();
   const abandoned = await markAbandonedOrders();
   const weekly = await sendWeeklyReports(); // una vez por semana por negocio; las siguientes llamadas no repiten
-  return Response.json({ ...(await dispatchPending({ subscribers: [presenceSubscriber] })), providerEventsReprocessed: reprocessed, abandonedCarts: abandoned, weeklyReports: weekly });
+  return Response.json({ ...(await dispatchPending({ subscribers: [presenceSubscriber, noticeSubscriber] })), providerEventsReprocessed: reprocessed, abandonedCarts: abandoned, weeklyReports: weekly });
 }
