@@ -278,7 +278,7 @@ export default function CustomerTable({
 
       {/* Barra de selección múltiple (solo archivados) */}
       {selectable && selected.size > 0 ? (
-        <div className="flex flex-wrap items-center gap-2 border-t border-border bg-accent-subtle/40 px-5 py-1.5">
+        <div className="flex flex-wrap items-center gap-2 bg-accent-subtle/40 px-5 py-1.5">
           <p className="text-sm font-medium text-foreground" aria-live="polite">
             {selected.size} {selected.size === 1 ? "seleccionado" : "seleccionados"}
           </p>
@@ -316,7 +316,7 @@ export default function CustomerTable({
       {/* ---------- Estado vacío ---------- */}
       {rows.length === 0 ? (
         <EmptyState
-          className="items-center border-t border-border text-center"
+          className="items-center text-center"
           title={query ? `Sin coincidencias para «${query}»` : isArchivedView ? `No hay ${customersLabel} archivados` : `Aún no tienes ${customersLabel}`}
           description={query ? "Prueba con otro término o limpia la búsqueda." : isArchivedView ? `Los ${customersLabel} que archives aparecen aquí.` : "Registra el primero para llevar su historial, sus citas y sus cobros."}
           action={!query && !isArchivedView ? <button type="button" onClick={() => quick.open("new-customer")} className={buttonVariants({ variant: "accent", size: "sm", className: "h-[34px]" })}><Plus aria-hidden="true" className="size-4" /> Nuevo</button> : undefined}
@@ -324,7 +324,7 @@ export default function CustomerTable({
       ) : (
         <>
           {/* ---------- Tabla (desktop) ---------- */}
-          <div className="hidden overflow-x-auto border-t border-border sm:block">
+          <div className="hidden overflow-x-auto sm:block">
             <table className="w-full text-left text-sm">
               <caption className="sr-only">
                 {terms.customers} de {tenantSlug}
@@ -476,7 +476,7 @@ export default function CustomerTable({
               ))}
             </ul>
           ) : (
-            <ul className="divide-y divide-border border-t border-border sm:hidden">
+            <ul className="divide-y divide-border sm:hidden">
               <li className="px-5 py-2 text-xs text-muted-foreground">Desliza una fila a la izquierda para cobrar o recordar.</li>
               {rows.map((row) => {
                 const digits = row.phone.replace(/\D/g, "");
