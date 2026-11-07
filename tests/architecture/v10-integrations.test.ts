@@ -13,10 +13,10 @@ import { classify, loadJson } from "../../scripts/check-layers.mjs";
 
 const ROOT = join(import.meta.dirname, "..", "..");
 const layers = loadJson("docs/architecture/layers.json");
-const MODULOS = ["einvoice", "google", "maps", "providers"];
+const MODULOS = ["channels", "einvoice", "google", "maps", "providers"];
 
 describe("Etapa I · lib/integrations", () => {
-  test("contiene exactamente los cuatro módulos", () => {
+  test("contiene exactamente los cinco módulos", () => {
     expect(readdirSync(join(ROOT, "lib/integrations")).sort()).toEqual(MODULOS);
   });
 
@@ -32,6 +32,6 @@ describe("Etapa I · lib/integrations", () => {
   });
 
   test("layers.json no conserva unidades de las carpetas de origen", () => {
-    for (const u of layers.units) expect(u.path, u.path).not.toMatch(/^lib\/(providers|einvoice|google|maps)\b/);
+    for (const u of layers.units) expect(u.path, u.path).not.toMatch(/^lib\/(providers|einvoice|google|maps|channels)\b/);
   });
 });

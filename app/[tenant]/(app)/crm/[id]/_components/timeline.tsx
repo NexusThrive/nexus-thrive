@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { BadgeCheck, CheckSquare, FileText, Package, StickyNote, Target, Wallet } from "lucide-react";
+import { BadgeCheck, CheckSquare, FileText, MessageCircle, Package, StickyNote, Target, Wallet } from "lucide-react";
 import type { CustomerTimelineEvent } from "@/lib/core/tenancy/db";
 import { formatCurrency, formatDateTime } from "@/lib/foundation/format";
 import { cn } from "@/lib/cn";
@@ -13,6 +13,7 @@ const EVENT_ICON: Record<CustomerTimelineEvent["type"], LucideIcon> = {
   order: Package,
   task: CheckSquare,
   document: FileText,
+  message: MessageCircle,
 };
 
 const EVENT_TONE: Record<CustomerTimelineEvent["type"], string> = {
@@ -24,6 +25,7 @@ const EVENT_TONE: Record<CustomerTimelineEvent["type"], string> = {
   order: "bg-success/10 text-success",
   task: "bg-muted text-muted-foreground",
   document: "bg-muted text-muted-foreground",
+  message: "bg-success/10 text-success",
 };
 
 /**

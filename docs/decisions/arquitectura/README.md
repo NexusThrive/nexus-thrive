@@ -15,6 +15,7 @@ consecuencias.
 | [0006](0006-servicio-de-dinero.md) | Servicio transaccional único para el dinero | Propuesta |
 | [0007](0007-soluciones-sobre-plataforma.md) | Soluciones especializadas sobre una plataforma de motores compartidos | Aceptada (2026-11-06) |
 | [0008](0008-payments-y-treasury.md) | Payments y Treasury: obligaciones, aplicaciones, cuentas y liquidaciones | Aceptada (2026-11-06) |
+| [0010](0010-whatsapp-por-negocio.md) | WhatsApp Business propio de cada negocio | Aceptada (2026-11-07) |
 
 Para aprobar una decisión: cambiar su estado a **Aceptada**, con fecha y
 responsable, y enlazar el PR que la implementa.

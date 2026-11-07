@@ -1,0 +1,59 @@
+// use prisma-8
+
+/// Conversación de un negocio con un contacto por un canal propio (HU-whatsapp-negocio-01, ADR 0010). NO es la bandeja de Nexus
+/// (`InboxConversation`, el soporte de la plataforma): aquí `tenantId` es obligatorio y la unicidad incluye el negocio, así dos negocios
+/// con el mismo contacto ven conversaciones separadas.
+///
+/// Campos:
+/// - `channel`: WHATSAPP.
+/// - `connectionId`: Conexión (`ExternalConnection`) por la que se habla.
+/// - `contactHandle`: Teléfono canónico del contacto (57 + 10 dígitos).
+/// - `customerId`: Ficha del contacto único a la que pertenece.
+/// - `lastInboundAt`: Último mensaje del contacto; abre la ventana de 24 h de WhatsApp.
+model BusinessConversation {
+  id            String    @id @default(uuid())
+  tenantId      String
+  tenant        Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  channel       String    @default("WHATSAPP")
+  connectionId  String
+  contactHandle String
+  contactName   String?
+  customerId    String?
+  status        String    @default("OPEN")
+  unread        Int       @default(0)
+  lastMessageAt DateTime  @default(now())
+  lastInboundAt DateTime?
+  createdAt     DateTime  @default(now())
+  messages      BusinessMessage[]
+
+  @@unique([tenantId, channel, contactHandle])
+  @@index([tenantId, status, lastMessageAt])
+  @@index([tenantId, customerId])
+  @@rls
+}
+
+/// Mensaje de una conversación del negocio.
+///
+/// Campos:
+/// - `direction`: IN (del contacto) | OUT (del negocio).
+/// - `status`: RECEIVED | SENT | DELIVERED | READ | FAILED | MANUAL. MANUAL = no salió por la API (fuera de ventana o sin conexión):
+///   quedó listo para enviar con un toque; nunca se marca enviado lo que no salió.
+/// - `externalId`: Id del mensaje en Meta; único por negocio, así un aviso repetido no duplica.
+model BusinessMessage {
+  id             String               @id @default(uuid())
+  tenantId       String
+  tenant         Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  conversationId String
+  conversation   BusinessConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  direction      String
+  body           String
+  status         String               @default("RECEIVED")
+  externalId     String?
+  error          String?
+  createdById    String?
+  createdAt      DateTime             @default(now())
+
+  @@unique([tenantId, externalId])
+  @@index([tenantId, conversationId, createdAt])
+  @@rls
+}

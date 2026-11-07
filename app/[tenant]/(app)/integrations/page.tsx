@@ -15,6 +15,7 @@ import { listConnections, type ConnectionRow } from "@/lib/integrations/provider
 import { adapterFor } from "@/lib/integrations/providers/registry";
 import { gatewayAccount } from "@/lib/domains/finance/payments/accounts-db";
 import { getAppBaseUrl } from "@/lib/foundation/app-url";
+import { WhatsappConnection } from "./_components/whatsapp-connection";
 import { WompiConnection } from "./_components/wompi-connection";
 
 const MATURITY: Record<CapabilityStatus, Maturity> = { READY: "Disponible", BETA: "En prueba", PLANNED: "En plan" };
@@ -95,7 +96,23 @@ export default async function IntegrationsPage({ params }: { params: Promise<{ t
   }
 
   if (active.has("whatsapp")) {
-    cards.push({ id: "whatsapp", name: "WhatsApp", kind: "Canales", description: "Envía mensajes desde plantillas: se abre la conversación en WhatsApp con el texto listo. Todavía no está conectado a la API de WhatsApp Business.", state: "manual", maturity: maturity("whatsapp"), href: `${base}/whatsapp`, actionLabel: "Abrir WhatsApp" });
+    const wa = rows.find((r) => r.kind === "MESSAGING" && r.provider === "whatsapp_cloud" && r.status !== "DISCONNECTED") ?? null;
+    cards.push({
+      id: wa?.id ?? "whatsapp",
+      name: "WhatsApp Business",
+      kind: "Canales",
+      description: wa
+        ? "Envía y recibe por tu propio número desde Nexus. Fuera de las 24 h desde su último mensaje, el aviso queda listo para enviarlo con un toque."
+        : "Conecta tu número de WhatsApp Business para enviar y recibir desde Nexus. Mientras tanto, envías con un toque por wa.me con el texto ya escrito.",
+      state: wa ? stateOf(wa) : "manual",
+      maturity: maturity("whatsapp"),
+      environment: undefined,
+      lastChecked: wa ? checked(wa.lastCheckedAt) : undefined,
+      error: wa?.status === "ERROR" ? errorText("WhatsApp", wa.lastError) : null,
+      href: `${base}/conversaciones`,
+      actionLabel: "Abrir conversaciones",
+      extra: <WhatsappConnection slug={tenant} connection={wa ? { id: wa.id, connected: wa.status === "CONNECTED" } : null} webhookUrl={wa ? `${appUrl}/api/webhooks/channels/whatsapp/${wa.id}` : null} />,
+    });
   }
 
   const dataManagers = joinRoles(rolesThatCan("data.exchange"));

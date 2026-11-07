@@ -46,9 +46,9 @@ Dominios especializados con reglas propias (hoy finance).
 
 ### `lib/integrations`
 
-Adaptadores hacia proveedores externos (pagos, facturación electrónica, Google, mapas).
+Adaptadores hacia proveedores externos (pagos, WhatsApp Business por negocio, facturación electrónica, Google, mapas).
 
-- **Módulos** (archivos): `einvoice/` (6) · `google/` (2) · `maps/` (2) · `providers/` (6)
+- **Módulos** (archivos): `channels/` (3) · `einvoice/` (6) · `google/` (2) · `maps/` (2) · `providers/` (6)
 
 ### `lib/industry`
 

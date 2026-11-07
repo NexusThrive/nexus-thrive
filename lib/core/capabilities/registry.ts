@@ -235,7 +235,10 @@ export const CAPABILITIES = [
     status: "READY",
     priceUsd: 0,
     general: true,
-    nav: [{ href: "/whatsapp", icon: MessageCircle, label: () => "WhatsApp" }],
+    nav: [
+      { href: "/whatsapp", icon: MessageCircle, label: () => "WhatsApp" },
+      { href: "/conversaciones", icon: MessageCircle, label: () => "Conversaciones" },
+    ],
   },
   {
     id: "memberships",

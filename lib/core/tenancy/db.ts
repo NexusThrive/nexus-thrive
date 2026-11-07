@@ -153,7 +153,7 @@ export type Customer360Note = {
  */
 export type CustomerTimelineEvent = {
   id: string;
-  type: "payment" | "membership" | "note" | "opportunity" | "quote" | "order" | "task" | "document";
+  type: "payment" | "membership" | "note" | "opportunity" | "quote" | "order" | "task" | "document" | "message";
   /** ISO (Temporal.Instant serializado); la UI formatea en America/Bogota. */
   date: string;
   title: string;

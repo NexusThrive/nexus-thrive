@@ -7,19 +7,21 @@ import { db } from "@/prisma/db";
 /**
  * Lo comercial de un cliente para su ficha única (HU-customer360-01): oportunidades, cotizaciones, pedidos, tareas y documentos,
  * como eventos de la misma línea de tiempo que los pagos, las membresías y las notas. Cada fuente se pide con LÍMITE en el servidor
- * y todo por `tenantId` + `customerId`. Las conversaciones llegan con el WhatsApp propio del negocio (etapa 2d).
+ * y todo por `tenantId` + `customerId`. Las conversaciones salen del WhatsApp propio del negocio (ADR 0010).
  */
 const PER_SOURCE = 30;
 const ORDER_TEXT: Record<string, string> = { PENDING_PAYMENT: "Por pagar", PAID: "Pagado", CANCELED: "Cancelado", ABANDONED: "Abandonado" };
 
 export async function commercialTimeline(tenantId: string, customerId: string): Promise<CustomerTimelineEvent[]> {
-  const [opps, quotes, orders, tasks, docs] = await Promise.all([
+  const [opps, quotes, orders, tasks, docs, convos] = await Promise.all([
     db.orm.public.Opportunity.where({ tenantId, customerId }).orderBy((o) => o.createdAt.desc()).limit(PER_SOURCE).all(),
     db.orm.public.SalesQuote.where({ tenantId, customerId }).orderBy((q) => q.createdAt.desc()).limit(PER_SOURCE).all(),
     db.orm.public.StoreOrder.where({ tenantId, customerId }).orderBy((o) => o.createdAt.desc()).limit(PER_SOURCE).all(),
     db.orm.public.Task.where({ tenantId, customerId }).orderBy((t) => t.createdAt.desc()).limit(PER_SOURCE).all(),
     db.orm.public.Invoice.where({ tenantId, customerId }).orderBy((i) => i.createdAt.desc()).limit(PER_SOURCE).all(),
+    db.orm.public.BusinessConversation.where({ tenantId, customerId }).limit(5).all(),
   ]);
+  const messages = convos.length ? await db.orm.public.BusinessMessage.where({ tenantId }).where((m) => m.conversationId.in(convos.map((c) => c.id))).orderBy((m) => m.createdAt.desc()).limit(PER_SOURCE).all() : [];
   const out: CustomerTimelineEvent[] = [];
   for (const o of opps) {
     out.push({ id: `opp-${o.id}`, type: "opportunity", date: String(o.createdAt), title: `Oportunidad · ${o.interest}`, description: o.status === "LOST" && o.lostReason ? `Perdida: ${o.lostReason}` : o.nextAction ? `Siguiente: ${o.nextAction}` : undefined, amount: o.estimatedValue == null ? undefined : toNumber(o.estimatedValue), status: o.status === "OPEN" ? STAGE_TEXT[o.stage as OpportunityStage] : o.status === "WON" ? "Ganada" : "Perdida" });
@@ -35,6 +37,9 @@ export async function commercialTimeline(tenantId: string, customerId: string): 
   }
   for (const d of docs) {
     out.push({ id: `doc-${d.id}`, type: "document", date: String(d.createdAt), title: `${d.kind === "BILL" ? "Cuenta de cobro" : d.kind === "SALE" ? "Venta" : "Documento"} N.º ${d.number}`, amount: toNumber(d.total), status: d.status === "PAID" ? "Pagado" : d.status === "VOID" ? "Anulado" : "Emitido" });
+  }
+  for (const m of messages) {
+    out.push({ id: `msg-${m.id}`, type: "message", date: String(m.createdAt), title: m.direction === "IN" ? "WhatsApp · escribió" : "WhatsApp · le respondiste", description: m.body.slice(0, 200), status: m.direction === "OUT" && m.status === "MANUAL" ? "Pendiente de enviar" : undefined });
   }
   return out;
 }

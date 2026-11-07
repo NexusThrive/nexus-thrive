@@ -1,0 +1,602 @@
+[
+  {
+    "id": "table.BusinessConversation",
+    "label": "Create table \"BusinessConversation\"",
+    "summary": "Creates table \"BusinessConversation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "BusinessConversation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"BusinessConversation\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BusinessConversation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"BusinessConversation\"",
+        "sql": "CREATE TABLE \"public\".\"BusinessConversation\" (\n  \"channel\" text DEFAULT 'WHATSAPP' NOT NULL,\n  \"connectionId\" text NOT NULL,\n  \"contactHandle\" text NOT NULL,\n  \"contactName\" text,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"customerId\" text,\n  \"id\" text NOT NULL,\n  \"lastInboundAt\" timestamptz,\n  \"lastMessageAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"status\" text DEFAULT 'OPEN' NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"unread\" int4 DEFAULT 0 NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"BusinessConversation\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BusinessConversation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.BusinessMessage",
+    "label": "Create table \"BusinessMessage\"",
+    "summary": "Creates table \"BusinessMessage\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "BusinessMessage"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"BusinessMessage\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BusinessMessage\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"BusinessMessage\"",
+        "sql": "CREATE TABLE \"public\".\"BusinessMessage\" (\n  \"body\" text NOT NULL,\n  \"conversationId\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"createdById\" text,\n  \"direction\" text NOT NULL,\n  \"error\" text,\n  \"externalId\" text,\n  \"id\" text NOT NULL,\n  \"status\" text DEFAULT 'RECEIVED' NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"BusinessMessage\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BusinessMessage\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.BusinessConversation.BusinessConversation_tenantId_channel_contactHandle_key",
+    "label": "Add unique constraint on \"BusinessConversation\" (tenantId, channel, contactHandle)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "BusinessConversation_tenantId_channel_contactHandle_key",
+        "table": "BusinessConversation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"BusinessConversation_tenantId_channel_contactHandle_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BusinessConversation_tenantId_channel_contactHandle_key",
+          "public",
+          "\"public\".\"BusinessConversation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"BusinessConversation_tenantId_channel_contactHandle_key\"",
+        "sql": "ALTER TABLE \"public\".\"BusinessConversation\" ADD CONSTRAINT \"BusinessConversation_tenantId_channel_contactHandle_key\" UNIQUE (\"tenantId\", \"channel\", \"contactHandle\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"BusinessConversation_tenantId_channel_contactHandle_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BusinessConversation_tenantId_channel_contactHandle_key",
+          "public",
+          "\"public\".\"BusinessConversation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.BusinessMessage.BusinessMessage_tenantId_externalId_key",
+    "label": "Add unique constraint on \"BusinessMessage\" (tenantId, externalId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "BusinessMessage_tenantId_externalId_key",
+        "table": "BusinessMessage"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"BusinessMessage_tenantId_externalId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BusinessMessage_tenantId_externalId_key",
+          "public",
+          "\"public\".\"BusinessMessage\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"BusinessMessage_tenantId_externalId_key\"",
+        "sql": "ALTER TABLE \"public\".\"BusinessMessage\" ADD CONSTRAINT \"BusinessMessage_tenantId_externalId_key\" UNIQUE (\"tenantId\", \"externalId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"BusinessMessage_tenantId_externalId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BusinessMessage_tenantId_externalId_key",
+          "public",
+          "\"public\".\"BusinessMessage\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.BusinessConversation.BusinessConversation_tenantId_customerId_idx_302ad259",
+    "label": "Create index \"BusinessConversation_tenantId_customerId_idx_302ad259\" on \"BusinessConversation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "BusinessConversation_tenantId_customerId_idx_302ad259",
+        "table": "BusinessConversation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"BusinessConversation_tenantId_customerId_idx_302ad259\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BusinessConversation_tenantId_customerId_idx_302ad259\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"BusinessConversation_tenantId_customerId_idx_302ad259\"",
+        "sql": "CREATE INDEX \"BusinessConversation_tenantId_customerId_idx_302ad259\" ON \"public\".\"BusinessConversation\" (\"tenantId\", \"customerId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"BusinessConversation_tenantId_customerId_idx_302ad259\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BusinessConversation_tenantId_customerId_idx_302ad259\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.BusinessConversation.BusinessConversation_tenantId_idx_c93ed4f1",
+    "label": "Create index \"BusinessConversation_tenantId_idx_c93ed4f1\" on \"BusinessConversation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "BusinessConversation_tenantId_idx_c93ed4f1",
+        "table": "BusinessConversation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"BusinessConversation_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BusinessConversation_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"BusinessConversation_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"BusinessConversation_tenantId_idx_c93ed4f1\" ON \"public\".\"BusinessConversation\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"BusinessConversation_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BusinessConversation_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.BusinessConversation.BusinessConversation_tenantId_status_lastMessageAt_idx_bee5e13b",
+    "label": "Create index \"BusinessConversation_tenantId_status_lastMessageAt_idx_bee5e13b\" on \"BusinessConversation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "BusinessConversation_tenantId_status_lastMessageAt_idx_bee5e13b",
+        "table": "BusinessConversation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"BusinessConversation_tenantId_status_lastMessageAt_idx_bee5e13b\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BusinessConversation_tenantId_status_lastMessageAt_idx_bee5e13b\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"BusinessConversation_tenantId_status_lastMessageAt_idx_bee5e13b\"",
+        "sql": "CREATE INDEX \"BusinessConversation_tenantId_status_lastMessageAt_idx_bee5e13b\" ON \"public\".\"BusinessConversation\" (\"tenantId\", \"status\", \"lastMessageAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"BusinessConversation_tenantId_status_lastMessageAt_idx_bee5e13b\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BusinessConversation_tenantId_status_lastMessageAt_idx_bee5e13b\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.BusinessMessage.BusinessMessage_conversationId_idx_669215a6",
+    "label": "Create index \"BusinessMessage_conversationId_idx_669215a6\" on \"BusinessMessage\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "BusinessMessage_conversationId_idx_669215a6",
+        "table": "BusinessMessage"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"BusinessMessage_conversationId_idx_669215a6\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BusinessMessage_conversationId_idx_669215a6\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"BusinessMessage_conversationId_idx_669215a6\"",
+        "sql": "CREATE INDEX \"BusinessMessage_conversationId_idx_669215a6\" ON \"public\".\"BusinessMessage\" (\"conversationId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"BusinessMessage_conversationId_idx_669215a6\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BusinessMessage_conversationId_idx_669215a6\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.BusinessMessage.BusinessMessage_tenantId_conversationId_createdAt_idx_3e214dca",
+    "label": "Create index \"BusinessMessage_tenantId_conversationId_createdAt_idx_3e214dca\" on \"BusinessMessage\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "BusinessMessage_tenantId_conversationId_createdAt_idx_3e214dca",
+        "table": "BusinessMessage"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"BusinessMessage_tenantId_conversationId_createdAt_idx_3e214dca\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BusinessMessage_tenantId_conversationId_createdAt_idx_3e214dca\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"BusinessMessage_tenantId_conversationId_createdAt_idx_3e214dca\"",
+        "sql": "CREATE INDEX \"BusinessMessage_tenantId_conversationId_createdAt_idx_3e214dca\" ON \"public\".\"BusinessMessage\" (\"tenantId\", \"conversationId\", \"createdAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"BusinessMessage_tenantId_conversationId_createdAt_idx_3e214dca\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BusinessMessage_tenantId_conversationId_createdAt_idx_3e214dca\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.BusinessMessage.BusinessMessage_tenantId_idx_c93ed4f1",
+    "label": "Create index \"BusinessMessage_tenantId_idx_c93ed4f1\" on \"BusinessMessage\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "BusinessMessage_tenantId_idx_c93ed4f1",
+        "table": "BusinessMessage"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"BusinessMessage_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BusinessMessage_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"BusinessMessage_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"BusinessMessage_tenantId_idx_c93ed4f1\" ON \"public\".\"BusinessMessage\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"BusinessMessage_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BusinessMessage_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.BusinessConversation.BusinessConversation_tenantId_fkey",
+    "label": "Add foreign key \"BusinessConversation_tenantId_fkey\" on \"BusinessConversation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "BusinessConversation_tenantId_fkey",
+        "table": "BusinessConversation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"BusinessConversation_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BusinessConversation_tenantId_fkey",
+          "public",
+          "\"public\".\"BusinessConversation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"BusinessConversation_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"BusinessConversation\"\nADD CONSTRAINT \"BusinessConversation_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"BusinessConversation_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BusinessConversation_tenantId_fkey",
+          "public",
+          "\"public\".\"BusinessConversation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.BusinessMessage.BusinessMessage_tenantId_fkey",
+    "label": "Add foreign key \"BusinessMessage_tenantId_fkey\" on \"BusinessMessage\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "BusinessMessage_tenantId_fkey",
+        "table": "BusinessMessage"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"BusinessMessage_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BusinessMessage_tenantId_fkey",
+          "public",
+          "\"public\".\"BusinessMessage\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"BusinessMessage_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"BusinessMessage\"\nADD CONSTRAINT \"BusinessMessage_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"BusinessMessage_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BusinessMessage_tenantId_fkey",
+          "public",
+          "\"public\".\"BusinessMessage\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.BusinessMessage.BusinessMessage_conversationId_fkey",
+    "label": "Add foreign key \"BusinessMessage_conversationId_fkey\" on \"BusinessMessage\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "BusinessMessage_conversationId_fkey",
+        "table": "BusinessMessage"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"BusinessMessage_conversationId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BusinessMessage_conversationId_fkey",
+          "public",
+          "\"public\".\"BusinessMessage\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"BusinessMessage_conversationId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"BusinessMessage\"\nADD CONSTRAINT \"BusinessMessage_conversationId_fkey\"\nFOREIGN KEY (\"conversationId\")\nREFERENCES \"public\".\"BusinessConversation\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"BusinessMessage_conversationId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BusinessMessage_conversationId_fkey",
+          "public",
+          "\"public\".\"BusinessMessage\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.BusinessConversation",
+    "label": "Enable row-level security on \"BusinessConversation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "BusinessConversation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"BusinessConversation\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "BusinessConversation"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"BusinessConversation\"",
+        "sql": "ALTER TABLE \"public\".\"BusinessConversation\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"BusinessConversation\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "BusinessConversation"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.BusinessMessage",
+    "label": "Enable row-level security on \"BusinessMessage\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "BusinessMessage"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"BusinessMessage\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "BusinessMessage"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"BusinessMessage\"",
+        "sql": "ALTER TABLE \"public\".\"BusinessMessage\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"BusinessMessage\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "BusinessMessage"
+        ]
+      }
+    ]
+  }
+]

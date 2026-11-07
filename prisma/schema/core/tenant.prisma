@@ -233,6 +233,8 @@ model Tenant {
   opportunities      Opportunity[]
   tasks              Task[]
   leadForms          LeadForm[]
+  businessConversations BusinessConversation[]
+  businessMessages   BusinessMessage[]
   salesQuotes        SalesQuote[]
   salesQuoteLines    SalesQuoteLine[]
   reconciliationRuns ReconciliationRun[]

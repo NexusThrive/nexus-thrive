@@ -23,7 +23,7 @@ const PLATFORM_DIRS = ["lib/platform/admin/", "lib/platform/team/", "lib/platfor
  * Procesos de plataforma que por diseño cruzan negocios: el despachador del
  * outbox lee eventos y entregas de todos y luego opera por id de filas ya leídas.
  */
-const PLATFORM_FILES = ["lib/core/events/dispatcher.ts", "lib/integrations/providers/inbound.ts"];
+const PLATFORM_FILES = ["lib/core/events/dispatcher.ts", "lib/integrations/providers/inbound.ts", "lib/integrations/channels/webhook-handler.ts"];
 
 const SCOPED_ELSEWHERE: { file: string; model: string; why: string }[] = [
   { file: "lib/core/files/stored-files.ts", model: "Attachment", why: "Se pide por id desde una URL; después se exige membresía del negocio del archivo." },
