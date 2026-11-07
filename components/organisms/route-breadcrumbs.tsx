@@ -24,8 +24,6 @@ export function RouteBreadcrumbs() {
   // La ficha de un contacto pone su propia miga de registro («Atrás» · «Clientes › María Pérez»).
   if (deeper && relative.startsWith("/contactos/")) return null;
   const crumbs: Crumb[] = [
-    { label: "Inicio", href: hrefFor("") },
-    { label: group.label },
     { label: item.label, href: hrefFor(item.href) },
     ...(deeper ? [{ label: "Detalle" }] : []),
   ];
