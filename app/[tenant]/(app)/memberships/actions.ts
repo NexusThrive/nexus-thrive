@@ -75,7 +75,7 @@ async function actionContext(
 /** Revalida el módulo de membresías, Finanzas y el dashboard juntos. */
 function revalidateMembershipViews(tenantSlug: string): void {
   revalidatePath(`/${tenantSlug}/memberships`);
-  revalidatePath(`/${tenantSlug}/finance`);
+  revalidatePath(`/${tenantSlug}/finanzas`);
   revalidatePath(`/${tenantSlug}`);
 }
 
@@ -298,8 +298,8 @@ export async function saveMembershipTypeAction(
   );
 
   revalidatePath(`/${tenantSlug}/memberships`);
-  revalidatePath(`/${tenantSlug}/crm`);
-  revalidatePath(`/${tenantSlug}/inventory`);
+  revalidatePath(`/${tenantSlug}/contactos`);
+  revalidatePath(`/${tenantSlug}/inventario/productos`);
   revalidatePath(`/${tenantSlug}`);
   return { ok: true, message: id ? "Tipo de membresía guardado" : "Tipo de membresía creado" };
 }

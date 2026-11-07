@@ -57,7 +57,7 @@ export default async function IntegrationsPage({ params }: { params: Promise<{ t
 
   if (active.has("online_payments")) {
     const payments = rows.filter((r) => r.kind === "PAYMENT" && r.status !== "DISCONNECTED");
-    const base0 = { kind: "Cobros en línea", maturity: maturity("online_payments"), href: `${base}/cobros`, actionLabel: "Abrir Cobros en línea" } as const;
+    const base0 = { kind: "Cobros en línea", maturity: maturity("online_payments"), href: `${base}/ventas/cobros`, actionLabel: "Abrir Cobros en línea" } as const;
     const wompi = payments.find((r) => r.provider === "wompi") ?? null;
     // Wompi siempre tiene su ficha: sin conexión, el negocio cobra por transferencia o efectivo y no se bloquea nada.
     cards.push({
@@ -81,7 +81,7 @@ export default async function IntegrationsPage({ params }: { params: Promise<{ t
 
   if (active.has("einvoicing")) {
     const fiscal = rows.filter((r) => r.kind === "EINVOICE");
-    const base0 = { kind: "Factura electrónica", maturity: maturity("einvoicing"), href: `${base}/factura-electronica`, actionLabel: "Abrir Factura electrónica" } as const;
+    const base0 = { kind: "Factura electrónica", maturity: maturity("einvoicing"), href: `${base}/finanzas/facturacion-electronica`, actionLabel: "Abrir Factura electrónica" } as const;
     if (fiscal.length === 0)
       cards.push({ ...base0, id: "einvoice-none", name: "Proveedor de factura electrónica", description: "Aún no conectas un proveedor. La factura electrónica requiere uno habilitado ante la DIAN.", state: "disconnected", lastChecked: "Sin verificar" });
     for (const r of fiscal) {
@@ -92,7 +92,7 @@ export default async function IntegrationsPage({ params }: { params: Promise<{ t
 
   if (active.has("google")) {
     const state: ConnectionState = !listing.connected ? "disconnected" : listing.status === "ERROR" ? "attention" : "connected";
-    cards.push({ id: "google", name: "Ficha de Google", kind: "Presencia en línea", description: "Trae los datos de tu ficha de Google para compararlos con los de tu negocio.", state, maturity: maturity("google"), lastChecked: checked(listing.syncedAt), error: state === "attention" ? errorText("tu ficha de Google", listing.lastError) : null, href: `${base}/google`, actionLabel: "Abrir Ficha de Google" });
+    cards.push({ id: "google", name: "Ficha de Google", kind: "Presencia en línea", description: "Trae los datos de tu ficha de Google para compararlos con los de tu negocio.", state, maturity: maturity("google"), lastChecked: checked(listing.syncedAt), error: state === "attention" ? errorText("tu ficha de Google", listing.lastError) : null, href: `${base}/presencia/google`, actionLabel: "Abrir Ficha de Google" });
   }
 
   if (active.has("whatsapp")) {
@@ -109,7 +109,7 @@ export default async function IntegrationsPage({ params }: { params: Promise<{ t
       environment: undefined,
       lastChecked: wa ? checked(wa.lastCheckedAt) : undefined,
       error: wa?.status === "ERROR" ? errorText("WhatsApp", wa.lastError) : null,
-      href: `${base}/conversaciones`,
+      href: `${base}/canales/conversaciones`,
       actionLabel: "Abrir conversaciones",
       extra: <WhatsappConnection slug={tenant} connection={wa ? { id: wa.id, connected: wa.status === "CONNECTED" } : null} webhookUrl={wa ? `${appUrl}/api/webhooks/channels/whatsapp/${wa.id}` : null} />,
     });

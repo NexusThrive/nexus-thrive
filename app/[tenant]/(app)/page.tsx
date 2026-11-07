@@ -169,7 +169,7 @@ export default async function TenantDashboard({
         description: item.description,
         amount: formatCurrency(Math.abs(item.amount)),
         time: formatRelativeTime(item.date),
-        href: `${base}/finance`,
+        href: `${base}/finanzas`,
       } satisfies RecentActivityItem,
     })),
     ...newCustomers.map((c) => ({
@@ -181,7 +181,7 @@ export default async function TenantDashboard({
         description: `Nuevo ${terms.customer.toLowerCase()}`,
         amount: "",
         time: formatRelativeTime(c.createdAt),
-        href: `${base}/crm/${c.id}`,
+        href: `${base}/contactos/${c.id}`,
       } satisfies RecentActivityItem,
     })),
   ]
@@ -196,7 +196,7 @@ export default async function TenantDashboard({
       description: row.daysOverdue > 0 ? `${row.number} · ${row.daysOverdue} ${row.daysOverdue === 1 ? "día" : "días"} de mora` : `${row.number} · por cobrar`,
       amount: formatCurrency(row.balance),
       time: row.dueDate ? `Vence ${row.dueDate}` : "Sin vencimiento",
-      href: `${base}/cartera`,
+      href: `${base}/finanzas/cartera`,
     })),
     ...expiring.slice(0, 3).map((m) => {
       const left = daysUntil(m.endDate);
@@ -219,12 +219,12 @@ export default async function TenantDashboard({
     ...(cartera ? [{ type: "pending" as const, label: "Pendientes" }] : []),
   ];
   const activityRegistry = {
-    all: { href: `${base}/finance`, label: "Ver registro completo" },
-    payment: { href: `${base}/finance`, label: "Ver todos los pagos" },
-    expense: { href: `${base}/finance`, label: "Ver todos los gastos" },
-    customer: { href: `${base}/crm`, label: `Ver ${terms.customers.toLowerCase()}` },
+    all: { href: `${base}/finanzas`, label: "Ver registro completo" },
+    payment: { href: `${base}/finanzas`, label: "Ver todos los pagos" },
+    expense: { href: `${base}/finanzas`, label: "Ver todos los gastos" },
+    customer: { href: `${base}/contactos`, label: `Ver ${terms.customers.toLowerCase()}` },
     expiry: { href: `${base}/memberships`, label: "Ver membresías" },
-    pending: { href: `${base}/cartera`, label: "Ver la cartera" },
+    pending: { href: `${base}/finanzas/cartera`, label: "Ver la cartera" },
   };
 
   // Módulos de la receta del rubro que el negocio aún no tiene encendidos (se sugieren en un bloque del inicio).
@@ -244,7 +244,7 @@ export default async function TenantDashboard({
         info="Suma de los cobros confirmados del periodo. La variación compara con el periodo anterior del mismo largo."
         action={{ label: "Ver cobros" }}
         trend={incomeTrend}
-        href={has("finance") ? `${base}/finance` : undefined}
+        href={has("finance") ? `${base}/finanzas` : undefined}
       />
     ) },
     { id: "kpi-expenses", label: "Gastos", span: 3, half: true, node: (
@@ -260,7 +260,7 @@ export default async function TenantDashboard({
         action={{ label: "Ver gastos" }}
         trend={expenseTrend}
         trendColor="var(--danger)"
-        href={has("finance") ? `${base}/finance` : undefined}
+        href={has("finance") ? `${base}/finanzas` : undefined}
       />
     ) },
     { id: "kpi-balance", label: "Balance neto", span: 3, half: true, node: (
@@ -277,7 +277,7 @@ export default async function TenantDashboard({
         action={{ label: "Ver balance" }}
         trend={balanceTrend}
         trendColor="var(--nx-gold-600)"
-        href={has("finance") ? `${base}/finance` : undefined}
+        href={has("finance") ? `${base}/finanzas` : undefined}
       />
     ) },
     ...(pending
@@ -292,7 +292,7 @@ export default async function TenantDashboard({
             hint={pending.count === 0 ? "Nada pendiente" : `${countLabel(pending.count, "cuenta pendiente", "cuentas pendientes")}`}
             info="Saldo de las cuentas por cobrar emitidas y aún no pagadas, con o sin vencimiento. Es dinero que todavía no entra a caja."
             action={{ label: "Ver cartera" }}
-            href={`${base}/cartera`}
+            href={`${base}/finanzas/cartera`}
           />
         ) }]
       : []),
@@ -346,7 +346,7 @@ export default async function TenantDashboard({
         info={`${terms.customers} con registro activo hoy. La variación cuenta los nuevos del periodo.`}
         action={{ label: `Ver ${terms.customers.toLowerCase()}` }}
         trend={growth.series}
-        href={has("crm") ? `${base}/crm` : undefined}
+        href={has("crm") ? `${base}/contactos` : undefined}
       />
     ) },
     { id: "activity", label: "Actividad reciente", span: 8, node: <RecentActivity items={activityItems} filters={activityFilters} registry={activityRegistry} /> },

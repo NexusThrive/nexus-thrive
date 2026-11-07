@@ -72,13 +72,13 @@ const GROUP_ICONS: Record<GroupName, LucideIcon> = {
 };
 /** Pantallas que el menú reducido de un rubro con control de acceso (gimnasio) no muestra: el seguimiento de ventas y, de Mi sitio web, los pedidos de la tienda. */
 /** Pantallas que piden un permiso: sin él, el enlace no se muestra (la página igual lo comprueba en el servidor). Sin rol, se muestra todo. */
-const NAV_PERMISSION: Record<string, BusinessPermission> = { "/finance": "money.handle", "/cobros": "money.handle", "/dinero": "money.handle", "/cartera": "money.handle", "/orders": "orders.work" };
+const NAV_PERMISSION: Record<string, BusinessPermission> = { "/finanzas": "money.handle", "/ventas/cobros": "money.handle", "/finanzas/dinero": "money.handle", "/finanzas/cartera": "money.handle", "/ventas/pedidos": "orders.work" };
 const allowedFor = (role: string | undefined, href: string): boolean => {
   const permission = NAV_PERMISSION[href.split("?")[0] ?? ""];
   return !role || !permission || can(role, permission);
 };
 
-const LEAN_HIDDEN: readonly string[] = ["/oportunidades", "/tareas", "/formularios", "/entregables"];
+const LEAN_HIDDEN: readonly string[] = ["/crm", "/crm/tareas", "/crm/formularios", "/proyectos/entregables"];
 /** Grupo de cada función: su categoría en el registro (la misma que ve en «Funciones»). */
 const MODULE_GROUP: Partial<Record<string, GroupName>> = Object.fromEntries(CAPABILITIES.map((c) => [c.id, c.category]));
 
@@ -93,7 +93,7 @@ export function buildTenantNav(vertical: VerticalValue, activeModules: readonly 
   // Rubros con control de acceso de socios (gimnasio): menú reducido, sin tienda en línea, funciones, datos ni integraciones.
   const lean = hasMemberAccess(vertical);
   const items = (moduleName: ModuleValue): NavItem[] => {
-    return MODULE_NAV[moduleName].filter((nav) => !nav.verticals || nav.verticals.includes(vertical)).filter((nav) => allowedFor(role, nav.href)).filter((nav) => !(lean && (LEAN_HIDDEN.includes(nav.href) || (moduleName === "website" && nav.href === "/orders")))).map((nav) => ({
+    return MODULE_NAV[moduleName].filter((nav) => !nav.verticals || nav.verticals.includes(vertical)).filter((nav) => allowedFor(role, nav.href)).filter((nav) => !(lean && (LEAN_HIDDEN.includes(nav.href) || (moduleName === "website" && nav.href === "/ventas/pedidos")))).map((nav) => ({
       key: nav.href || "home",
       module: moduleName,
       href: nav.href,
@@ -108,9 +108,9 @@ export function buildTenantNav(vertical: VerticalValue, activeModules: readonly 
   const forGroup = (label: GroupName): NavItem[] =>
     enabled
       .filter((m) => m !== "dashboard")
-      .flatMap((m) => items(m).filter((item) => groupOf(m, item.href) === label).filter((item) => !(m === "payments" && active.has("finance") && item.href.startsWith("/finance")) && !(m === "website" && item.href === "/orders" && active.has("orders"))));
+      .flatMap((m) => items(m).filter((item) => groupOf(m, item.href) === label).filter((item) => !(m === "payments" && active.has("finance") && item.href.startsWith("/finanzas")) && !(m === "website" && item.href === "/ventas/pedidos" && active.has("orders"))));
   const gym = lean;
-  const expenses: NavItem[] = active.has("finance") && !gym && allowedFor(role, "/finance") ? [{ key: "/finance?tab=gastos", module: "finance", href: "/finance?tab=gastos", icon: Receipt, label: "Gastos" }] : [];
+  const expenses: NavItem[] = active.has("finance") && !gym && allowedFor(role, "/finanzas") ? [{ key: "/finanzas?tab=gastos", module: "finance", href: "/finanzas?tab=gastos", icon: Receipt, label: "Gastos" }] : [];
   return [
     // El inicio existe siempre (es la raíz del negocio), con o sin el módulo.
     { label: "General", items: items("dashboard") },
@@ -124,7 +124,7 @@ export function buildTenantNav(vertical: VerticalValue, activeModules: readonly 
   ].filter((group) => group.items.length > 0);
 }
 
-/** Ruta dentro del negocio: "/acme/crm/123" → "/crm/123"; "/acme" → "/". */
+/** Ruta dentro del negocio: "/acme/crm/123" → "/contactos/123"; "/acme" → "/". */
 export function tenantRelativePath(pathname: string | null, tenantSlug: string): string {
   const base = `/${tenantSlug}`;
   if (!pathname || pathname === base || pathname === `${base}/`) return "/";
@@ -142,7 +142,7 @@ export function activeNavItem(groups: NavGroup[], relativePath: string): NavItem
 }
 
 /**
- * Categoría de una pantalla del negocio ("/pos" → «Ventas y cobros»): la misma de la barra lateral y de «Funciones».
+ * Categoría de una pantalla del negocio ("/ventas/pos" → «Ventas y cobros»): la misma de la barra lateral y de «Funciones».
  * Los encabezados de página la usan para que el menú y la página siempre digan lo mismo.
  */
 export function routeCategory(route: string): CapabilityCategory {

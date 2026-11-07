@@ -17,7 +17,7 @@ export type QuickCreateData = {
  * por `tenantId`. Mismo tope de clientes que la pantalla de Finanzas.
  */
 export async function loadQuickCreateDataAction(tenantSlug: string): Promise<QuickCreateData | null> {
-  const ctx = await requireTenantContext(tenantSlug, "/finance");
+  const ctx = await requireTenantContext(tenantSlug, "/finanzas");
   if (!ctx) return null;
   try {
     const [customers, boxes] = await Promise.all([

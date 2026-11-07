@@ -89,12 +89,12 @@ const PRESENCIA = (estado: Estado): PresenceSnapshot => ({
 });
 
 const ACTIVIDAD: RecentActivityItem[] = [
-  { id: "pending-1", type: "pending", title: "Carlos Mejía", description: "FV-0112 · 12 días de mora", amount: formatCurrency(240_000), time: "Vence 13/10/2026", href: `${BASE}/cartera` },
+  { id: "pending-1", type: "pending", title: "Carlos Mejía", description: "FV-0112 · 12 días de mora", amount: formatCurrency(240_000), time: "Vence 13/10/2026", href: `${BASE}/finanzas/cartera` },
   { id: "expiry-1", type: "expiry", title: "Laura Gómez", description: "Membresía mensual por vencer", amount: "", time: "En 2 días", href: `${BASE}/memberships` },
-  { id: "p1", type: "payment", title: "Mensualidad · Plan Premium", description: "Punto de venta", amount: formatCurrency(180_000), time: "hace 2 h", href: `${BASE}/finance` },
-  { id: "p2", type: "payment", title: "Venta en mostrador", description: "Efectivo", amount: formatCurrency(45_000), time: "hace 4 h", href: `${BASE}/finance` },
-  { id: "e1", type: "expense", title: "Compra de insumos", description: "Caja menor", amount: formatCurrency(62_000), time: "hace 5 h", href: `${BASE}/finance` },
-  { id: "c1", type: "customer", title: "Andrés Pinzón", description: `Nuevo ${terms.customer.toLowerCase()}`, amount: "", time: "ayer", href: `${BASE}/crm/c1` },
+  { id: "p1", type: "payment", title: "Mensualidad · Plan Premium", description: "Punto de venta", amount: formatCurrency(180_000), time: "hace 2 h", href: `${BASE}/finanzas` },
+  { id: "p2", type: "payment", title: "Venta en mostrador", description: "Efectivo", amount: formatCurrency(45_000), time: "hace 4 h", href: `${BASE}/finanzas` },
+  { id: "e1", type: "expense", title: "Compra de insumos", description: "Caja menor", amount: formatCurrency(62_000), time: "hace 5 h", href: `${BASE}/finanzas` },
+  { id: "c1", type: "customer", title: "Andrés Pinzón", description: `Nuevo ${terms.customer.toLowerCase()}`, amount: "", time: "ayer", href: `${BASE}/contactos/c1` },
 ];
 
 function Pagina({ estado, escala = 1 }: { estado: Estado; escala?: number }) {
@@ -123,38 +123,38 @@ function Pagina({ estado, escala = 1 }: { estado: Estado; escala?: number }) {
     { type: "pending" as const, label: "Pendientes" },
   ];
   const activityRegistry = {
-    all: { href: `${BASE}/finance`, label: "Ver registro completo" },
-    payment: { href: `${BASE}/finance`, label: "Ver todos los pagos" },
-    expense: { href: `${BASE}/finance`, label: "Ver todos los gastos" },
-    customer: { href: `${BASE}/crm`, label: `Ver ${terms.customers.toLowerCase()}` },
+    all: { href: `${BASE}/finanzas`, label: "Ver registro completo" },
+    payment: { href: `${BASE}/finanzas`, label: "Ver todos los pagos" },
+    expense: { href: `${BASE}/finanzas`, label: "Ver todos los gastos" },
+    customer: { href: `${BASE}/contactos`, label: `Ver ${terms.customers.toLowerCase()}` },
     expiry: { href: `${BASE}/memberships`, label: "Ver membresías" },
-    pending: { href: `${BASE}/cartera`, label: "Ver la cartera" },
+    pending: { href: `${BASE}/finanzas/cartera`, label: "Ver la cartera" },
   };
   const widgets: DashboardWidget[] = [
     { id: "kpi-income", label: "Ingresos", span: 3, half: true, node: (
       <KpiCard index={0} label="Ingresos" value={current.income} format="cop" icon={TrendingUp} delta={deltaFor(current.income, previous.income)}
         hint={`${countLabel(current.count, "cobro registrado", "cobros registrados", "Sin cobros")} · ${incomeVs.note}`}
         info="Suma de los cobros confirmados del periodo. La variación compara con el periodo anterior del mismo largo."
-        action={{ label: "Ver cobros" }} trend={incomeTrend} href={`${BASE}/finance`} />
+        action={{ label: "Ver cobros" }} trend={incomeTrend} href={`${BASE}/finanzas`} />
     ) },
     { id: "kpi-expenses", label: "Gastos", span: 3, half: true, node: (
       <KpiCard index={1} label="Gastos" value={current.expenses} format="cop" icon={MinusCircle} delta={deltaFor(current.expenses, previous.expenses, true)}
         hint={`${expenseVs.note} · caja menor y fijos`}
         info="Suma de los gastos registrados en el periodo, sin los anulados. Más gasto que antes se marca en rojo."
-        action={{ label: "Ver gastos" }} trend={expenseTrend} trendColor="var(--danger)" href={`${BASE}/finance`} />
+        action={{ label: "Ver gastos" }} trend={expenseTrend} trendColor="var(--danger)" href={`${BASE}/finanzas`} />
     ) },
     { id: "kpi-balance", label: "Balance neto", span: 3, half: true, node: (
       <KpiCard index={2} label="Balance neto" value={flow} format="cop" icon={Wallet} alert={flow < 0} delta={deltaFor(flow, previous.balance)}
         hint="Ingresos − gastos del periodo"
         info="Flujo de caja del periodo: lo que entró menos lo que salió. No incluye lo que aún te deben (ver «Por cobrar»)."
-        action={{ label: "Ver balance" }} trend={runningBalance(days)} trendColor="var(--nx-gold-600)" href={`${BASE}/finance`} />
+        action={{ label: "Ver balance" }} trend={runningBalance(days)} trendColor="var(--nx-gold-600)" href={`${BASE}/finanzas`} />
     ) },
     ...(pending
       ? [{ id: "kpi-pending", label: "Por cobrar", span: 3 as const, half: true, node: (
           <KpiCard index={3} label="Por cobrar" value={pending.total} format="cop" icon={HandCoins} alert={pending.overdue > 0}
             hint={countLabel(pending.count, "cuenta pendiente", "cuentas pendientes")}
             info="Saldo de las cuentas por cobrar emitidas y aún no pagadas, con o sin vencimiento. Es dinero que todavía no entra a caja."
-            action={{ label: "Ver cartera" }} href={`${BASE}/cartera`} />
+            action={{ label: "Ver cartera" }} href={`${BASE}/finanzas/cartera`} />
         ) }]
       : []),
     { id: "chart", label: "Ingresos y gastos", span: 8, node: (
@@ -181,7 +181,7 @@ function Pagina({ estado, escala = 1 }: { estado: Estado; escala?: number }) {
         delta={growth.added > 0 ? <Delta value={growth.added} format="count" /> : undefined}
         hint={activeCustomers > 0 ? (growth.added > 0 ? "nuevos en el periodo" : "en tu cartera") : `Sin ${terms.customers.toLowerCase()} aún`}
         info={`${terms.customers} con registro activo hoy. La variación cuenta los nuevos del periodo.`}
-        action={{ label: `Ver ${terms.customers.toLowerCase()}` }} trend={growth.series} href={`${BASE}/crm`} />
+        action={{ label: `Ver ${terms.customers.toLowerCase()}` }} trend={growth.series} href={`${BASE}/contactos`} />
     ) },
     { id: "activity", label: "Actividad reciente", span: 8, node: <RecentActivity items={activityItems} filters={activityFilters} registry={activityRegistry} /> },
     { id: "quick-actions", label: "Accesos rápidos", span: 4, node: <QuickActions tenantSlug={TENANT} actions={quickActions} /> },

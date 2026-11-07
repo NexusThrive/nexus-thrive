@@ -35,7 +35,7 @@ describe("registro de capacidades", () => {
   test("Cotizaciones (HU-cotizacion-01) ya está disponible y su pantalla existe", () => {
     const quotes = CAPABILITIES.find((c) => c.id === "quotes");
     expect(quotes?.status).toBe("READY");
-    expect(quotes?.nav.map((n) => n.href)).toEqual(["/cotizaciones"]);
+    expect(quotes?.nav.map((n) => n.href)).toEqual(["/ventas/cotizaciones"]);
   });
 
   test("isModule valida contra el registro (la base guarda texto)", () => {
@@ -53,7 +53,7 @@ describe("categorías y funciones hijas", () => {
     for (const c of CAPABILITIES) for (const n of c.nav) owners.set(n.href.split("?")[0]!, [...(owners.get(n.href.split("?")[0]!) ?? []), c.id]);
     const shared = [...owners].filter(([, ids]) => ids.length > 1).map(([href]) => href);
     // /finance la abren Finanzas y Pagos; /orders (Pedidos), Pedidos y Mi sitio web (los pedidos de la tienda). El menú no la repite.
-    expect(shared).toEqual(["/finance", "/orders"]);
+    expect(shared).toEqual(["/finanzas", "/ventas/pedidos"]);
   });
   test("las funciones hijas apuntan a una madre real y viajan con ella", () => {
     const ids = new Set<string>(CAPABILITIES.map((c) => c.id));

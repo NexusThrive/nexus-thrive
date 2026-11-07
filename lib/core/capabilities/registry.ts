@@ -122,11 +122,11 @@ export const CAPABILITIES = [
     priceUsd: 0,
     included: true,
     nav: [
-      { href: "/crm", icon: Users, label: (terms) => terms.customers },
-      { href: "/oportunidades", icon: Target, label: () => "Oportunidades", category: "CRM" },
-      { href: "/tareas", icon: CheckSquare, label: () => "Tareas", category: "CRM" },
-      { href: "/entregables", icon: FileCheck2, label: () => "Entregables", category: "CRM" },
-      { href: "/formularios", icon: Link2, label: () => "Formularios web", category: "CRM" },
+      { href: "/contactos", icon: Users, label: (terms) => terms.customers },
+      { href: "/crm", icon: Target, label: () => "Oportunidades", category: "CRM" },
+      { href: "/crm/tareas", icon: CheckSquare, label: () => "Tareas", category: "CRM" },
+      { href: "/proyectos/entregables", icon: FileCheck2, label: () => "Entregables", category: "CRM" },
+      { href: "/crm/formularios", icon: Link2, label: () => "Formularios web", category: "CRM" },
     ],
   },
   {
@@ -159,7 +159,7 @@ export const CAPABILITIES = [
     priceUsd: 0,
     general: true,
     nav: [
-      { href: "/finance?tab=cobros", icon: Banknote, label: () => "Cobros" },
+      { href: "/finanzas?tab=cobros", icon: Banknote, label: () => "Cobros" },
     ],
   },
   {
@@ -175,7 +175,7 @@ export const CAPABILITIES = [
     priceUsd: 0,
     general: true,
     nav: [
-      { href: "/billing", icon: Receipt, label: () => "Facturación" },
+      { href: "/finanzas/facturacion", icon: Receipt, label: () => "Facturación" },
     ],
   },
   {
@@ -191,8 +191,8 @@ export const CAPABILITIES = [
     priceUsd: 0,
     general: true,
     nav: [
-      { href: "/inventory", icon: Package, label: () => "Catálogo" },
-      { href: "/stock", icon: Warehouse, label: () => "Existencias" },
+      { href: "/inventario/productos", icon: Package, label: () => "Catálogo" },
+      { href: "/inventario/existencias", icon: Warehouse, label: () => "Existencias" },
     ],
   },
   {
@@ -208,8 +208,8 @@ export const CAPABILITIES = [
     priceUsd: 0,
     included: true,
     nav: [
-      { href: "/finance", icon: Wallet, label: () => "Finanzas" },
-      { href: "/dinero", icon: Banknote, label: () => "¿Dónde está mi dinero?" },
+      { href: "/finanzas", icon: Wallet, label: () => "Finanzas" },
+      { href: "/finanzas/dinero", icon: Banknote, label: () => "¿Dónde está mi dinero?" },
     ],
   },
   {
@@ -239,9 +239,9 @@ export const CAPABILITIES = [
     priceUsd: 0,
     general: true,
     nav: [
-      { href: "/whatsapp", icon: MessageCircle, label: () => "WhatsApp" },
-      { href: "/conversaciones", icon: MessageCircle, label: () => "Conversaciones" },
-      { href: "/avisos", icon: MessageCircle, label: () => "Plantillas y avisos" },
+      { href: "/canales/whatsapp", icon: MessageCircle, label: () => "WhatsApp" },
+      { href: "/canales/conversaciones", icon: MessageCircle, label: () => "Conversaciones" },
+      { href: "/canales/avisos", icon: MessageCircle, label: () => "Plantillas y avisos" },
     ],
   },
   {
@@ -275,7 +275,7 @@ export const CAPABILITIES = [
     priceUsd: 0,
     general: true,
     // El restaurante compra insumos; el resto, mercancía.
-    nav: [{ href: "/purchases", icon: Truck, label: (terms) => terms.purchases ?? "Compras" }],
+    nav: [{ href: "/compras", icon: Truck, label: (terms) => terms.purchases ?? "Compras" }],
   },
   {
     id: "orders",
@@ -288,7 +288,7 @@ export const CAPABILITIES = [
     icon: ShoppingCart,
     status: "PLANNED",
     priceUsd: 0,
-    nav: [{ href: "/orders", icon: ShoppingCart, label: () => "Pedidos" }],
+    nav: [{ href: "/ventas/pedidos", icon: ShoppingCart, label: () => "Pedidos" }],
   },
   {
     // Cotización comercial genérica: llega con el documento comercial
@@ -303,7 +303,7 @@ export const CAPABILITIES = [
     icon: BadgeCheck,
     status: "READY",
     priceUsd: 0,
-    nav: [{ href: "/cotizaciones", icon: BadgeCheck, label: () => "Cotizaciones" }],
+    nav: [{ href: "/ventas/cotizaciones", icon: BadgeCheck, label: () => "Cotizaciones" }],
   },
   {
     // Suite de construcción (ARCH-01): obras, presupuestos APU, Lean,
@@ -320,12 +320,12 @@ export const CAPABILITIES = [
     priceUsd: 0,
     nav: [
       {
-        href: "/projects",
+        href: "/proyectos",
         icon: Building2,
         label: (terms) => terms.projects ?? "Proyectos",
       },
-      { href: "/quotes", icon: FolderOpen, label: () => "Cotizaciones" },
-      { href: "/catalog", icon: BookOpen, label: () => "Catálogo APU" },
+      { href: "/ventas/cotizaciones/anteriores", icon: FolderOpen, label: () => "Cotizaciones" },
+      { href: "/proyectos/catalogo-apu", icon: BookOpen, label: () => "Catálogo APU" },
     ],
   },
   {
@@ -341,7 +341,7 @@ export const CAPABILITIES = [
     status: "READY",
     priceUsd: 0,
     general: true,
-    nav: [{ href: "/pos", icon: ShoppingCart, label: () => "Punto de venta" }],
+    nav: [{ href: "/ventas/pos", icon: ShoppingCart, label: () => "Punto de venta" }],
   },
   {
     id: "online_payments",
@@ -356,7 +356,7 @@ export const CAPABILITIES = [
     status: "READY",
     priceUsd: 0,
     general: true,
-    nav: [{ href: "/cobros", icon: Link2, label: () => "Cobros en línea" }],
+    nav: [{ href: "/ventas/cobros", icon: Link2, label: () => "Cobros en línea" }],
   },
   {
     id: "einvoicing",
@@ -371,7 +371,7 @@ export const CAPABILITIES = [
     status: "BETA",
     priceUsd: 0,
     general: true,
-    nav: [{ href: "/factura-electronica", icon: FileCheck2, label: () => "Factura electrónica" }],
+    nav: [{ href: "/finanzas/facturacion-electronica", icon: FileCheck2, label: () => "Factura electrónica" }],
   },
   {
     id: "receivables",
@@ -386,7 +386,7 @@ export const CAPABILITIES = [
     status: "READY",
     priceUsd: 0,
     general: true,
-    nav: [{ href: "/cartera", icon: HandCoins, label: () => "Cartera" }],
+    nav: [{ href: "/finanzas/cartera", icon: HandCoins, label: () => "Cartera" }],
   },
   {
     id: "accounting",
@@ -401,7 +401,7 @@ export const CAPABILITIES = [
     status: "BETA",
     priceUsd: 0,
     general: true,
-    nav: [{ href: "/contabilidad", icon: BookOpenCheck, label: () => "Contabilidad" }],
+    nav: [{ href: "/finanzas/contabilidad", icon: BookOpenCheck, label: () => "Contabilidad" }],
   },
   {
     id: "taxes",
@@ -416,7 +416,7 @@ export const CAPABILITIES = [
     status: "READY",
     priceUsd: 0,
     general: true,
-    nav: [{ href: "/taxes", icon: Percent, label: () => "Impuestos y numeración" }],
+    nav: [{ href: "/finanzas/impuestos", icon: Percent, label: () => "Impuestos y numeración" }],
   },
   {
     id: "website",
@@ -432,8 +432,8 @@ export const CAPABILITIES = [
     priceUsd: 0,
     general: true,
     nav: [
-      { href: "/sitio", icon: Globe, label: (terms) => terms.siteLabel ?? "Mi sitio web" },
-      { href: "/orders", icon: PackageCheck, label: () => "Pedidos" },
+      { href: "/presencia/sitio", icon: Globe, label: (terms) => terms.siteLabel ?? "Mi sitio web" },
+      { href: "/ventas/pedidos", icon: PackageCheck, label: () => "Pedidos" },
     ],
   },
   {
@@ -449,7 +449,7 @@ export const CAPABILITIES = [
     status: "BETA",
     priceUsd: 0,
     general: true,
-    nav: [{ href: "/google", icon: MapPin, label: () => "Ficha de Google" }],
+    nav: [{ href: "/presencia/google", icon: MapPin, label: () => "Ficha de Google" }],
   },
   {
     id: "growth",
@@ -464,7 +464,7 @@ export const CAPABILITIES = [
     status: "READY",
     priceUsd: 0,
     general: true,
-    nav: [{ href: "/crecimiento", icon: Megaphone, label: () => "Campañas y reseñas" }],
+    nav: [{ href: "/presencia/crecimiento", icon: Megaphone, label: () => "Campañas y reseñas" }],
   },
 ] as const satisfies readonly CapabilityDefinition[];
 

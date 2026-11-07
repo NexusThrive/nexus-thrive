@@ -94,14 +94,14 @@ describe.skipIf(!enabled)("membresía al entrar a un negocio (integración)", ()
 
   // SEC-06: una ruta solo se sirve con un módulo activo que la habilite.
   test("las rutas de módulos apagados no se sirven", async () => {
-    expect(await isRouteEnabled(tenantId, "/crm/123")).toBe(true);
-    expect(await isRouteEnabled(tenantId, "/finance")).toBe(true); // la abre Pagos
-    expect(await isRouteEnabled(tenantId, "/projects")).toBe(false);
+    expect(await isRouteEnabled(tenantId, "/contactos/123")).toBe(true);
+    expect(await isRouteEnabled(tenantId, "/finanzas")).toBe(true); // la abre Pagos
+    expect(await isRouteEnabled(tenantId, "/proyectos")).toBe(false);
     expect(await isRouteEnabled(tenantId, "/memberships")).toBe(false);
     expect(await isRouteEnabled(tenantId, "/settings")).toBe(true);
 
     await db.orm.public.TenantModule.where({ tenantId, moduleName: "crm" }).update({ active: false });
-    expect(await isRouteEnabled(tenantId, "/crm")).toBe(false);
+    expect(await isRouteEnabled(tenantId, "/contactos")).toBe(false);
     await db.orm.public.TenantModule.where({ tenantId, moduleName: "crm" }).update({ active: true });
   });
 

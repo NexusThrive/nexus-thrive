@@ -12,7 +12,7 @@ let runs = 0;
 const OPS = [
   defineOperation({
     id: "orders.update_status",
-    rest: { method: "POST", path: "/orders/{orderId}/status" },
+    rest: { method: "POST", path: "/ventas/pedidos/{orderId}/status" },
     title: "Cambiar estado",
     description: "Cambia el estado de un pedido.",
     module: null,
@@ -87,21 +87,21 @@ beforeEach(() => {
 
 describe("Idempotency-Key en /api/v1", () => {
   test("sin la cabecera se rechaza con 422 idempotency_key_required y no se ejecuta", async () => {
-    const res = await post("/orders/o1/status", { status: "CANCELED" });
+    const res = await post("/ventas/pedidos/o1/status", { status: "CANCELED" });
     expect(res.status).toBe(422);
     expect(await res.json()).toMatchObject({ code: "idempotency_key_required" });
     expect(runs).toBe(0);
   });
 
   test("una llave con formato inválido se rechaza", async () => {
-    expect((await post("/orders/o1/status", { status: "CANCELED" }, { "idempotency-key": "corta" })).status).toBe(422);
+    expect((await post("/ventas/pedidos/o1/status", { status: "CANCELED" }, { "idempotency-key": "corta" })).status).toBe(422);
     expect(IDEMPOTENCY_KEY_PATTERN.test(KEY)).toBe(true);
     expect(IDEMPOTENCY_KEY_PATTERN.test("con espacios no")).toBe(false);
   });
 
   test("la misma llave y los mismos datos ejecutan UNA vez y devuelven la misma respuesta", async () => {
-    const first = await post("/orders/o1/status", { status: "CANCELED" }, { "idempotency-key": KEY });
-    const again = await post("/orders/o1/status", { status: "CANCELED" }, { "idempotency-key": KEY });
+    const first = await post("/ventas/pedidos/o1/status", { status: "CANCELED" }, { "idempotency-key": KEY });
+    const again = await post("/ventas/pedidos/o1/status", { status: "CANCELED" }, { "idempotency-key": KEY });
     expect(first.status).toBe(200);
     expect(await again.json()).toEqual(await first.clone().json());
     expect(again.headers.get("idempotent-replayed")).toBe("true");
@@ -114,8 +114,8 @@ describe("Idempotency-Key en /api/v1", () => {
   });
 
   test("la misma llave con otros datos da 422 idempotency_conflict", async () => {
-    await post("/orders/o1/status", { status: "CANCELED" }, { "idempotency-key": KEY });
-    const other = await post("/orders/o2/status", { status: "CANCELED" }, { "idempotency-key": KEY });
+    await post("/ventas/pedidos/o1/status", { status: "CANCELED" }, { "idempotency-key": KEY });
+    const other = await post("/ventas/pedidos/o2/status", { status: "CANCELED" }, { "idempotency-key": KEY });
     expect(other.status).toBe(422);
     expect(await other.json()).toMatchObject({ code: "idempotency_conflict" });
     expect(runs).toBe(1);
@@ -123,13 +123,13 @@ describe("Idempotency-Key en /api/v1", () => {
 
   test("una petición en curso con la misma llave responde 409", async () => {
     store.rows.set("k1:" + KEY, { hash: requestHash("orders.update_status", { status: "CANCELED", orderId: "o1" }), status: 0, body: {} });
-    const res = await post("/orders/o1/status", { status: "CANCELED" }, { "idempotency-key": KEY });
+    const res = await post("/ventas/pedidos/o1/status", { status: "CANCELED" }, { "idempotency-key": KEY });
     expect(res.status).toBe(409);
     expect(await res.json()).toMatchObject({ code: "idempotency_in_progress" });
   });
 
   test("si la operación falla, la llave se libera y se puede reintentar", async () => {
-    const failed = await post("/orders/falla/status", { status: "CANCELED" }, { "idempotency-key": KEY });
+    const failed = await post("/ventas/pedidos/falla/status", { status: "CANCELED" }, { "idempotency-key": KEY });
     expect(failed.status).toBe(422);
     expect(await failed.json()).toMatchObject({ code: "rule_violation" });
     expect(store.rows.size).toBe(0);
@@ -144,7 +144,7 @@ describe("Idempotency-Key en /api/v1", () => {
 
   test("OpenAPI documenta la cabecera y el alcance exacto de dinero", () => {
     const doc = buildOpenApi(OPS) as { paths: Record<string, Record<string, { parameters: { name: string; in: string; required: boolean }[]; "x-nexus-scope": string[] }>> };
-    const order = doc.paths["/orders/{orderId}/status"]!.post!;
+    const order = doc.paths["/ventas/pedidos/{orderId}/status"]!.post!;
     expect(order.parameters).toContainEqual(expect.objectContaining({ name: "Idempotency-Key", in: "header", required: true }));
     expect(doc.paths["/payments/{reference}/confirm"]!.post!["x-nexus-scope"]).toEqual(["payments.confirm"]);
   });

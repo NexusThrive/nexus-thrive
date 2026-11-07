@@ -20,7 +20,7 @@ export async function loadMovementsAction(tenantSlug: string, from: string, to: 
   if (!DAY.test(from) || !DAY.test(to) || from > to) return { ok: false, message: "El rango no es válido." };
   const span = (Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86_400_000;
   if (span > MAX_SPAN_DAYS) return { ok: false, message: "El rango es demasiado largo." };
-  const ctx = await requireTenantContext(tenantSlug, "/finance");
+  const ctx = await requireTenantContext(tenantSlug, "/finanzas");
   if (!ctx) return { ok: false, message: "No tienes acceso a Finanzas." };
   try {
     const rows = await ctx.tenantDb.finance.getMovements(LIMIT + 1, bogotaRange(from, to));

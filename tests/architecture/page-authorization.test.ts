@@ -29,10 +29,13 @@ function files(dir: string, keep: (name: string) => boolean): string[] {
 
 const pages = (dir: string) => files(dir, (name) => name === "page.tsx");
 
-/** Ruta del negocio a la que pertenece un archivo: "(app)/crm/[id]/page.tsx" → "/crm". */
+/** Ruta del negocio a la que pertenece un archivo: "(app)/contactos/[id]/page.tsx" → "/contactos". */
 function routeOf(rel: string): string {
-  const first = rel.split("/").filter((p) => !(p.startsWith("(") && p.endsWith(")")))[0];
-  return first && !first.endsWith(".tsx") && !first.endsWith(".ts") ? `/${first}` : "";
+  // Ruta de la página sin grupos (app) ni archivo, hasta el primer segmento dinámico: "finanzas/cartera", "proyectos".
+  const parts = rel.split("/").filter((p) => !(p.startsWith("(") && p.endsWith(")")) && !/\.tsx?$/.test(p));
+  const cut = parts.findIndex((p) => p.startsWith("["));
+  const kept = cut === -1 ? parts : parts.slice(0, cut);
+  return kept.length ? `/${kept.join("/")}` : "";
 }
 
 /** Rutas pasadas como segundo argumento a requirePageContext / requireTenantContext. */

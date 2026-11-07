@@ -28,7 +28,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ ten
   });
   if (result.ok && !result.alreadyRegistered) {
     // El equipo ve el alta de inmediato en Clientes, la campana y el inicio.
-    revalidatePath(`/${tenant}/crm`);
+    revalidatePath(`/${tenant}/contactos`);
     revalidatePath(`/${tenant}`);
   }
   return NextResponse.json(result, { status: result.ok ? 200 : 422, headers: { "Cache-Control": "no-store" } });

@@ -16,11 +16,11 @@ const navLabel = (moduleId: string, href: string, vertical: VerticalValue) => {
 
 describe("vocabulario por rubro (equivale a las comparaciones anteriores)", () => {
   test.each(VERTICALS)("%s: etiqueta del menú de compras", (v) => {
-    expect(navLabel("purchases", "/purchases", v)).toBe(v === "restaurant" ? "Compras de insumos" : "Compras");
+    expect(navLabel("purchases", "/compras", v)).toBe(v === "restaurant" ? "Compras de insumos" : "Compras");
   });
 
   test.each(VERTICALS)("%s: etiqueta del menú de proyectos", (v) => {
-    expect(navLabel("construction", "/projects", v)).toBe(v === "construction" ? "Obras" : "Proyectos");
+    expect(navLabel("construction", "/proyectos", v)).toBe(v === "construction" ? "Obras" : "Proyectos");
   });
 
   test.each(VERTICALS)("%s: título de la pantalla de compras", (v) => {

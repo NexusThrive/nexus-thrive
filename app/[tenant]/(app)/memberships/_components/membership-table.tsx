@@ -104,7 +104,7 @@ export default function MembershipTable({
                   <PauseCircle aria-hidden="true" className="size-4" />
                 </RowAction>
                 <Link
-                  href={`/${tenantSlug}/crm?q=${encodeURIComponent(row.customerName)}`}
+                  href={`/${tenantSlug}/contactos?q=${encodeURIComponent(row.customerName)}`}
                   aria-label={`Ver a ${row.customerName} en el CRM`}
                   className={rowActionClass(false)}
                 >

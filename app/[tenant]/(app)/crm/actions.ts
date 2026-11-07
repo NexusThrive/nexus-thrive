@@ -1,154 +1,65 @@
 "use server";
 
-import { requireTenantContext } from "@/lib/core/tenancy/context";
 import { revalidatePath } from "next/cache";
-import { createTenantDb } from "@/lib/core/tenancy/db";
-import { getVerticalTerms, type VerticalTerms } from "@/lib/core/sectors/terms";
-import { can } from "@/lib/core/auth/permissions";
+import { createOpportunityNow, loseOpportunity, moveStage, setNextAction, winOpportunityNow } from "@/lib/business/growth/opportunities-db";
+import type { OpportunityStage } from "@/lib/business/growth/opportunities";
 import { logTenantAction } from "@/lib/core/tenancy/audit";
-import { withinLimit } from "@/lib/foundation/limits";
-import { customerLimit } from "@/lib/core/tenancy/customer-limit";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
 
-/** Resultado de las acciones de fila / acciones masivas. */
-export type CustomerActionResult = {
-  ok: boolean;
-  message?: string;
-  deleted?: number;
+export type OppResult = { ok: true; message: string } | { ok: false; message: string };
+const refresh = (slug: string) => {
+  revalidatePath(`/${slug}/crm`);
+  revalidatePath(`/${slug}/contactos`);
 };
+const dayInstant = (day: string) => (/^\d{4}-\d{2}-\d{2}$/.test(day) ? Temporal.Instant.from(`${day}T17:00:00Z`) : null); // 12 m. en Bogotá
 
-
-type TenantDb = ReturnType<typeof createTenantDb>;
-
-/** DB del tenant + vocabulario de su vertical (mensajes adaptativos). */
-type TenantContext = {
-  tenantDb: TenantDb;
-  terms: VerticalTerms;
-  role: string;
-  /** Contexto completo, para la bitácora del negocio. */
-  shared: NonNullable<Awaited<ReturnType<typeof requireTenantContext>>>;
-};
-
-/**
- * Verifica sesión de Clerk + tenant activo + membresía del usuario.
- * Devuelve `null` cuando algo falla (el caller responde con mensaje genérico).
- */
-async function actionContext(
-  tenantSlug: string,
-): Promise<TenantContext | null> {
-  const context = await requireTenantContext(tenantSlug, "/crm");
-  if (!context) {
-    return null;
-  }
-  return { tenantDb: context.tenantDb, terms: getVerticalTerms(context.vertical), role: context.role, shared: context };
+async function ctxFor(slug: string) {
+  return requireTenantContext(slug, "/crm");
 }
 
-/** Archivar, restaurar y borrar clientes es de administración (SEC-05). */
-function cannotRemoveCustomers(context: TenantContext): CustomerActionResult | null {
-  if (can(context.role, "customers.delete")) return null;
-  return {
-    ok: false,
-    message: `Tu rol no puede archivar ni eliminar ${context.terms.customers.toLowerCase()}. Pídeselo a administración.`,
-  };
+export async function createOpportunityAction(slug: string, input: { customerId: string; interest: string; estimatedValue: number | null; nextAction: string; nextActionDay: string }): Promise<OppResult> {
+  const ctx = await ctxFor(slug);
+  if (!ctx) return { ok: false, message: "No tienes acceso a este negocio." };
+  const r = await createOpportunityNow(ctx.tenantId, { customerId: input.customerId, interest: input.interest, estimatedValue: input.estimatedValue, nextAction: input.nextAction, nextActionAt: dayInstant(input.nextActionDay), ownerId: ctx.memberId, source: "MANUAL" });
+  if (!r.ok) return r;
+  refresh(slug);
+  return { ok: true, message: "Oportunidad creada" };
 }
 
-// ---------------------------------------------------------------------------
-// Formulario (create / update) — firma compatible con useActionState
-// ---------------------------------------------------------------------------
-
-
-
-// ---------------------------------------------------------------------------
-// Acciones de fila / masivas
-// ---------------------------------------------------------------------------
-
-export async function archiveCustomerAction(
-  tenantSlug: string,
-  customerId: string,
-): Promise<CustomerActionResult> {
-  const context = await actionContext(tenantSlug);
-  if (!context) {
-    return { ok: false, message: "No tienes acceso a este negocio." };
-  }
-  const denied = cannotRemoveCustomers(context);
-  if (denied) return denied;
-  const { tenantDb, terms } = context;
-
-  const result = await tenantDb.customers.archive(customerId);
-  if (!result) {
-    return {
-      ok: false,
-      message: `No se encontró el ${terms.customer.toLowerCase()}.`,
-    };
-  }
-  await logTenantAction(context.shared, "BIZ_CUSTOMER_ARCHIVE", { customerId });
-
-  revalidatePath(`/${tenantSlug}/crm`);
-  return { ok: true };
+export async function moveStageAction(slug: string, id: string, stage: string): Promise<OppResult> {
+  const ctx = await ctxFor(slug);
+  if (!ctx) return { ok: false, message: "No tienes acceso a este negocio." };
+  const r = await moveStage(ctx.tenantId, id, stage as OpportunityStage);
+  if (!r.ok) return r;
+  refresh(slug);
+  return { ok: true, message: "Etapa actualizada" };
 }
 
-export async function restoreCustomerAction(
-  tenantSlug: string,
-  customerId: string,
-): Promise<CustomerActionResult> {
-  const context = await actionContext(tenantSlug);
-  if (!context) {
-    return { ok: false, message: "No tienes acceso a este negocio." };
-  }
-  const denied = cannotRemoveCustomers(context);
-  if (denied) return denied;
-  const { tenantDb, terms } = context;
-
-  // Restaurar suma un cliente activo: respeta el límite acordado (código a medida).
-  const { limit, used } = await customerLimit(context.shared.tenantId);
-  if (!withinLimit(limit, used)) {
-    return { ok: false, message: `Tu acuerdo incluye ${limit} ${terms.customers.toLowerCase()} activos. Archiva alguno o escríbenos para ampliarlo.` };
-  }
-  const result = await tenantDb.customers.restore(customerId);
-  if (!result) {
-    return {
-      ok: false,
-      message: `No se encontró el ${terms.customer.toLowerCase()}.`,
-    };
-  }
-  await logTenantAction(context.shared, "BIZ_CUSTOMER_RESTORE", { customerId });
-
-  revalidatePath(`/${tenantSlug}/crm`);
-  return { ok: true };
+export async function nextActionAction(slug: string, id: string, action: string, day: string): Promise<OppResult> {
+  const ctx = await ctxFor(slug);
+  if (!ctx) return { ok: false, message: "No tienes acceso a este negocio." };
+  const r = await setNextAction(ctx.tenantId, id, action, dayInstant(day));
+  if (!r.ok) return r;
+  refresh(slug);
+  return { ok: true, message: "Siguiente paso guardado" };
 }
 
-/**
- * Borrado definitivo — solo clientes ya archivados (la condición se aplica
- * en la base de datos). Los pagos se conservan (FK `SetNull`).
- */
-export async function deleteCustomersAction(
-  tenantSlug: string,
-  customerIds: string[],
-): Promise<CustomerActionResult> {
-  const context = await actionContext(tenantSlug);
-  if (!context) {
-    return { ok: false, message: "No tienes acceso a este negocio." };
-  }
-  const denied = cannotRemoveCustomers(context);
-  if (denied) return denied;
-  const { tenantDb, terms } = context;
-  const customersLabel = terms.customers.toLowerCase();
+export async function winAction(slug: string, id: string): Promise<OppResult> {
+  const ctx = await ctxFor(slug);
+  if (!ctx) return { ok: false, message: "No tienes acceso a este negocio." };
+  const r = await winOpportunityNow(ctx.tenantId, id);
+  if (!r.ok) return r;
+  await logTenantAction(ctx, "BIZ_OPPORTUNITY", { action: "win_opportunity", id });
+  refresh(slug);
+  return { ok: true, message: "¡Ganada! El contacto pasa a cliente" };
+}
 
-  if (!Array.isArray(customerIds) || customerIds.length === 0) {
-    return {
-      ok: false,
-      message: `Selecciona al menos un ${terms.customer.toLowerCase()} archivado.`,
-    };
-  }
-
-  const deleted = await tenantDb.customers.deleteManyArchived(customerIds);
-  if (deleted === 0) {
-    return {
-      ok: false,
-      message: `No había ${customersLabel} archivados para eliminar (recarga la página).`,
-    };
-  }
-
-  await logTenantAction(context.shared, "BIZ_CUSTOMERS_DELETE", { customerIds, deleted });
-  revalidatePath(`/${tenantSlug}/crm`);
-  return { ok: true, deleted };
+export async function loseAction(slug: string, id: string, reason: string): Promise<OppResult> {
+  const ctx = await ctxFor(slug);
+  if (!ctx) return { ok: false, message: "No tienes acceso a este negocio." };
+  const r = await loseOpportunity(ctx.tenantId, id, reason);
+  if (!r.ok) return r;
+  await logTenantAction(ctx, "BIZ_OPPORTUNITY", { action: "lose_opportunity", id });
+  refresh(slug);
+  return { ok: true, message: "Oportunidad perdida: quedó el motivo" };
 }

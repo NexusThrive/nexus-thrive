@@ -85,7 +85,7 @@ export default function MuseumSettingsForm({ slug, settings, canManage, ticketTy
               Crear entradas sugeridas
             </button>
           ) : null}
-          <Link href={`/${slug}/inventory`} className={buttonVariants({ size: "sm", variant: "outline" })}>
+          <Link href={`/${slug}/inventario/productos`} className={buttonVariants({ size: "sm", variant: "outline" })}>
             Editar precios en Catálogo
           </Link>
         </div>

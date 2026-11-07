@@ -132,7 +132,7 @@ export default function CheckinStation({ slug, canScan, entries, customerTerm }:
                 Le quedan {cd.text}
               </p>
             ) : null}
-            <a href={`/${slug}/crm/${result.member.id}`} className="text-sm font-medium text-accent-text underline-offset-4 hover:underline">
+            <a href={`/${slug}/contactos/${result.member.id}`} className="text-sm font-medium text-accent-text underline-offset-4 hover:underline">
               Ver ficha del {customerTerm.toLowerCase()}
             </a>
           </div>
@@ -182,7 +182,7 @@ export default function CheckinStation({ slug, canScan, entries, customerTerm }:
             <li key={e.id} className="flex items-center gap-3 px-3 py-2.5">
               <Photo id={e.photoId} className="size-9 rounded-full" />
               <span className="min-w-0 flex-1 text-sm">
-                <a href={`/${slug}/crm/${e.customerId}`} className="block truncate font-medium hover:underline">
+                <a href={`/${slug}/contactos/${e.customerId}`} className="block truncate font-medium hover:underline">
                   {e.name}
                 </a>
                 <small className="block truncate text-xs text-muted-foreground">

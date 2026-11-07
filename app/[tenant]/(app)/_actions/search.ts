@@ -30,9 +30,9 @@ export async function searchEntitiesAction(tenantSlug: string, query: string): P
   if (q.length < MIN_CHARS) return { ok: true, hits: [] };
 
   const [crm, inventory, finance] = await Promise.all([
-    requireTenantContext(tenantSlug, "/crm"),
-    requireTenantContext(tenantSlug, "/inventory"),
-    requireTenantContext(tenantSlug, "/finance"),
+    requireTenantContext(tenantSlug, "/contactos"),
+    requireTenantContext(tenantSlug, "/inventario/productos"),
+    requireTenantContext(tenantSlug, "/finanzas"),
   ]);
   if (!crm && !inventory && !finance) return { ok: false };
 
@@ -50,21 +50,21 @@ export async function searchEntitiesAction(tenantSlug: string, query: string): P
         kind: "customer" as const,
         title: c.name,
         subtitle: c.email || c.phone || "Cliente",
-        href: `/crm/${c.id}`,
+        href: `/contactos/${c.id}`,
       })),
       ...products.map((p) => ({
         id: p.id,
         kind: "product" as const,
         title: p.name,
         subtitle: p.sku ? `${p.sku}` : "Catálogo",
-        href: `/inventory`,
+        href: `/inventario/productos`,
       })),
       ...(payments?.rows ?? []).map((p) => ({
         id: p.id,
         kind: "payment" as const,
         title: `${formatCurrency(p.amount)} · ${p.customerName ?? "Venta de mostrador"}`,
         subtitle: p.description?.trim() || p.providerRefId || "Cobro registrado",
-        href: `/finance`,
+        href: `/finanzas`,
       })),
       ...(expenses?.rows ?? [])
         .filter((e) => !e.voided)
@@ -73,7 +73,7 @@ export async function searchEntitiesAction(tenantSlug: string, query: string): P
           kind: "expense" as const,
           title: e.description,
           subtitle: `${e.category} · ${formatCurrency(e.amount)}`,
-          href: `/finance`,
+          href: `/finanzas`,
         })),
     ];
     return { ok: true, hits };

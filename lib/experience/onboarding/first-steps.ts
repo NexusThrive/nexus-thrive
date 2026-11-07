@@ -27,25 +27,25 @@ export async function loadFirstSteps(params: {
       id: "customer", icon: "customer", done: customers.length > 0,
       title: `Registra tu primer ${customerWord}`,
       description: "Agrega a tus contactos para llevar su historial, sus cobros y su seguimiento.",
-      cta: `Nuevo ${customerWord}`, href: `${base}/crm`,
+      cta: `Nuevo ${customerWord}`, href: `${base}/contactos`,
     },
     on("finance") && {
       id: "payment", icon: "payment", done: activity.some((a) => a.type === "payment"),
       title: "Registra tu primer cobro",
       description: "Cobra y genera el comprobante para que tus ingresos queden al día.",
-      cta: "Registrar pago", href: `${base}/finance?nuevo=pago`,
+      cta: "Registrar pago", href: `${base}/finanzas?nuevo=pago`,
     },
     on("finance") && {
       id: "expense", icon: "expense", done: activity.some((a) => a.type === "expense"),
       title: "Agrega tus gastos",
       description: "Anota los egresos de caja para conocer tu balance real.",
-      cta: "Registrar gasto", href: `${base}/finance?nuevo=gasto`,
+      cta: "Registrar gasto", href: `${base}/finanzas?nuevo=gasto`,
     },
     on("inventory") && {
       id: "catalog", icon: "catalog", done: products.length > 0,
       title: "Arma tu catálogo",
       description: "Define lo que vendes: precios, inventario y planes, para cobrar en un toque.",
-      cta: "Agregar al catálogo", href: `${base}/inventory?nuevo=1`,
+      cta: "Agregar al catálogo", href: `${base}/inventario/productos?nuevo=1`,
     },
   ].filter((step): step is WelcomeStep => Boolean(step));
   return steps.length >= 2 && steps.some((s) => !s.done) ? steps : [];

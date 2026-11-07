@@ -15,7 +15,7 @@ describe("buildTenantNav", () => {
   it("solo muestra funciones activas y siempre Funciones y Configuración", () => {
     const groups = buildTenantNav("retail", ["dashboard", "crm"]);
     expect(groups.map((g) => g.label)).toEqual(["General", "Clientes y agenda", "CRM", "Sistema"]);
-    expect(groups.flatMap((g) => g.items).map((i) => i.href)).toEqual(["", "/crm", "/oportunidades", "/tareas", "/entregables", "/formularios", "/functions", "/data", "/integrations", "/settings"]);
+    expect(groups.flatMap((g) => g.items).map((i) => i.href)).toEqual(["", "/contactos", "/crm", "/crm/tareas", "/proyectos/entregables", "/crm/formularios", "/functions", "/data", "/integrations", "/settings"]);
   });
 
   it("agrupa por trabajo, con todas las categorías desplegables, y omite los grupos vacíos", () => {
@@ -47,9 +47,9 @@ describe("buildTenantNav", () => {
   it("el gimnasio trae un menú reducido: sin Funciones, datos, integraciones, Gastos ni tienda", () => {
     const groups = buildTenantNav("gym", ["dashboard", "crm", "memberships", "finance", "website"]);
     const items = groups.flatMap((g) => g.items);
-    expect(items.map((i) => i.href)).toEqual(["", "/crm", "/memberships", "/checkin", "/finance", "/dinero", "/sitio", "/settings"]);
-    expect(items.find((i) => i.href === "/sitio")?.label).toBe("Panel de registro de cliente");
-    for (const hidden of ["/orders", "/oportunidades", "/tareas", "/formularios", "/entregables"]) expect(items.map((i) => i.href)).not.toContain(hidden);
+    expect(items.map((i) => i.href)).toEqual(["", "/contactos", "/memberships", "/checkin", "/finanzas", "/finanzas/dinero", "/presencia/sitio", "/settings"]);
+    expect(items.find((i) => i.href === "/presencia/sitio")?.label).toBe("Panel de registro de cliente");
+    for (const hidden of ["/ventas/pedidos", "/crm", "/crm/tareas", "/crm/formularios", "/proyectos/entregables"]) expect(items.map((i) => i.href)).not.toContain(hidden);
   });
 
   it("sin facturación ni gastos no aparecen esas categorías", () => {
@@ -69,27 +69,27 @@ describe("buildTenantNav", () => {
 describe("ARCH-01: construcción separada de cotizaciones", () => {
   it("un rubro que no construye no ve pantallas APU aunque tenga cotizaciones", () => {
     const hrefs = buildTenantNav("mechanic", ["dashboard", "crm", "quotes"]).flatMap((g) => g.items).map((i) => i.href);
-    expect(hrefs).not.toContain("/catalog");
-    expect(hrefs).not.toContain("/projects");
+    expect(hrefs).not.toContain("/proyectos/catalogo-apu");
+    expect(hrefs).not.toContain("/proyectos");
   });
 });
 
 describe("ruta activa", () => {
   it("quita el slug del negocio", () => {
     expect(tenantRelativePath("/acme", "acme")).toBe("/");
-    expect(tenantRelativePath("/acme/projects/9", "acme")).toBe("/projects/9");
+    expect(tenantRelativePath("/acme/proyectos/9", "acme")).toBe("/proyectos/9");
   });
 
   it("inicio solo coincide en la raíz; los módulos también en subrutas", () => {
     expect(isNavActive("", "/")).toBe(true);
-    expect(isNavActive("", "/crm")).toBe(false);
-    expect(isNavActive("/projects", "/projects/9")).toBe(true);
-    expect(isNavActive("/project", "/projects")).toBe(false);
+    expect(isNavActive("", "/contactos")).toBe(false);
+    expect(isNavActive("/proyectos", "/proyectos/9")).toBe(true);
+    expect(isNavActive("/project", "/proyectos")).toBe(false);
   });
 
   it("encuentra el ítem activo", () => {
     const groups = buildTenantNav("construction", ["dashboard", "construction"]);
-    expect(activeNavItem(groups, "/quotes/4")?.label).toBe("Cotizaciones");
+    expect(activeNavItem(groups, "/ventas/cotizaciones/anteriores/4")?.label).toBe("Cotizaciones");
   });
 });
 
@@ -123,15 +123,15 @@ describe("cada ítem del menú tiene su página", () => {
 // SEC-06: el servidor sabe qué módulo habilita cada ruta, con el menú como fuente.
 describe("modulesForRoute", () => {
   it("una ruta de módulo y sus subrutas", () => {
-    expect(modulesForRoute("/crm")).toEqual(["crm"]);
-    expect(modulesForRoute("/crm/123/carnet")).toEqual(["crm"]);
-    expect(modulesForRoute("/projects/9/budget")).toEqual(["construction"]);
+    expect(modulesForRoute("/contactos")).toEqual(["crm"]);
+    expect(modulesForRoute("/contactos/123/carnet")).toEqual(["crm"]);
+    expect(modulesForRoute("/proyectos/9/budget")).toEqual(["construction"]);
     // La cotización genérica aún no tiene pantallas: no abre la suite APU.
-    expect(modulesForRoute("/catalog")).toEqual(["construction"]);
+    expect(modulesForRoute("/proyectos/catalogo-apu")).toEqual(["construction"]);
   });
 
   it("Finanzas la habilitan Finanzas y Pagos", () => {
-    expect([...(modulesForRoute("/finance") ?? [])].sort()).toEqual(["finance", "payments"]);
+    expect([...(modulesForRoute("/finanzas") ?? [])].sort()).toEqual(["finance", "payments"]);
   });
 
   it("no confunde prefijos parecidos", () => {
@@ -178,12 +178,12 @@ describe("menú por rol (HU-navegacion-commerce-01)", () => {
   const hrefs = (role?: string) => buildTenantNav("retail", ["dashboard", "orders", "finance", "payments", "crm"], role).flatMap((g) => g.items.map((i) => i.href));
   it("quien produce ve Pedidos pero no cobros ni finanzas", () => {
     const advisor = hrefs("ADVISOR");
-    expect(advisor).toContain("/orders");
-    for (const h of ["/finance", "/finance?tab=gastos", "/cobros", "/dinero", "/cartera"]) expect(advisor).not.toContain(h);
+    expect(advisor).toContain("/ventas/pedidos");
+    for (const h of ["/finanzas", "/finanzas?tab=gastos", "/ventas/cobros", "/finanzas/dinero", "/finanzas/cartera"]) expect(advisor).not.toContain(h);
   });
   it("quien maneja dinero ve todo, y sin rol se muestra todo", () => {
-    expect(hrefs("OWNER")).toEqual(expect.arrayContaining(["/orders", "/finance"]));
-    expect(hrefs()).toEqual(expect.arrayContaining(["/orders", "/finance"]));
+    expect(hrefs("OWNER")).toEqual(expect.arrayContaining(["/ventas/pedidos", "/finanzas"]));
+    expect(hrefs()).toEqual(expect.arrayContaining(["/ventas/pedidos", "/finanzas"]));
   });
 });
 
@@ -191,12 +191,12 @@ describe("reparto del menú por trabajo (etapa A6)", () => {
   it("CRM tiene oportunidades, tareas, entregables y formularios; Clientes queda con los contactos", () => {
     const groups = buildTenantNav("retail", ["dashboard", "crm"]);
     const crm = groups.find((g) => g.label === "CRM")!;
-    expect(crm.items.map((i) => i.href)).toEqual(["/oportunidades", "/tareas", "/entregables", "/formularios"]);
-    expect(groups.find((g) => g.label === "Clientes y agenda")!.items.map((i) => i.href)).toEqual(["/crm"]);
+    expect(crm.items.map((i) => i.href)).toEqual(["/crm", "/crm/tareas", "/proyectos/entregables", "/crm/formularios"]);
+    expect(groups.find((g) => g.label === "Clientes y agenda")!.items.map((i) => i.href)).toEqual(["/contactos"]);
   });
   it("cotizaciones y pedidos van en Ventas, no en obras", () => {
     const groups = buildTenantNav("retail", ["dashboard", "quotes", "orders"]);
-    expect(groups.find((g) => g.label === "Ventas y cobros")!.items.map((i) => i.href)).toEqual(expect.arrayContaining(["/cotizaciones", "/orders"]));
+    expect(groups.find((g) => g.label === "Ventas y cobros")!.items.map((i) => i.href)).toEqual(expect.arrayContaining(["/ventas/cotizaciones", "/ventas/pedidos"]));
     expect(groups.find((g) => g.label === "Obras y proyectos")).toBeUndefined();
   });
 });

@@ -56,7 +56,7 @@ export function buildNotifications(input: {
         title: m.type === "in" ? `Cobro registrado · ${cop(m.amount)}` : `Gasto · ${cop(m.amount)}`,
         detail: m.type === "in" ? `${m.title} · ${m.subtitle}` : m.title,
         at: m.at,
-        href: "/finance",
+        href: "/finanzas",
       });
     }
   }
@@ -74,16 +74,16 @@ export function buildNotifications(input: {
         title: `Nuevo cliente registrado · ${r.name}`,
         detail: "Entró por el registro público. Asígnale su membresía.",
         at: r.at,
-        href: r.customerId ? `/crm/${r.customerId}` : "/crm",
+        href: r.customerId ? `/contactos/${r.customerId}` : "/contactos",
       });
     }
   }
   for (const o of input.readyOrders ?? []) {
-    out.push({ id: `order-ready-${o.id}`, kind: "order", severity: "action", title: `Pedido ${o.code} listo para entregar`, detail: o.customer, at: o.at, href: "/orders" });
+    out.push({ id: `order-ready-${o.id}`, kind: "order", severity: "action", title: `Pedido ${o.code} listo para entregar`, detail: o.customer, at: o.at, href: "/ventas/pedidos" });
   }
   if ((input.overdueTasks ?? 0) > 0) {
     const n = input.overdueTasks!;
-    out.push({ id: `tasks-overdue-${input.todayStart.slice(0, 10)}-${n}`, kind: "task", severity: "urgent", title: n === 1 ? "1 tarea vencida" : `${n} tareas vencidas`, detail: "Hazlas hoy o cámbiales la fecha", at: input.todayStart, href: "/tareas" });
+    out.push({ id: `tasks-overdue-${input.todayStart.slice(0, 10)}-${n}`, kind: "task", severity: "urgent", title: n === 1 ? "1 tarea vencida" : `${n} tareas vencidas`, detail: "Hazlas hoy o cámbiales la fecha", at: input.todayStart, href: "/crm/tareas" });
   }
   if (input.modules.memberships) {
     if (input.expiring > 0) {

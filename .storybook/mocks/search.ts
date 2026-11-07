@@ -8,9 +8,9 @@ export type SearchHit = {
 };
 
 const SAMPLE: SearchHit[] = [
-  { id: "c1", kind: "customer", title: "María Fernanda Ríos", subtitle: "maria@ejemplo.co", href: "/crm/c1" },
-  { id: "c2", kind: "customer", title: "Mariano Pardo", subtitle: "+57 300 000 0000", href: "/crm/c2" },
-  { id: "p1", kind: "product", title: "Plan mensual", subtitle: "PLAN-01", href: "/inventory" },
+  { id: "c1", kind: "customer", title: "María Fernanda Ríos", subtitle: "maria@ejemplo.co", href: "/contactos/c1" },
+  { id: "c2", kind: "customer", title: "Mariano Pardo", subtitle: "+57 300 000 0000", href: "/contactos/c2" },
+  { id: "p1", kind: "product", title: "Plan mensual", subtitle: "PLAN-01", href: "/inventario/productos" },
 ];
 
 export async function searchEntitiesAction(_slug: string, query: string) {

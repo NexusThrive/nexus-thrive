@@ -1,0 +1,115 @@
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { auth } from "@clerk/nextjs/server";
+import { ArrowLeft, Building2 } from "lucide-react";
+import { allCustomerOptions } from "@/lib/business/customers/customers-db";
+import { createTenantDb } from "@/lib/core/tenancy/db";
+import { canGovernBudget, type TenantRole } from "@/lib/core/tenancy/context";
+import { PROJECT_STATUSES, isValidProjectStatus } from "@/lib/industry/construction/project-domain";
+import SearchInput from "@/components/molecules/search-input";
+import FilterSelect from "@/components/molecules/filter-select";
+import QuoteFolders from "./_components/quote-folders";
+import LegacyQuotes from "./_components/legacy-quotes";
+import { buttonVariants } from "@/components/atoms/button-variants";
+import { PageHeader } from "@/components/molecules/page-header";
+import { requirePageContext } from "@/lib/core/tenancy/context";
+
+import { createConstructionDb } from "@/lib/industry/construction/construction-db";
+function firstString(value: string | string[] | undefined): string {
+  return Array.isArray(value) ? (value[0] ?? "") : (value ?? "");
+}
+
+/**
+ * Cotizaciones: un directorio con una carpeta por obra (`?q=&status=`), más
+ * la carpeta de cotizaciones anteriores a la obra (`?folder=anteriores`).
+ * El acceso lo garantiza `app/[tenant]/layout.tsx`.
+ */
+export default async function QuotesPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ tenant: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const { tenant: tenantSlug } = await params;
+  const sp = await searchParams;
+
+  // El catálogo APU vivía aquí (?tab=activities|items).
+  const legacyTab = firstString(sp.tab);
+  if (legacyTab === "activities" || legacyTab === "items") {
+    redirect(`/${tenantSlug}/proyectos/catalogo-apu?tab=${legacyTab}`);
+  }
+
+  // Sesión + negocio activo + membresía activa (SEC-03): no basta el layout.
+  const pageCtx = await requirePageContext(tenantSlug, "/ventas/cotizaciones/anteriores");
+  const tenantRecord = pageCtx.tenant;
+  const tenantDb = createTenantDb(tenantRecord.id);
+  const construction = createConstructionDb(tenantRecord.id);
+  const { userId } = await auth();
+  const member = userId ? await tenantDb.users.findByClerkUserId(userId) : null;
+  const canGovern = canGovernBudget((member?.role ?? "STAFF") as TenantRole);
+
+  const legacy = await construction.projectQuotes.listLegacy();
+  const showLegacy = firstString(sp.folder) === "anteriores";
+
+  if (showLegacy) {
+    const customers = await allCustomerOptions(tenantRecord.id);
+    return (
+      <div className="space-y-6">
+        <PageHeader
+          eyebrow="Construcción"
+          title="Cotizaciones anteriores"
+          actions={<Link
+            href={`/${tenantSlug}/ventas/cotizaciones/anteriores`}
+            className="inline-flex items-center gap-1 text-sm text-muted-foreground transition hover:text-foreground"
+          >
+            <ArrowLeft aria-hidden="true" className="h-4 w-4" />
+            Volver a las carpetas
+          </Link>}
+        />
+        <LegacyQuotes tenantSlug={tenantSlug} quotes={legacy} customers={customers} canMigrate={canGovern} />
+      </div>
+    );
+  }
+
+  const q = firstString(sp.q).trim();
+  const statusRaw = firstString(sp.status);
+  const status = isValidProjectStatus(statusRaw) ? statusRaw : undefined;
+  const folders = await construction.projectQuotes.listFolders({ q, status });
+
+  return (
+    <div className="space-y-6">
+      <PageHeader
+        eyebrow="Construcción"
+        title="Cotizaciones"
+        description="Una carpeta por obra con sus versiones emitidas y los seguimientos al cliente."
+        actions={<Link
+          href={`/${tenantSlug}/proyectos`}
+          className={`${buttonVariants({ variant: "outline" })} shrink-0 self-start`}
+        >
+          <Building2 aria-hidden="true" className="h-4 w-4" />
+          Obras
+        </Link>}
+      />
+
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <SearchInput
+          paramKey="q"
+          pageParam="page"
+          ariaLabel="Buscar carpeta por obra"
+          placeholder="Buscar obra…"
+          defaultValue={q}
+        />
+        <FilterSelect
+          paramKey="status"
+          pageParam="page"
+          allLabel="Todos los estados"
+          options={PROJECT_STATUSES}
+          value={status ?? ""}
+        />
+      </div>
+
+      <QuoteFolders tenantSlug={tenantSlug} folders={folders} legacyCount={q || status ? 0 : legacy.length} />
+    </div>
+  );
+}

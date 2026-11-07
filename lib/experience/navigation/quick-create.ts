@@ -41,7 +41,7 @@ export function quickCreateActions(
       key: "new-project",
       label: terms.newProject ?? "Nuevo proyecto",
       hint: "Presupuesto y cotización",
-      href: "/projects",
+      href: "/proyectos",
       icon: Building2,
       permission: "projects.create",
     });
@@ -51,21 +51,21 @@ export function quickCreateActions(
       key: "new-customer",
       label: `Nuevo ${terms.customer.toLowerCase()}`,
       hint: "Agregar un contacto",
-      href: "/crm",
+      href: "/contactos",
       icon: UserPlus,
     });
   }
   if (has("finance")) {
     actions.push(
-      { key: "payment", label: "Registrar pago", hint: "Cobrar y generar comprobante", href: "/finance?nuevo=pago", icon: HandCoins, permission: "money.handle" },
-      { key: "expense", label: "Registrar gasto", hint: "Anotar un egreso de caja", href: "/finance?nuevo=gasto", icon: Receipt, permission: "money.handle" },
+      { key: "payment", label: "Registrar pago", hint: "Cobrar y generar comprobante", href: "/finanzas?nuevo=pago", icon: HandCoins, permission: "money.handle" },
+      { key: "expense", label: "Registrar gasto", hint: "Anotar un egreso de caja", href: "/finanzas?nuevo=gasto", icon: Receipt, permission: "money.handle" },
     );
   }
   if (has("bookings")) {
     actions.push({ key: "booking", label: "Nueva reserva", hint: "Reservar un horario", href: "/bookings", icon: CalendarPlus });
   }
   if (has("billing")) {
-    actions.push({ key: "invoice", label: "Crear factura", hint: "Generar un documento", href: "/billing", icon: FileText });
+    actions.push({ key: "invoice", label: "Crear factura", hint: "Generar un documento", href: "/finanzas/facturacion", icon: FileText });
   }
   return actions.filter((action) => !role || !action.permission || can(role, action.permission)).slice(0, limit);
 }

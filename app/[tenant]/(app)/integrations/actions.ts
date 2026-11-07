@@ -20,8 +20,8 @@ const manager = async (slug: string) => {
 };
 const refresh = (slug: string) => {
   revalidatePath(`/${slug}/integrations`);
-  revalidatePath(`/${slug}/cobros`);
-  revalidatePath(`/${slug}/conversaciones`);
+  revalidatePath(`/${slug}/ventas/cobros`);
+  revalidatePath(`/${slug}/canales/conversaciones`);
 };
 
 /**

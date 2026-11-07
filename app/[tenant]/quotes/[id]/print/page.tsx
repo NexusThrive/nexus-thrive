@@ -29,7 +29,7 @@ export default async function QuotePrintPage({
   const { tenant: tenantSlug, id: quoteId } = await params;
 
   // Sesión + negocio activo + membresía activa (SEC-03): no basta el layout.
-  const pageCtx = await requirePageContext(tenantSlug, "/quotes");
+  const pageCtx = await requirePageContext(tenantSlug, "/ventas/cotizaciones/anteriores");
   const tenantRecord = pageCtx.tenant;
   const construction = createConstructionDb(tenantRecord.id);
   const terms = getQuoteTerms(tenantRecord.vertical);
@@ -42,7 +42,7 @@ export default async function QuotePrintPage({
         <style>{`@page { size: A4; margin: 12mm; }`}</style>
         <div className="mx-auto mb-6 flex max-w-[210mm] flex-col gap-3 sm:flex-row sm:items-center sm:justify-between print:hidden">
           <Link
-            href={`/${tenantSlug}/projects/${versioned.projectId}?tab=cotizaciones`}
+            href={`/${tenantSlug}/proyectos/${versioned.projectId}?tab=cotizaciones`}
             className={`${buttonVariants({ variant: "outline" })} w-fit`}
           >
             <ArrowLeft aria-hidden="true" className="h-4 w-4" />
@@ -73,7 +73,7 @@ export default async function QuotePrintPage({
 
       <div className="mx-auto mb-6 flex max-w-[210mm] flex-col gap-3 sm:flex-row sm:items-center sm:justify-between print:hidden">
         <Link
-          href={`/${tenantSlug}/quotes/${quoteId}`}
+          href={`/${tenantSlug}/ventas/cotizaciones/anteriores/${quoteId}`}
           className={`${buttonVariants({ variant: "outline" })} w-fit`}
         >
           <ArrowLeft aria-hidden="true" className="h-4 w-4" />

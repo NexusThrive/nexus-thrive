@@ -23,7 +23,7 @@ describe("tareas (HU-actividades-01)", () => {
     expect(buildNotifications({ ...base, overdueTasks: 0 })).toEqual([]);
     const n = buildNotifications({ ...base, overdueTasks: 3 });
     expect(n).toHaveLength(1);
-    expect(n[0]).toMatchObject({ kind: "task", severity: "urgent", title: "3 tareas vencidas", href: "/tareas" });
+    expect(n[0]).toMatchObject({ kind: "task", severity: "urgent", title: "3 tareas vencidas", href: "/crm/tareas" });
     expect(buildNotifications({ ...base, overdueTasks: 1 })[0]!.title).toBe("1 tarea vencida");
   });
 });

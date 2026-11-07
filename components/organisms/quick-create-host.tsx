@@ -3,8 +3,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { loadQuickCreateDataAction, type QuickCreateData } from "@/app/[tenant]/(app)/_actions/quick-create";
-import CustomerQuickCreate from "@/app/[tenant]/(app)/crm/_components/customer-quick-create";
-import { ConnectedExpenseSheet, ConnectedPaymentSheet } from "@/app/[tenant]/(app)/finance/_components/finance-sheets";
+import CustomerQuickCreate from "@/app/[tenant]/(app)/contactos/_components/customer-quick-create";
+import { ConnectedExpenseSheet, ConnectedPaymentSheet } from "@/app/[tenant]/(app)/finanzas/_components/finance-sheets";
 import { SkeletonRows } from "@/components/molecules/skeleton-rows";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { useShell } from "@/components/providers/shell-context";
@@ -98,7 +98,7 @@ export function QuickCreateProvider({ children }: { children: ReactNode }) {
           tenantSlug={slug}
           open
           onOpenChange={onOpenChange}
-          fullHref={hrefFor("/finance?nuevo=pago")}
+          fullHref={hrefFor("/finanzas?nuevo=pago")}
           business={data?.business ?? { name: "" }}
           customers={data?.customers ?? []}
         />
@@ -106,7 +106,7 @@ export function QuickCreateProvider({ children }: { children: ReactNode }) {
 
       {sheet === "expense" ? (
         data ? (
-          <ConnectedExpenseSheet tenantSlug={slug} open onOpenChange={onOpenChange} fullHref={hrefFor("/finance?nuevo=gasto")} cashOpen={data.cashOpen} />
+          <ConnectedExpenseSheet tenantSlug={slug} open onOpenChange={onOpenChange} fullHref={hrefFor("/finanzas?nuevo=gasto")} cashOpen={data.cashOpen} />
         ) : (
           // El gasto decide «de dónde sale» al montarse: se espera a tener la caja (casi nunca se ve, ya se pidió en reposo).
           <ResponsiveSheet open onOpenChange={onOpenChange} title="Registrar gasto" description="Se descuenta de la caja menor." unsavedGuard={false}>
@@ -116,7 +116,7 @@ export function QuickCreateProvider({ children }: { children: ReactNode }) {
       ) : null}
 
       {sheet === "customer" ? (
-        <CustomerQuickCreate tenantSlug={slug} onClose={close} fullHref={hrefFor("/crm")} />
+        <CustomerQuickCreate tenantSlug={slug} onClose={close} fullHref={hrefFor("/contactos")} />
       ) : null}
     </QuickCreateContext.Provider>
   );

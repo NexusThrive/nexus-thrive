@@ -12,7 +12,7 @@ export type NavItem = {
   /** Módulo del negocio al que pertenece (no aplica en el panel CEO). */
   module?: ModuleValue | "settings";
   label: string;
-  /** Ruta relativa al negocio: "" = inicio, "/crm", "/projects"… */
+  /** Ruta relativa al negocio: "" = inicio, "/contactos", "/proyectos"… */
   href: string;
   icon: LucideIcon;
 };

@@ -6,7 +6,7 @@ import { Trash2 } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { useToast } from "@/components/molecules/toast";
 import { DeleteBusinessDialog } from "@/components/organisms/delete-business-dialog";
-import { deleteBusinessAction } from "../../../negocios/actions";
+import { deleteBusinessAction } from "../../actions";
 
 /**
  * Botón de borrado de raíz en la ficha del negocio (Operations Center).

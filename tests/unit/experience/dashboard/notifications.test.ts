@@ -35,7 +35,7 @@ describe("unreadCount", () => {
 });
 
 describe("newArrivals", () => {
-  const n = (id: string, at: string) => ({ id, kind: "payment" as const, title: id, detail: "", at, href: "/finance" });
+  const n = (id: string, at: string) => ({ id, kind: "payment" as const, title: id, detail: "", at, href: "/finanzas" });
   it("en la primera carga no avisa de lo que ya estaba", async () => {
     const { newArrivals } = await import("@/lib/experience/dashboard/notifications");
     expect(newArrivals(null, [n("a", "2026-10-16T10:00:00Z")], null)).toEqual([]);
@@ -71,7 +71,7 @@ describe("altas del registro público", () => {
   it("avisa al personal con enlace a la ficha del cliente", () => {
     const list = buildNotifications({ ...base, registrations: [{ id: "ev1", customerId: "c9", name: "Laura", at: "2026-11-04T14:00:00Z" }] });
     expect(list).toHaveLength(1);
-    expect(list[0]).toMatchObject({ kind: "customer", severity: "info", href: "/crm/c9" });
+    expect(list[0]).toMatchObject({ kind: "customer", severity: "info", href: "/contactos/c9" });
     expect(list[0].title).toContain("Laura");
   });
 
@@ -84,6 +84,6 @@ describe("altas del registro público", () => {
 describe("pedidos listos para entregar (HU-avisos-01)", () => {
   it("el responsable ve un aviso por cada pedido listo, con acción y enlace a Pedidos", () => {
     const list = buildNotifications({ movements: [], bookings: [], expiring: 0, expired: 0, todayStart: "2026-11-07T05:00:00.000Z", modules: { finance: false, bookings: false, memberships: false }, readyOrders: [{ id: "o1", code: "T-0005", customer: "María", at: "2026-11-07T10:00:00.000Z" }] });
-    expect(list).toEqual([expect.objectContaining({ id: "order-ready-o1", kind: "order", severity: "action", title: "Pedido T-0005 listo para entregar", href: "/orders" })]);
+    expect(list).toEqual([expect.objectContaining({ id: "order-ready-o1", kind: "order", severity: "action", title: "Pedido T-0005 listo para entregar", href: "/ventas/pedidos" })]);
   });
 });

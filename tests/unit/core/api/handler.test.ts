@@ -20,7 +20,7 @@ const OPS = [
   }),
   defineOperation({
     id: "finance.get_summary",
-    rest: { method: "GET", path: "/finance/summary" },
+    rest: { method: "GET", path: "/finanzas/summary" },
     title: "Resumen",
     description: "Resumen de finanzas del periodo.",
     module: "finance",
@@ -83,7 +83,7 @@ describe("API /api/v1 (núcleo)", () => {
   });
 
   test("un valor literal numérico (1|7|30) también se convierte", async () => {
-    expect((await body(await call("/finance/summary?days=30"))).data).toEqual({ days: 30 });
+    expect((await body(await call("/finanzas/summary?days=30"))).data).toEqual({ days: 30 });
   });
 
   test("parámetros de ruta", async () => {
@@ -105,18 +105,18 @@ describe("API /api/v1 (núcleo)", () => {
 
   test("alcances: la llave no incluye la operación → 403 scope_denied", async () => {
     auth = { ok: true, key: { ...KEY, scopes: ["customers.*"] } };
-    expect(await body(await call("/finance/summary"))).toMatchObject({ code: "scope_denied", status: 403 });
+    expect(await body(await call("/finanzas/summary"))).toMatchObject({ code: "scope_denied", status: 403 });
     expect((await call("/customers?q=ma")).status).toBe(200);
   });
 
   test("el rol de la llave es el de quien la creó: sin dinero aunque el alcance sea `*`", async () => {
     auth = { ok: true, key: { ...KEY, scopes: ["*"], createdByRole: "ADVISOR" } };
-    expect(await body(await call("/finance/summary"))).toMatchObject({ code: "forbidden", status: 403 });
+    expect(await body(await call("/finanzas/summary"))).toMatchObject({ code: "forbidden", status: 403 });
   });
 
   test("módulo inactivo → 403 module_inactive", async () => {
     tenant = { active: true, modules: ["crm"] };
-    expect(await body(await call("/finance/summary"))).toMatchObject({ code: "module_inactive" });
+    expect(await body(await call("/finanzas/summary"))).toMatchObject({ code: "module_inactive" });
   });
 
   test("negocio inactivo o inexistente → 403 tenant_inactive", async () => {
