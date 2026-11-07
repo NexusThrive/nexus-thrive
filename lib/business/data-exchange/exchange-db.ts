@@ -2,6 +2,7 @@ import { withinLimit } from "@/lib/foundation/limits";
 import { customerLimit } from "@/lib/core/tenancy/customer-limit";
 import { syncCustomerParty } from "@/lib/core/parties/parties-db";
 import { db } from "@/prisma/db";
+import { canonicalPhone } from "@/lib/foundation/kernel/phone";
 import { CUSTOMER_HEADERS, PRODUCT_HEADERS, documentKey, parseCustomers, parseProducts, type ParsedRows, type RowError } from "./rows";
 import { toCsv, type Table } from "./table";
 
@@ -139,7 +140,7 @@ export async function importCustomers(tenantId: string, table: Table, opts: { dr
           continue;
         }
         if (!opts.dryRun) {
-          const created = await db.orm.public.Customer.create({ tenantId, name: data.name, email: data.email, phone: data.phone, documentId: data.documentId, city: data.city, tags: data.tags, active: true });
+          const created = await db.orm.public.Customer.create({ tenantId, name: data.name, email: data.email, phone: data.phone, phoneNorm: canonicalPhone(data.phone) || null, source: "IMPORT", documentId: data.documentId, city: data.city, tags: data.tags, active: true });
           await syncCustomerParty(tenantId, created.id);
           if (data.documentId) byDoc.set(data.documentId, created);
           else if (data.email) byEmail.set(data.email, created);
@@ -164,7 +165,7 @@ export async function importCustomers(tenantId: string, table: Table, opts: { dr
         continue;
       }
       if (!opts.dryRun) {
-        await db.orm.public.Customer.where({ tenantId, id: found.id }).update(next);
+        await db.orm.public.Customer.where({ tenantId, id: found.id }).update({ ...next, phoneNorm: canonicalPhone(next.phone) || null });
         await syncCustomerParty(tenantId, found.id);
       }
       out.updated++;

@@ -3,6 +3,7 @@ import { emitEvent } from "@/lib/core/events/outbox";
 import { toNumber } from "@/lib/foundation/format";
 import { applyStockMovement, StockError } from "@/lib/business/inventory/stock-service";
 import type { MoneyTx } from "@/lib/business/sales/money-service";
+import { refreshStageFromPaidOrders } from "@/lib/business/customers/contacts-db";
 import { allocatePayment } from "@/lib/business/sales/allocations";
 import { applyToObligation } from "@/lib/business/sales/obligations";
 import { orderCode } from "./cart";
@@ -40,5 +41,7 @@ export async function settleStoreOrder(tx: MoneyTx, tenantId: string, orderId: s
   const parts = await applyToObligation(tx, tenantId, "STORE_ORDER", orderId, toNumber(order.total));
   if (payment) for (const part of parts) await allocatePayment(tx, tenantId, { paymentId: payment.id, paymentAmount: payment.amount, targetType: "OBLIGATION", targetId: part.obligationId, amount: part.amount });
   await tx.orm.public.StoreOrder.where({ tenantId, id: orderId }).update({ status: "PAID", paidAt: Temporal.Instant.fromEpochMilliseconds(Date.now()), documentId, review });
+  // Pagar la vuelve cliente (y recurrente desde la tercera compra pagada).
+  if (order.customerId) await refreshStageFromPaidOrders(tx, tenantId, order.customerId);
   await emitEvent(tx, tenantId, { type: "order.paid", resourceType: "store_order", resourceId: orderId, payload: { order_id: orderId, code: orderCode(order.number), total: toNumber(order.total), currency: "COP", needs_review: review !== null, document_id: documentId } });
 }

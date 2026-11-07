@@ -3,6 +3,7 @@
  * de clientes, gastos, ficha 360° y demás datos del negocio, siempre acotadas por `tenantId`. Es el archivo más grande
  * de `lib/` y está pendiente de dividirse por dominio.
  */
+import { canonicalPhone } from "@/lib/foundation/kernel/phone";
 import { bogotaDayKey, buildFinanceSeries, cumulativeByDay, lastBogotaDays, type FinanceSeries } from "@/lib/foundation/kernel/finance-series";
 import {
   and,
@@ -492,6 +493,7 @@ export function createTenantDb(tenantId: string) {
       create: (data: Omit<Parameters<typeof db.orm.public.Customer.create>[0], "tenantId">) =>
         db.orm.public.Customer.create({
           ...data,
+          phoneNorm: canonicalPhone((data as { phone?: string | null }).phone) || null,
           tenantId,
         }),
 

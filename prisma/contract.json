@@ -6592,6 +6592,13 @@
                   "kind": "scalar"
                 }
               },
+              "consentAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
               "createdAt": {
                 "nullable": false,
                 "type": {
@@ -6634,6 +6641,13 @@
                   "kind": "scalar"
                 }
               },
+              "ownerId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "partyId": {
                 "nullable": true,
                 "type": {
@@ -6642,6 +6656,13 @@
                 }
               },
               "phone": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "phoneNorm": {
                 "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
@@ -6659,6 +6680,20 @@
                 "nullable": true,
                 "type": {
                   "codecId": "pg/json@1",
+                  "kind": "scalar"
+                }
+              },
+              "source": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "stage": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
@@ -6808,6 +6843,9 @@
                 "city": {
                   "column": "city"
                 },
+                "consentAt": {
+                  "column": "consentAt"
+                },
                 "createdAt": {
                   "column": "createdAt"
                 },
@@ -6826,17 +6864,29 @@
                 "nfcUid": {
                   "column": "nfcUid"
                 },
+                "ownerId": {
+                  "column": "ownerId"
+                },
                 "partyId": {
                   "column": "partyId"
                 },
                 "phone": {
                   "column": "phone"
                 },
+                "phoneNorm": {
+                  "column": "phoneNorm"
+                },
                 "photoId": {
                   "column": "photoId"
                 },
                 "profile": {
                   "column": "profile"
+                },
+                "source": {
+                  "column": "source"
+                },
+                "stage": {
+                  "column": "stage"
                 },
                 "tags": {
                   "column": "tags"
@@ -18081,6 +18131,13 @@
                   "kind": "scalar"
                 }
               },
+              "customerId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "customerName": {
                 "nullable": false,
                 "type": {
@@ -18226,6 +18283,9 @@
                 },
                 "createdAt": {
                   "column": "createdAt"
+                },
+                "customerId": {
+                  "column": "customerId"
                 },
                 "customerName": {
                   "column": "customerName"
@@ -28327,6 +28387,11 @@
                   "nativeType": "text",
                   "nullable": true
                 },
+                "consentAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
                 "createdAt": {
                   "codecId": "pg/timestamptz-temporal@1",
                   "default": {
@@ -28361,12 +28426,22 @@
                   "nativeType": "text",
                   "nullable": true
                 },
+                "ownerId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "partyId": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": true
                 },
                 "phone": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "phoneNorm": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": true
@@ -28380,6 +28455,20 @@
                   "codecId": "pg/json@1",
                   "nativeType": "json",
                   "nullable": true
+                },
+                "source": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "stage": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "CUSTOMER"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
                 },
                 "tags": {
                   "codecId": "pg/text@1",
@@ -28470,6 +28559,15 @@
                   "prefix": "Customer_tenantId_nfcUid_key",
                   "unique": true,
                   "where": "\"nfcUid\" IS NOT NULL"
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "phoneNorm"
+                  ],
+                  "name": "Customer_tenantId_phoneNorm_idx_8e50ed71",
+                  "prefix": "Customer_tenantId_phoneNorm_idx",
+                  "unique": false
                 }
               ],
               "primaryKey": {
@@ -37676,6 +37774,11 @@
                   "nativeType": "timestamptz",
                   "nullable": false
                 },
+                "customerId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "customerName": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -41068,7 +41171,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "84495926b9da9545f54ee11e6bd9013f75730f1829380511a67a333495497017"
+    "storageHash": "afa78939f472d4222044ba2206a3803b8c8f2bea89c88dcfcb8796b2ba5cb085"
   },
   "execution": {
     "executionHash": "32f1cebf3156d7c94928325f36709482fc8eaf14706a799144dc81bb445b13c1",

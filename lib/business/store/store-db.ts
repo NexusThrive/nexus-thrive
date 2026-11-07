@@ -2,6 +2,7 @@ import { emitEvent } from "@/lib/core/events/outbox";
 import { toNumber } from "@/lib/foundation/format";
 import { canTransitionOrder, resolveLimits, validateAmount } from "@/lib/foundation/kernel/integrity";
 import { paymentGatewayPort } from "./payment-gateway-port";
+import { findOrCreateContact } from "@/lib/business/customers/contacts-db";
 import { openObligation, voidObligations } from "@/lib/business/sales/obligations";
 import { db } from "@/prisma/db";
 import { sanitizeOrigin } from "@/lib/business/growth/growth";
@@ -46,13 +47,15 @@ export async function placeOrder(siteSlug: string, input: { customer: CustomerDa
       const order = await db.transaction(async (tx) => {
         const last = await tx.orm.public.StoreOrder.where({ tenantId }).orderBy((o) => o.number.desc()).first();
         const number = (last?.number ?? 0) + 1;
-        const created = await tx.orm.public.StoreOrder.create({ tenantId, number, customerName: c.name.trim().slice(0, 120), phone: c.phone.trim().slice(0, 30), email: c.email.trim().toLowerCase().slice(0, 120) || null, address: c.address.trim().slice(0, 200) || null, city: c.city.trim().slice(0, 80) || null, notes: c.notes.trim().slice(0, 300) || null, total: total.toFixed(2), origin: sanitizeOrigin(input.origin) as never });
+        // La persona que compra es UN contacto, venga de donde venga (mismo teléfono = misma ficha).
+        const contact = await findOrCreateContact(tx, tenantId, { name: c.name, phone: c.phone, email: c.email, source: "STORE", stage: "PROSPECT" });
+        const created = await tx.orm.public.StoreOrder.create({ tenantId, customerId: contact?.id ?? null, number, customerName: c.name.trim().slice(0, 120), phone: c.phone.trim().slice(0, 30), email: c.email.trim().toLowerCase().slice(0, 120) || null, address: c.address.trim().slice(0, 200) || null, city: c.city.trim().slice(0, 80) || null, notes: c.notes.trim().slice(0, 300) || null, total: total.toFixed(2), origin: sanitizeOrigin(input.origin) as never });
         await tx.orm.public.StoreOrderLine.createAll(lines.map((l) => ({ tenantId, orderId: created.id, productId: l.productId, name: l.name.slice(0, 160), quantity: l.quantity, unitPrice: l.unitPrice.toFixed(2), taxRatePct: l.taxRatePct.toFixed(2) }))).toArray();
         // Lo que el cliente debe: aparece en cartera con su saldo y vence cuando vence el enlace de cobro (72 h).
         await openObligation(tx, tenantId, { originType: "STORE_ORDER", originId: created.id, debtorName: c.name, description: `Pedido ${orderCode(number)}`, amount: total, dueDate: Temporal.Instant.fromEpochMilliseconds(Date.now() + 72 * 3_600_000) });
         return created;
       });
-      const intent = await paymentGatewayPort.use().createIntent(tenantId, { amount: total, description: `Pedido ${orderCode(order.number)} · ${tenant.name}`, expiresInHours: 72 }, "tienda");
+      const intent = await paymentGatewayPort.use().createIntent(tenantId, { amount: total, description: `Pedido ${orderCode(order.number)} · ${tenant.name}`, expiresInHours: 72, customerId: order.customerId ?? undefined }, "tienda");
       if (!intent.ok) {
         await db.orm.public.StoreOrder.where({ tenantId, id: order.id }).update({ status: "CANCELED", review: `No se pudo crear el cobro: ${intent.message}` });
         return { ok: false, message: "No pudimos generar el cobro de tu pedido. Escríbenos por WhatsApp." };

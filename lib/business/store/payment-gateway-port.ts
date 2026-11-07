@@ -10,7 +10,7 @@ import { definePort } from "@/lib/foundation/ports";
 
 export type GatewayOption = { value: string; label: string };
 
-export type IntentRequest = { amount: number; description: string; expiresInHours?: number; provider?: string };
+export type IntentRequest = { amount: number; description: string; expiresInHours?: number; provider?: string; customerId?: string };
 
 export type IntentResult = { ok: true; id: string; reference: string } | { ok: false; message: string };
 

@@ -7,6 +7,11 @@
 /// - `profile`: Campos propios del rubro (gym: peso, talla, objetivo…; turismo: pasaporte…).
 /// - `photoId`: Foto (Attachment.id, kind CUSTOMER_PHOTO).
 /// - `accessCode`: Código de acceso (QR) y tarjeta NFC vinculada.
+/// - `stage`: Etapa del contacto: PROSPECT | CUSTOMER | RECURRING (HU-contacto-unico-01). Los clientes que ya existían son CUSTOMER.
+/// - `source`: De dónde llegó: MANUAL | WEB | STORE | REGISTRATION | IMPORT | WHATSAPP.
+/// - `ownerId`: Integrante del equipo responsable (TenantMember.id).
+/// - `phoneNorm`: Teléfono canónico (57 + 10 dígitos) para encontrar a la misma persona venga de donde venga.
+/// - `consentAt`: Cuándo aceptó que lo contacten (tratamiento de datos); vacío = sin registro.
 /// - `partyId`: Tercero único al que pertenece este cliente (la misma persona o empresa, con sus
 ///   roles).
 /// - `@@index([tenantId,`: Un código o una tarjeta identifica a UN socio del negocio (DATA-04).
@@ -26,6 +31,11 @@ model Customer {
   city       String?
   accessCode String?
   nfcUid     String?
+  stage      String   @default("CUSTOMER")
+  source     String?
+  ownerId    String?
+  phoneNorm  String?
+  consentAt  DateTime?
   createdAt DateTime @default(now())
   updatedAt temporal.updatedAt()
 
@@ -38,6 +48,7 @@ model Customer {
   party    Party?   @relation(fields: [partyId], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
+  @@index([tenantId, phoneNorm])
   @@index([partyId])
   @@index([tenantId, accessCode], unique: true, where: "\"accessCode\" IS NOT NULL", name: "Customer_tenantId_accessCode_key")
   @@index([tenantId, nfcUid], unique: true, where: "\"nfcUid\" IS NOT NULL", name: "Customer_tenantId_nfcUid_key")

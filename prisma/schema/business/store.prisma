@@ -16,6 +16,7 @@ model StoreOrder {
   tenant             Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   number             Int
   status             String    @default("PENDING_PAYMENT")
+  customerId         String?
   customerName       String
   phone              String
   email              String?

@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'84495926b9da9545f54ee11e6bd9013f75730f1829380511a67a333495497017'>;
+  StorageHashBase<'afa78939f472d4222044ba2206a3803b8c8f2bea89c88dcfcb8796b2ba5cb085'>;
 export type ExecutionHash =
   ExecutionHashBase<'32f1cebf3156d7c94928325f36709482fc8eaf14706a799144dc81bb445b13c1'>;
 export type ProfileHash =
@@ -702,16 +702,21 @@ export type FieldOutputTypes = {
       readonly active: CodecTypes['pg/bool@1']['output'];
       readonly birthDate: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly city: CodecTypes['pg/text@1']['output'] | null;
+      readonly consentAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly documentId: CodecTypes['pg/text@1']['output'] | null;
       readonly email: CodecTypes['pg/text@1']['output'] | null;
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly name: CodecTypes['pg/text@1']['output'];
       readonly nfcUid: CodecTypes['pg/text@1']['output'] | null;
+      readonly ownerId: CodecTypes['pg/text@1']['output'] | null;
       readonly partyId: CodecTypes['pg/text@1']['output'] | null;
       readonly phone: CodecTypes['pg/text@1']['output'] | null;
+      readonly phoneNorm: CodecTypes['pg/text@1']['output'] | null;
       readonly photoId: CodecTypes['pg/text@1']['output'] | null;
       readonly profile: CodecTypes['pg/json@1']['output'] | null;
+      readonly source: CodecTypes['pg/text@1']['output'] | null;
+      readonly stage: CodecTypes['pg/text@1']['output'];
       readonly tags: ReadonlyArray<CodecTypes['pg/text@1']['output']> | null;
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -1652,6 +1657,7 @@ export type FieldOutputTypes = {
       readonly address: CodecTypes['pg/text@1']['output'] | null;
       readonly city: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly customerId: CodecTypes['pg/text@1']['output'] | null;
       readonly customerName: CodecTypes['pg/text@1']['output'];
       readonly documentId: CodecTypes['pg/text@1']['output'] | null;
       readonly email: CodecTypes['pg/text@1']['output'] | null;
@@ -2463,16 +2469,21 @@ export type FieldInputTypes = {
       readonly active: CodecTypes['pg/bool@1']['input'];
       readonly birthDate: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly city: CodecTypes['pg/text@1']['input'] | null;
+      readonly consentAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly documentId: CodecTypes['pg/text@1']['input'] | null;
       readonly email: CodecTypes['pg/text@1']['input'] | null;
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly name: CodecTypes['pg/text@1']['input'];
       readonly nfcUid: CodecTypes['pg/text@1']['input'] | null;
+      readonly ownerId: CodecTypes['pg/text@1']['input'] | null;
       readonly partyId: CodecTypes['pg/text@1']['input'] | null;
       readonly phone: CodecTypes['pg/text@1']['input'] | null;
+      readonly phoneNorm: CodecTypes['pg/text@1']['input'] | null;
       readonly photoId: CodecTypes['pg/text@1']['input'] | null;
       readonly profile: CodecTypes['pg/json@1']['input'] | null;
+      readonly source: CodecTypes['pg/text@1']['input'] | null;
+      readonly stage: CodecTypes['pg/text@1']['input'];
       readonly tags: ReadonlyArray<CodecTypes['pg/text@1']['input']> | null;
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -3413,6 +3424,7 @@ export type FieldInputTypes = {
       readonly address: CodecTypes['pg/text@1']['input'] | null;
       readonly city: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly customerId: CodecTypes['pg/text@1']['input'] | null;
       readonly customerName: CodecTypes['pg/text@1']['input'];
       readonly documentId: CodecTypes['pg/text@1']['input'] | null;
       readonly email: CodecTypes['pg/text@1']['input'] | null;
@@ -4224,16 +4236,21 @@ export type StorageColumnTypes = {
       readonly active: CodecTypes['pg/bool@1']['output'];
       readonly birthDate: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly city: CodecTypes['pg/text@1']['output'] | null;
+      readonly consentAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly documentId: CodecTypes['pg/text@1']['output'] | null;
       readonly email: CodecTypes['pg/text@1']['output'] | null;
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly name: CodecTypes['pg/text@1']['output'];
       readonly nfcUid: CodecTypes['pg/text@1']['output'] | null;
+      readonly ownerId: CodecTypes['pg/text@1']['output'] | null;
       readonly partyId: CodecTypes['pg/text@1']['output'] | null;
       readonly phone: CodecTypes['pg/text@1']['output'] | null;
+      readonly phoneNorm: CodecTypes['pg/text@1']['output'] | null;
       readonly photoId: CodecTypes['pg/text@1']['output'] | null;
       readonly profile: CodecTypes['pg/json@1']['output'] | null;
+      readonly source: CodecTypes['pg/text@1']['output'] | null;
+      readonly stage: CodecTypes['pg/text@1']['output'];
       readonly tags: ReadonlyArray<CodecTypes['pg/text@1']['output']> | null;
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -5174,6 +5191,7 @@ export type StorageColumnTypes = {
       readonly address: CodecTypes['pg/text@1']['output'] | null;
       readonly city: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly customerId: CodecTypes['pg/text@1']['output'] | null;
       readonly customerName: CodecTypes['pg/text@1']['output'];
       readonly documentId: CodecTypes['pg/text@1']['output'] | null;
       readonly email: CodecTypes['pg/text@1']['output'] | null;
@@ -5985,16 +6003,21 @@ export type StorageColumnInputTypes = {
       readonly active: CodecTypes['pg/bool@1']['input'];
       readonly birthDate: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly city: CodecTypes['pg/text@1']['input'] | null;
+      readonly consentAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly documentId: CodecTypes['pg/text@1']['input'] | null;
       readonly email: CodecTypes['pg/text@1']['input'] | null;
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly name: CodecTypes['pg/text@1']['input'];
       readonly nfcUid: CodecTypes['pg/text@1']['input'] | null;
+      readonly ownerId: CodecTypes['pg/text@1']['input'] | null;
       readonly partyId: CodecTypes['pg/text@1']['input'] | null;
       readonly phone: CodecTypes['pg/text@1']['input'] | null;
+      readonly phoneNorm: CodecTypes['pg/text@1']['input'] | null;
       readonly photoId: CodecTypes['pg/text@1']['input'] | null;
       readonly profile: CodecTypes['pg/json@1']['input'] | null;
+      readonly source: CodecTypes['pg/text@1']['input'] | null;
+      readonly stage: CodecTypes['pg/text@1']['input'];
       readonly tags: ReadonlyArray<CodecTypes['pg/text@1']['input']> | null;
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -6935,6 +6958,7 @@ export type StorageColumnInputTypes = {
       readonly address: CodecTypes['pg/text@1']['input'] | null;
       readonly city: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly customerId: CodecTypes['pg/text@1']['input'] | null;
       readonly customerName: CodecTypes['pg/text@1']['input'];
       readonly documentId: CodecTypes['pg/text@1']['input'] | null;
       readonly email: CodecTypes['pg/text@1']['input'] | null;
@@ -7855,16 +7879,21 @@ export namespace Models {
     active: CodecTypes['pg/bool@1']['output'];
     birthDate: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
     city: CodecTypes['pg/text@1']['output'] | null;
+    consentAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     documentId: CodecTypes['pg/text@1']['output'] | null;
     email: CodecTypes['pg/text@1']['output'] | null;
     id: CodecTypes['pg/text@1']['output'];
     name: CodecTypes['pg/text@1']['output'];
     nfcUid: CodecTypes['pg/text@1']['output'] | null;
+    ownerId: CodecTypes['pg/text@1']['output'] | null;
     partyId: CodecTypes['pg/text@1']['output'] | null;
     phone: CodecTypes['pg/text@1']['output'] | null;
+    phoneNorm: CodecTypes['pg/text@1']['output'] | null;
     photoId: CodecTypes['pg/text@1']['output'] | null;
     profile: CodecTypes['pg/json@1']['output'] | null;
+    source: CodecTypes['pg/text@1']['output'] | null;
+    stage: CodecTypes['pg/text@1']['output'];
     tags: ReadonlyArray<CodecTypes['pg/text@1']['output']> | null;
     tenantId: CodecTypes['pg/text@1']['output'];
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -9040,6 +9069,7 @@ export namespace Models {
     address: CodecTypes['pg/text@1']['output'] | null;
     city: CodecTypes['pg/text@1']['output'] | null;
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    customerId: CodecTypes['pg/text@1']['output'] | null;
     customerName: CodecTypes['pg/text@1']['output'];
     documentId: CodecTypes['pg/text@1']['output'] | null;
     email: CodecTypes['pg/text@1']['output'] | null;
@@ -13206,6 +13236,11 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
                 };
+                readonly consentAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: true;
+                };
                 readonly createdAt: {
                   readonly nativeType: 'timestamptz';
                   readonly codecId: 'pg/timestamptz-temporal@1';
@@ -13237,12 +13272,22 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
                 };
+                readonly ownerId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
                 readonly partyId: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
                 };
                 readonly phone: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly phoneNorm: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
@@ -13256,6 +13301,20 @@ type ContractBase = Omit<
                   readonly nativeType: 'json';
                   readonly codecId: 'pg/json@1';
                   readonly nullable: true;
+                };
+                readonly source: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly stage: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'CUSTOMER'>;
+                  };
                 };
                 readonly tags: {
                   readonly nativeType: 'text';
@@ -13301,6 +13360,12 @@ type ContractBase = Omit<
                   readonly columns: readonly ['tenantId', 'nfcUid'];
                   readonly where: '"nfcUid" IS NOT NULL';
                   readonly unique: true;
+                },
+                {
+                  readonly name: 'Customer_tenantId_phoneNorm_idx_8e50ed71';
+                  readonly prefix: 'Customer_tenantId_phoneNorm_idx';
+                  readonly columns: readonly ['tenantId', 'phoneNorm'];
+                  readonly unique: false;
                 },
               ];
               foreignKeys: readonly [
@@ -20734,6 +20799,11 @@ type ContractBase = Omit<
                   readonly nullable: false;
                   readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
                 };
+                readonly customerId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
                 readonly customerName: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
@@ -27086,6 +27156,13 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly consentAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
               readonly createdAt: {
                 readonly nullable: false;
                 readonly type: {
@@ -27113,11 +27190,19 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly ownerId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly partyId: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly phone: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly phoneNorm: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
@@ -27128,6 +27213,14 @@ type ContractBase = Omit<
               readonly profile: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/json@1' };
+              };
+              readonly source: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly stage: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly tags: {
                 readonly nullable: true;
@@ -27235,16 +27328,21 @@ type ContractBase = Omit<
                 readonly active: { readonly column: 'active' };
                 readonly birthDate: { readonly column: 'birthDate' };
                 readonly city: { readonly column: 'city' };
+                readonly consentAt: { readonly column: 'consentAt' };
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly documentId: { readonly column: 'documentId' };
                 readonly email: { readonly column: 'email' };
                 readonly id: { readonly column: 'id' };
                 readonly name: { readonly column: 'name' };
                 readonly nfcUid: { readonly column: 'nfcUid' };
+                readonly ownerId: { readonly column: 'ownerId' };
                 readonly partyId: { readonly column: 'partyId' };
                 readonly phone: { readonly column: 'phone' };
+                readonly phoneNorm: { readonly column: 'phoneNorm' };
                 readonly photoId: { readonly column: 'photoId' };
                 readonly profile: { readonly column: 'profile' };
+                readonly source: { readonly column: 'source' };
+                readonly stage: { readonly column: 'stage' };
                 readonly tags: { readonly column: 'tags' };
                 readonly tenantId: { readonly column: 'tenantId' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
@@ -34222,6 +34320,10 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/timestamptz-temporal@1';
                 };
               };
+              readonly customerId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly customerName: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -34315,6 +34417,7 @@ type ContractBase = Omit<
                 readonly address: { readonly column: 'address' };
                 readonly city: { readonly column: 'city' };
                 readonly createdAt: { readonly column: 'createdAt' };
+                readonly customerId: { readonly column: 'customerId' };
                 readonly customerName: { readonly column: 'customerName' };
                 readonly documentId: { readonly column: 'documentId' };
                 readonly email: { readonly column: 'email' };
