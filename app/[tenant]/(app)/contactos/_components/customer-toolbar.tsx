@@ -73,7 +73,9 @@ export default function CustomerToolbar({
 
   return (
     <>
-      <div className="grid items-center gap-x-4 gap-y-3 px-5 py-4 min-[1100px]:grid-cols-[1fr_minmax(0,543px)_1fr]">
+      {/* `suppressHydrationWarning`: Proton Pass marca con `data-protonpass-form` los contenedores con campos antes de que
+          React hidrate; no es nuestro HTML (mismo criterio que la barra superior). */}
+      <div suppressHydrationWarning className="grid items-center gap-x-4 gap-y-3 px-5 py-4 min-[1100px]:grid-cols-[1fr_minmax(0,543px)_1fr]">
         {/* Izquierda: alta, título y ⋮ */}
         <div className="flex min-w-0 items-center gap-3 justify-self-start">
           <button type="button" onClick={() => setIsFormOpen(true)} className={buttonVariants({ variant: "accent", size: "sm", className: "h-[34px]" })}>
@@ -142,7 +144,7 @@ export default function CustomerToolbar({
             </DropdownMenu>
           </div>
         ) : (
-        <div className="relative h-[34px] w-full justify-self-center max-w-[543px] [&>div]:h-full [&>div]:max-w-none [&_input]:h-full [&_input]:w-full [&_input]:rounded-lg [&_input]:border-border [&_input]:bg-card [&_input]:pr-10">
+        <div suppressHydrationWarning className="relative h-[34px] w-full justify-self-center max-w-[543px] [&>div]:h-full [&>div]:max-w-none [&_input]:h-full [&_input]:w-full [&_input]:rounded-lg [&_input]:border-border [&_input]:bg-card [&_input]:pr-10">
           <CustomerSearch />
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
