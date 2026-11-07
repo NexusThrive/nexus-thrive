@@ -82,6 +82,7 @@ export function AppTopbar({ actions, notifications, search, switcher }: { action
       {atHome ? (
         <div className="relative flex flex-1 items-center justify-end gap-3 pe-3">
           <span className="truncate text-sm font-medium text-muted-foreground">{brandName}</span>
+          <ThemeToggle />
           <AccountButton />
         </div>
       ) : (
@@ -240,6 +241,7 @@ function ModuleBar({
           <Kbd className="max-md:hidden">Ctrl K</Kbd>
         </button>
         {notifications}
+        <ThemeToggle />
         <span className="flex items-center gap-2">
           <span className="text-sm font-medium text-muted-foreground max-md:hidden">{brandName}</span>
           <AccountButton />
