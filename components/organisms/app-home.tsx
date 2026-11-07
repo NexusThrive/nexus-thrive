@@ -73,10 +73,10 @@ export function AppHome() {
           aria-label={`${label}: ${group.items.length} ${group.items.length === 1 ? "sección" : "secciones"}`}
           className="group grid w-24 justify-items-center gap-2 rounded-2xl p-2 text-center outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
-          <span className="grid size-16 place-items-center rounded-2xl border border-border bg-card text-accent-text shadow-sm transition-[transform,background-color] duration-200 group-hover:-translate-y-0.5 group-hover:bg-accent-subtle sm:size-18">
-            <Icon aria-hidden="true" className="size-7" />
+          <span className="grid size-20 place-items-center rounded-2xl border border-border bg-card text-accent-text shadow-sm transition-[transform,background-color] duration-200 group-hover:-translate-y-0.5 group-hover:bg-accent-subtle sm:size-22">
+            <Icon aria-hidden="true" className="size-9" />
           </span>
-          <span className="line-clamp-2 text-sm font-medium leading-tight text-foreground">{label}</span>
+          <span className="line-clamp-2 text-xs font-medium leading-tight text-foreground">{label}</span>
         </Link>
         <button
           type="button"
