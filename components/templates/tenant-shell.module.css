@@ -7,19 +7,7 @@
   background: var(--background);
   color: var(--foreground);
 }
-@media (min-width: 768px) {
-  .root {
-    --sw: 88px;
-  }
-}
-@media (min-width: 1024px) {
-  .root {
-    --sw: 248px;
-  }
-  :global(html[data-rail]) .root {
-    --sw: 76px;
-  }
-}
+/* Nexus Workspace: sin barra lateral fija. La navegación vive en la barra superior (launcher) y en la fila contextual. */
 
 .main {
   min-width: 0;
