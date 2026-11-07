@@ -7,8 +7,8 @@ import { tenantRelativePath } from "@/lib/experience/navigation/tenant-nav";
 
 /**
  * Migas de la página actual, derivadas del menú del negocio: Inicio › categoría ›
- * sección (› Detalle si se entró a un registro). No aparece en el inicio ni
- * fuera de una sección del menú.
+ * sección (› Detalle si se entró a un registro). La ficha de un contacto pone su
+ * propia miga de registro. No aparece en el inicio ni fuera de una sección del menú.
  */
 export function RouteBreadcrumbs() {
   const { groups, activeKey, hrefFor } = useShell();
@@ -21,6 +21,8 @@ export function RouteBreadcrumbs() {
   const relative = tenantRelativePath(pathname, slug);
   const base = item.href.split("?")[0]!;
   const deeper = relative !== base && relative.startsWith(`${base}/`);
+  // La ficha de un contacto pone su propia miga de registro («Atrás» · «Clientes › María Pérez»).
+  if (deeper && relative.startsWith("/contactos/")) return null;
   const crumbs: Crumb[] = [
     { label: "Inicio", href: hrefFor("") },
     { label: group.label },

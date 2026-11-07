@@ -8,6 +8,7 @@ import { getCustomer360Memberships } from "@/lib/industry/gym/memberships-repo";
 import { getVerticalTerms, hasMemberAccess } from "@/lib/core/sectors/terms";
 import { bmi, profileFor } from "@/lib/business/customers/customer-fields";
 import CustomerHeader from "./_components/customer-header";
+import { RecordBreadcrumbs } from "@/components/organisms/record-breadcrumbs";
 import MembershipHighlight from "./_components/membership-highlight";
 import AgeText from "./_components/age-text";
 import FinanceSummary from "./_components/finance-summary";
@@ -185,6 +186,7 @@ export default async function CustomerPage({
     // hidrate: sin esto aparece un aviso de hydration mismatch que no es
     // nuestro (la ficha 360 tiene varios formularios).
     <div className="space-y-5" suppressHydrationWarning>
+      <RecordBreadcrumbs list={{ label: terms.customers, href: `/${tenantSlug}/contactos` }} record={customer.name} />
       <CustomerHeader
         tenantSlug={tenantSlug}
         tenantName={tenantRecord.name}
