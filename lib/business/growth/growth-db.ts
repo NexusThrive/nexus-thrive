@@ -1,3 +1,5 @@
+import { findOrCreateContact } from "@/lib/business/customers/contacts-db";
+import { createOpportunity } from "./opportunities-db";
 import { emitEvent } from "@/lib/core/events/outbox";
 import { toNumber } from "@/lib/foundation/format";
 import { db } from "@/prisma/db";
@@ -77,6 +79,9 @@ export async function createLead(siteSlug: string, input: { name: string; phone:
   const lead = await db.transaction(async (tx) => {
     const l = await tx.orm.public.ContactLead.create({ tenantId: site.tenantId, name: input.name.trim().slice(0, 120), phone: input.phone.trim().slice(0, 30), email: input.email.trim().toLowerCase().slice(0, 120) || null, message: input.message.trim().slice(0, 500) || null, origin: origin as never });
     await emitEvent(tx, site.tenantId, { type: "lead.created", resourceType: "contact_lead", resourceId: l.id, payload: { lead_id: l.id, name: l.name, phone: l.phone, email: l.email, origin } });
+    // El interesado es un contacto único y su seguimiento empieza como oportunidad abierta.
+    const contact = await findOrCreateContact(tx, site.tenantId, { name: l.name, phone: l.phone, email: l.email, source: "WEB", stage: "PROSPECT", consent: true });
+    if (contact) await createOpportunity(tx, site.tenantId, { customerId: contact.id, interest: l.message?.trim() || "Escribió desde el sitio", source: "WEB", leadId: l.id });
     return l;
   });
   void lead;

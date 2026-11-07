@@ -76,3 +76,38 @@ model CustomerNote {
   @@index([customerId])
   @@rls
 }
+
+/// Oportunidad (HU-leads-01): seguir a cada interesado hasta que compra o se pierde. Siempre ligada a UN contacto (`Customer`):
+/// ganar una oportunidad no duplica a la persona. No es el CRM comercial de Nexus (`platform/crm`): es el del negocio.
+///
+/// Campos:
+/// - `stage`: NEW | CONTACTED | QUOTED | NEGOTIATING (mientras está abierta).
+/// - `status`: OPEN | WON | LOST. Al ganar o perder se guarda `closedAt`; perder pide `lostReason`.
+/// - `leadId`: `ContactLead` de donde nació (los contactos del formulario que ya existían se migran con él).
+/// - `orderId`: Pedido de la tienda con el que se ganó, si lo hubo.
+/// - `nextAction`, `nextActionAt`: El siguiente paso y cuándo; la base de las tareas del seguimiento.
+model Opportunity {
+  id            String    @id @default(uuid())
+  tenantId      String
+  tenant        Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customerId    String
+  interest      String
+  estimatedValue Decimal?
+  stage         String    @default("NEW")
+  status        String    @default("OPEN")
+  nextAction    String?
+  nextActionAt  DateTime?
+  ownerId       String?
+  source        String?
+  leadId        String?
+  orderId       String?
+  lostReason    String?
+  closedAt      DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     temporal.updatedAt()
+
+  @@unique([tenantId, leadId])
+  @@index([tenantId, status, stage])
+  @@index([tenantId, customerId])
+  @@rls
+}

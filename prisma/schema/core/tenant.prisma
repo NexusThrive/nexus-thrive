@@ -230,6 +230,7 @@ model Tenant {
   financialAccounts  FinancialAccount[]
   providerSettlements ProviderSettlement[]
   bankStatementLines BankStatementLine[]
+  opportunities      Opportunity[]
   reconciliationRuns ReconciliationRun[]
   supplierPayments   SupplierPayment[]
   numberingResolutions NumberingResolution[]

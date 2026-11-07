@@ -18,6 +18,7 @@ import {
   Globe,
   HandCoins,
   MapPin,
+  Target,
   Megaphone,
   PackageCheck,
   Link2,
@@ -117,7 +118,10 @@ export const CAPABILITIES = [
     status: "READY",
     priceUsd: 0,
     included: true,
-    nav: [{ href: "/crm", icon: Users, label: (terms) => terms.customers }],
+    nav: [
+      { href: "/crm", icon: Users, label: (terms) => terms.customers },
+      { href: "/oportunidades", icon: Target, label: () => "Oportunidades" },
+    ],
   },
   {
     id: "bookings",
