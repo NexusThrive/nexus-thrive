@@ -1,3 +1,4 @@
+import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 import { HandCoins, MinusCircle, TrendingUp, Users, Wallet } from "lucide-react";
 import { tenantWithModules } from "@/lib/core/tenancy/membership";
