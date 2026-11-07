@@ -63,7 +63,12 @@ export function AppHome({ trial }: { trial?: AppHomeTrial | null }) {
   const raw = useSyncExternalStore(subscribeFavorites, readRaw, () => "[]");
   const favorites = useMemo(() => parseFavorites(raw), [raw]);
 
-  const areas = useMemo(() => groups.filter((group) => group.label !== "Sistema" && group.items.length > 0), [groups]);
+  // Las áreas del negocio, y al final Configuración (el ítem de «Sistema»), que también es una aplicación más.
+  const areas = useMemo(() => {
+    const list = groups.filter((group) => group.label !== "Sistema" && group.items.length > 0);
+    const settings = groups.find((group) => group.label === "Sistema")?.items.find((item) => item.key === "settings");
+    return settings ? [...list, { label: "Configuración", items: [settings], icon: settings.icon }] : list;
+  }, [groups]);
   const visible = areas;
 
   const toggle = (label: string) => {
