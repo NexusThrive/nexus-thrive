@@ -197,7 +197,7 @@ function ModuleBar({
     <header
       data-app-topbar=""
       data-module-bar=""
-      className="fixed inset-x-0 top-0 z-(--z-topbar) flex h-[calc(56px+env(safe-area-inset-top,0px))] items-center gap-3 border-b border-[#1f1f23] bg-background px-3 pt-[env(safe-area-inset-top,0px)] md:px-4"
+      className="fixed inset-x-0 top-0 z-(--z-topbar) flex h-[calc(56px+env(safe-area-inset-top,0px))] items-center gap-3 border-b border-border bg-background px-3 pt-[env(safe-area-inset-top,0px)] md:px-4"
     >
       <Link
         href={hrefFor("")}
@@ -233,12 +233,12 @@ function ModuleBar({
         <button
           type="button"
           onClick={openSearch}
-          aria-label="Buscar (Ctrl K)"
+          aria-keyshortcuts="Control+K"
           className="inline-flex h-9 items-center gap-2 rounded-lg border border-border bg-card px-2.5 text-sm text-muted-foreground outline-none hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
           <Search aria-hidden="true" className="size-4" />
-          <span className="max-md:hidden">Buscar</span>
-          <Kbd className="max-md:hidden">Ctrl K</Kbd>
+          <span className="max-md:sr-only">Buscar</span>
+          <Kbd aria-hidden="true" className="max-md:hidden">Ctrl K</Kbd>
         </button>
         {notifications}
         <ThemeToggle />

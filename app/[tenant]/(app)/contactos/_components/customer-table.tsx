@@ -4,20 +4,22 @@ import { formatCurrency } from "@/lib/foundation/format";
 import { useEffect, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 import { SwipeCard } from "@/components/molecules/swipe-card";
-import { ArrowDown, ArrowUp, Archive, Banknote, MessageCircle, Pencil, Plus, RotateCcw, SlidersHorizontal, Trash2, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Archive, ChevronDown, Banknote, MessageCircle, Pencil, Plus, RotateCcw, SlidersHorizontal, Trash2, X } from "lucide-react";
 import { NLoader } from "@/components/atoms/n-loader";
 import {
   archiveCustomerAction,
   deleteCustomersAction,
   restoreCustomerAction,
   type CustomerActionResult,
-} from "../actions";
+} from "@/app/[tenant]/(app)/contactos/actions";
 import { ConfirmDialog } from "@/components/organisms/confirm-dialog";
 import CustomerSheet from "./customer-sheet";
 import { useVerticalTerms } from "../../vertical-terms-context";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { EmptyState } from "@/components/molecules/empty-state";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/molecules/dropdown-menu";
 import { useQuickCreate } from "@/components/organisms/quick-create-host";
 
 export type CustomerRow = {
@@ -198,6 +200,25 @@ export default function CustomerTable({
     });
   };
 
+  const bulkRun = (action: (id: string) => Promise<CustomerActionResult>, done: (count: number) => string) => {
+    const ids = [...selected];
+    runAction(
+      async () => {
+        for (const id of ids) {
+          const result = await action(id);
+          if (!result.ok) return result;
+        }
+        return { ok: true };
+      },
+      () => {
+        replaceSelection(new Set());
+        setNotice({ kind: "success", text: done(ids.length) });
+      },
+    );
+  };
+  const bulkArchive = () => bulkRun((id) => archiveCustomerAction(tenantSlug, id), (n) => `Se archivaron ${n} ${n === 1 ? customerLabel : customersLabel}.`);
+  const bulkRestore = () => bulkRun((id) => restoreCustomerAction(tenantSlug, id), (n) => `Se restauraron ${n} ${n === 1 ? customerLabel : customersLabel}.`);
+
   const confirmBulkDelete = () => {
     const ids = [...selected];
     setConfirmOpen(false);
@@ -228,16 +249,16 @@ export default function CustomerTable({
 
   const isArchivedView = status === "archived";
   // Seleccionar es para eliminar: sin ese permiso no hay casillas ni barra.
-  const selectable = isArchivedView && canRemove;
+  const selectable = canRemove;
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col">
       {/* Aviso de éxito/error */}
       {notice ? (
         <div
           role="status"
           className={[
-            "flex items-center justify-between gap-3 rounded-lg border px-4 py-2.5 text-sm",
+            "mx-5 mb-3 flex items-center justify-between gap-3 rounded-lg border px-4 py-2.5 text-sm",
             notice.kind === "error"
               ? "border-destructive/20 bg-destructive/10 text-destructive"
               : "border-success/20 bg-success/10 text-success",
@@ -257,43 +278,48 @@ export default function CustomerTable({
 
       {/* Barra de selección múltiple (solo archivados) */}
       {selectable && selected.size > 0 ? (
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-destructive/20 bg-destructive/10 px-4 py-3">
-          <p className="text-sm font-medium text-destructive">
+        <div className="flex flex-wrap items-center gap-2 border-t border-border bg-accent-subtle/40 px-5 py-1.5">
+          <p className="text-sm font-medium text-foreground" aria-live="polite">
             {selected.size} {selected.size === 1 ? "seleccionado" : "seleccionados"}
           </p>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              disabled={isPending}
-              onClick={() => replaceSelection(new Set())}
-              className="h-9 rounded-lg border border-destructive/20 bg-card px-3 text-sm font-medium text-foreground/80 transition hover:bg-muted disabled:opacity-50"
-            >
-              Cancelar
-            </button>
-            <button
-              type="button"
-              disabled={isPending}
-              onClick={() => setConfirmOpen(true)}
-              className="inline-flex h-9 items-center gap-2 rounded-lg bg-destructive px-3 text-sm font-medium text-destructive-foreground transition hover:bg-destructive/90 disabled:opacity-60"
-            >
-              {isPending ? (
-                <NLoader size={16} className="text-current" />
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <button type="button" disabled={isPending} className={buttonVariants({ variant: "outline", size: "sm", className: "h-8 border bg-card" })}>
+                {isPending ? <NLoader size={16} className="text-current" /> : null}
+                Acciones
+                <ChevronDown aria-hidden="true" className="size-4" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" sideOffset={6}>
+              {isArchivedView ? (
+                <>
+                  <DropdownMenuItem onSelect={bulkRestore}>
+                    <RotateCcw aria-hidden="true" className="size-4" /> Restaurar
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => setConfirmOpen(true)} className="text-danger">
+                    <Trash2 aria-hidden="true" className="size-4" /> Eliminar definitivamente
+                  </DropdownMenuItem>
+                </>
               ) : (
-                <Trash2 aria-hidden="true" className="h-4 w-4" />
+                <DropdownMenuItem onSelect={bulkArchive}>
+                  <Archive aria-hidden="true" className="size-4" /> Archivar
+                </DropdownMenuItem>
               )}
-              Eliminar definitivamente
-            </button>
-          </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <button type="button" disabled={isPending} onClick={() => replaceSelection(new Set())} className={buttonVariants({ variant: "ghost", size: "sm", className: "h-8" })}>
+            Quitar selección
+          </button>
         </div>
       ) : null}
 
       {/* ---------- Estado vacío ---------- */}
       {rows.length === 0 ? (
         <EmptyState
-          className="rounded-lg border border-border bg-card"
-          title={query ? `Sin coincidencias para «${query}»` : isArchivedView ? `No hay ${customersLabel} archivados` : `Aún no hay ${customersLabel} registrados`}
-          description={query ? "Prueba con otro término o limpia la búsqueda." : isArchivedView ? `Los ${customersLabel} que archives aparecerán aquí.` : `Registra a tu primer ${customerLabel} para llevar su historial, sus cobros y su seguimiento.`}
-          action={!query && !isArchivedView ? <button type="button" onClick={() => quick.open("new-customer")} className={buttonVariants()}><Plus aria-hidden="true" className="size-4" /> Nuevo {customerLabel}</button> : undefined}
+          className="items-center border-t border-border text-center"
+          title={query ? `Sin coincidencias para «${query}»` : isArchivedView ? `No hay ${customersLabel} archivados` : `Aún no tienes ${customersLabel}`}
+          description={query ? "Prueba con otro término o limpia la búsqueda." : isArchivedView ? `Los ${customersLabel} que archives aparecen aquí.` : "Registra el primero para llevar su historial, sus citas y sus cobros."}
+          action={!query && !isArchivedView ? <button type="button" onClick={() => quick.open("new-customer")} className={buttonVariants({ variant: "accent", size: "sm", className: "h-[34px]" })}><Plus aria-hidden="true" className="size-4" /> Nuevo</button> : undefined}
         />
       ) : (
         <>
@@ -306,7 +332,7 @@ export default function CustomerTable({
               <thead className="sticky top-0 z-10 h-[38px] border-b border-border bg-background text-xs font-medium text-muted-foreground">
                 <tr>
                   {selectable ? (
-                    <th scope="col" className="w-10 px-5 py-2">
+                    <th scope="col" className="w-10 h-[38px] px-5 py-0">
                       <input
                         type="checkbox"
                         aria-label={`Seleccionar todos los ${customersLabel} de esta página`}
@@ -321,35 +347,35 @@ export default function CustomerTable({
                       />
                     </th>
                   ) : null}
-                  <th scope="col" className="w-9 px-2 py-2">
+                  <th scope="col" className="h-[38px] w-9 px-2 py-0">
                     <span className="sr-only">Foto</span>
                   </th>
-                  <th scope="col" className="px-5 py-2" aria-sort={sort === "name_asc" ? "ascending" : sort === "name_desc" ? "descending" : "none"}>
+                  <th scope="col" className="h-[38px] px-5 py-0" aria-sort={sort === "name_asc" ? "ascending" : sort === "name_desc" ? "descending" : "none"}>
                     <button type="button" onClick={() => setSort(nameSort)} className="inline-flex items-center gap-1 outline-none hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
                       {terms.customer}
                       {sortIcon(sort !== "recent", sort === "name_desc")}
                     </button>
                   </th>
-                  <th scope="col" className="px-5 py-2">
+                  <th scope="col" className="h-[38px] px-5 py-0">
                     Correo electrónico
                   </th>
-                  <th scope="col" className="px-5 py-2">
+                  <th scope="col" className="h-[38px] px-5 py-0">
                     Teléfono
                   </th>
-                  <th scope="col" className="px-5 py-2">
+                  <th scope="col" className="h-[38px] px-5 py-0">
                     Próxima cita
                   </th>
-                  <th scope="col" className="px-5 py-2">
+                  <th scope="col" className="h-[38px] px-5 py-0">
                     Por cobrar
                   </th>
-                  <th scope="col" className="px-5 py-2" aria-sort={sort === "recent" ? "descending" : "none"}>
+                  <th scope="col" className="h-[38px] px-5 py-0" aria-sort={sort === "recent" ? "descending" : "none"}>
                     <button type="button" onClick={() => setSort("recent")} className="inline-flex items-center gap-1 outline-none hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
                       Registrado
                       {sortIcon(sort === "recent", true)}
                     </button>
                   </th>
-                  <th scope="col" className="w-9 px-2 py-2">
-                    <button type="button" disabled aria-label="Elegir columnas (próximamente)" className="grid size-[34px] place-items-center rounded-md text-muted-foreground/50">
+                  <th scope="col" className="h-[38px] w-9 px-2 py-0">
+                    <button type="button" disabled aria-label="Elegir columnas (próximamente)" className="grid size-7 place-items-center rounded-md text-muted-foreground/50">
                       <SlidersHorizontal aria-hidden="true" className="size-4" />
                     </button>
                   </th>
@@ -360,7 +386,7 @@ export default function CustomerTable({
                   <tr
                     key={row.id}
                     onClick={(event) => openProfile(event, row.id)}
-                    className="cursor-pointer transition hover:bg-muted/60"
+                    className={cn("cursor-pointer transition hover:bg-muted/60", selected.has(row.id) && "bg-accent-subtle/30")}
                   >
                     {selectable ? (
                       <td className="px-5 py-2">
@@ -400,6 +426,7 @@ export default function CustomerTable({
                     <td className="px-5 py-2 text-muted-foreground">{row.nextAppointment ? formatAppointment(row.nextAppointment) : "—"}</td>
                     <td className="px-5 py-2">{row.owed > 0 ? <span className="font-medium text-danger">{formatCurrency(row.owed)}</span> : <span className="text-muted-foreground">—</span>}</td>
                     <td className="px-5 py-2 text-muted-foreground">{row.createdAt}</td>
+                    <td className="w-9 px-2 py-2" aria-hidden="true" />
                   </tr>
                 ))}
               </tbody>
@@ -449,14 +476,15 @@ export default function CustomerTable({
               ))}
             </ul>
           ) : (
-            <ul className="grid gap-2.5 sm:hidden">
-              <li className="text-center text-xs text-muted-foreground">Desliza una tarjeta a la izquierda para cobrar o recordar.</li>
+            <ul className="divide-y divide-border border-t border-border sm:hidden">
+              <li className="px-5 py-2 text-xs text-muted-foreground">Desliza una fila a la izquierda para cobrar o recordar.</li>
               {rows.map((row) => {
                 const digits = row.phone.replace(/\D/g, "");
                 const wa = digits ? `https://wa.me/${digits.length === 10 ? `57${digits}` : digits}?text=${encodeURIComponent(`Hola ${row.name.split(" ")[0]}, te escribimos de parte de nuestro negocio.`)}` : undefined;
                 return (
                   <li key={row.id}>
                     <SwipeCard
+                      className="rounded-none border-0 bg-background"
                       actions={[
                         { label: "Cobrar", icon: Banknote, tone: "gold", href: `/${tenantSlug}/finanzas?nuevo=pago&cliente=${row.id}` },
                         { label: "Recordar", icon: MessageCircle, tone: "ink", href: wa, external: true, disabled: !wa },
@@ -466,8 +494,8 @@ export default function CustomerTable({
                           : []),
                       ]}
                     >
-                      <Link href={`/${tenantSlug}/contactos/${row.id}`} draggable={false} className="flex items-center gap-3 px-3.5 py-3">
-                        <Face row={row} className="grid size-[38px] shrink-0 place-items-center rounded-full bg-primary font-display text-xs font-bold text-primary-foreground" />
+                      <Link href={`/${tenantSlug}/contactos/${row.id}`} draggable={false} className="flex items-center gap-3 px-5 py-2.5">
+                        <Face row={row} className="grid size-8 shrink-0 place-items-center rounded-md bg-accent-subtle text-2xs font-semibold text-accent-text" />
                         <span className="min-w-0 flex-1">
                           <b className="block truncate font-medium">{row.name}</b>
                           {showMembership && !row.hasMembership ? <MembershipAlert className="mt-1" /> : null}
@@ -482,7 +510,7 @@ export default function CustomerTable({
                             </span>
                           ) : null}
                         </span>
-                        <small className="shrink-0 text-xs text-muted-foreground">{row.createdAt}</small>
+                        {row.owed > 0 ? <small className="shrink-0 text-sm font-medium text-danger">{formatCurrency(row.owed)}</small> : <small className="shrink-0 text-xs text-muted-foreground">{row.createdAt}</small>}
                       </Link>
                     </SwipeCard>
                   </li>

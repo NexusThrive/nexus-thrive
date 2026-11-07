@@ -93,7 +93,7 @@ export default function CustomerToolbar({
         </div>
 
         {/* Centro: una sola caja de búsqueda de 543px, centrada en la pantalla, con el filtro dentro */}
-        <div className="relative h-[34px] w-full justify-self-center max-w-[543px] [&>div]:max-w-none [&_input]:h-full [&_input]:w-full [&_input]:rounded-lg [&_input]:border-border [&_input]:bg-card [&_input]:pr-10">
+        <div className="relative h-[34px] w-full justify-self-center max-w-[543px] [&>div]:h-full [&>div]:max-w-none [&_input]:h-full [&_input]:w-full [&_input]:rounded-lg [&_input]:border-border [&_input]:bg-card [&_input]:pr-10">
           <CustomerSearch />
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
@@ -150,9 +150,9 @@ export default function CustomerToolbar({
           </div>
           {/* Vistas: solo la lista existe; las demás aparecen desactivadas hasta que se construyan. */}
           <div role="group" aria-label="Vista" className="flex h-[34px] items-center rounded-lg border border-border p-0.5">
-            <span aria-pressed="true" aria-label="Vista de lista" className="grid h-[28px] w-8 place-items-center rounded-md bg-surface-muted text-accent-text">
+            <button type="button" aria-pressed="true" aria-label="Vista de lista" className="grid h-[28px] w-8 place-items-center rounded-md bg-surface-muted text-accent-text outline-none focus-visible:outline-2 focus-visible:outline-ring">
               <List aria-hidden="true" className="size-4" />
-            </span>
+            </button>
             {[
               { label: "Vista de tarjetas", Icon: LayoutGrid },
               { label: "Vista de mapa", Icon: Map },
