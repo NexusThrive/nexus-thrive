@@ -33,6 +33,7 @@ export function TenantShell({
   businesses,
   onSwitchBusiness,
   topbarActions,
+  topbarNotifications,
   accountExtra,
   children,
 }: {
@@ -49,6 +50,8 @@ export function TenantShell({
   onSwitchBusiness?: (slug: string) => void | Promise<void>;
   /** Botones extra de la barra superior (p. ej. la campana de notificaciones). */
   topbarActions?: ReactNode;
+  /** Notificaciones (la barra de módulo las muestra; la barra general las pone con sus acciones). */
+  topbarNotifications?: ReactNode;
   /** Fila extra en la tarjeta de la cuenta de «Más» (móvil), p. ej. los días de prueba. */
   accountExtra?: ReactNode;
   children: ReactNode;
@@ -66,6 +69,7 @@ export function TenantShell({
         <div className={styles.root}>
           <div className={styles.main}>
             <AppTopbar
+              notifications={topbarNotifications}
               actions={
                 <>
                   <WorkspaceLauncher />

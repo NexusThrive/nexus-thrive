@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Plus, Search } from "lucide-react";
+import { ChevronLeft, Plus, Search } from "lucide-react";
 import { N_PATH, THRIVE_LETTERS } from "@nexus/brand/BrandLogo";
 import { Button } from "@/components/atoms/button";
 import { Kbd } from "@/components/atoms/kbd";
@@ -20,6 +20,7 @@ import { AccountButton } from "@/components/molecules/account-button";
 import { RouteBar } from "@/components/molecules/route-bar";
 import { useQuickCreate } from "@/components/organisms/quick-create-host";
 import { useOptionalPalette, useShell } from "@/components/providers/shell-context";
+import type { NavGroup } from "@/lib/core/capabilities/nav-types";
 import { cn } from "@/lib/utils";
 import styles from "./app-topbar.module.css";
 
@@ -32,8 +33,8 @@ import styles from "./app-topbar.module.css";
  * el selector de negocio, tema y cuenta. En móvil se compacta: logo, negocio y sección, y la búsqueda; «Crear»
  * vive en la barra inferior. La barra de ruta corre por el borde al navegar.
  */
-export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; /** Selector de negocio (PC), a la derecha. */ switcher?: ReactNode; /** Buscador en línea de PC (`NavbarSearch`); sin él, el botón abre la paleta modal. */ search?: ReactNode }) {
-  const { title, brandName, hrefFor, openSearch, quickActions, createActions = quickActions } = useShell();
+export function AppTopbar({ actions, notifications, search, switcher }: { actions?: ReactNode; /** Notificaciones (las muestra la barra de módulo y la general). */ notifications?: ReactNode; /** Selector de negocio (PC), a la derecha. */ switcher?: ReactNode; /** Buscador en línea de PC (`NavbarSearch`); sin él, el botón abre la paleta modal. */ search?: ReactNode }) {
+  const { title, brandName, hrefFor, openSearch, quickActions, createActions = quickActions, groups, activeKey } = useShell();
   // El buscador móvil comparte la paleta del negocio; el Operations Center no la tiene y usa su botón de búsqueda.
   const hasPalette = useOptionalPalette() !== null;
   const router = useRouter();
@@ -41,6 +42,9 @@ export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; 
   const pathname = usePathname();
   // En la raíz (pantalla de aplicaciones) la barra queda reducida y transparente: solo logo, cambio de empresa y cuenta.
   const atHome = pathname.replace(/\/$/, "") === hrefFor("");
+  // Dentro de un módulo (no en Inicio ni en Sistema) la barra cambia a la barra de módulo: «<», módulo, secciones y utilidades.
+  const moduleGroup = atHome ? undefined : groups.find((g) => g.label !== "General" && g.label !== "Sistema" && g.items.some((i) => i.key === activeKey));
+  if (moduleGroup) return <ModuleBar group={moduleGroup} activeKey={activeKey} hrefFor={hrefFor} openSearch={openSearch} notifications={notifications} />;
 
   return (
     <header
@@ -149,6 +153,7 @@ export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; 
           {/* Móvil: lupa, lo que falta por completar y las notificaciones; el tema y la cuenta viven en «Más». */}
           <div className="flex items-center gap-1 md:gap-0.5">
             {actions}
+            {notifications}
             <ThemeToggle className="max-md:hidden" />
           </div>
           <span aria-hidden="true" className="mx-1 hidden h-6 w-px bg-[var(--sidebar-border)] md:block" />
@@ -163,6 +168,78 @@ export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; 
       {hasPalette && !atHome ? <MobileTopbarSearch /> : null}
 
       {atHome ? null : <RouteBar className="absolute inset-x-auto left-[var(--sw)] right-0 top-full" />}
+    </header>
+  );
+}
+
+/**
+ * Barra de módulo (Nexus): una sola fila de 56 px. «<» vuelve siempre a Inicio; después el módulo con su ícono y sus secciones en
+ * texto (la activa resaltada); a la derecha, buscar (Ctrl K), notificaciones y cuenta. Sin logo, sin «Crear» y sin el aviso de prueba.
+ */
+function ModuleBar({
+  group,
+  activeKey,
+  hrefFor,
+  openSearch,
+  notifications,
+}: {
+  group: NavGroup;
+  activeKey: string | undefined;
+  hrefFor: (href: string) => string;
+  openSearch: () => void;
+  notifications?: ReactNode;
+}) {
+  const Icon = group.icon ?? group.items[0]!.icon;
+  return (
+    <header
+      data-app-topbar=""
+      data-module-bar=""
+      className="fixed inset-x-0 top-0 z-(--z-topbar) flex h-[calc(56px+env(safe-area-inset-top,0px))] items-center gap-3 border-b border-[#1f1f23] bg-background px-3 pt-[env(safe-area-inset-top,0px)] md:px-4"
+    >
+      <Link
+        href={hrefFor("")}
+        aria-label="Volver al inicio"
+        className="grid size-9 shrink-0 place-items-center rounded-lg border border-border bg-card text-foreground outline-none hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      >
+        <ChevronLeft aria-hidden="true" className="size-5" />
+      </Link>
+      <span aria-hidden="true" className="hidden h-6 w-px shrink-0 bg-border sm:block" />
+      <div className="flex min-w-0 shrink-0 items-center gap-2">
+        <Icon aria-hidden="true" className="size-5 text-accent-text" />
+        <span className="truncate text-[15px] font-semibold text-foreground">{group.label}</span>
+      </div>
+      <nav aria-label={`Secciones de ${group.label}`} className="ms-2 flex min-w-0 flex-1 items-center gap-1 overflow-x-auto">
+        {group.items.map((item) => {
+          const active = item.key === activeKey;
+          return (
+            <Link
+              key={item.key}
+              href={hrefFor(item.href)}
+              aria-current={active ? "page" : undefined}
+              className={cn(
+                "shrink-0 rounded-md px-3 py-1.5 text-sm outline-none transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+                active ? "bg-surface-muted font-medium text-foreground" : "text-muted-foreground hover:bg-surface-muted/60 hover:text-foreground",
+              )}
+            >
+              {item.label}
+            </Link>
+          );
+        })}
+      </nav>
+      <div className="flex shrink-0 items-center gap-2">
+        <button
+          type="button"
+          onClick={openSearch}
+          aria-label="Buscar (Ctrl K)"
+          className="inline-flex h-9 items-center gap-2 rounded-lg border border-border bg-card px-2.5 text-sm text-muted-foreground outline-none hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        >
+          <Search aria-hidden="true" className="size-4" />
+          <span className="max-md:hidden">Buscar</span>
+          <Kbd className="max-md:hidden">Ctrl K</Kbd>
+        </button>
+        {notifications}
+        <AccountButton />
+      </div>
     </header>
   );
 }

@@ -103,9 +103,9 @@ export default async function AppLayout({
                 />
               </span>
             ) : null}
-            <TenantNotifications tenantSlug={tenantRecord.slug} />
           </>
         }
+        topbarNotifications={<TenantNotifications tenantSlug={tenantRecord.slug} />}
       >
         <ThemeSync tenantSlug={tenantRecord.slug} saved={savedTheme} />
         {children}
