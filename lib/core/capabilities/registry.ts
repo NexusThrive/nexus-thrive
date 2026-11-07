@@ -224,7 +224,7 @@ export const CAPABILITIES = [
     status: "READY",
     priceUsd: 0,
     included: true,
-    nav: [{ href: "", icon: LayoutDashboard, label: () => "Inicio" }],
+    nav: [{ href: "/inicio", icon: LayoutDashboard, label: () => "Inicio" }],
   },
   {
     id: "whatsapp",

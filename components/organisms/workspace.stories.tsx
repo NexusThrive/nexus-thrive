@@ -31,7 +31,7 @@ const navMeta = {
 export default navMeta;
 export const Contactos: StoryObj<typeof navMeta> = {};
 
-export const LauncherAbierto: StoryObj<typeof WorkspaceLauncher> = {
+export const BotonAplicaciones: StoryObj<typeof WorkspaceLauncher> = {
   render: () => (
     <Shell>
       <WorkspaceLauncher />

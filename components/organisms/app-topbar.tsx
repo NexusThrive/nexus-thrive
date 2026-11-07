@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Plus, Search } from "lucide-react";
 import { N_PATH, THRIVE_LETTERS } from "@nexus/brand/BrandLogo";
 import { Button } from "@/components/atoms/button";
@@ -38,11 +38,18 @@ export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; 
   const hasPalette = useOptionalPalette() !== null;
   const router = useRouter();
   const quick = useQuickCreate();
+  const pathname = usePathname();
+  // En la raíz (pantalla de aplicaciones) la barra queda reducida y transparente: solo logo, cambio de empresa y cuenta.
+  const atHome = pathname.replace(/\/$/, "") === hrefFor("");
 
   return (
     <header
       data-app-topbar=""
-      className="fixed inset-x-0 top-0 z-(--z-topbar) flex h-[calc(var(--topbar-height)+env(safe-area-inset-top,0px))] items-stretch pt-[env(safe-area-inset-top,0px)]"
+      data-home={atHome ? "" : undefined}
+      className={cn(
+        "fixed inset-x-0 top-0 z-(--z-topbar) flex items-stretch pt-[env(safe-area-inset-top,0px)]",
+        atHome ? "h-[calc(3rem+env(safe-area-inset-top,0px))] bg-transparent" : "h-[calc(var(--topbar-height)+env(safe-area-inset-top,0px))]",
+      )}
     >
       <Link
         href={hrefFor("")}
@@ -59,7 +66,7 @@ export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; 
             </g>
           </svg>
         </span>
-        <span className={cn(styles.ident, "flex min-w-0 flex-col leading-tight")}>
+        <span className={cn(styles.ident, atHome && "hidden", "flex min-w-0 flex-col leading-tight")}>
           <b className="truncate font-display text-sm font-semibold">{brandName}</b>
           <small className="flex items-center gap-1.5 text-2xs text-muted-foreground">
             <i aria-hidden="true" className="inline-block size-1.5 -skew-x-[24deg] bg-accent" />
@@ -68,6 +75,12 @@ export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; 
         </span>
       </Link>
 
+      {atHome ? (
+        <div className="relative flex flex-1 items-center justify-end gap-2 pe-3">
+          {switcher}
+          <AccountButton />
+        </div>
+      ) : (
       <div className="relative flex min-w-fit flex-1 items-center justify-end gap-2 md:min-w-0 lg:grid lg:grid-cols-[minmax(max-content,1fr)_minmax(0,440px)_minmax(max-content,1fr)] border-b border-[var(--sidebar-border)] bg-[var(--sidebar-bg)] px-3 text-[var(--sidebar-fg)] md:gap-4 md:px-6 xl:px-8">
         {/* Izquierda: contexto (negocio) y búsqueda. `suppressHydrationWarning`:
             Proton Pass marca con `data-protonpass-form` los contenedores con
@@ -144,11 +157,12 @@ export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; 
         </div>
 
       </div>
+      )}
 
       {/* Debajo de la navbar, fuera de su fila y desde el borde de la barra lateral (`--sw`): no se mete en ella ni deforma la navbar. */}
-      {hasPalette ? <MobileTopbarSearch /> : null}
+      {hasPalette && !atHome ? <MobileTopbarSearch /> : null}
 
-      <RouteBar className="absolute inset-x-auto left-[var(--sw)] right-0 top-full" />
+      {atHome ? null : <RouteBar className="absolute inset-x-auto left-[var(--sw)] right-0 top-full" />}
     </header>
   );
 }

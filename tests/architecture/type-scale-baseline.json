@@ -14,7 +14,7 @@
   "app/[tenant]/(app)/finanzas/facturacion-electronica/_components/fiscal-view.tsx": 1,
   "app/[tenant]/(app)/finanzas/facturacion/_components/invoice-sheet.tsx": 1,
   "app/[tenant]/(app)/functions/_components/functions-view.tsx": 1,
-  "app/[tenant]/(app)/page.tsx": 1,
+  "app/[tenant]/(app)/inicio/page.tsx": 1,
   "app/[tenant]/(app)/presencia/crecimiento/_components/growth-view.tsx": 1,
   "app/[tenant]/(app)/presencia/google/_components/google-view.tsx": 3,
   "app/[tenant]/(app)/presencia/sitio/_components/site-editor.tsx": 5,
