@@ -6,6 +6,7 @@
 /// Campos:
 /// - `number`: Consecutivo por negocio (T-0001).
 /// - `status`: PENDING_PAYMENT | PAID | CANCELED | ABANDONED
+/// - `quoteId`: Cotización comercial aprobada de la que nació el pedido (no pasa por el cobro en línea ni se abandona).
 /// - `intentId`: Cobro en línea del pedido (su enlace y su estado oficial).
 /// - `documentId`: Documento de venta que deja al pagarse.
 /// - `review`: Aviso para revisar a mano (p. ej. se pagó sin existencias suficientes).
@@ -17,6 +18,7 @@ model StoreOrder {
   number             Int
   status             String    @default("PENDING_PAYMENT")
   customerId         String?
+  quoteId            String?
   customerName       String
   phone              String
   email              String?

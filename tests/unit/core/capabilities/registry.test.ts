@@ -32,8 +32,10 @@ describe("registro de capacidades", () => {
     }
   });
 
-  test("un módulo planeado no promete pantallas que no existen", () => {
-    expect(CAPABILITIES.find((c) => c.id === "quotes")?.nav).toEqual([]);
+  test("Cotizaciones (HU-cotizacion-01) ya está disponible y su pantalla existe", () => {
+    const quotes = CAPABILITIES.find((c) => c.id === "quotes");
+    expect(quotes?.status).toBe("READY");
+    expect(quotes?.nav.map((n) => n.href)).toEqual(["/cotizaciones"]);
   });
 
   test("isModule valida contra el registro (la base guarda texto)", () => {

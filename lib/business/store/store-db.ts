@@ -110,7 +110,7 @@ export async function cancelOrder(tenantId: string, id: string): Promise<{ ok: t
 export async function markAbandonedOrders(nowMs = Date.now(), tenantIds?: readonly string[]): Promise<number> {
   const cutoff = Temporal.Instant.fromEpochMilliseconds(nowMs - ABANDON_AFTER_MINUTES * 60_000);
   const only = tenantIds ? [...tenantIds] : null;
-  const candidates = await db.orm.public.StoreOrder.where({ status: "PENDING_PAYMENT" }).where((o) => o.abandonedNotifiedAt.isNull()).where((o) => o.createdAt.lte(cutoff)).where((o) => (only ? o.tenantId.in(only) : o.status.eq("PENDING_PAYMENT"))).limit(200).all();
+  const candidates = await db.orm.public.StoreOrder.where({ status: "PENDING_PAYMENT" }).where((o) => o.abandonedNotifiedAt.isNull()).where((o) => o.quoteId.isNull()).where((o) => o.createdAt.lte(cutoff)).where((o) => (only ? o.tenantId.in(only) : o.status.eq("PENDING_PAYMENT"))).limit(200).all();
   let n = 0;
   for (const o of candidates) {
     if (!isAbandoned(Date.parse(String(o.createdAt)), nowMs)) continue;

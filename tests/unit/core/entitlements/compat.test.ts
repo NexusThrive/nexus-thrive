@@ -12,7 +12,7 @@ describe("compatibilidad de módulos", () => {
     expect(checkModuleToggle(c, "gym", "construction", true).ok).toBe(false); // obras no es de Gym (ADR 0007)
     expect(checkModuleToggle(c, "gym", "construction", true, null, { allowIncompatible: true }).ok).toBe(true); // el Operations Center lo puede autorizar
     expect(checkModuleToggle(c, "construction", "memberships", true).ok).toBe(true); // Business admite membresías (clubes, academias)
-    expect(checkModuleToggle(c, "construction", "quotes", true).ok).toBe(false); // cotización genérica: planeada
+    expect(checkModuleToggle(c, "construction", "quotes", true).ok).toBe(true); // cotización comercial compartida (HU-cotizacion-01)
     expect(checkModuleToggle(c, "restaurant", "orders", true).ok).toBe(false); // planeado
   });
   it("siempre deja desactivar (salvo el Inicio)", () => {

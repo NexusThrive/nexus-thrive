@@ -87,3 +87,59 @@ model InvoiceLine {
   @@index([invoiceId])
   @@rls
 }
+
+/// Cotización comercial compartida (HU-cotizacion-01, D-4): cotizar desde cualquier solución con el catálogo y convertir sin
+/// reescribir. NO reemplaza el presupuesto de obra (`Quote`, con APU): la extensión de construcción sigue encima de su propio modelo.
+///
+/// Campos:
+/// - `code`: Consecutivo por negocio (COT-0001).
+/// - `status`: DRAFT | SENT | APPROVED | REJECTED. Aprobarla crea el pedido, con su anticipo y su saldo como obligaciones.
+/// - `depositPct`: Porcentaje del total que se pide como anticipo al aprobar (0 a 100).
+/// - `validUntil`: Último día en que se puede aprobar, «AAAA-MM-DD» (vacío = sin vencimiento).
+/// - `orderId`: Pedido que nació al aprobarla.
+model SalesQuote {
+  id            String   @id @default(uuid())
+  tenantId      String
+  tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  number        Int
+  customerId    String
+  title         String
+  status        String   @default("DRAFT")
+  depositPct    Decimal  @default(50)
+  validUntil    String?
+  notes         String?
+  subtotal      Decimal
+  taxTotal      Decimal
+  total         Decimal
+  sentAt        DateTime?
+  decidedAt     DateTime?
+  decidedByName String?
+  decisionNote  String?
+  orderId       String?
+  createdById   String?
+  createdAt     DateTime @default(now())
+  updatedAt     temporal.updatedAt()
+  lines         SalesQuoteLine[]
+
+  @@unique([tenantId, number])
+  @@index([tenantId, status])
+  @@index([tenantId, customerId])
+  @@rls
+}
+
+/// Línea de una cotización comercial: un producto o servicio del catálogo con su cantidad y precio al cotizar.
+model SalesQuoteLine {
+  id         String     @id @default(uuid())
+  tenantId   String
+  tenant     Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  quoteId    String
+  quote      SalesQuote @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  productId  String
+  name       String
+  quantity   Int
+  unitPrice  Decimal
+  taxRatePct Decimal    @default(0)
+
+  @@index([quoteId])
+  @@rls
+}

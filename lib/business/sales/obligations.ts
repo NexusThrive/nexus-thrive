@@ -76,13 +76,17 @@ export async function applyToObligation(tx: DbTransaction, tenantId: string, ori
   return applied;
 }
 
-/** Anula las obligaciones abiertas de un origen (el pedido se canceló o se abandonó). Lo ya cobrado queda registrado en `paidTotal`. */
+/** Anula las obligaciones abiertas de un origen y sus cuotas (`id:saldo`) cuando el pedido se canceló o se abandonó. Lo ya cobrado queda registrado en `paidTotal`. */
 export async function voidObligations(tx: DbTransaction, tenantId: string, originType: ObligationOrigin, originId: string): Promise<void> {
-  const plan = tx.sql.public.Obligation.update({ status: "VOID" })
-    .where((f, fns) => fns.and(fns.eq(f.tenantId, tenantId), fns.eq(f.originType, originType), fns.eq(f.originId, originId), fns.eq(f.status, "OPEN")))
-    .returning("id")
-    .build();
-  await tx.query(plan);
+  const open = await tx.orm.public.Obligation.where({ tenantId, originType, status: "OPEN" }).where((o) => o.originId.ilike(`${originId}%`)).select("id", "originId").all();
+  for (const o of open) {
+    if (o.originId !== originId && !o.originId.startsWith(`${originId}:`)) continue;
+    const plan = tx.sql.public.Obligation.update({ status: "VOID" })
+      .where((f, fns) => fns.and(fns.eq(f.id, o.id), fns.eq(f.tenantId, tenantId), fns.eq(f.status, "OPEN")))
+      .returning("id")
+      .build();
+    await tx.query(plan);
+  }
 }
 
 export type ObligationRow = { id: string; originType: ObligationOrigin; originId: string; debtorName: string; description: string; amount: number; paidTotal: number; dueDate: string; status: string };
