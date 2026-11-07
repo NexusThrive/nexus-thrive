@@ -4,7 +4,7 @@
  * reúne los datos y aquí se arma la lista que pinta la campana.
  */
 
-export type NotificationKind = "payment" | "expense" | "booking" | "membership" | "customer";
+export type NotificationKind = "payment" | "expense" | "booking" | "membership" | "customer" | "task";
 
 /**
  * Qué se espera de la persona (DR-40): `info` solo informa; `action` pide atención (algo por resolver pronto);
@@ -37,6 +37,8 @@ export function buildNotifications(input: {
   bookings: { id: string; at: string; service: string; customer: string }[];
   /** Altas del registro público (gimnasio), de la más reciente a la más antigua. */
   registrations?: { id: string; customerId: string; name: string; at: string }[];
+  /** Tareas abiertas ya vencidas de quien mira la campana (HU-actividades-01). */
+  overdueTasks?: number;
   expiring: number;
   expired: number;
   /** ISO del inicio de hoy (Bogotá): las alertas de membresía se fechan ahí. */
@@ -73,6 +75,10 @@ export function buildNotifications(input: {
         href: r.customerId ? `/crm/${r.customerId}` : "/crm",
       });
     }
+  }
+  if ((input.overdueTasks ?? 0) > 0) {
+    const n = input.overdueTasks!;
+    out.push({ id: `tasks-overdue-${input.todayStart.slice(0, 10)}-${n}`, kind: "task", severity: "urgent", title: n === 1 ? "1 tarea vencida" : `${n} tareas vencidas`, detail: "Hazlas hoy o cámbiales la fecha", at: input.todayStart, href: "/tareas" });
   }
   if (input.modules.memberships) {
     if (input.expiring > 0) {

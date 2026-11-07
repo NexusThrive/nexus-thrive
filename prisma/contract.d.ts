@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'fca68f7fb259f2a3cb8e56480adfd48b98b5249c9c99dbaf1259d061448d158d'>;
+  StorageHashBase<'138a345014a8fb658a06e23a7bb305a6d650968ed2f1564ca3dc4c909f7177af'>;
 export type ExecutionHash =
-  ExecutionHashBase<'71812e8d2886af81a9df964c371efdf793753ab2d263151224cb0eee3620c970'>;
+  ExecutionHashBase<'9bccfc486a3248ea703d671f05aed0dc6c8dc642afdc9f3de1adb72059754186'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -1764,6 +1764,21 @@ export type FieldOutputTypes = {
       readonly tenantId: CodecTypes['pg/text@1']['output'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly year: CodecTypes['pg/int4@1']['output'];
+    };
+    readonly Task: {
+      readonly assigneeId: CodecTypes['pg/text@1']['output'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly createdById: CodecTypes['pg/text@1']['output'] | null;
+      readonly customerId: CodecTypes['pg/text@1']['output'] | null;
+      readonly doneAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly doneById: CodecTypes['pg/text@1']['output'] | null;
+      readonly dueDay: CodecTypes['pg/text@1']['output'] | null;
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly notes: CodecTypes['pg/text@1']['output'] | null;
+      readonly opportunityId: CodecTypes['pg/text@1']['output'] | null;
+      readonly status: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly title: CodecTypes['pg/text@1']['output'];
     };
     readonly TaxRate: {
       readonly active: CodecTypes['pg/bool@1']['output'];
@@ -3551,6 +3566,21 @@ export type FieldInputTypes = {
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly year: CodecTypes['pg/int4@1']['input'];
     };
+    readonly Task: {
+      readonly assigneeId: CodecTypes['pg/text@1']['input'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly createdById: CodecTypes['pg/text@1']['input'] | null;
+      readonly customerId: CodecTypes['pg/text@1']['input'] | null;
+      readonly doneAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly doneById: CodecTypes['pg/text@1']['input'] | null;
+      readonly dueDay: CodecTypes['pg/text@1']['input'] | null;
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly notes: CodecTypes['pg/text@1']['input'] | null;
+      readonly opportunityId: CodecTypes['pg/text@1']['input'] | null;
+      readonly status: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly title: CodecTypes['pg/text@1']['input'];
+    };
     readonly TaxRate: {
       readonly active: CodecTypes['pg/bool@1']['input'];
       readonly code: CodecTypes['pg/text@1']['input'];
@@ -5337,6 +5367,21 @@ export type StorageColumnTypes = {
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly year: CodecTypes['pg/int4@1']['output'];
     };
+    readonly Task: {
+      readonly assigneeId: CodecTypes['pg/text@1']['output'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly createdById: CodecTypes['pg/text@1']['output'] | null;
+      readonly customerId: CodecTypes['pg/text@1']['output'] | null;
+      readonly doneAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly doneById: CodecTypes['pg/text@1']['output'] | null;
+      readonly dueDay: CodecTypes['pg/text@1']['output'] | null;
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly notes: CodecTypes['pg/text@1']['output'] | null;
+      readonly opportunityId: CodecTypes['pg/text@1']['output'] | null;
+      readonly status: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly title: CodecTypes['pg/text@1']['output'];
+    };
     readonly TaxRate: {
       readonly active: CodecTypes['pg/bool@1']['output'];
       readonly code: CodecTypes['pg/text@1']['output'];
@@ -7122,6 +7167,21 @@ export type StorageColumnInputTypes = {
       readonly tenantId: CodecTypes['pg/text@1']['input'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly year: CodecTypes['pg/int4@1']['input'];
+    };
+    readonly Task: {
+      readonly assigneeId: CodecTypes['pg/text@1']['input'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly createdById: CodecTypes['pg/text@1']['input'] | null;
+      readonly customerId: CodecTypes['pg/text@1']['input'] | null;
+      readonly doneAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly doneById: CodecTypes['pg/text@1']['input'] | null;
+      readonly dueDay: CodecTypes['pg/text@1']['input'] | null;
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly notes: CodecTypes['pg/text@1']['input'] | null;
+      readonly opportunityId: CodecTypes['pg/text@1']['input'] | null;
+      readonly status: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly title: CodecTypes['pg/text@1']['input'];
     };
     readonly TaxRate: {
       readonly active: CodecTypes['pg/bool@1']['input'];
@@ -9275,6 +9335,23 @@ export namespace Models {
     tenant: public_Tenant | null;
     readonly [RelationKeys]?: 'messages' | 'tenant';
   };
+  export type public_Task = {
+    assigneeId: CodecTypes['pg/text@1']['output'] | null;
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    createdById: CodecTypes['pg/text@1']['output'] | null;
+    customerId: CodecTypes['pg/text@1']['output'] | null;
+    doneAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+    doneById: CodecTypes['pg/text@1']['output'] | null;
+    dueDay: CodecTypes['pg/text@1']['output'] | null;
+    id: CodecTypes['pg/text@1']['output'];
+    notes: CodecTypes['pg/text@1']['output'] | null;
+    opportunityId: CodecTypes['pg/text@1']['output'] | null;
+    status: CodecTypes['pg/text@1']['output'];
+    tenantId: CodecTypes['pg/text@1']['output'];
+    title: CodecTypes['pg/text@1']['output'];
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'tenant';
+  };
   export type public_TaxRate = {
     active: CodecTypes['pg/bool@1']['output'];
     code: CodecTypes['pg/text@1']['output'];
@@ -9444,6 +9521,7 @@ export namespace Models {
     supplierInvoices: public_SupplierInvoice[];
     supplierPayments: public_SupplierPayment[];
     supportTickets: public_SupportTicket[];
+    tasks: public_Task[];
     taxRates: public_TaxRate[];
     ticketSales: public_TicketSale[];
     tourBookings: public_TourBooking[];
@@ -9547,6 +9625,7 @@ export namespace Models {
       | 'supplierInvoices'
       | 'supplierPayments'
       | 'supportTickets'
+      | 'tasks'
       | 'taxRates'
       | 'ticketSales'
       | 'tourBookings'
@@ -9908,6 +9987,7 @@ export declare const models: {
     SupplierInvoice: Models.public_SupplierInvoice;
     SupplierPayment: Models.public_SupplierPayment;
     SupportTicket: Models.public_SupportTicket;
+    Task: Models.public_Task;
     TaxRate: Models.public_TaxRate;
     Tenant: Models.public_Tenant;
     TenantContact: Models.public_TenantContact;
@@ -21711,6 +21791,122 @@ type ContractBase = Omit<
                 },
               ];
             };
+            readonly Task: {
+              columns: {
+                readonly assigneeId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly createdById: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly customerId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly doneAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: true;
+                };
+                readonly doneById: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly dueDay: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly notes: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly opportunityId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly status: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'OPEN'>;
+                  };
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly title: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'Task_tenantId_assigneeId_status_idx_580462e1';
+                  readonly prefix: 'Task_tenantId_assigneeId_status_idx';
+                  readonly columns: readonly ['tenantId', 'assigneeId', 'status'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'Task_tenantId_customerId_idx_302ad259';
+                  readonly prefix: 'Task_tenantId_customerId_idx';
+                  readonly columns: readonly ['tenantId', 'customerId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'Task_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'Task_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'Task_tenantId_status_dueDay_idx_d302ca36';
+                  readonly prefix: 'Task_tenantId_status_dueDay_idx';
+                  readonly columns: readonly ['tenantId', 'status', 'dueDay'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Task';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
             readonly TaxRate: {
               columns: {
                 readonly active: {
@@ -24032,6 +24228,7 @@ type ContractBase = Omit<
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'SupportTicket';
     };
+    readonly Task: { readonly namespace: 'public' & NamespaceId; readonly model: 'Task' };
     readonly TaxRate: { readonly namespace: 'public' & NamespaceId; readonly model: 'TaxRate' };
     readonly Tenant: { readonly namespace: 'public' & NamespaceId; readonly model: 'Tenant' };
     readonly TenantContact: {
@@ -35341,6 +35538,101 @@ type ContractBase = Omit<
               };
             };
           };
+          readonly Task: {
+            readonly fields: {
+              readonly assigneeId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly createdById: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly customerId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly doneAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly doneById: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly dueDay: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly notes: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly opportunityId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly status: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly title: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'Task';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly assigneeId: { readonly column: 'assigneeId' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly createdById: { readonly column: 'createdById' };
+                readonly customerId: { readonly column: 'customerId' };
+                readonly doneAt: { readonly column: 'doneAt' };
+                readonly doneById: { readonly column: 'doneById' };
+                readonly dueDay: { readonly column: 'dueDay' };
+                readonly id: { readonly column: 'id' };
+                readonly notes: { readonly column: 'notes' };
+                readonly opportunityId: { readonly column: 'opportunityId' };
+                readonly status: { readonly column: 'status' };
+                readonly tenantId: { readonly column: 'tenantId' };
+                readonly title: { readonly column: 'title' };
+              };
+            };
+          };
           readonly TaxRate: {
             readonly fields: {
               readonly active: {
@@ -36624,6 +36916,14 @@ type ContractBase = Omit<
                   readonly namespace: 'public' & NamespaceId;
                   readonly model: 'SupportTicket';
                 };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
+              readonly tasks: {
+                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'Task' };
                 readonly cardinality: '1:N';
                 readonly on: {
                   readonly localFields: readonly ['id'];
@@ -39762,6 +40062,14 @@ type ContractBase = Omit<
           readonly ref: {
             readonly entry: 'SupportTicket';
             readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'Task';
+            readonly field: 'id';
             readonly namespace: 'public';
           };
         },

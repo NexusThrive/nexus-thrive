@@ -231,6 +231,7 @@ model Tenant {
   providerSettlements ProviderSettlement[]
   bankStatementLines BankStatementLine[]
   opportunities      Opportunity[]
+  tasks              Task[]
   reconciliationRuns ReconciliationRun[]
   supplierPayments   SupplierPayment[]
   numberingResolutions NumberingResolution[]

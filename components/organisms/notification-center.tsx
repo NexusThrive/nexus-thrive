@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
-import { Banknote, Bell, CalendarClock, Clock, MinusCircle, UserRoundPlus, X } from "lucide-react";
+import { Banknote, Bell, CalendarClock, CheckSquare, Clock, MinusCircle, UserRoundPlus, X } from "lucide-react";
 import { EASE_IN_OUT, armPopoverMorph, flash, motionOff, spring, type PopoverMorph } from "@/lib/experience/motion/index";
 import { newArrivals, SEVERITY_LABEL, unreadCount, type AppNotification, type NotificationKind } from "@/lib/experience/dashboard/notifications";
 import { NOTIFICATIONS_REFRESH, type NotificationArrival } from "@/lib/experience/dashboard/notifications-client";
@@ -14,6 +14,7 @@ const ICONS: Record<NotificationKind, typeof Bell> = {
   booking: CalendarClock,
   membership: Clock,
   customer: UserRoundPlus,
+  task: CheckSquare,
 };
 
 const rel = new Intl.RelativeTimeFormat("es-CO", { numeric: "auto" });

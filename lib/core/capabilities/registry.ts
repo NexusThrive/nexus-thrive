@@ -17,6 +17,7 @@ import {
   FileCheck2,
   Globe,
   HandCoins,
+  CheckSquare,
   MapPin,
   Target,
   Megaphone,
@@ -121,6 +122,7 @@ export const CAPABILITIES = [
     nav: [
       { href: "/crm", icon: Users, label: (terms) => terms.customers },
       { href: "/oportunidades", icon: Target, label: () => "Oportunidades" },
+      { href: "/tareas", icon: CheckSquare, label: () => "Tareas" },
     ],
   },
   {

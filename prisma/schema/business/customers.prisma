@@ -111,3 +111,33 @@ model Opportunity {
   @@index([tenantId, customerId])
   @@rls
 }
+
+/// Tarea (HU-actividades-01): un paso concreto con fecha y responsable, ligado a un contacto o a una oportunidad. Es el ÚNICO
+/// modelo de tareas de Business: los proyectos y entregables (etapa 4) lo reutilizan en vez de crear otro.
+///
+/// Campos:
+/// - `assigneeId`: Integrante del equipo responsable (`User.id` del negocio); vacío = sin asignar.
+/// - `dueDay`: Día de vencimiento «AAAA-MM-DD» en hora de Bogotá; vacío = sin fecha.
+/// - `status`: OPEN | DONE. Al completarla se guarda `doneAt` y quién (`doneById`).
+/// - `customerId`, `opportunityId`: A quién o a qué oportunidad se refiere (opcionales).
+model Task {
+  id            String    @id @default(uuid())
+  tenantId      String
+  tenant        Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  title         String
+  notes         String?
+  dueDay        String?
+  assigneeId    String?
+  customerId    String?
+  opportunityId String?
+  status        String    @default("OPEN")
+  doneAt        DateTime?
+  doneById      String?
+  createdById   String?
+  createdAt     DateTime  @default(now())
+
+  @@index([tenantId, status, dueDay])
+  @@index([tenantId, assigneeId, status])
+  @@index([tenantId, customerId])
+  @@rls
+}

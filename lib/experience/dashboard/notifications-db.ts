@@ -4,6 +4,7 @@ import { bogotaDayKey } from "@/lib/foundation/kernel/finance-series";
 import { buildNotifications, type AppNotification } from "@/lib/experience/dashboard/notifications";
 import { can } from "@/lib/core/auth/permissions";
 import { createTenantDb } from "@/lib/core/tenancy/db";
+import { overdueCountFor } from "@/lib/business/customers/tasks-db";
 import { activeModuleNames } from "@/lib/core/tenancy/settings-db";
 
 import { createMembershipsDb } from "@/lib/industry/gym/memberships-repo";
@@ -31,7 +32,7 @@ export async function loadNotifications(tenantId: string, memberId: string, role
   const start = Temporal.Instant.fromEpochMilliseconds(startMs);
   const end = Temporal.Instant.fromEpochMilliseconds(startMs + 86_400_000);
 
-  const [movements, bookings, membership, registrations] = await Promise.all([
+  const [movements, bookings, membership, registrations, overdueTasks] = await Promise.all([
     modules.finance ? tenantDb.finance.getMovements(20) : Promise.resolve([]),
     modules.bookings
       ? db.orm.public.Booking.where({ tenantId })
@@ -49,6 +50,7 @@ export async function loadNotifications(tenantId: string, memberId: string, role
           .select("id", "createdAt", "payload")
           .all()
       : Promise.resolve([]),
+    active.has("crm") ? overdueCountFor(tenantId, memberId) : Promise.resolve(0),
   ]);
 
   const customerIds = [...new Set(bookings.map((b) => b.customerId))];
@@ -74,6 +76,7 @@ export async function loadNotifications(tenantId: string, memberId: string, role
         at: String(event.createdAt),
       };
     }),
+    overdueTasks,
     todayStart: new Date(startMs).toISOString(),
     modules: { ...modules, registrations: active.has("crm") },
   });
