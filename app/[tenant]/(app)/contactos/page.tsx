@@ -5,6 +5,7 @@ import { createMembershipsDb } from "@/lib/industry/gym/memberships-repo";
 import { LiveRefresh } from "@/components/molecules/live-refresh";
 import CustomerToolbar from "./_components/customer-toolbar";
 import CustomerTable, { type CustomerRow } from "./_components/customer-table";
+import { CustomerSelectionProvider } from "./_components/customer-selection";
 import { customerAgendaSummary } from "@/lib/business/customers/customer-agenda";
 import type { CustomerSort, CustomerStatus } from "./_components/customer-filters";
 import { requirePageContext } from "@/lib/core/tenancy/context";
@@ -121,6 +122,7 @@ export default async function CrmPage({
 
 
   return (
+    <CustomerSelectionProvider status={status}>
     <div className="flex flex-col" data-bleed="">
       <LiveRefresh everyMs={8000} />
       <CustomerToolbar
@@ -142,5 +144,6 @@ export default async function CrmPage({
         showMembership={showMembership && status === "active"}
       />
     </div>
+    </CustomerSelectionProvider>
   );
 }

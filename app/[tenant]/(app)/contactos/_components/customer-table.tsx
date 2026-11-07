@@ -6,8 +6,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { SwipeCard } from "@/components/molecules/swipe-card";
-import { ArrowDown, ArrowUp, Archive, ChevronDown, Banknote, MessageCircle, Pencil, Plus, RotateCcw, SlidersHorizontal, Trash2, X } from "lucide-react";
-import { NLoader } from "@/components/atoms/n-loader";
+import { ArrowDown, ArrowUp, Archive, Banknote, MessageCircle, Pencil, Plus, RotateCcw, SlidersHorizontal, X } from "lucide-react";
 import {
   archiveCustomerAction,
   deleteCustomersAction,
@@ -19,8 +18,8 @@ import CustomerSheet from "./customer-sheet";
 import { useVerticalTerms } from "../../vertical-terms-context";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { EmptyState } from "@/components/molecules/empty-state";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/molecules/dropdown-menu";
 import { useQuickCreate } from "@/components/organisms/quick-create-host";
+import { useCustomerSelection } from "./customer-selection";
 
 export type CustomerRow = {
   /** Próxima cita (ISO) o null. */
@@ -123,10 +122,7 @@ export default function CustomerTable({
   // La selección solo aplica a la vista de archivados. Se guarda junto a la
   // vista en la que se hizo: si el usuario cambia de pestaña, la selección
   // vieja queda ignorada (derivada, sin efecto que reinicie estado).
-  const [selection, setSelection] = useState<{
-    status: string;
-    ids: Set<string>;
-  }>(() => ({ status, ids: new Set() }));
+  const { selection, setSelection, register } = useCustomerSelection();
   const [editTarget, setEditTarget] = useState<CustomerRow | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [notice, setNotice] = useState<Notice>(null);
@@ -219,6 +215,11 @@ export default function CustomerTable({
   const bulkArchive = () => bulkRun((id) => archiveCustomerAction(tenantSlug, id), (n) => `Se archivaron ${n} ${n === 1 ? customerLabel : customersLabel}.`);
   const bulkRestore = () => bulkRun((id) => restoreCustomerAction(tenantSlug, id), (n) => `Se restauraron ${n} ${n === 1 ? customerLabel : customersLabel}.`);
 
+  // El panel de control ejecuta estas acciones desde su menú «Acciones».
+  useEffect(() => {
+    register({ archive: bulkArchive, restore: bulkRestore, remove: () => setConfirmOpen(true) });
+  });
+
   const confirmBulkDelete = () => {
     const ids = [...selected];
     setConfirmOpen(false);
@@ -277,42 +278,6 @@ export default function CustomerTable({
       ) : null}
 
       {/* Barra de selección múltiple (solo archivados) */}
-      {selectable && selected.size > 0 ? (
-        <div className="flex flex-wrap items-center gap-2 bg-accent-subtle/40 px-5 py-1.5">
-          <p className="text-sm font-medium text-foreground" aria-live="polite">
-            {selected.size} {selected.size === 1 ? "seleccionado" : "seleccionados"}
-          </p>
-          <DropdownMenu modal={false}>
-            <DropdownMenuTrigger asChild>
-              <button type="button" disabled={isPending} className={buttonVariants({ variant: "outline", size: "sm", className: "h-8 border bg-card" })}>
-                {isPending ? <NLoader size={16} className="text-current" /> : null}
-                Acciones
-                <ChevronDown aria-hidden="true" className="size-4" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" sideOffset={6}>
-              {isArchivedView ? (
-                <>
-                  <DropdownMenuItem onSelect={bulkRestore}>
-                    <RotateCcw aria-hidden="true" className="size-4" /> Restaurar
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => setConfirmOpen(true)} className="text-danger">
-                    <Trash2 aria-hidden="true" className="size-4" /> Eliminar definitivamente
-                  </DropdownMenuItem>
-                </>
-              ) : (
-                <DropdownMenuItem onSelect={bulkArchive}>
-                  <Archive aria-hidden="true" className="size-4" /> Archivar
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <button type="button" disabled={isPending} onClick={() => replaceSelection(new Set())} className={buttonVariants({ variant: "ghost", size: "sm", className: "h-8" })}>
-            Quitar selección
-          </button>
-        </div>
-      ) : null}
-
       {/* ---------- Estado vacío ---------- */}
       {rows.length === 0 ? (
         <EmptyState
@@ -343,7 +308,7 @@ export default function CustomerTable({
                           }
                         }}
                         onChange={toggleAllOnPage}
-                        className="h-4 w-4 cursor-pointer rounded accent-gold-600"
+                        className="size-3.5 cursor-pointer rounded accent-gold-600"
                       />
                     </th>
                   ) : null}
@@ -395,7 +360,7 @@ export default function CustomerTable({
                           aria-label={`Seleccionar a ${row.name}`}
                           checked={selected.has(row.id)}
                           onChange={() => toggleRow(row.id)}
-                          className="h-4 w-4 cursor-pointer rounded accent-gold-600"
+                          className="size-3.5 cursor-pointer rounded accent-gold-600"
                         />
                       </td>
                     ) : null}

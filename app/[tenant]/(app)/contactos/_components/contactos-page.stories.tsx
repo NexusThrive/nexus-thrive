@@ -7,6 +7,7 @@ import { buildTenantNav } from "@/lib/experience/navigation/tenant-nav";
 import { VerticalTermsProvider } from "../../vertical-terms-context";
 import CustomerTable, { type CustomerRow } from "./customer-table";
 import CustomerToolbar from "./customer-toolbar";
+import { CustomerSelectionProvider } from "./customer-selection";
 
 const groups = buildTenantNav("retail", ["dashboard", "crm", "bookings", "memberships", "quotes", "orders", "finance"]);
 
@@ -43,10 +44,12 @@ function ContactosPage({ rows }: { rows: CustomerRow[] }) {
     <AppShellProvider value={{ brandName: "Simpleapp", brandSub: "simpleapp", groups, activeKey: "/contactos", title: "Clientes", hrefFor: (href) => `/demo${href}`, quickActions: [], openSearch: () => {} }}>
       <VerticalTermsProvider terms={getVerticalTerms("retail")}>
         <AppTopbar />
-        <div data-bleed="" className="flex min-h-dvh flex-col bg-background pt-14">
-          <CustomerToolbar tenantSlug="demo" status="active" page={1} pageSize={20} totalPages={1} total={rows.length} />
-          <CustomerTable tenantSlug="demo" rows={rows} status="active" sort="recent" query="" canRemove showMembership={false} />
-        </div>
+        <CustomerSelectionProvider status="active">
+          <div data-bleed="" className="flex min-h-dvh flex-col bg-background pt-14">
+            <CustomerToolbar tenantSlug="demo" status="active" page={1} pageSize={20} totalPages={1} total={rows.length} />
+            <CustomerTable tenantSlug="demo" rows={rows} status="active" sort="recent" query="" canRemove showMembership={false} />
+          </div>
+        </CustomerSelectionProvider>
       </VerticalTermsProvider>
     </AppShellProvider>
   );

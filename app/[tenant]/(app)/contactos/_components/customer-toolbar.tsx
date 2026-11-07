@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { CalendarClock, ChevronLeft, ChevronRight, LayoutGrid, List, Map, MoreVertical, Plus, SlidersHorizontal, X } from "lucide-react";
+import { Archive, ArchiveRestore, CalendarClock, ChevronLeft, ChevronRight, Download, LayoutGrid, List, Map, MoreVertical, Plus, Settings, SlidersHorizontal, Trash2, X } from "lucide-react";
 import CustomerSearch from "./customer-search";
 import CustomerQuickCreate from "./customer-quick-create";
+import { useCustomerSelection } from "./customer-selection";
 import type { CustomerStatus } from "./customer-filters";
 import { useVerticalTerms } from "../../vertical-terms-context";
 import { buttonVariants } from "@/components/atoms/button-variants";
@@ -46,6 +47,8 @@ export default function CustomerToolbar({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  const { selection, setSelection, run } = useCustomerSelection();
+  const selectedCount = selection.status === status ? selection.ids.size : 0;
 
   const go = (mutate: (params: URLSearchParams) => void) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -92,7 +95,53 @@ export default function CustomerToolbar({
           </DropdownMenu>
         </div>
 
-        {/* Centro: una sola caja de búsqueda de 543px, centrada en la pantalla, con el filtro dentro */}
+        {selectedCount > 0 ? (
+          /* Con filas seleccionadas, el centro muestra la selección y sus acciones (como en Odoo). */
+          <div className="flex h-[34px] w-full items-center gap-2 justify-self-center max-w-[543px]">
+            <div className="flex h-full min-w-0 flex-1 items-center justify-between gap-2 rounded-lg border border-accent bg-card px-3 ring-2 ring-accent/25">
+              <span className="truncate text-sm font-medium text-foreground" aria-live="polite">
+                {selectedCount} {selectedCount === 1 ? "seleccionado" : "seleccionados"}
+              </span>
+              <button
+                type="button"
+                onClick={() => setSelection({ status, ids: new Set() })}
+                aria-label="Quitar selección"
+                className="grid size-6 place-items-center rounded-md text-muted-foreground outline-none hover:bg-surface-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
+              >
+                <X aria-hidden="true" className="size-4" />
+              </button>
+            </div>
+            <DropdownMenu modal={false}>
+              <DropdownMenuTrigger asChild>
+                <button type="button" className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-[34px] border border-border bg-card")}>
+                  <Settings aria-hidden="true" className="size-4" />
+                  Acciones
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" sideOffset={8} className="w-52">
+                <DropdownMenuItem asChild>
+                  <Link href={`/${tenantSlug}/data`}>
+                    <Download aria-hidden="true" className="size-4" /> Exportar
+                  </Link>
+                </DropdownMenuItem>
+                {archived ? (
+                  <>
+                    <DropdownMenuItem onSelect={() => run("restore")}>
+                      <ArchiveRestore aria-hidden="true" className="size-4" /> Desarchivar
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => run("remove")} className="text-danger">
+                      <Trash2 aria-hidden="true" className="size-4" /> Eliminar
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <DropdownMenuItem onSelect={() => run("archive")}>
+                    <Archive aria-hidden="true" className="size-4" /> Archivar
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        ) : (
         <div className="relative h-[34px] w-full justify-self-center max-w-[543px] [&>div]:h-full [&>div]:max-w-none [&_input]:h-full [&_input]:w-full [&_input]:rounded-lg [&_input]:border-border [&_input]:bg-card [&_input]:pr-10">
           <CustomerSearch />
           <DropdownMenu modal={false}>
@@ -121,6 +170,7 @@ export default function CustomerToolbar({
             </button>
           ) : null}
         </div>
+        )}
 
         {/* Derecha: paginación y vistas */}
         <div className="flex flex-wrap items-center justify-start gap-3 justify-self-start min-[1100px]:justify-self-end">
