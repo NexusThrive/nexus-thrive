@@ -65,6 +65,21 @@ async function siteTenant(siteSlug: string) {
   return tenant ? { tenantId: tenant.id, name: tenant.name } : null;
 }
 
+/**
+ * Registra un interesado de un negocio: el contacto de formulario (con su origen), el contacto único y su oportunidad abierta, y el
+ * evento `lead.created`. Lo usan el formulario del sitio de Nexus y la captura desde webs externas.
+ */
+export async function recordLead(tenantId: string, input: { name: string; phone: string; email: string; message: string; origin: unknown; source: string; consent: boolean }): Promise<void> {
+  const origin = sanitizeOrigin(input.origin);
+  await db.transaction(async (tx) => {
+    const l = await tx.orm.public.ContactLead.create({ tenantId, name: input.name.trim().slice(0, 120), phone: input.phone.trim().slice(0, 30), email: input.email.trim().toLowerCase().slice(0, 120) || null, message: input.message.trim().slice(0, 500) || null, origin: origin as never });
+    await emitEvent(tx, tenantId, { type: "lead.created", resourceType: "contact_lead", resourceId: l.id, payload: { lead_id: l.id, name: l.name, phone: l.phone, email: l.email, origin } });
+    // El interesado es un contacto único y su seguimiento empieza como oportunidad abierta.
+    const contact = await findOrCreateContact(tx, tenantId, { name: l.name, phone: l.phone, email: l.email, source: "WEB", stage: "PROSPECT", consent: input.consent });
+    if (contact) await createOpportunity(tx, tenantId, { customerId: contact.id, interest: l.message?.trim() || "Escribió desde la web", source: input.source, leadId: l.id });
+  });
+}
+
 /** Contacto desde el formulario público del sitio. */
 export async function createLead(siteSlug: string, input: { name: string; phone: string; email: string; message: string; origin: unknown }): Promise<{ ok: true } | { ok: false; message: string; fields?: Record<string, string> }> {
   const fields: Record<string, string> = {};
@@ -75,16 +90,7 @@ export async function createLead(siteSlug: string, input: { name: string; phone:
   if (Object.keys(fields).length) return { ok: false, message: "Revisa los datos marcados.", fields };
   const site = await siteTenant(siteSlug);
   if (!site) return { ok: false, message: "Este sitio no está disponible." };
-  const origin = sanitizeOrigin(input.origin);
-  const lead = await db.transaction(async (tx) => {
-    const l = await tx.orm.public.ContactLead.create({ tenantId: site.tenantId, name: input.name.trim().slice(0, 120), phone: input.phone.trim().slice(0, 30), email: input.email.trim().toLowerCase().slice(0, 120) || null, message: input.message.trim().slice(0, 500) || null, origin: origin as never });
-    await emitEvent(tx, site.tenantId, { type: "lead.created", resourceType: "contact_lead", resourceId: l.id, payload: { lead_id: l.id, name: l.name, phone: l.phone, email: l.email, origin } });
-    // El interesado es un contacto único y su seguimiento empieza como oportunidad abierta.
-    const contact = await findOrCreateContact(tx, site.tenantId, { name: l.name, phone: l.phone, email: l.email, source: "WEB", stage: "PROSPECT", consent: true });
-    if (contact) await createOpportunity(tx, site.tenantId, { customerId: contact.id, interest: l.message?.trim() || "Escribió desde el sitio", source: "WEB", leadId: l.id });
-    return l;
-  });
-  void lead;
+  await recordLead(site.tenantId, { ...input, source: "WEB", consent: true });
   return { ok: true };
 }
 

@@ -68,6 +68,8 @@ const GROUP_ICONS: Record<GroupName, LucideIcon> = {
   "Presencia en línea": Globe,
   Canales: MessageCircle,
 };
+/** Pantallas que el menú reducido de un rubro con control de acceso (gimnasio) no muestra: tienda en línea y seguimiento de ventas. */
+const LEAN_HIDDEN: readonly string[] = ["/pedidos-tienda", "/oportunidades", "/tareas", "/formularios"];
 /** Grupo de cada función: su categoría en el registro (la misma que ve en «Funciones»). */
 const MODULE_GROUP: Partial<Record<string, GroupName>> = Object.fromEntries(CAPABILITIES.map((c) => [c.id, c.category]));
 
@@ -82,7 +84,7 @@ export function buildTenantNav(vertical: VerticalValue, activeModules: readonly 
   // Rubros con control de acceso de socios (gimnasio): menú reducido, sin tienda en línea, funciones, datos ni integraciones.
   const lean = hasMemberAccess(vertical);
   const items = (moduleName: ModuleValue): NavItem[] => {
-    return MODULE_NAV[moduleName].filter((nav) => !nav.verticals || nav.verticals.includes(vertical)).filter((nav) => !(lean && nav.href === "/pedidos-tienda")).map((nav) => ({
+    return MODULE_NAV[moduleName].filter((nav) => !nav.verticals || nav.verticals.includes(vertical)).filter((nav) => !(lean && LEAN_HIDDEN.includes(nav.href))).map((nav) => ({
       key: nav.href || "home",
       module: moduleName,
       href: nav.href,

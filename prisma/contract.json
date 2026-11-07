@@ -224,6 +224,10 @@
       "model": "LeadActivity",
       "namespace": "public"
     },
+    "LeadForm": {
+      "model": "LeadForm",
+      "namespace": "public"
+    },
     "LookaheadTask": {
       "model": "LookaheadTask",
       "namespace": "public"
@@ -10061,6 +10065,115 @@
               },
               "namespaceId": "public",
               "table": "LeadActivity"
+            }
+          },
+          "LeadForm": {
+            "fields": {
+              "allowedOrigins": {
+                "many": true,
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "campaign": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "enabled": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "publicKey": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "allowedOrigins": {
+                  "column": "allowedOrigins"
+                },
+                "campaign": {
+                  "column": "campaign"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "enabled": {
+                  "column": "enabled"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "publicKey": {
+                  "column": "publicKey"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "LeadForm"
             }
           },
           "LookaheadTask": {
@@ -21091,6 +21204,21 @@
                   "namespace": "public"
                 }
               },
+              "leadForms": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "LeadForm",
+                  "namespace": "public"
+                }
+              },
               "leads": {
                 "cardinality": "1:N",
                 "on": {
@@ -24578,6 +24706,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "LeadActivity"
+            },
+            "LeadForm": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "LeadForm"
             },
             "LookaheadTask": {
               "kind": "rls",
@@ -31978,6 +32111,107 @@
                 ]
               },
               "uniques": []
+            },
+            "LeadForm": {
+              "checks": [
+                {
+                  "expression": "array_position(\"allowedOrigins\", NULL) IS NULL",
+                  "name": "LeadForm_allowedOrigins_elem_not_null_d963e802",
+                  "prefix": "LeadForm_allowedOrigins_elem_not_null"
+                }
+              ],
+              "columns": {
+                "allowedOrigins": {
+                  "codecId": "pg/text@1",
+                  "many": true,
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "campaign": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "enabled": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": true
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "publicKey": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "LeadForm"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "LeadForm_tenantId_idx_c93ed4f1",
+                  "prefix": "LeadForm_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "publicKey"
+                  ]
+                }
+              ]
             },
             "LookaheadTask": {
               "columns": {
@@ -42592,10 +42826,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "ba2fe6ffbf659f919f1bdf4a03ec8906251bdb5d4e33598a63a6709455452fe2"
+    "storageHash": "2846fa93f5ee846dcf42dba8e60faefe63342403e0e16fc32b528daad89ae102"
   },
   "execution": {
-    "executionHash": "c72ea9e8a0dab225cfd5e3baa00c20b0bf7ae1f65517ff8f9d4a8891813a7131",
+    "executionHash": "ebcd54c31c56c3e9c5ca9826a1b6310e7f6557512ebd6bc1880c164c2006d59a",
     "mutations": {
       "defaults": [
         {
@@ -43541,6 +43775,17 @@
           },
           "ref": {
             "entry": "LeadActivity",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "LeadForm",
             "field": "id",
             "namespace": "public"
           }

@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'ba2fe6ffbf659f919f1bdf4a03ec8906251bdb5d4e33598a63a6709455452fe2'>;
+  StorageHashBase<'2846fa93f5ee846dcf42dba8e60faefe63342403e0e16fc32b528daad89ae102'>;
 export type ExecutionHash =
-  ExecutionHashBase<'c72ea9e8a0dab225cfd5e3baa00c20b0bf7ae1f65517ff8f9d4a8891813a7131'>;
+  ExecutionHashBase<'ebcd54c31c56c3e9c5ca9826a1b6310e7f6557512ebd6bc1880c164c2006d59a'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -999,6 +999,16 @@ export type FieldOutputTypes = {
       readonly leadId: CodecTypes['pg/text@1']['output'];
       readonly staffId: CodecTypes['pg/text@1']['output'] | null;
       readonly staffName: CodecTypes['pg/text@1']['output'] | null;
+    };
+    readonly LeadForm: {
+      readonly allowedOrigins: ReadonlyArray<CodecTypes['pg/text@1']['output']>;
+      readonly campaign: CodecTypes['pg/text@1']['output'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly enabled: CodecTypes['pg/bool@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly name: CodecTypes['pg/text@1']['output'];
+      readonly publicKey: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
     };
     readonly LookaheadTask: {
       readonly budgetItemId: CodecTypes['pg/text@1']['output'] | null;
@@ -2834,6 +2844,16 @@ export type FieldInputTypes = {
       readonly staffId: CodecTypes['pg/text@1']['input'] | null;
       readonly staffName: CodecTypes['pg/text@1']['input'] | null;
     };
+    readonly LeadForm: {
+      readonly allowedOrigins: ReadonlyArray<CodecTypes['pg/text@1']['input']>;
+      readonly campaign: CodecTypes['pg/text@1']['input'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly enabled: CodecTypes['pg/bool@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly name: CodecTypes['pg/text@1']['input'];
+      readonly publicKey: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+    };
     readonly LookaheadTask: {
       readonly budgetItemId: CodecTypes['pg/text@1']['input'] | null;
       readonly code: CodecTypes['pg/text@1']['input'];
@@ -4668,6 +4688,16 @@ export type StorageColumnTypes = {
       readonly staffId: CodecTypes['pg/text@1']['output'] | null;
       readonly staffName: CodecTypes['pg/text@1']['output'] | null;
     };
+    readonly LeadForm: {
+      readonly allowedOrigins: ReadonlyArray<CodecTypes['pg/text@1']['output']>;
+      readonly campaign: CodecTypes['pg/text@1']['output'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly enabled: CodecTypes['pg/bool@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly name: CodecTypes['pg/text@1']['output'];
+      readonly publicKey: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+    };
     readonly LookaheadTask: {
       readonly budgetItemId: CodecTypes['pg/text@1']['output'] | null;
       readonly code: CodecTypes['pg/text@1']['output'];
@@ -6501,6 +6531,16 @@ export type StorageColumnInputTypes = {
       readonly leadId: CodecTypes['pg/text@1']['input'];
       readonly staffId: CodecTypes['pg/text@1']['input'] | null;
       readonly staffName: CodecTypes['pg/text@1']['input'] | null;
+    };
+    readonly LeadForm: {
+      readonly allowedOrigins: ReadonlyArray<CodecTypes['pg/text@1']['input']>;
+      readonly campaign: CodecTypes['pg/text@1']['input'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly enabled: CodecTypes['pg/bool@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly name: CodecTypes['pg/text@1']['input'];
+      readonly publicKey: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
     };
     readonly LookaheadTask: {
       readonly budgetItemId: CodecTypes['pg/text@1']['input'] | null;
@@ -8504,6 +8544,18 @@ export namespace Models {
     lead: public_Lead;
     readonly [RelationKeys]?: 'lead';
   };
+  export type public_LeadForm = {
+    allowedOrigins: ReadonlyArray<CodecTypes['pg/text@1']['output']>;
+    campaign: CodecTypes['pg/text@1']['output'] | null;
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    enabled: CodecTypes['pg/bool@1']['output'];
+    id: CodecTypes['pg/text@1']['output'];
+    name: CodecTypes['pg/text@1']['output'];
+    publicKey: CodecTypes['pg/text@1']['output'];
+    tenantId: CodecTypes['pg/text@1']['output'];
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'tenant';
+  };
   export type public_LookaheadTask = {
     budgetItemId: CodecTypes['pg/text@1']['output'] | null;
     code: CodecTypes['pg/text@1']['output'];
@@ -9643,6 +9695,7 @@ export namespace Models {
     invoices: public_Invoice[];
     journalEntries: public_JournalEntry[];
     journalLines: public_JournalLine[];
+    leadForms: public_LeadForm[];
     leads: public_Lead[];
     lookaheadTasks: public_LookaheadTask[];
     memberships: public_Membership[];
@@ -9749,6 +9802,7 @@ export namespace Models {
       | 'invoices'
       | 'journalEntries'
       | 'journalLines'
+      | 'leadForms'
       | 'leads'
       | 'lookaheadTasks'
       | 'memberships'
@@ -10108,6 +10162,7 @@ export declare const models: {
     JournalLine: Models.public_JournalLine;
     Lead: Models.public_Lead;
     LeadActivity: Models.public_LeadActivity;
+    LeadForm: Models.public_LeadForm;
     LookaheadTask: Models.public_LookaheadTask;
     Membership: Models.public_Membership;
     ModuleSetting: Models.public_ModuleSetting;
@@ -15809,6 +15864,79 @@ type ContractBase = Omit<
                   readonly target: {
                     readonly namespaceId: 'public' & NamespaceId;
                     readonly tableName: 'Lead';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly LeadForm: {
+              columns: {
+                readonly allowedOrigins: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly campaign: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly enabled: {
+                  readonly nativeType: 'bool';
+                  readonly codecId: 'pg/bool@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/bool@1', true>;
+                  };
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly name: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly publicKey: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['publicKey'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'LeadForm_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'LeadForm_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'LeadForm';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
                     readonly columns: readonly ['id'];
                   };
                 },
@@ -24463,6 +24591,7 @@ type ContractBase = Omit<
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'LeadActivity';
     };
+    readonly LeadForm: { readonly namespace: 'public' & NamespaceId; readonly model: 'LeadForm' };
     readonly LookaheadTask: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'LookaheadTask';
@@ -30128,6 +30257,74 @@ type ContractBase = Omit<
                 readonly leadId: { readonly column: 'leadId' };
                 readonly staffId: { readonly column: 'staffId' };
                 readonly staffName: { readonly column: 'staffName' };
+              };
+            };
+          };
+          readonly LeadForm: {
+            readonly fields: {
+              readonly allowedOrigins: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+                readonly many: true;
+              };
+              readonly campaign: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly enabled: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly name: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly publicKey: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'LeadForm';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly allowedOrigins: { readonly column: 'allowedOrigins' };
+                readonly campaign: { readonly column: 'campaign' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly enabled: { readonly column: 'enabled' };
+                readonly id: { readonly column: 'id' };
+                readonly name: { readonly column: 'name' };
+                readonly publicKey: { readonly column: 'publicKey' };
+                readonly tenantId: { readonly column: 'tenantId' };
               };
             };
           };
@@ -37042,6 +37239,17 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['tenantId'];
                 };
               };
+              readonly leadForms: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'LeadForm';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
               readonly leads: {
                 readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'Lead' };
                 readonly cardinality: '1:N';
@@ -40072,6 +40280,14 @@ type ContractBase = Omit<
           readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
           readonly ref: {
             readonly entry: 'LeadActivity';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'LeadForm';
             readonly field: 'id';
             readonly namespace: 'public';
           };

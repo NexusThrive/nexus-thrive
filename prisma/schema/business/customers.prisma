@@ -141,3 +141,26 @@ model Task {
   @@index([tenantId, customerId])
   @@rls
 }
+
+/// Formulario de captura de interesados (HU-lead-capture-01): una clave PÚBLICA por formulario que una web externa (WordPress,
+/// Next.js, Shopify) usa para enviar interesados a Nexus. La clave puede verse en el navegador; no da acceso a nada más que a
+/// crear interesados desde los dominios permitidos. NO es una llave de API.
+///
+/// Campos:
+/// - `publicKey`: Clave pública del formulario (`lf_…`), única en toda la plataforma.
+/// - `allowedOrigins`: Orígenes web permitidos («https://mitienda.com»). Un envío desde otro origen se rechaza.
+/// - `campaign`: Campaña por omisión de lo que llegue por este formulario.
+model LeadForm {
+  id             String   @id @default(uuid())
+  tenantId       String
+  tenant         Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name           String
+  publicKey      String   @unique
+  allowedOrigins String[]
+  campaign       String?
+  enabled        Boolean  @default(true)
+  createdAt      DateTime @default(now())
+
+  @@index([tenantId])
+  @@rls
+}

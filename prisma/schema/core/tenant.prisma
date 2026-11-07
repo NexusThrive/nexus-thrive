@@ -232,6 +232,7 @@ model Tenant {
   bankStatementLines BankStatementLine[]
   opportunities      Opportunity[]
   tasks              Task[]
+  leadForms          LeadForm[]
   salesQuotes        SalesQuote[]
   salesQuoteLines    SalesQuoteLine[]
   reconciliationRuns ReconciliationRun[]
