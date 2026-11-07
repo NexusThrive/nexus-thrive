@@ -100,9 +100,9 @@ export function AppHome() {
   };
 
   return (
-    <div className="relative isolate -mx-4 min-h-[calc(100dvh-var(--topbar-height))] overflow-hidden px-4 pb-10 pt-8 sm:-mx-6 sm:px-6">
+    <div className="relative isolate -mx-4 flex min-h-[calc(100dvh-var(--topbar-height))] flex-col items-center overflow-hidden px-4 pb-10 pt-8 sm:-mx-6 sm:px-6">
       <GridBackdrop />
-      <p suppressHydrationWarning className="mb-8 text-center text-xs text-muted-foreground">{greetingLine(new Date())}</p>
+      <p suppressHydrationWarning className="mb-8 w-full text-center text-xs text-muted-foreground">{greetingLine(new Date())}</p>
       {visible.length === 0 ? (
         <p className="text-center text-sm text-muted-foreground">No hay aplicaciones disponibles para tu cuenta.</p>
       ) : (
