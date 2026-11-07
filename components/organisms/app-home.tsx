@@ -44,6 +44,14 @@ function writeFavorites(list: string[]) {
   }
 }
 
+/** Saludo y fecha de hoy en Bogotá: «Buenos días · sábado, 7 de noviembre». */
+function greetingLine(now: Date): string {
+  const hour = Number(new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", hour: "numeric", hour12: false }).format(now));
+  const greeting = hour < 12 ? "Buenos días" : hour < 19 ? "Buenas tardes" : "Buenas noches";
+  const date = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", weekday: "long", day: "numeric", month: "long" }).format(now);
+  return `${greeting} · ${date}`;
+}
+
 /**
  * Pantalla de aplicaciones de Nexus (App Home): la entrada del negocio. No es el dashboard: no muestra cifras. Cada tarjeta es un
  * área habilitada para la organización y el rol; abre su espacio de trabajo. Inicio es una aplicación más.
@@ -94,6 +102,7 @@ export function AppHome() {
   return (
     <div className="relative isolate -mx-4 min-h-[calc(100dvh-var(--topbar-height))] overflow-hidden px-4 pb-10 pt-8 sm:-mx-6 sm:px-6">
       <GridBackdrop />
+      <p suppressHydrationWarning className="mb-8 text-center text-xs text-muted-foreground">{greetingLine(new Date())}</p>
       {visible.length === 0 ? (
         <p className="text-center text-sm text-muted-foreground">No hay aplicaciones disponibles para tu cuenta.</p>
       ) : (
