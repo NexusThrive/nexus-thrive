@@ -5,7 +5,7 @@ import { useEffect, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { SwipeCard } from "@/components/molecules/swipe-card";
-import { Archive, Banknote, ChevronLeft, ChevronRight, MessageCircle, Pencil, Plus, RotateCcw, Trash2, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Archive, Banknote, MessageCircle, Pencil, Plus, RotateCcw, Trash2, X } from "lucide-react";
 import { NLoader } from "@/components/atoms/n-loader";
 import {
   archiveCustomerAction,
@@ -82,9 +82,7 @@ export default function CustomerTable({
   tenantSlug,
   rows,
   status,
-  page,
-  totalPages,
-  total,
+  sort,
   query,
   canRemove = true,
   showMembership = false,
@@ -92,9 +90,8 @@ export default function CustomerTable({
   tenantSlug: string;
   rows: CustomerRow[];
   status: "active" | "archived";
-  page: number;
-  totalPages: number;
-  total: number;
+  /** Orden actual (URL): «recent», «name_asc» o «name_desc». */
+  sort: "recent" | "name_asc" | "name_desc";
   query: string;
   /** El rol puede archivar, restaurar y eliminar (el servidor lo vuelve a exigir). */
   canRemove?: boolean;
@@ -103,6 +100,17 @@ export default function CustomerTable({
 }) {
   const router = useRouter();
   const quick = useQuickCreate();
+  const setSort = (next: "recent" | "name_asc" | "name_desc") => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("sort", next);
+    params.delete("page");
+    startTransition(() => {
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    });
+  };
+  const nameSort = sort === "name_asc" ? "name_desc" : "name_asc";
+  const sortIcon = (active: boolean, descending: boolean) =>
+    active ? (descending ? <ArrowDown aria-hidden="true" className="size-3.5" /> : <ArrowUp aria-hidden="true" className="size-3.5" />) : null;
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
@@ -154,13 +162,6 @@ export default function CustomerTable({
     });
   };
 
-  const navigateToPage = (nextPage: number) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("page", String(nextPage));
-    startTransition(() => {
-      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-    });
-  };
 
   const pageIds = rows.map((row) => row.id);
   const selectedOnPage = pageIds.filter((id) => selected.has(id)).length;
@@ -320,8 +321,11 @@ export default function CustomerTable({
                       />
                     </th>
                   ) : null}
-                  <th scope="col" className="px-5 py-2">
-                    {terms.customer}
+                  <th scope="col" className="px-5 py-2" aria-sort={sort === "name_asc" ? "ascending" : sort === "name_desc" ? "descending" : "none"}>
+                    <button type="button" onClick={() => setSort(nameSort)} className="inline-flex items-center gap-1 outline-none hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
+                      {terms.customer}
+                      {sortIcon(sort !== "recent", sort === "name_desc")}
+                    </button>
                   </th>
                   <th scope="col" className="px-5 py-2">
                     Correo electrónico
@@ -335,8 +339,11 @@ export default function CustomerTable({
                   <th scope="col" className="px-5 py-2">
                     Por cobrar
                   </th>
-                  <th scope="col" className="px-5 py-2">
-                    Registrado
+                  <th scope="col" className="px-5 py-2" aria-sort={sort === "recent" ? "descending" : "none"}>
+                    <button type="button" onClick={() => setSort("recent")} className="inline-flex items-center gap-1 outline-none hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
+                      Registrado
+                      {sortIcon(sort === "recent", true)}
+                    </button>
                   </th>
                 </tr>
               </thead>
@@ -477,34 +484,6 @@ export default function CustomerTable({
       )}
 
       {/* ---------- Paginación ---------- */}
-      {totalPages > 1 ? (
-        <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
-          <p className="text-xs text-muted-foreground">
-            Página {page} de {totalPages} · {total} en total
-          </p>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              disabled={page <= 1 || isPending}
-              onClick={() => navigateToPage(page - 1)}
-              className={buttonVariants({ variant: "outline", size: "sm" })}
-            >
-              <ChevronLeft aria-hidden="true" className="h-4 w-4" />
-              Anterior
-            </button>
-            <button
-              type="button"
-              disabled={page >= totalPages || isPending}
-              onClick={() => navigateToPage(page + 1)}
-              className={buttonVariants({ variant: "outline", size: "sm" })}
-            >
-              Siguiente
-              <ChevronRight aria-hidden="true" className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-      ) : null}
-
       {/* ---------- Modales ---------- */}
       {editTarget ? (
         <CustomerSheet tenantSlug={tenantSlug} customerId={editTarget.id} onClose={() => setEditTarget(null)} />

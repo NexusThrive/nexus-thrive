@@ -126,7 +126,9 @@ export default async function CrmPage({
       <CustomerToolbar
         tenantSlug={tenantSlug}
         status={status}
-        sort={sort}
+        page={safePage}
+        pageSize={PAGE_SIZE}
+        totalPages={totalPages}
         total={result.total}
       />
 
@@ -134,9 +136,7 @@ export default async function CrmPage({
         tenantSlug={tenantSlug}
         rows={customerRows}
         status={status}
-        page={safePage}
-        totalPages={totalPages}
-        total={result.total}
+        sort={sort}
         query={q}
         canRemove={can(pageCtx.role, "customers.delete")}
         showMembership={showMembership && status === "active"}
