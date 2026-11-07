@@ -15,20 +15,21 @@ import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useToast } from "@/components/molecules/toast";
 import { FormDialog } from "@/components/organisms/form-sheet";
 import { AdaptiveTable } from "@/components/organisms/adaptive-table";
-import { cancelIntentAction, confirmManualAction, createIntentAction, reconcileAction, refundAction, registerSettlementAction, rejectProofAction } from "@/app/[tenant]/(app)/cobros/actions";
+import { cancelIntentAction, confirmManualAction, confirmMatchAction, importStatementAction, reviewLineAction, createIntentAction, reconcileAction, refundAction, registerSettlementAction, rejectProofAction } from "@/app/[tenant]/(app)/cobros/actions";
 import { STATUS_LABELS, payButtonHtml, type Reconciliation } from "@/lib/domains/finance/payments/intents";
 import type { IntentRow } from "@/lib/domains/finance/payments/intents-db";
+import type { StatementRow } from "@/lib/domains/finance/payments/statements-db";
 import type { SettlementRow } from "@/lib/domains/finance/payments/settlements-db";
 import { formatCurrency } from "@/lib/foundation/format";
 import { DateInput } from "@/components/molecules/date-input";
 
 type Run = { id: string; provider: string; day: string; expected: number; reported: number; matched: number; differences: Reconciliation["differences"] };
-type Tab = "links" | "settlements" | "recon";
+type Tab = "links" | "settlements" | "statement" | "recon";
 type Small = { kind: "confirm" | "reject" | "refund" | "share"; row: IntentRow } | null;
 const TONE = { PENDING: "warning", VERIFYING: "warning", PAID: "success", EXPIRED: "secondary", FAILED: "destructive", CANCELED: "secondary" } as const;
 const KIND_TEXT = { missing_in_nexus: "El proveedor lo reporta y NEXUS no lo tiene", missing_in_provider: "NEXUS lo confirmó y el proveedor no lo reporta", amount_mismatch: "El monto no coincide" } as const;
 
-export default function CobrosView({ slug, baseUrl, intents, runs, canAdmin, today, gateways = [], settlements = [] }: { slug: string; baseUrl: string; intents: IntentRow[]; runs: Run[]; canAdmin: boolean; today: string; gateways?: { value: string; label: string }[]; settlements?: SettlementRow[] }) {
+export default function CobrosView({ slug, baseUrl, intents, runs, canAdmin, today, gateways = [], settlements = [], statement = [] }: { slug: string; baseUrl: string; intents: IntentRow[]; runs: Run[]; canAdmin: boolean; today: string; gateways?: { value: string; label: string }[]; settlements?: SettlementRow[]; statement?: StatementRow[] }) {
   const [tab, setTab] = useState<Tab>("links");
   const [creating, setCreating] = useState(false);
   const [small, setSmall] = useState<Small>(null);
@@ -51,7 +52,7 @@ export default function CobrosView({ slug, baseUrl, intents, runs, canAdmin, tod
     <div className="grid gap-4">
       {canAdmin ? (
         <div className="max-w-full overflow-x-auto pb-1">
-          <SegmentedControl ariaLabel="Sección" value={tab} onChange={setTab} options={[{ value: "links", label: "Enlaces de cobro", count: intents.filter((i) => i.status === "PENDING" || i.status === "VERIFYING").length || undefined }, { value: "settlements", label: "Liquidaciones", count: undefined }, { value: "recon", label: "Conciliación" }]} />
+          <SegmentedControl ariaLabel="Sección" value={tab} onChange={setTab} options={[{ value: "links", label: "Enlaces de cobro", count: intents.filter((i) => i.status === "PENDING" || i.status === "VERIFYING").length || undefined }, { value: "settlements", label: "Liquidaciones", count: undefined }, { value: "statement", label: "Extracto del banco", count: statement.filter((l) => l.status === "PROPOSED" || l.status === "UNMATCHED").length || undefined }, { value: "recon", label: "Conciliación" }]} />
         </div>
       ) : null}
 
@@ -110,6 +111,8 @@ export default function CobrosView({ slug, baseUrl, intents, runs, canAdmin, tod
         </div>
       ) : tab === "settlements" ? (
         <Settlements slug={slug} rows={settlements} today={today} onDone={done} />
+      ) : tab === "statement" ? (
+        <Statement slug={slug} lines={statement} onDone={done} />
       ) : (
         <Reconciliation slug={slug} runs={runs} today={today} />
       )}
@@ -277,6 +280,72 @@ function Settlements({ slug, rows, today, onDone }: { slug: string; rows: Settle
             <Field label="Valor depositado (COP)" required hint="Bruto menos comisión real.">{(c) => <input {...c} name="net" inputMode="decimal" autoComplete="off" className={inputClasses} />}</Field>
           </div>
         )}
+      </FormDialog>
+    </div>
+  );
+}
+
+const LINE_TEXT = { UNMATCHED: "Pendiente", PROPOSED: "Propuesto", MATCHED: "Conciliado", REVIEWED: "Revisado, sin cruce" } as const;
+const LINE_TONE = { UNMATCHED: "secondary", PROPOSED: "warning", MATCHED: "success", REVIEWED: "outline" } as const;
+
+function Statement({ slug, lines, onDone }: { slug: string; lines: StatementRow[]; onDone: (message?: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const { toast } = useToast();
+  const act = async (fn: () => Promise<{ ok: boolean; message: string }>) => {
+    const r = await fn();
+    toast(r.message, r.ok ? "success" : "error");
+    if (r.ok) onDone();
+  };
+  const count = (s: StatementRow["status"]) => lines.filter((l) => l.status === s).length;
+  return (
+    <div className="grid gap-3">
+      <p className="text-ui text-muted-foreground">Importa el extracto de tu banco y NEXUS propone con qué pago o liquidación cruza cada depósito. Nada se concilia solo: tú confirmas.</p>
+      <div className="flex flex-wrap items-center gap-2">
+        <Badge variant="success">{count("MATCHED")} conciliados</Badge>
+        <Badge variant="warning">{count("PROPOSED")} propuestos</Badge>
+        <Badge variant="secondary">{count("UNMATCHED") + count("REVIEWED")} pendientes</Badge>
+        <button type="button" onClick={() => setOpen(true)} className={buttonVariants({ className: "ml-auto" })}><Plus aria-hidden="true" className="size-4" /> Importar extracto</button>
+      </div>
+      {lines.length === 0 ? (
+        <EmptyState title="Aún no importas un extracto" description="Pega los movimientos de tu banco para ver cuáles ya cuadran con tus cobros y liquidaciones." />
+      ) : (
+        <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">
+          {lines.map((l) => (
+            <li key={l.id} className="grid gap-2 px-4 py-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <b className="text-ui font-medium">{l.description}</b>
+                <Badge variant={LINE_TONE[l.status]}>{LINE_TEXT[l.status]}</Badge>
+                <span className={`ml-auto font-mono text-ui font-semibold tabular-nums ${l.amount < 0 ? "text-danger" : ""}`}>{formatCurrency(l.amount)}</span>
+              </div>
+              <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                <span>{l.day}</span>
+                {l.reference ? <span>· ref. {l.reference}</span> : null}
+                {l.matchLabel ? <span>· {l.status === "MATCHED" ? "conciliado con" : l.matchConfidence === "EXACT" ? "coincide exacto con" : "se parece a"} {l.matchLabel}</span> : null}
+                {l.status === "PROPOSED" || l.status === "UNMATCHED" ? (
+                  <span className="ml-auto flex gap-2">
+                    {l.status === "PROPOSED" ? <button type="button" onClick={() => act(() => confirmMatchAction(slug, l.id))} className={buttonVariants({ variant: "outline", size: "sm" })}>Confirmar cruce</button> : null}
+                    <button type="button" onClick={() => act(() => reviewLineAction(slug, l.id))} aria-label={`No cruza: ${l.description}`} className={buttonVariants({ variant: "ghost", size: "sm" })}>No cruza</button>
+                  </span>
+                ) : null}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+      <FormDialog
+        open={open}
+        onOpenChange={setOpen}
+        title="Importar extracto"
+        description="Una línea por movimiento: fecha; descripción; referencia; valor. El valor es positivo si entró dinero y negativo si salió. El encabezado es opcional."
+        submitLabel="Importar"
+        pendingLabel="Importando…"
+        onSubmit={async (d) => {
+          const r = await importStatementAction(slug, String(d.get("text") ?? ""));
+          return r.ok ? { ok: true, message: r.message } : { ok: false, message: r.message };
+        }}
+        onSuccess={({ message }) => onDone(message)}
+      >
+        {() => <Field label="Movimientos" required hint="Separados por punto y coma, coma o tabulador.">{(c) => <textarea {...c} name="text" rows={8} className={inputClasses} placeholder={"2026-11-07; Abono Wompi; LQ-114; 139.050\n2026-11-06; Transferencia Camila Torres; 88231; 140.000"} />}</Field>}
       </FormDialog>
     </div>
   );

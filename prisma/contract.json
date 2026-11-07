@@ -68,6 +68,10 @@
       "model": "AuditLog",
       "namespace": "public"
     },
+    "BankStatementLine": {
+      "model": "BankStatementLine",
+      "namespace": "public"
+    },
     "BenefitCode": {
       "model": "BenefitCode",
       "namespace": "public"
@@ -3581,6 +3585,184 @@
               },
               "namespaceId": "public",
               "table": "AuditLog"
+            }
+          },
+          "BankStatementLine": {
+            "fields": {
+              "amount": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "batch": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "confirmedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "confirmedById": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "day": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "description": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "fingerprint": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "matchConfidence": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "matchId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "matchType": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "reference": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "amount": {
+                  "column": "amount"
+                },
+                "batch": {
+                  "column": "batch"
+                },
+                "confirmedAt": {
+                  "column": "confirmedAt"
+                },
+                "confirmedById": {
+                  "column": "confirmedById"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "day": {
+                  "column": "day"
+                },
+                "description": {
+                  "column": "description"
+                },
+                "fingerprint": {
+                  "column": "fingerprint"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "matchConfidence": {
+                  "column": "matchConfidence"
+                },
+                "matchId": {
+                  "column": "matchId"
+                },
+                "matchType": {
+                  "column": "matchType"
+                },
+                "reference": {
+                  "column": "reference"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "BankStatementLine"
             }
           },
           "BenefitCode": {
@@ -19650,6 +19832,21 @@
                   "namespace": "public"
                 }
               },
+              "bankStatementLines": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "BankStatementLine",
+                  "namespace": "public"
+                }
+              },
               "benefitRedemptions": {
                 "cardinality": "1:N",
                 "on": {
@@ -23318,6 +23515,11 @@
               "namespaceId": "public",
               "tableName": "AuditLog"
             },
+            "BankStatementLine": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "BankStatementLine"
+            },
             "BenefitCode": {
               "kind": "rls",
               "namespaceId": "public",
@@ -25721,6 +25923,145 @@
                 ]
               },
               "uniques": []
+            },
+            "BankStatementLine": {
+              "columns": {
+                "amount": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "batch": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "confirmedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "confirmedById": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "day": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "description": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "fingerprint": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "matchConfidence": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "matchId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "matchType": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "reference": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "UNMATCHED"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "BankStatementLine"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "BankStatementLine_tenantId_idx_c93ed4f1",
+                  "prefix": "BankStatementLine_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "status",
+                    "day"
+                  ],
+                  "name": "BankStatementLine_tenantId_status_day_idx_0d0f6919",
+                  "prefix": "BankStatementLine_tenantId_status_day_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "fingerprint"
+                  ]
+                }
+              ]
             },
             "BenefitCode": {
               "checks": [
@@ -40727,10 +41068,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "532d872de56d4f11ee0d5960adea95bc2530e42fd9e8d16cc4117d7838ce7953"
+    "storageHash": "84495926b9da9545f54ee11e6bd9013f75730f1829380511a67a333495497017"
   },
   "execution": {
-    "executionHash": "511455eecc05b17e9edee29e135c5df0f7ddc1bf9435f937991b93bdfb877e98",
+    "executionHash": "32f1cebf3156d7c94928325f36709482fc8eaf14706a799144dc81bb445b13c1",
     "mutations": {
       "defaults": [
         {
@@ -40969,6 +41310,17 @@
           },
           "ref": {
             "entry": "AuditLog",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "BankStatementLine",
             "field": "id",
             "namespace": "public"
           }

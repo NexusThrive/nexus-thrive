@@ -146,7 +146,7 @@ describe("M5.5 · domains/finance/receivables", () => {
 
 describe("M5.6 · domains/finance/payments", () => {
   const dir = "lib/domains/finance/payments";
-  const produccion = ["accounts-db.ts", "checkout-port.ts", "intents-db.ts", "intents.ts", "settlements-db.ts"];
+  const produccion = ["accounts-db.ts", "checkout-port.ts", "intents-db.ts", "intents.ts", "settlements-db.ts", "statements-db.ts", "statements.ts"];
 
   test("contiene exactamente los módulos de producción, y lib/payments ya no existe", () => {
     const hoy = readdirSync(join(ROOT, dir)).filter((n) => n.endsWith(".ts") && !n.endsWith(".test.ts"));
@@ -162,7 +162,7 @@ describe("M5.6 · domains/finance/payments", () => {
 
   test("solo depende de Foundation, del kernel, de Business (dinero y liquidación de la tienda), de tax y de sí mismo", () => {
     const permitidos = new RegExp(
-      "^(node:crypto|@/prisma/db|@/lib/foundation/ports|@/lib/foundation/environment|@/lib/foundation/format|@/lib/foundation/kernel/aging|@/lib/business/sales/money-service|@/lib/business/store/store-settle|@/lib/domains/finance/tax/tax|\\./(accounts-db|checkout-port|intents))$",
+      "^(node:crypto|@/prisma/db|@/lib/foundation/ports|@/lib/foundation/environment|@/lib/foundation/format|@/lib/foundation/kernel/aging|@/lib/business/sales/money-service|@/lib/business/store/store-settle|@/lib/domains/finance/tax/tax|\\./(accounts-db|checkout-port|intents|statements))$",
     );
     for (const name of produccion) {
       for (const spec of importsOf(`${dir}/${name}`)) expect(spec, name).toMatch(permitidos);

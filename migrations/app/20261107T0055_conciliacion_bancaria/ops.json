@@ -1,0 +1,242 @@
+[
+  {
+    "id": "table.BankStatementLine",
+    "label": "Create table \"BankStatementLine\"",
+    "summary": "Creates table \"BankStatementLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "BankStatementLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"BankStatementLine\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BankStatementLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"BankStatementLine\"",
+        "sql": "CREATE TABLE \"public\".\"BankStatementLine\" (\n  \"amount\" numeric NOT NULL,\n  \"batch\" text NOT NULL,\n  \"confirmedAt\" timestamptz,\n  \"confirmedById\" text,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"day\" text NOT NULL,\n  \"description\" text NOT NULL,\n  \"fingerprint\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"matchConfidence\" text,\n  \"matchId\" text,\n  \"matchType\" text,\n  \"reference\" text,\n  \"status\" text DEFAULT 'UNMATCHED' NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"BankStatementLine\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BankStatementLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.BankStatementLine.BankStatementLine_tenantId_fingerprint_key",
+    "label": "Add unique constraint on \"BankStatementLine\" (tenantId, fingerprint)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "BankStatementLine_tenantId_fingerprint_key",
+        "table": "BankStatementLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"BankStatementLine_tenantId_fingerprint_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BankStatementLine_tenantId_fingerprint_key",
+          "public",
+          "\"public\".\"BankStatementLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"BankStatementLine_tenantId_fingerprint_key\"",
+        "sql": "ALTER TABLE \"public\".\"BankStatementLine\" ADD CONSTRAINT \"BankStatementLine_tenantId_fingerprint_key\" UNIQUE (\"tenantId\", \"fingerprint\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"BankStatementLine_tenantId_fingerprint_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BankStatementLine_tenantId_fingerprint_key",
+          "public",
+          "\"public\".\"BankStatementLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.BankStatementLine.BankStatementLine_tenantId_idx_c93ed4f1",
+    "label": "Create index \"BankStatementLine_tenantId_idx_c93ed4f1\" on \"BankStatementLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "BankStatementLine_tenantId_idx_c93ed4f1",
+        "table": "BankStatementLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"BankStatementLine_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BankStatementLine_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"BankStatementLine_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"BankStatementLine_tenantId_idx_c93ed4f1\" ON \"public\".\"BankStatementLine\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"BankStatementLine_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BankStatementLine_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.BankStatementLine.BankStatementLine_tenantId_status_day_idx_0d0f6919",
+    "label": "Create index \"BankStatementLine_tenantId_status_day_idx_0d0f6919\" on \"BankStatementLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "BankStatementLine_tenantId_status_day_idx_0d0f6919",
+        "table": "BankStatementLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"BankStatementLine_tenantId_status_day_idx_0d0f6919\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BankStatementLine_tenantId_status_day_idx_0d0f6919\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"BankStatementLine_tenantId_status_day_idx_0d0f6919\"",
+        "sql": "CREATE INDEX \"BankStatementLine_tenantId_status_day_idx_0d0f6919\" ON \"public\".\"BankStatementLine\" (\"tenantId\", \"status\", \"day\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"BankStatementLine_tenantId_status_day_idx_0d0f6919\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"BankStatementLine_tenantId_status_day_idx_0d0f6919\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.BankStatementLine.BankStatementLine_tenantId_fkey",
+    "label": "Add foreign key \"BankStatementLine_tenantId_fkey\" on \"BankStatementLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "BankStatementLine_tenantId_fkey",
+        "table": "BankStatementLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"BankStatementLine_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BankStatementLine_tenantId_fkey",
+          "public",
+          "\"public\".\"BankStatementLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"BankStatementLine_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"BankStatementLine\"\nADD CONSTRAINT \"BankStatementLine_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"BankStatementLine_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "BankStatementLine_tenantId_fkey",
+          "public",
+          "\"public\".\"BankStatementLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.BankStatementLine",
+    "label": "Enable row-level security on \"BankStatementLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "BankStatementLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"BankStatementLine\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "BankStatementLine"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"BankStatementLine\"",
+        "sql": "ALTER TABLE \"public\".\"BankStatementLine\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"BankStatementLine\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "BankStatementLine"
+        ]
+      }
+    ]
+  }
+]

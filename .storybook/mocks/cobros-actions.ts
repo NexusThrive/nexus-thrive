@@ -26,3 +26,9 @@ export async function registerSettlementAction(_s: string, input: { externalRef:
   if (!input.report.trim()) return { ok: false as const, message: "Pega las transacciones de la liquidación: una por línea («id, valor»)." };
   return input.netReceived !== 96_006 ? { ok: false as const, message: `El depósito no cuadra: 100.000 de bruto menos 3.994 de comisión da 96.006, no ${input.netReceived}.` } : { ok: true as const, message: "Liquidación registrada: la comisión real fue 8 mayor que la estimada" };
 }
+export async function importStatementAction(_s: string, text: string) {
+  await wait();
+  return text.trim() ? { ok: true as const, message: "3 movimientos importados, 2 con propuesta" } : { ok: false as const, message: "Pega el extracto: «fecha; descripción; referencia; valor» por línea." };
+}
+export async function confirmMatchAction() { await wait(); return { ok: true as const, message: "Movimiento conciliado" }; }
+export async function reviewLineAction() { await wait(); return { ok: true as const, message: "Marcado como revisado: no se vuelve a proponer" }; }

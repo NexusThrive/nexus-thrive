@@ -3,6 +3,7 @@ import { PermissionNotice } from "@/components/molecules/permission-notice";
 import { PageHeader } from "@/components/molecules/page-header";
 import { getAppBaseUrl } from "@/lib/foundation/app-url";
 import { can } from "@/lib/core/auth/permissions";
+import { listStatement } from "@/lib/domains/finance/payments/statements-db";
 import { listSettlements } from "@/lib/domains/finance/payments/settlements-db";
 import { connectedGateways, listIntents, listReconciliations } from "@/lib/domains/finance/payments/intents-db";
 import { todayCO } from "@/lib/domains/finance/tax/tax";
@@ -24,11 +25,11 @@ export default async function CobrosPage({ params }: { params: Promise<{ tenant:
     );
   }
   const admin = can(ctx.role, "business.manage");
-  const [intents, runs, base, gateways, settlements] = await Promise.all([listIntents(ctx.tenantId), admin ? listReconciliations(ctx.tenantId) : Promise.resolve([]), getAppBaseUrl(), connectedGateways(ctx.tenantId), admin ? listSettlements(ctx.tenantId) : Promise.resolve([])]);
+  const [intents, runs, base, gateways, settlements, statement] = await Promise.all([listIntents(ctx.tenantId), admin ? listReconciliations(ctx.tenantId) : Promise.resolve([]), getAppBaseUrl(), connectedGateways(ctx.tenantId), admin ? listSettlements(ctx.tenantId) : Promise.resolve([]), admin ? listStatement(ctx.tenantId) : Promise.resolve([])]);
   return (
     <div className="grid gap-5">
       {header}
-      <CobrosView slug={tenant} baseUrl={base} intents={intents} runs={runs} canAdmin={admin} today={todayCO()} gateways={gateways} settlements={settlements} />
+      <CobrosView slug={tenant} baseUrl={base} intents={intents} runs={runs} canAdmin={admin} today={todayCO()} gateways={gateways} settlements={settlements} statement={statement} />
     </div>
   );
 }

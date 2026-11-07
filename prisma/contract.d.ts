@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'532d872de56d4f11ee0d5960adea95bc2530e42fd9e8d16cc4117d7838ce7953'>;
+  StorageHashBase<'84495926b9da9545f54ee11e6bd9013f75730f1829380511a67a333495497017'>;
 export type ExecutionHash =
-  ExecutionHashBase<'511455eecc05b17e9edee29e135c5df0f7ddc1bf9435f937991b93bdfb877e98'>;
+  ExecutionHashBase<'32f1cebf3156d7c94928325f36709482fc8eaf14706a799144dc81bb445b13c1'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -445,6 +445,23 @@ export type FieldOutputTypes = {
       readonly targetTenantId: CodecTypes['pg/text@1']['output'] | null;
       readonly targetTenantName: CodecTypes['pg/text@1']['output'] | null;
       readonly userAgent: CodecTypes['pg/text@1']['output'] | null;
+    };
+    readonly BankStatementLine: {
+      readonly amount: CodecTypes['pg/numeric@1']['output'];
+      readonly batch: CodecTypes['pg/text@1']['output'];
+      readonly confirmedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly confirmedById: CodecTypes['pg/text@1']['output'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly day: CodecTypes['pg/text@1']['output'];
+      readonly description: CodecTypes['pg/text@1']['output'];
+      readonly fingerprint: CodecTypes['pg/text@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly matchConfidence: CodecTypes['pg/text@1']['output'] | null;
+      readonly matchId: CodecTypes['pg/text@1']['output'] | null;
+      readonly matchType: CodecTypes['pg/text@1']['output'] | null;
+      readonly reference: CodecTypes['pg/text@1']['output'] | null;
+      readonly status: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
     };
     readonly BenefitCode: {
       readonly active: CodecTypes['pg/bool@1']['output'];
@@ -2190,6 +2207,23 @@ export type FieldInputTypes = {
       readonly targetTenantName: CodecTypes['pg/text@1']['input'] | null;
       readonly userAgent: CodecTypes['pg/text@1']['input'] | null;
     };
+    readonly BankStatementLine: {
+      readonly amount: CodecTypes['pg/numeric@1']['input'];
+      readonly batch: CodecTypes['pg/text@1']['input'];
+      readonly confirmedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly confirmedById: CodecTypes['pg/text@1']['input'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly day: CodecTypes['pg/text@1']['input'];
+      readonly description: CodecTypes['pg/text@1']['input'];
+      readonly fingerprint: CodecTypes['pg/text@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly matchConfidence: CodecTypes['pg/text@1']['input'] | null;
+      readonly matchId: CodecTypes['pg/text@1']['input'] | null;
+      readonly matchType: CodecTypes['pg/text@1']['input'] | null;
+      readonly reference: CodecTypes['pg/text@1']['input'] | null;
+      readonly status: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+    };
     readonly BenefitCode: {
       readonly active: CodecTypes['pg/bool@1']['input'];
       readonly code: CodecTypes['pg/text@1']['input'];
@@ -3934,6 +3968,23 @@ export type StorageColumnTypes = {
       readonly targetTenantName: CodecTypes['pg/text@1']['output'] | null;
       readonly userAgent: CodecTypes['pg/text@1']['output'] | null;
     };
+    readonly BankStatementLine: {
+      readonly amount: CodecTypes['pg/numeric@1']['output'];
+      readonly batch: CodecTypes['pg/text@1']['output'];
+      readonly confirmedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly confirmedById: CodecTypes['pg/text@1']['output'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly day: CodecTypes['pg/text@1']['output'];
+      readonly description: CodecTypes['pg/text@1']['output'];
+      readonly fingerprint: CodecTypes['pg/text@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly matchConfidence: CodecTypes['pg/text@1']['output'] | null;
+      readonly matchId: CodecTypes['pg/text@1']['output'] | null;
+      readonly matchType: CodecTypes['pg/text@1']['output'] | null;
+      readonly reference: CodecTypes['pg/text@1']['output'] | null;
+      readonly status: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+    };
     readonly BenefitCode: {
       readonly active: CodecTypes['pg/bool@1']['output'];
       readonly code: CodecTypes['pg/text@1']['output'];
@@ -5677,6 +5728,23 @@ export type StorageColumnInputTypes = {
       readonly targetTenantId: CodecTypes['pg/text@1']['input'] | null;
       readonly targetTenantName: CodecTypes['pg/text@1']['input'] | null;
       readonly userAgent: CodecTypes['pg/text@1']['input'] | null;
+    };
+    readonly BankStatementLine: {
+      readonly amount: CodecTypes['pg/numeric@1']['input'];
+      readonly batch: CodecTypes['pg/text@1']['input'];
+      readonly confirmedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly confirmedById: CodecTypes['pg/text@1']['input'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly day: CodecTypes['pg/text@1']['input'];
+      readonly description: CodecTypes['pg/text@1']['input'];
+      readonly fingerprint: CodecTypes['pg/text@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly matchConfidence: CodecTypes['pg/text@1']['input'] | null;
+      readonly matchId: CodecTypes['pg/text@1']['input'] | null;
+      readonly matchType: CodecTypes['pg/text@1']['input'] | null;
+      readonly reference: CodecTypes['pg/text@1']['input'] | null;
+      readonly status: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
     };
     readonly BenefitCode: {
       readonly active: CodecTypes['pg/bool@1']['input'];
@@ -7470,6 +7538,25 @@ export namespace Models {
     userAgent: CodecTypes['pg/text@1']['output'] | null;
     readonly [RelationKeys]?: never;
   };
+  export type public_BankStatementLine = {
+    amount: CodecTypes['pg/numeric@1']['output'];
+    batch: CodecTypes['pg/text@1']['output'];
+    confirmedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+    confirmedById: CodecTypes['pg/text@1']['output'] | null;
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    day: CodecTypes['pg/text@1']['output'];
+    description: CodecTypes['pg/text@1']['output'];
+    fingerprint: CodecTypes['pg/text@1']['output'];
+    id: CodecTypes['pg/text@1']['output'];
+    matchConfidence: CodecTypes['pg/text@1']['output'] | null;
+    matchId: CodecTypes['pg/text@1']['output'] | null;
+    matchType: CodecTypes['pg/text@1']['output'] | null;
+    reference: CodecTypes['pg/text@1']['output'] | null;
+    status: CodecTypes['pg/text@1']['output'];
+    tenantId: CodecTypes['pg/text@1']['output'];
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'tenant';
+  };
   export type public_BenefitCode = {
     active: CodecTypes['pg/bool@1']['output'];
     code: CodecTypes['pg/text@1']['output'];
@@ -9151,6 +9238,7 @@ export namespace Models {
     apuPriceHistory: public_ApuItemPriceHistory[];
     attachments: public_Attachment[];
     attendances: public_Attendance[];
+    bankStatementLines: public_BankStatementLine[];
     benefitRedemptions: public_BenefitRedemption[];
     bookings: public_Booking[];
     budgetBaselines: public_BudgetBaseline[];
@@ -9252,6 +9340,7 @@ export namespace Models {
       | 'apuPriceHistory'
       | 'attachments'
       | 'attendances'
+      | 'bankStatementLines'
       | 'benefitRedemptions'
       | 'bookings'
       | 'budgetBaselines'
@@ -9597,6 +9686,7 @@ export declare const models: {
     Attachment: Models.public_Attachment;
     Attendance: Models.public_Attendance;
     AuditLog: Models.public_AuditLog;
+    BankStatementLine: Models.public_BankStatementLine;
     BenefitCode: Models.public_BenefitCode;
     BenefitRedemption: Models.public_BenefitRedemption;
     BillingPolicy: Models.public_BillingPolicy;
@@ -11207,6 +11297,120 @@ type ContractBase = Omit<
                 },
               ];
               foreignKeys: readonly [];
+            };
+            readonly BankStatementLine: {
+              columns: {
+                readonly amount: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                };
+                readonly batch: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly confirmedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: true;
+                };
+                readonly confirmedById: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly day: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly description: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly fingerprint: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly matchConfidence: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly matchId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly matchType: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly reference: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly status: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'UNMATCHED'>;
+                  };
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['tenantId', 'fingerprint'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'BankStatementLine_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'BankStatementLine_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'BankStatementLine_tenantId_status_day_idx_0d0f6919';
+                  readonly prefix: 'BankStatementLine_tenantId_status_day_idx';
+                  readonly columns: readonly ['tenantId', 'status', 'day'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'BankStatementLine';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
             };
             readonly BenefitCode: {
               columns: {
@@ -23209,6 +23413,10 @@ type ContractBase = Omit<
       readonly model: 'Attendance';
     };
     readonly AuditLog: { readonly namespace: 'public' & NamespaceId; readonly model: 'AuditLog' };
+    readonly BankStatementLine: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'BankStatementLine';
+    };
     readonly BenefitCode: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'BenefitCode';
@@ -25017,6 +25225,111 @@ type ContractBase = Omit<
                 readonly targetTenantId: { readonly column: 'targetTenantId' };
                 readonly targetTenantName: { readonly column: 'targetTenantName' };
                 readonly userAgent: { readonly column: 'userAgent' };
+              };
+            };
+          };
+          readonly BankStatementLine: {
+            readonly fields: {
+              readonly amount: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly batch: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly confirmedAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly confirmedById: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly day: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly description: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly fingerprint: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly matchConfidence: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly matchId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly matchType: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly reference: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly status: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'BankStatementLine';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly amount: { readonly column: 'amount' };
+                readonly batch: { readonly column: 'batch' };
+                readonly confirmedAt: { readonly column: 'confirmedAt' };
+                readonly confirmedById: { readonly column: 'confirmedById' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly day: { readonly column: 'day' };
+                readonly description: { readonly column: 'description' };
+                readonly fingerprint: { readonly column: 'fingerprint' };
+                readonly id: { readonly column: 'id' };
+                readonly matchConfidence: { readonly column: 'matchConfidence' };
+                readonly matchId: { readonly column: 'matchId' };
+                readonly matchType: { readonly column: 'matchType' };
+                readonly reference: { readonly column: 'reference' };
+                readonly status: { readonly column: 'status' };
+                readonly tenantId: { readonly column: 'tenantId' };
               };
             };
           };
@@ -34988,6 +35301,17 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['tenantId'];
                 };
               };
+              readonly bankStatementLines: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'BankStatementLine';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
               readonly benefitRedemptions: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -37820,6 +38144,14 @@ type ContractBase = Omit<
           readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
           readonly ref: {
             readonly entry: 'AuditLog';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'BankStatementLine';
             readonly field: 'id';
             readonly namespace: 'public';
           };

@@ -5,6 +5,7 @@ import { can } from "@/lib/core/auth/permissions";
 import { cancelIntent, confirmIntent, createIntent, refundIntent, rejectProof, runReconciliation, type IntentRow } from "@/lib/domains/finance/payments/intents-db";
 import { parseReport } from "@/lib/domains/finance/payments/intents";
 import { registerSettlement } from "@/lib/domains/finance/payments/settlements-db";
+import { confirmMatch, importStatement, markReviewed } from "@/lib/domains/finance/payments/statements-db";
 import type { Reconciliation } from "@/lib/domains/finance/payments/intents";
 import { logTenantAction } from "@/lib/core/tenancy/audit";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
@@ -91,6 +92,39 @@ export async function registerSettlementAction(slug: string, input: { externalRe
   await logTenantAction(ctx, "BIZ_ONLINE_PAYMENT", { action: "settlement", externalRef: input.externalRef, difference: r.difference });
   refresh(slug);
   return { ok: true, message: r.difference === 0 ? "Liquidación registrada: la comisión real coincide con la estimada" : r.difference > 0 ? `Liquidación registrada: la comisión real fue ${Math.abs(r.difference).toLocaleString("es-CO")} mayor que la estimada` : `Liquidación registrada: la comisión real fue ${Math.abs(r.difference).toLocaleString("es-CO")} menor que la estimada` };
+}
+
+/** Importa el extracto del banco («fecha; descripción; referencia; valor» por línea) y propone el cruce de cada depósito. */
+export async function importStatementAction(slug: string, text: string): Promise<CobroResult> {
+  const ctx = await ctxFor(slug, "business.manage");
+  if (!ctx) return { ok: false, message: "Solo el dueño o administración concilia." };
+  const r = await importStatement(ctx.tenantId, text);
+  if (!r.ok) return r;
+  await logTenantAction(ctx, "BIZ_ONLINE_PAYMENT", { action: "import_statement", added: r.added });
+  refresh(slug);
+  const extra = [r.duplicates ? `${r.duplicates} ya estaban` : "", r.bad.length ? `${r.bad.length} líneas no se leyeron` : ""].filter(Boolean).join(" · ");
+  return { ok: true, message: `${r.added} movimientos importados, ${r.proposed} con propuesta${extra ? ` (${extra})` : ""}` };
+}
+
+/** Confirma el cruce propuesto de un movimiento del extracto. Nada se concilia solo. */
+export async function confirmMatchAction(slug: string, lineId: string): Promise<CobroResult> {
+  const ctx = await ctxFor(slug, "business.manage");
+  if (!ctx) return { ok: false, message: "Solo el dueño o administración concilia." };
+  const r = await confirmMatch(ctx.tenantId, lineId, ctx.memberId);
+  if (!r.ok) return r;
+  await logTenantAction(ctx, "BIZ_ONLINE_PAYMENT", { action: "confirm_match", lineId });
+  refresh(slug);
+  return { ok: true, message: "Movimiento conciliado" };
+}
+
+/** Marca un movimiento como revisado sin cruce: sale de las propuestas. */
+export async function reviewLineAction(slug: string, lineId: string): Promise<CobroResult> {
+  const ctx = await ctxFor(slug, "business.manage");
+  if (!ctx) return { ok: false, message: "Solo el dueño o administración concilia." };
+  const r = await markReviewed(ctx.tenantId, lineId);
+  if (!r.ok) return r;
+  refresh(slug);
+  return { ok: true, message: "Marcado como revisado: no se vuelve a proponer" };
 }
 
 export type { IntentRow };

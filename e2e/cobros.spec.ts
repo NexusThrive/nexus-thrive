@@ -111,4 +111,22 @@ test.describe("Cobros en línea", () => {
     await expect(page.getByText(/Liquidación registrada/)).toBeVisible();
     await expectNoAxeViolations(page);
   });
+
+  test("extracto del banco: propuesto, conciliado y pendiente; confirmar y descartar", async ({ page }) => {
+    await openStory(page, "páginas-dinero-cobros-en-línea--extracto-bancario");
+    await page.getByRole("tab", { name: /Extracto del banco/ }).or(page.getByRole("button", { name: /Extracto del banco/ })).first().click();
+    await expect(page.getByText("1 conciliados")).toBeVisible();
+    await expect(page.getByText("1 propuestos")).toBeVisible();
+    await expect(page.getByText(/coincide exacto con Liquidación LQ-2026-114/)).toBeVisible();
+    await page.getByRole("button", { name: "Confirmar cruce" }).click();
+    await expect(page.getByText("Movimiento conciliado")).toBeVisible();
+    await page.getByRole("button", { name: /No cruza: Pago de nómina/ }).click();
+    await expect(page.getByText("Marcado como revisado: no se vuelve a proponer")).toBeVisible();
+    await page.getByRole("button", { name: "Importar extracto" }).click();
+    const d = page.getByRole("dialog", { name: "Importar extracto" });
+    await d.getByLabel(/Movimientos/).fill("   ");
+    await d.getByRole("button", { name: "Importar" }).click();
+    await expect(d.getByText(/Pega el extracto/).first()).toBeVisible();
+    await expectNoAxeViolations(page);
+  });
 });

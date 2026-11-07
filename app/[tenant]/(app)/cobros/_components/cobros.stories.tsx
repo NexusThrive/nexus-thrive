@@ -21,6 +21,11 @@ export const EnVerificacion: Story = { args: { intents: [row("4", "Pedido P-0042
 export const ConIntentosFallidos: Story = { args: { intents: [row("6", "Pedido P-0050", 80_000, "PENDING", { failedAttempts: 2, lastAttemptResult: "DECLINED" })] } };
 export const ConComision: Story = { args: { intents: [row("7", "Pedido P-0051", 100_000, "PAID", { confirmedBy: "PROVIDER", feeEstimated: 3_994, netExpected: 96_006 })] } };
 export const Liquidaciones: Story = { args: { settlements: [{ id: "s1", provider: "wompi", externalRef: "LQ-2026-114", day: "2026-10-23", gross: 145_000, feeEstimated: 5_780, feeReal: 5_790, netReceived: 139_210, difference: 10, itemCount: 2, accounted: true, createdAt: "2026-10-23T15:00:00.000Z" }] } };
+export const ExtractoBancario: Story = { args: { statement: [
+  { id: "l1", day: "2026-11-07", description: "Abono Wompi", reference: "LQ-114", amount: 139_050, status: "PROPOSED", matchType: "SETTLEMENT", matchId: "s1", matchLabel: "Liquidación LQ-2026-114", matchConfidence: "EXACT" },
+  { id: "l2", day: "2026-11-06", description: "Transferencia Camila Torres", reference: "88231", amount: 140_000, status: "MATCHED", matchType: "PAYMENT", matchId: "p1", matchLabel: "Pago · Pedido P-0042", matchConfidence: "EXACT" },
+  { id: "l3", day: "2026-11-05", description: "Pago de nómina", reference: null, amount: -900_000, status: "UNMATCHED", matchType: null, matchId: null, matchLabel: null, matchConfidence: null },
+] } };
 export const SinCobros: Story = { args: { intents: [] } };
 export const SoloCrear: Story = { args: { canAdmin: false } };
 export const DosPasarelas: Story = { args: { gateways: [{ value: "wompi", label: "Wompi" }, { value: "sandbox", label: "Pasarela de prueba" }] } };

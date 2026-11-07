@@ -229,6 +229,7 @@ model Tenant {
   paymentAttempts    PaymentAttempt[]
   financialAccounts  FinancialAccount[]
   providerSettlements ProviderSettlement[]
+  bankStatementLines BankStatementLine[]
   reconciliationRuns ReconciliationRun[]
   supplierPayments   SupplierPayment[]
   numberingResolutions NumberingResolution[]

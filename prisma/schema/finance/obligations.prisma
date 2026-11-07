@@ -134,3 +134,35 @@ model ProviderSettlement {
   @@index([tenantId, createdAt])
   @@rls
 }
+
+/// Movimiento del extracto bancario (HU-conciliacion-01): lo que el banco registró. NEXUS propone con qué pago o liquidación
+/// cruza cada depósito y una persona autorizada lo confirma; nada se concilia solo.
+///
+/// Campos:
+/// - `amount`: Con signo: positivo es un depósito (entra dinero), negativo un retiro.
+/// - `fingerprint`: Huella del movimiento (día, valor, descripción, referencia): importar dos veces el mismo extracto no duplica.
+/// - `status`: UNMATCHED (pendiente) | PROPOSED (hay una propuesta) | MATCHED (conciliado por una persona) | REVIEWED (una
+///   persona lo revisó y no cruza con nada: no se vuelve a proponer).
+/// - `matchType`, `matchId`, `matchConfidence`: Con qué cruza (SETTLEMENT | PAYMENT), su id y si el cruce es EXACT o APPROX.
+model BankStatementLine {
+  id              String    @id @default(uuid())
+  tenantId        String
+  tenant          Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  day             String
+  description     String
+  reference       String?
+  amount          Decimal
+  fingerprint     String
+  status          String    @default("UNMATCHED")
+  matchType       String?
+  matchId         String?
+  matchConfidence String?
+  batch           String
+  confirmedById   String?
+  confirmedAt     DateTime?
+  createdAt       DateTime  @default(now())
+
+  @@unique([tenantId, fingerprint])
+  @@index([tenantId, status, day])
+  @@rls
+}
