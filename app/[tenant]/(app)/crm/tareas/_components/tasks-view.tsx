@@ -73,7 +73,7 @@ export default function TasksView({ slug, mine, overdue, all, team, customers, p
       ) : null}
 
       {rows.length === 0 ? (
-        <EmptyState title={view === "mine" ? "No tienes tareas asignadas" : view === "overdue" ? "Nada vencido" : "Sin tareas abiertas"} description={view === "overdue" ? "Todo lo que tiene fecha va al día." : "Crea una para que nadie olvide el siguiente paso con un cliente."} />
+        <EmptyState mark="page" remember={view === "mine"} title={view === "mine" ? "No tienes tareas asignadas" : view === "overdue" ? "Nada vencido" : "Sin tareas abiertas"} description={view === "overdue" ? "Todo lo que tiene fecha va al día." : "Crea una para que nadie olvide el siguiente paso con un cliente."} />
       ) : (
         <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">
           {rows.map((t) => (

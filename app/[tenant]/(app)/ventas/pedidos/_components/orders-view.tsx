@@ -44,7 +44,7 @@ export default function OrdersView({ slug, orders, canCharge = true }: { slug: s
     if (r.ok) router.refresh();
   };
 
-  if (orders.length === 0) return <EmptyState title="Aún no hay pedidos" description="Cuando un cliente pida desde tu sitio, o apruebes una cotización, el pedido aparece aquí." />;
+  if (orders.length === 0) return <EmptyState mark="page" title="Aún no hay pedidos" description="Cuando un cliente pida desde tu sitio, o apruebes una cotización, el pedido aparece aquí." />;
   return (
     <div className="grid gap-3">
       <div className="max-w-full overflow-x-auto pb-1">
@@ -56,7 +56,7 @@ export default function OrdersView({ slug, orders, canCharge = true }: { slug: s
           ))}
         </div>
       </div>
-      {list.length === 0 ? <EmptyState title="Nada en este paso" description="Cambia el filtro para ver los demás pedidos." /> : null}
+      {list.length === 0 ? <EmptyState mark="page" remember={false} title="Nada en este paso" description="Cambia el filtro para ver los demás pedidos." /> : null}
       <ul className="grid gap-3">
         {list.map((o) => {
           const next = allowedNext(o.fulfillment);

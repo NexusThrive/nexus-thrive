@@ -362,8 +362,8 @@ export default function BudgetWorkspace({
 
       {/* Estructura jerárquica */}
       {budget.chapters.length === 0 ? (
-        <EmptyState
-          className="rounded-lg border border-border bg-card"
+        <EmptyState mark="page" remember={false}
+
           title="El presupuesto está vacío"
           description="Crea el primer capítulo para empezar a desglosar las partidas de la obra. Los totales se recalculan automáticamente con cada partida."
           action={<>{!budget.isLocked ? (

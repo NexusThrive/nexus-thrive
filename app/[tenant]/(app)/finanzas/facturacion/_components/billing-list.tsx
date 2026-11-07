@@ -85,9 +85,7 @@ export default function BillingList({ slug, rows, customers, products, today, ca
           ))}
         </ul>
       ) : (
-        <div className="rounded-lg border border-border bg-surface">
-          <EmptyState title="Nada por aquí" description="Crea cuentas de cobro y recibos numerados para tus clientes." action={canCreate ? <button type="button" onClick={() => setCreating(true)} className={buttonVariants()}><Plus aria-hidden="true" className="size-4" /> Nueva cuenta de cobro</button> : undefined} />
-        </div>
+          <EmptyState mark="page" title="Nada por aquí" description="Crea cuentas de cobro y recibos numerados para tus clientes." action={canCreate ? <button type="button" onClick={() => setCreating(true)} className={buttonVariants()}><Plus aria-hidden="true" className="size-4" /> Nueva cuenta de cobro</button> : undefined} />
       )}
       <DocumentViewer
         open={viewId !== null}

@@ -112,9 +112,7 @@ export default function CrmView({
       </div>
 
       {visible.length === 0 ? (
-        <div className="rounded-lg border border-border bg-surface">
-          <EmptyState title="Todavía no hay leads" description="Registra el primer prospecto y su próximo paso." />
-        </div>
+          <EmptyState mark="page" title="Todavía no hay leads" description="Registra el primer prospecto y su próximo paso." />
       ) : (
         <>
           {/* Escritorio: tablero por etapa; los leads se arrastran entre etapas activas. */}

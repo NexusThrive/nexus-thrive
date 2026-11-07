@@ -45,7 +45,7 @@ export default function FormsView({ slug, forms, appUrl }: { slug: string; forms
         </button>
       </div>
       {forms.length === 0 ? (
-        <EmptyState title="Aún no tienes formularios" description="Crea uno, copia su código en tu web y los interesados llegarán a Oportunidades." />
+        <EmptyState mark="page" title="Aún no tienes formularios" description="Crea uno, copia su código en tu web y los interesados llegarán a Oportunidades." />
       ) : (
         <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">
           {forms.map((f) => (

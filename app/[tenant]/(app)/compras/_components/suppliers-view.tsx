@@ -43,9 +43,7 @@ export default function SuppliersView({ slug, suppliers }: { slug: string; suppl
           ))}
         </ul>
       ) : (
-        <div className="rounded-lg border border-border bg-surface">
-          <EmptyState title={suppliers.length ? "Sin resultados" : "Aún no hay proveedores"} description={suppliers.length ? "Prueba con otro nombre o documento." : "Registra a quienes te venden mercancía para poder hacerles órdenes de compra."} action={suppliers.length ? undefined : <button type="button" onClick={() => setCreating(true)} className={buttonVariants()}><Plus aria-hidden="true" className="size-4" /> Nuevo proveedor</button>} />
-        </div>
+          <EmptyState mark="page" remember={!suppliers.length} title={suppliers.length ? "Sin resultados" : "Aún no hay proveedores"} description={suppliers.length ? "Prueba con otro nombre o documento." : "Registra a quienes te venden mercancía para poder hacerles órdenes de compra."} action={suppliers.length ? undefined : <button type="button" onClick={() => setCreating(true)} className={buttonVariants()}><Plus aria-hidden="true" className="size-4" /> Nuevo proveedor</button>} />
       )}
 
       <FormDrawer

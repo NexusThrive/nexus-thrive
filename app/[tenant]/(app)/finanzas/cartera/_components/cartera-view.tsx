@@ -65,7 +65,7 @@ function Panel({ slug, side, cartera }: { slug: string; side: Side; cartera: Car
       </section>
 
       {cartera.rows.length === 0 ? (
-        <EmptyState title={side === "in" ? "Nadie te debe" : "No debes nada"} description={side === "in" ? "Las cuentas de cobro emitidas con saldo aparecerán aquí." : "Las facturas de proveedor registradas con saldo aparecerán aquí."} />
+        <EmptyState mark="page" remember={side === "in"} title={side === "in" ? "Nadie te debe" : "No debes nada"} description={side === "in" ? "Las cuentas de cobro emitidas con saldo aparecerán aquí." : "Las facturas de proveedor registradas con saldo aparecerán aquí."} />
       ) : (
         <AdaptiveTable
           caption={`Cuentas ${word.total.toLowerCase()} con su saldo y vencimiento`}

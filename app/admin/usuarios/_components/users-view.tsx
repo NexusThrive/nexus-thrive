@@ -34,7 +34,7 @@ export default function UsersView({ users, total, q, canEdit, canCreate, vertica
         </div>
         <button type="submit" className={buttonVariants({ variant: "outline" })}>Buscar</button>
       </form>
-      {users.length === 0 ? <EmptyState title="Nadie coincide" description="Prueba con otro correo, nombre o negocio." /> : (
+      {users.length === 0 ? <EmptyState mark="page" remember={false} title="Nadie coincide" description="Prueba con otro correo, nombre o negocio." /> : (
         <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">
           {users.map((u) => {
             const over = u.limit !== null && u.owned >= u.limit;

@@ -31,9 +31,7 @@ export default async function OnboardingPage() {
         description={`${rows.length} cuentas en puesta en marcha${stuck ? ` · ${stuck} por debajo del 50 %` : ""}. Cada paso se marca solo cuando el negocio lo hace.`}
       />
       {rows.length === 0 ? (
-        <div className="rounded-lg border border-border bg-surface">
-          <EmptyState title="Nadie en puesta en marcha" description="Las cuentas nuevas aparecen aquí durante sus primeros 30 días." />
-        </div>
+          <EmptyState mark="page" title="Nadie en puesta en marcha" description="Las cuentas nuevas aparecen aquí durante sus primeros 30 días." />
       ) : (
         <>
           <ul className="grid gap-2.5 lg:hidden">

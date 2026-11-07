@@ -69,7 +69,7 @@ export default function PurchasesView({ slug, orders, suppliers, products, wareh
             </ul>
           ) : (
             <div className="rounded-lg border border-border bg-surface">
-              <EmptyState
+              <EmptyState mark="page"
                 title={orders.length ? "Nada en este filtro" : "Aún no hay órdenes"}
                 description={suppliers.length ? "Crea una orden para pedir mercancía; al recibirla entra al inventario con su costo." : "Primero registra a tu proveedor en la pestaña Proveedores."}
                 action={

@@ -87,7 +87,7 @@ export default function FiscalView({ slug, settings, docs }: { slug: string; set
       </div>
 
       {list.length === 0 ? (
-        <EmptyState title="Sin documentos fiscales" description={settings.enabled ? "Cada venta, nota crédito o débito que hagas aparecerá aquí." : "Activa la factura electrónica para que cada venta deje su documento fiscal."} />
+        <EmptyState mark="page" title="Sin documentos fiscales" description={settings.enabled ? "Cada venta, nota crédito o débito que hagas aparecerá aquí." : "Activa la factura electrónica para que cada venta deje su documento fiscal."} />
       ) : (
         <AdaptiveTable
           caption="Documentos fiscales con su estado"

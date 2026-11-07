@@ -18,7 +18,6 @@ import CustomerSheet from "./customer-sheet";
 import { useVerticalTerms } from "../../vertical-terms-context";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { EmptyState } from "@/components/molecules/empty-state";
-import { useQuickCreate } from "@/components/organisms/quick-create-host";
 import { useCustomerSelection } from "./customer-selection";
 import { ColumnChooser, ResizeHandle, useColumnPrefs, type ColumnKey } from "./customer-columns";
 
@@ -132,7 +131,6 @@ export default function CustomerTable({
   // La ficha recibe la búsqueda, el filtro y el orden de esta lista para que su paginador recorra los mismos clientes.
   const listQuery = new URLSearchParams({ ...(query ? { q: query } : {}), ...(status !== "active" ? { status } : {}), ...(sort !== "recent" ? { sort } : {}) }).toString();
   const fichaHref = (id: string) => `/${tenantSlug}/contactos/${id}${listQuery ? `?${listQuery}` : ""}`;
-  const quick = useQuickCreate();
   const columns = useColumnPrefs();
   const [boxWidth, setBoxWidth] = useState(0);
   const boxRef = useRef<HTMLDivElement>(null);
@@ -332,10 +330,12 @@ export default function CustomerTable({
       {/* ---------- Estado vacío ---------- */}
       {rows.length === 0 ? (
         <EmptyState
-          className="items-center text-center"
+          mark="page"
+          remember={!query && !isArchivedView}
+          headingLevel={2}
           title={query ? `Sin coincidencias para «${query}»` : isArchivedView ? `No hay ${customersLabel} archivados` : `Aún no tienes ${customersLabel}`}
           description={query ? "Prueba con otro término o limpia la búsqueda." : isArchivedView ? `Los ${customersLabel} que archives aparecen aquí.` : "Registra el primero para llevar su historial, sus citas y sus cobros."}
-          action={!query && !isArchivedView ? <button type="button" onClick={() => quick.open("new-customer")} className={buttonVariants({ variant: "accent", size: "sm", className: "h-[34px]" })}><Plus aria-hidden="true" className="size-4" /> Nuevo</button> : undefined}
+          action={!query && !isArchivedView ? <Link href={`/${tenantSlug}/contactos/nuevo`} className={buttonVariants({ variant: "accent", size: "sm", className: "h-[34px]" })}><Plus aria-hidden="true" className="size-4" /> Nuevo</Link> : undefined}
         />
       ) : (
         <>

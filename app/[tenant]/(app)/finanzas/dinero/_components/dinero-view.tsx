@@ -16,7 +16,7 @@ export default function DineroView({ slug, overview: o }: { slug: string; overvi
     o.receivable.overdue > 0 ? { key: "overdue", text: `${o.receivable.overdue} ${o.receivable.overdue === 1 ? "deuda vencida" : "deudas vencidas"}`, href: `${base}/finanzas/cartera`, action: "Ver cartera" } : null,
   ].filter((x): x is NonNullable<typeof x> => x !== null);
 
-  if (empty) return <EmptyState title="Aún no hay movimientos de dinero" description="Cuando cobres, vendas o registres una deuda, aquí verás dónde está cada peso." />;
+  if (empty) return <EmptyState mark="page" title="Aún no hay movimientos de dinero" description="Cuando cobres, vendas o registres una deuda, aquí verás dónde está cada peso." />;
 
   return (
     <div className="grid min-w-0 gap-5">

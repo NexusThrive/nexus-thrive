@@ -103,7 +103,7 @@ export default function FunctionsView({ slug, groups, canManage, profile }: { sl
         </p>
       </div>
       {visible.length === 0 ? (
-        <EmptyState title="Ninguna función coincide" description={filtering ? "Prueba con otra palabra o quita los filtros." : "No hay funciones para mostrar."} />
+        <EmptyState mark="page" remember={!filtering} title="Ninguna función coincide" description={filtering ? "Prueba con otra palabra o quita los filtros." : "No hay funciones para mostrar."} />
       ) : (
         CAPABILITY_CATEGORIES.map((c) => {
           const rows = visible.filter((i) => i.category === c);

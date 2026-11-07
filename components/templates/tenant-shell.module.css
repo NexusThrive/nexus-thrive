@@ -4,6 +4,7 @@
 .root {
   --sw: 0px;
   min-height: 100vh;
+  min-height: 100dvh;
   background: var(--background);
   color: var(--foreground);
 }
@@ -20,6 +21,8 @@
 .view {
   max-width: var(--content-max);
   min-height: calc(100vh - var(--topbar-height) - env(safe-area-inset-top, 0px));
+  /* Alto visible real en el celular (100vh incluye la barra del navegador y deja un scroll de sobra). */
+  min-height: calc(100dvh - var(--topbar-height) - env(safe-area-inset-top, 0px));
   margin: 0 auto;
   padding: 20px max(16px, env(safe-area-inset-right, 0px))
     calc(112px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));

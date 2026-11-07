@@ -107,7 +107,7 @@ export function AppHome({ trial }: { trial?: AppHomeTrial | null }) {
   };
 
   return (
-    <div className="relative isolate -mx-4 flex min-h-[calc(100dvh-var(--topbar-height))] flex-col items-center overflow-hidden px-4 pb-10 pt-8 sm:-mx-6 sm:px-6">
+    <div className="relative isolate -mx-4 flex min-h-[calc(100dvh-var(--topbar-height)-8.25rem-env(safe-area-inset-bottom,0px))] md:min-h-[calc(100dvh-var(--topbar-height)-5.5rem)] flex-col items-center overflow-hidden px-4 pb-10 pt-8 sm:-mx-6 sm:px-6">
       <GridBackdrop />
       {trial ? (
         <div className="mb-4 w-full rounded-lg border border-border bg-card/60 px-4 py-2.5 text-center text-sm text-foreground backdrop-blur-sm">

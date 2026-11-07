@@ -15,7 +15,7 @@ const NEXT = { QUEUED: { to: "IN_PROGRESS", label: "Empezar" }, IN_PROGRESS: { t
 export function ProductionBoard({ slug, rows }: { slug: string; rows: ProductionRow[] }) {
   const router = useRouter();
   const { toast } = useToast();
-  if (rows.length === 0) return <EmptyState title="Nada en producción" description="Cuando un pedido pase a «En producción», sus productos aparecen aquí para fabricarlos." />;
+  if (rows.length === 0) return <EmptyState mark="page" title="Nada en producción" description="Cuando un pedido pase a «En producción», sus productos aparecen aquí para fabricarlos." />;
   return (
     <ul className="grid gap-2 sm:grid-cols-2">
       {rows.map((p) => {

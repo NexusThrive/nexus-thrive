@@ -86,12 +86,10 @@ export default function TenantTable({
 
   if (rows.length === 0) {
     return (
-      <div className="rounded-lg border border-border bg-card">
-        <EmptyState
+        <EmptyState mark="page" remember={false}
           title="No hay negocios que coincidan"
           description="Ajusta la búsqueda o los filtros para ver resultados."
         />
-      </div>
     );
   }
 

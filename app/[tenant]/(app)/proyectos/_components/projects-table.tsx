@@ -70,7 +70,7 @@ export default function ProjectsTable({
         getRowId={(r) => r.id}
         getRowHref={(r) => `/${tenantSlug}/proyectos/${r.id}`}
         rowLabel={(r) => `Abrir ${r.code} · ${r.name}`}
-        empty={<EmptyState title="Aún no hay proyectos de obra" description="Crea el primero para armar su presupuesto, su plan y su bitácora." action={emptyAction} />}
+        empty={<EmptyState mark="page" title="Aún no hay proyectos de obra" description="Crea el primero para armar su presupuesto, su plan y su bitácora." action={emptyAction} />}
         columns={[
           { key: "name", header: "Proyecto", role: "primary", cell: (r) => <span className="font-medium">{r.name}</span> },
           { key: "code", header: "Código", role: "secondary", cell: (r) => <span className="font-mono text-xs text-accent-text">{r.code}</span> },

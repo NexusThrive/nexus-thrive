@@ -84,9 +84,7 @@ export default function StockView({ slug, warehouses, overview, transfers, count
               ]}
             />
           ) : (
-            <div className="rounded-lg border border-border bg-surface">
-              <EmptyState title="Aún no hay existencias" description="Registra una entrada desde el Catálogo o recibe una compra, y aparecerán aquí por bodega." action={<Link href={`/${slug}/inventario/productos`} className={buttonVariants()}>Ir al catálogo</Link>} />
-            </div>
+              <EmptyState mark="page" title="Aún no hay existencias" description="Registra una entrada desde el Catálogo o recibe una compra, y aparecerán aquí por bodega." action={<Link href={`/${slug}/inventario/productos`} className={buttonVariants()}>Ir al catálogo</Link>} />
           )}
         </>
       ) : null}
@@ -117,9 +115,7 @@ export default function StockView({ slug, warehouses, overview, transfers, count
               ))}
             </ul>
           ) : (
-            <div className="rounded-lg border border-border bg-surface">
-              <EmptyState title="Aún no hay traslados" description="Mueve mercancía de una bodega a otra sin perder su costo." action={canMove ? <button type="button" onClick={() => setTransferring(true)} className={buttonVariants()}><Plus aria-hidden="true" className="size-4" /> Nuevo traslado</button> : undefined} />
-            </div>
+              <EmptyState mark="page" remember={false} title="Aún no hay traslados" description="Mueve mercancía de una bodega a otra sin perder su costo." action={canMove ? <button type="button" onClick={() => setTransferring(true)} className={buttonVariants()}><Plus aria-hidden="true" className="size-4" /> Nuevo traslado</button> : undefined} />
           )}
         </>
       ) : null}
@@ -148,9 +144,7 @@ export default function StockView({ slug, warehouses, overview, transfers, count
               ))}
             </ul>
           ) : (
-            <div className="rounded-lg border border-border bg-surface">
-              <EmptyState title="Aún no hay conteos" description="Cuenta lo que hay en la bodega y NEXUS ajusta las diferencias, dejando el motivo en el kardex." action={<button type="button" onClick={() => setCounting(true)} className={buttonVariants()}><Plus aria-hidden="true" className="size-4" /> Nuevo conteo</button>} />
-            </div>
+              <EmptyState mark="page" remember={false} title="Aún no hay conteos" description="Cuenta lo que hay en la bodega y NEXUS ajusta las diferencias, dejando el motivo en el kardex." action={<button type="button" onClick={() => setCounting(true)} className={buttonVariants()}><Plus aria-hidden="true" className="size-4" /> Nuevo conteo</button>} />
           )}
         </>
       ) : null}

@@ -69,7 +69,7 @@ export default function CobrosView({ slug, baseUrl, intents, runs, canAdmin, tod
             </Alert>
           ) : null}
           {intents.length === 0 ? (
-            <EmptyState title="Aún no hay cobros en línea" description="Crea un enlace, compártelo por WhatsApp o ponlo como botón en tu página. Se marca pagado cuando llega la confirmación oficial." action={<button type="button" onClick={() => setCreating(true)} className={buttonVariants()}><Plus aria-hidden="true" className="size-4" /> Nuevo cobro</button>} />
+            <EmptyState mark="page" title="Aún no hay cobros en línea" description="Crea un enlace, compártelo por WhatsApp o ponlo como botón en tu página. Se marca pagado cuando llega la confirmación oficial." action={<button type="button" onClick={() => setCreating(true)} className={buttonVariants()}><Plus aria-hidden="true" className="size-4" /> Nuevo cobro</button>} />
           ) : (
             <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">
               {intents.map((r) => (
@@ -240,7 +240,7 @@ function Settlements({ slug, rows, today, onDone }: { slug: string; rows: Settle
         <button type="button" onClick={() => setOpen(true)} className={buttonVariants({ className: "ml-auto" })}><Plus aria-hidden="true" className="size-4" /> Registrar liquidación</button>
       </div>
       {rows.length === 0 ? (
-        <EmptyState title="Aún no registras liquidaciones" description="Cuando Wompi te deposite, registra aquí la liquidación para saber cuánto pagaste de comisión y que tu contabilidad cuadre." />
+        <EmptyState mark="page" remember={false} title="Aún no registras liquidaciones" description="Cuando Wompi te deposite, registra aquí la liquidación para saber cuánto pagaste de comisión y que tu contabilidad cuadre." />
       ) : (
         <AdaptiveTable
           caption="Liquidaciones de la pasarela"
@@ -307,7 +307,7 @@ function Statement({ slug, lines, onDone }: { slug: string; lines: StatementRow[
         <button type="button" onClick={() => setOpen(true)} className={buttonVariants({ className: "ml-auto" })}><Plus aria-hidden="true" className="size-4" /> Importar extracto</button>
       </div>
       {lines.length === 0 ? (
-        <EmptyState title="Aún no importas un extracto" description="Pega los movimientos de tu banco para ver cuáles ya cuadran con tus cobros y liquidaciones." />
+        <EmptyState mark="page" remember={false} title="Aún no importas un extracto" description="Pega los movimientos de tu banco para ver cuáles ya cuadran con tus cobros y liquidaciones." />
       ) : (
         <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">
           {lines.map((l) => (

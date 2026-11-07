@@ -49,7 +49,7 @@ export default function OpportunitiesView({ slug, open, won, lost, customers, to
       </div>
 
       {rows.length === 0 ? (
-        <EmptyState title={tab === "open" ? "Sin oportunidades abiertas" : tab === "won" ? "Aún no has ganado ninguna" : "Ninguna perdida"} description={tab === "open" ? "Cuando alguien escriba desde tu sitio o la crees tú, aparecerá aquí con su siguiente paso." : "Aquí quedan las que cierres."} />
+        <EmptyState mark="page" remember={tab === "open"} title={tab === "open" ? "Sin oportunidades abiertas" : tab === "won" ? "Aún no has ganado ninguna" : "Ninguna perdida"} description={tab === "open" ? "Cuando alguien escriba desde tu sitio o la crees tú, aparecerá aquí con su siguiente paso." : "Aquí quedan las que cierres."} />
       ) : (
         <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">
           {rows.map((o) => (

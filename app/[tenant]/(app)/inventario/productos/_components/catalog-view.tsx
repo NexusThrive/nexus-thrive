@@ -74,9 +74,7 @@ export default function CatalogView({ slug, products, kinds, customers, canManag
           })}
         </ul>
       ) : (
-        <div className="rounded-lg border border-border bg-surface">
-          <EmptyState title={text ? "Sin coincidencias" : `Aún no hay ${KIND_LABELS[kind].many.toLowerCase()}`} description={KIND_LABELS[kind].hint} action={!text && canManage ? <button type="button" onClick={() => setEditing("new")} className={buttonVariants()}><Plus aria-hidden="true" className="size-4" /> Agregar {KIND_LABELS[kind].one.toLowerCase()}</button> : undefined} />
-        </div>
+          <EmptyState mark="page" remember={!text} title={text ? "Sin coincidencias" : `Aún no hay ${KIND_LABELS[kind].many.toLowerCase()}`} description={KIND_LABELS[kind].hint} action={!text && canManage ? <button type="button" onClick={() => setEditing("new")} className={buttonVariants()}><Plus aria-hidden="true" className="size-4" /> Agregar {KIND_LABELS[kind].one.toLowerCase()}</button> : undefined} />
       )}
 
       {open ? <ProductDetail slug={slug} product={open} customers={customers} canManage={canManage} onEdit={() => { setEditing(open); setOpen(null); }} onClose={() => setOpen(null)} /> : null}

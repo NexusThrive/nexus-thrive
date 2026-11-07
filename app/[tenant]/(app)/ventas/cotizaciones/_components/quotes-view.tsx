@@ -51,7 +51,7 @@ export default function QuotesView({ slug, quotes, customers, products, today, i
       </div>
 
       {quotes.length === 0 ? (
-        <EmptyState title="Aún no hay cotizaciones" description="Arma una con tu catálogo, envíala y, cuando el cliente la apruebe, nace el pedido con su anticipo." />
+        <EmptyState mark="page" title="Aún no hay cotizaciones" description="Arma una con tu catálogo, envíala y, cuando el cliente la apruebe, nace el pedido con su anticipo." />
       ) : (
         <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">
           {quotes.map((q) => {

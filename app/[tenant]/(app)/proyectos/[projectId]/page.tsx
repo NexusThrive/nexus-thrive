@@ -39,8 +39,8 @@ function formatDate(value: string): string {
 /** Placeholder de las pestañas que llegan en fases posteriores del vertical. */
 function TabPlaceholder({ label }: { label: string }) {
   return (
-    <EmptyState
-      className="rounded-lg border border-border bg-card"
+    <EmptyState mark="page" remember={false}
+
       title={label}
       description="Esta sección llega en una próxima fase del vertical de construcción. FASE 1 entrega el contenedor y la ficha del proyecto (tab “Ficha y cliente”)."
     />

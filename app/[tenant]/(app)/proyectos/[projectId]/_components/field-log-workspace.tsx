@@ -96,7 +96,7 @@ export default function FieldLogWorkspace({
       <div className="rounded-lg border border-border bg-card">
         {entries.length === 0 ? (
           <div className="p-8">
-            <EmptyState
+            <EmptyState mark="page" remember={false}
               title="Bitácora vacía"
               description="Registra la primera anotación de campo para iniciar el diario de obra."
               action={<Button onClick={() => setShowForm(true)}>Crear primera anotación</Button>}

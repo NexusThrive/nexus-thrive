@@ -11,7 +11,7 @@ test.describe("Funciones", () => {
     await expect(page.getByText("Va bien con un negocio de gimnasio.")).toBeVisible();
     // Encendida pero sin configurar: no se presenta como operativa.
     await expect(page.getByText("Falta configurar")).toBeVisible();
-    await expect(page.getByRole("link", { name: "Configurar" })).toHaveAttribute("href", "/demo/factura-electronica");
+    await expect(page.getByRole("link", { name: "Configurar" })).toHaveAttribute("href", "/demo/finanzas/facturacion-electronica");
     // Lo que no existe se informa, sin interruptor.
     await expect(page.getByText("Próximamente")).toBeVisible();
     await expect(page.getByRole("switch", { name: /Pedidos/ })).toHaveCount(0);

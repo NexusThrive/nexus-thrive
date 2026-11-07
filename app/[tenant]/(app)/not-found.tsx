@@ -7,7 +7,7 @@ import { EmptyState } from "@/components/molecules/empty-state";
  */
 export default function TenantNotFound() {
   return (
-    <EmptyState
+    <EmptyState mark="page" remember={false}
       headingLevel={2}
       title="No encontramos esta pantalla"
       description="Puede que haya cambiado de lugar, que la función esté apagada o que tu rol no la use. Usa el menú o la búsqueda para ir a otra parte."

@@ -36,7 +36,7 @@ export default function SolutionsView({ rows, canEdit }: { rows: SolutionRow[]; 
         caption="Negocios con su solución"
         rows={list}
         getRowId={(r) => r.id}
-        empty={<EmptyState title="Nada por revisar" description="Todos los negocios tienen una solución clara." />}
+        empty={<EmptyState mark="page" title="Nada por revisar" description="Todos los negocios tienen una solución clara." />}
         columns={[
           { key: "name", header: "Negocio", role: "primary", cell: (r) => <span className="font-medium">{r.name}</span> },
           { key: "solution", header: "Solución", role: "secondary", cell: (r) => SOLUTIONS[r.solution].label },

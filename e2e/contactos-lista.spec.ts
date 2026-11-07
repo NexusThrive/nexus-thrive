@@ -29,5 +29,7 @@ test.describe("Lista de Contactos", () => {
     await openStory(page, "páginas-clientes-y-agenda-contactos--sin-clientes");
     await expect(page.getByText("Aún no tienes clientes")).toBeVisible();
     await expectNoAxeViolations(page);
+    // El vacío ocupa el alto que queda: centrado y sin scroll.
+    expect(await page.evaluate(() => document.documentElement.scrollHeight - window.innerHeight)).toBeLessThanOrEqual(0);
   });
 });

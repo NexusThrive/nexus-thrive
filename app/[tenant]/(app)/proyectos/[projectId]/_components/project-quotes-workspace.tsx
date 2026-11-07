@@ -154,8 +154,8 @@ export default function ProjectQuotesWorkspace({
         ) : null}
 
         {quotes.length === 0 ? (
-          <EmptyState
-            className="rounded-lg border border-border bg-card"
+          <EmptyState mark="page" remember={false}
+
             title="Todavía no hay cotizaciones"
             description="Arma el presupuesto en la pestaña Presupuestador y emite la primera versión para el cliente."
           />

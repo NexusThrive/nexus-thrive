@@ -121,13 +121,11 @@ export default async function IntegrationsPage({ params }: { params: Promise<{ t
     <div className="grid gap-5">
       {header}
       {cards.length === 0 ? (
-        <div className="rounded-lg border border-border bg-card">
-          <EmptyState
+          <EmptyState mark="page"
             title="Aún no tienes herramientas para conectar"
             description="Cuando enciendas funciones como Cobros en línea o Factura electrónica, sus conexiones aparecerán aquí."
             action={<Link href={`${base}/functions`} className={buttonVariants({ variant: "outline" })}>Ver funciones</Link>}
           />
-        </div>
       ) : (
         <section aria-label="Herramientas conectadas" className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {cards.map(({ id, ...card }) => (

@@ -1,5 +1,7 @@
 import { Skeleton } from "@/components/atoms/skeleton";
+import { EmptyPageFrame } from "@/components/molecules/empty-page-frame";
 import { GridBackdrop } from "@/components/molecules/grid-backdrop";
+import { SkeletonEmptySwitch } from "./skeleton-empty-switch";
 
 export type PageSkeletonVariant = "dashboard" | "table" | "detail" | "form" | "profile" | "apps" | "list" | "record";
 
@@ -55,7 +57,7 @@ function TableSkeleton({ rows = 7 }: { rows?: number }) {
 /** Cajón de aplicaciones (raíz): saludo centrado y la grilla de 4 columnas de iconos con su nombre, sobre el fondo de cuadros. */
 function AppsSkeleton({ label }: { label: string }) {
   return (
-    <div role="status" aria-busy="true" aria-label={label} className="relative isolate -mx-4 flex min-h-[calc(100dvh-var(--topbar-height))] flex-col items-center overflow-hidden px-4 pb-10 pt-8 sm:-mx-6 sm:px-6">
+    <div role="status" aria-busy="true" aria-label={label} className="relative isolate -mx-4 flex min-h-[calc(100dvh-var(--topbar-height)-8.25rem-env(safe-area-inset-bottom,0px))] md:min-h-[calc(100dvh-var(--topbar-height)-5.5rem)] flex-col items-center overflow-hidden px-4 pb-10 pt-8 sm:-mx-6 sm:px-6">
       <GridBackdrop />
       <Skeleton className="mb-8 h-3 w-52" />
       <ul className="mx-auto grid w-full max-w-lg grid-cols-4 justify-items-center gap-x-8 gap-y-12">
@@ -70,25 +72,43 @@ function AppsSkeleton({ label }: { label: string }) {
   );
 }
 
+/** Panel de control de una lista a todo el ancho: nuevo, título y menú; búsqueda al centro; paginador y vista a la derecha. */
+function ListToolbarSkeleton() {
+  return (
+    <div className="grid items-center gap-x-4 gap-y-3 px-5 py-4 min-[1100px]:grid-cols-[1fr_minmax(0,543px)_1fr]">
+      <div className="flex items-center gap-3">
+        <Skeleton className="h-[34px] w-[84px]" />
+        <Skeleton className="h-5 w-24" />
+        <Skeleton className="size-[34px]" />
+      </div>
+      <Skeleton className="h-[34px] w-full justify-self-center max-w-[543px]" />
+      <div className="hidden items-center justify-end gap-2 min-[1100px]:flex">
+        <Skeleton className="h-3.5 w-16" />
+        <Skeleton className="size-[34px]" />
+        <Skeleton className="size-[34px]" />
+        <Skeleton className="ms-2 size-[34px]" />
+      </div>
+    </div>
+  );
+}
+
+/** Estado vacío en precarga: el mismo marco (alto disponible, N grande abajo) con el título, la descripción y la acción en esqueleto. */
+function EmptySkeleton() {
+  return (
+    <EmptyPageFrame remember={false}>
+      <Skeleton className="h-5 w-56 max-w-full" />
+      <Skeleton className="mt-3 h-3.5 w-80 max-w-full" />
+      <Skeleton className="mt-6 h-[34px] w-24" />
+    </EmptyPageFrame>
+  );
+}
+
 /** Lista a todo el ancho (Clientes): panel de control de tres zonas y tabla de filas de 38 px; en móvil, lista compacta. */
 function ListSkeleton({ label }: { label: string }) {
   const widths = [22, 14, 12, 10, 9];
   return (
     <div data-bleed="" role="status" aria-busy="true" aria-label={label} className="flex flex-col">
-      <div className="grid items-center gap-x-4 gap-y-3 px-5 py-4 min-[1100px]:grid-cols-[1fr_minmax(0,543px)_1fr]">
-        <div className="flex items-center gap-3">
-          <Skeleton className="h-[34px] w-[84px]" />
-          <Skeleton className="h-5 w-24" />
-          <Skeleton className="size-[34px]" />
-        </div>
-        <Skeleton className="h-[34px] w-full justify-self-center max-w-[543px]" />
-        <div className="hidden items-center justify-end gap-2 min-[1100px]:flex">
-          <Skeleton className="h-3.5 w-16" />
-          <Skeleton className="size-[34px]" />
-          <Skeleton className="size-[34px]" />
-          <Skeleton className="ms-2 size-[34px]" />
-        </div>
-      </div>
+      <ListToolbarSkeleton />
       <div className="hidden border-b border-border md:block">
         <div className="flex h-[38px] items-center gap-6 border-b border-border px-5">
           <Skeleton className="size-3.5 shrink-0" />
@@ -205,8 +225,36 @@ export function PageSkeleton({
   kpis?: boolean;
 }) {
   if (variant === "apps") return <AppsSkeleton label={label} />;
-  if (variant === "list") return <ListSkeleton label={label} />;
   if (variant === "record") return <RecordSkeleton label={label} />;
+  // Si la vista estaba vacía la última vez, la precarga pinta su estado vacío (sin filas) con la misma cabecera.
+  if (variant === "list")
+    return (
+      <SkeletonEmptySwitch
+        normal={<ListSkeleton label={label} />}
+        empty={
+          <div data-bleed="" role="status" aria-busy="true" aria-label={label} className="flex flex-col">
+            <ListToolbarSkeleton />
+            <EmptySkeleton />
+          </div>
+        }
+      />
+    );
+  if (variant === "table" || variant === "dashboard" || variant === "detail")
+    return (
+      <SkeletonEmptySwitch
+        normal={<GenericSkeleton variant={variant} label={label} kpis={kpis} />}
+        empty={
+          <div className="grid gap-5" role="status" aria-busy="true" aria-label={label}>
+            <HeaderSkeleton actions={variant !== "dashboard"} />
+            <EmptySkeleton />
+          </div>
+        }
+      />
+    );
+  return <GenericSkeleton variant={variant} label={label} kpis={kpis} />;
+}
+
+function GenericSkeleton({ variant, label, kpis }: { variant: PageSkeletonVariant; label: string; kpis: boolean }) {
   return (
     <div className="grid gap-5" role="status" aria-busy="true" aria-label={label}>
       {variant === "profile" ? (

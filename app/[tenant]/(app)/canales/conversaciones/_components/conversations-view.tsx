@@ -50,7 +50,7 @@ export default function ConversationsView({ slug, conversations, selected, messa
         </Alert>
       ) : null}
       {conversations.length === 0 ? (
-        <EmptyState title="Aún no hay conversaciones" description="Cuando un cliente te escriba al número que conectaste, aparecerá aquí y en su ficha." />
+        <EmptyState mark="page" title="Aún no hay conversaciones" description="Cuando un cliente te escriba al número que conectaste, aparecerá aquí y en su ficha." />
       ) : (
         <div className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
           <ul aria-label="Conversaciones" className="max-h-80 divide-y divide-border overflow-y-auto rounded-lg border border-border bg-surface lg:max-h-[32rem]">

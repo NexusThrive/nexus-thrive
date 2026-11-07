@@ -321,7 +321,7 @@ export function ReportsWorkspace() {
                 {bomPending ? "Exportando..." : "Exportar CSV"}
               </Button>
             </div>
-            <EmptyState
+            <EmptyState mark="page" remember={false}
               title="Exportación CSV lista"
               description="Haz clic en Exportar BOM CSV para descargar el archivo con formato seguro (UTF-8 BOM + anti-fórmula)."
             />

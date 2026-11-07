@@ -77,7 +77,7 @@ export default function NoticesView({ slug, templates, notices, connected }: { s
           </ul>
         )
       ) : notices.length === 0 ? (
-        <EmptyState title="Aún no hay avisos" description="Cuando se reciba o se pague un pedido, el aviso aparece aquí con lo que pasó." />
+        <EmptyState mark="page" title="Aún no hay avisos" description="Cuando se reciba o se pague un pedido, el aviso aparece aquí con lo que pasó." />
       ) : (
         <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">
           {notices.map((n) => (

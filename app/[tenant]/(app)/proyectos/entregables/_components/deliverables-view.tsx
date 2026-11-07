@@ -63,7 +63,7 @@ export default function DeliverablesView({ slug, rows, projects, customers }: { 
       ) : null}
 
       {rows.length === 0 ? (
-        <EmptyState title="Aún no hay entregables" description="Crea uno, adjunta los archivos y envíaselo a tu cliente para que lo apruebe." />
+        <EmptyState mark="page" title="Aún no hay entregables" description="Crea uno, adjunta los archivos y envíaselo a tu cliente para que lo apruebe." />
       ) : (
         <ul className="grid gap-3">
           {rows.map((r) => (
