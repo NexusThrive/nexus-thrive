@@ -30,6 +30,11 @@
     padding: 24px 24px 64px;
   }
 }
+/* Listas a todo el ancho: si la página marca su contenido con data-bleed, la vista no limita el ancho ni el padding lateral. */
+.view:has([data-bleed]) {
+  max-width: none;
+  padding-inline: 0;
+}
 @media (min-width: 1024px) {
   .view {
     padding-inline: 32px;
