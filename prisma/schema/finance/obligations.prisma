@@ -28,3 +28,26 @@ model Obligation {
   @@index([tenantId, status, dueDate])
   @@rls
 }
+
+/// Aplicación de un pago a lo que cubre (HU-aplicacion-01, D-8): un pago puede cubrir varias obligaciones y una
+/// obligación puede recibir varios pagos (anticipos, parciales, abonos). El dinero se mueve una sola vez en `Payment`;
+/// aquí solo se reparte. La suma aplicada de un pago nunca supera su monto.
+///
+/// Campos:
+/// - `targetType`: INVOICE (cuenta de cobro o factura) | OBLIGATION (pedido de la tienda o membresía).
+/// - `targetId`: Id de la factura o de la obligación.
+/// - `amount`: Parte del pago aplicada a ese destino.
+model PaymentAllocation {
+  id         String   @id @default(uuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  paymentId  String
+  targetType String
+  targetId   String
+  amount     Decimal
+  createdAt  DateTime @default(now())
+
+  @@index([tenantId, paymentId])
+  @@index([tenantId, targetType, targetId])
+  @@rls
+}

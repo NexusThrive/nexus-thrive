@@ -155,7 +155,7 @@ export async function confirmIntent(tenantId: string, reference: string, by: { k
       const store = await storeOrderLines(tx, tenantId, intent.id);
       const income = await recordIncome(tx, tenantId, { documentLines: store?.lines, amount, method: by.kind === "PROVIDER" ? "WOMPI" : "TRANSFER", customerId: intent.customerId, invoiceId: intent.invoiceId, description: `Cobro en línea · ${intent.description}`, providerRefId: by.kind === "PROVIDER" ? by.externalId : null, sourceType: intent.invoiceId ? "INVOICE" : "ONLINE", sourceId: intent.invoiceId ?? intent.id }, by.kind === "MANUAL" ? by.userId : "proveedor");
       await tx.orm.public.PaymentIntent.where({ tenantId, id: intent.id }).update({ paymentId: income.paymentId });
-      if (store) await settleStoreOrder(tx, tenantId, store.orderId, income.documentId, by.kind === "MANUAL" ? by.userId : null);
+      if (store) await settleStoreOrder(tx, tenantId, store.orderId, income.documentId, by.kind === "MANUAL" ? by.userId : null, { id: income.paymentId, amount });
       return { ok: true as const, already: false };
     });
   } catch (e) {

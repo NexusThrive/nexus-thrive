@@ -45,24 +45,35 @@ export async function openObligation(tx: DbTransaction, tenantId: string, input:
  * tener varias (inscripción y renovaciones: `originId` = id de la membresía o `id:fecha`); se aplica a la más antigua.
  * La actualización exige el saldo anterior, así dos cobros a la vez no se pisan. Sin obligación abierta no hace nada.
  */
-export async function applyToObligation(tx: DbTransaction, tenantId: string, originType: ObligationOrigin, originId: string, amount: number): Promise<void> {
+export async function applyToObligation(tx: DbTransaction, tenantId: string, originType: ObligationOrigin, originId: string, amount: number): Promise<{ obligationId: string; amount: number }[]> {
+  const applied: { obligationId: string; amount: number }[] = [];
   let left = round2(amount);
-  const open = await tx.orm.public.Obligation.where({ tenantId, originType, status: "OPEN" }).where((o) => o.originId.ilike(`${originId}%`)).orderBy((o) => o.dueDate.asc()).all();
-  for (const o of open) {
-    if (left <= 0) break;
-    if (o.originId !== originId && !o.originId.startsWith(`${originId}:`)) continue;
-    const total = toNumber(o.amount);
-    const paidBefore = toNumber(o.paidTotal);
-    const apply = round2(Math.min(left, balanceOf(total, paidBefore)));
-    if (apply <= 0) continue;
-    const paid = round2(paidBefore + apply);
-    const plan = tx.sql.public.Obligation.update({ paidTotal: dec(paid), ...(paid >= total ? { status: "PAID" } : {}) })
-      .where((f, fns) => fns.and(fns.eq(f.id, o.id), fns.eq(f.tenantId, tenantId), fns.eq(f.status, "OPEN"), fns.eq(f.paidTotal, dec(paidBefore))))
-      .returning("id")
-      .build();
-    if ((await tx.query(plan)).length === 0) continue;
-    left = round2(left - apply);
+  // Si otro cobro tocó la misma deuda entre la lectura y la escritura, se vuelve a leer y se sigue con lo que falta.
+  for (let attempt = 0; attempt < 4 && left > 0; attempt++) {
+    const open = await tx.orm.public.Obligation.where({ tenantId, originType, status: "OPEN" }).where((o) => o.originId.ilike(`${originId}%`)).orderBy((o) => o.dueDate.asc()).all();
+    let conflict = false;
+    for (const o of open) {
+      if (left <= 0) break;
+      if (o.originId !== originId && !o.originId.startsWith(`${originId}:`)) continue;
+      const total = toNumber(o.amount);
+      const paidBefore = toNumber(o.paidTotal);
+      const apply = round2(Math.min(left, balanceOf(total, paidBefore)));
+      if (apply <= 0) continue;
+      const paid = round2(paidBefore + apply);
+      const plan = tx.sql.public.Obligation.update({ paidTotal: dec(paid), ...(paid >= total ? { status: "PAID" } : {}) })
+        .where((f, fns) => fns.and(fns.eq(f.id, o.id), fns.eq(f.tenantId, tenantId), fns.eq(f.status, "OPEN"), fns.eq(f.paidTotal, dec(paidBefore))))
+        .returning("id")
+        .build();
+      if ((await tx.query(plan)).length === 0) {
+        conflict = true;
+        break;
+      }
+      left = round2(left - apply);
+      applied.push({ obligationId: o.id, amount: apply });
+    }
+    if (!conflict) break;
   }
+  return applied;
 }
 
 /** Anula las obligaciones abiertas de un origen (el pedido se canceló o se abandonó). Lo ya cobrado queda registrado en `paidTotal`. */

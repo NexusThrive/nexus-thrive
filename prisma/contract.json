@@ -252,6 +252,10 @@
       "model": "Payment",
       "namespace": "public"
     },
+    "PaymentAllocation": {
+      "model": "PaymentAllocation",
+      "namespace": "public"
+    },
     "PaymentIntent": {
       "model": "PaymentIntent",
       "namespace": "public"
@@ -11206,6 +11210,104 @@
               "table": "Payment"
             }
           },
+          "PaymentAllocation": {
+            "fields": {
+              "amount": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "paymentId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "targetId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "targetType": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "amount": {
+                  "column": "amount"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "paymentId": {
+                  "column": "paymentId"
+                },
+                "targetId": {
+                  "column": "targetId"
+                },
+                "targetType": {
+                  "column": "targetType"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "PaymentAllocation"
+            }
+          },
           "PaymentIntent": {
             "fields": {
               "amount": {
@@ -19627,6 +19729,21 @@
                   "namespace": "public"
                 }
               },
+              "paymentAllocations": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "PaymentAllocation",
+                  "namespace": "public"
+                }
+              },
               "paymentIntents": {
                 "cardinality": "1:N",
                 "on": {
@@ -22909,6 +23026,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "Payment"
+            },
+            "PaymentAllocation": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "PaymentAllocation"
             },
             "PaymentIntent": {
               "kind": "rls",
@@ -31191,6 +31313,103 @@
                   ]
                 }
               ]
+            },
+            "PaymentAllocation": {
+              "columns": {
+                "amount": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "paymentId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "targetId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "targetType": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "PaymentAllocation"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "PaymentAllocation_tenantId_idx_c93ed4f1",
+                  "prefix": "PaymentAllocation_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "paymentId"
+                  ],
+                  "name": "PaymentAllocation_tenantId_paymentId_idx_5dee2bd2",
+                  "prefix": "PaymentAllocation_tenantId_paymentId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "targetType",
+                    "targetId"
+                  ],
+                  "name": "PaymentAllocation_tenantId_targetType_targetId_idx_aa5024a9",
+                  "prefix": "PaymentAllocation_tenantId_targetType_targetId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
             },
             "PaymentIntent": {
               "columns": {
@@ -39582,10 +39801,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "9ed1f54e32ae6c51941d0175744c5cd16cd77ba61fba583b31b1c5581e04956e"
+    "storageHash": "953e4d106a57aefda8e12e3671823b2b7ac1df966b02bc1ccf71bda6764f4935"
   },
   "execution": {
-    "executionHash": "b3c7b5d32051253ae48e138e3a50fe7bd6e2d37d8329259f29b14a81e4d672a2",
+    "executionHash": "3b8a532f05d72a944ed296535335aa4c91ea9e44b7027e31e8a12b63d9f8e64b",
     "mutations": {
       "defaults": [
         {
@@ -40673,6 +40892,17 @@
           "ref": {
             "entry": "Payment",
             "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "PaymentAllocation",
+            "field": "id",
             "namespace": "public"
           }
         },

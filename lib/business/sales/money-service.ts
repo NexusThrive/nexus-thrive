@@ -9,6 +9,7 @@ import { DUPLICATE_WINDOW_SECONDS, isDuplicatePayment, resolveLimits, validateAm
 import { accountingPort } from "./accounting-port";
 import { todayCO } from "@/lib/foundation/dates/plain-date";
 import { MoneyError } from "./money-error";
+import { allocatePayment, releaseAllocations } from "./allocations";
 import { applyToObligation } from "./obligations";
 import { receiptCode } from "./invoice";
 import type { DocumentLineInput } from "./commercial-document";
@@ -154,8 +155,15 @@ export async function recordIncome(tx: MoneyTx, tenantId: string, input: IncomeI
   });
 
   const receipt = receiptCode(receiptNumber);
-  // El cobro baja el saldo de la deuda de la membresía (si la había): inscripción o renovación.
-  if (status === "APPROVED" && input.sourceType === "MEMBERSHIP" && input.sourceId) await applyToObligation(tx, tenantId, "MEMBERSHIP", input.sourceId, Number(amount));
+  // Aplicación del pago (D-8): a qué cubrió. Una cuenta de cobro recibe el pago completo; una membresía lo reparte entre sus deudas abiertas.
+  if (status === "APPROVED") {
+    if (input.invoiceId) await allocatePayment(tx, tenantId, { paymentId: payment.id, paymentAmount: Number(amount), targetType: "INVOICE", targetId: input.invoiceId, amount: Number(amount) });
+    else if (input.sourceType === "MEMBERSHIP" && input.sourceId) {
+      for (const part of await applyToObligation(tx, tenantId, "MEMBERSHIP", input.sourceId, Number(amount))) {
+        await allocatePayment(tx, tenantId, { paymentId: payment.id, paymentAmount: Number(amount), targetType: "OBLIGATION", targetId: part.obligationId, amount: part.amount });
+      }
+    }
+  }
   if (status === "APPROVED") {
     const payer = input.customerId ? await tx.orm.public.Customer.where({ tenantId, id: input.customerId }).select("partyId").first() : null;
     await accountingPort.use().record(
@@ -448,6 +456,8 @@ export async function voidPayment(tenantId: string, paymentId: string, reason: s
       }
       // Contabilidad: el asiento del cobro se reversa (el libro no se edita, se corrige con otro asiento).
       await accountingPort.use().reverse(tx, tenantId, "PAYMENT", paymentId, reason, userId);
+      // Las aplicaciones del pago se deshacen: lo que cubría vuelve a deberse.
+      await releaseAllocations(tx, tenantId, paymentId);
       // Anular un abono (o el pago) de una cuenta de cobro la devuelve a la cartera.
       if (p.invoiceId && p.sourceType === "INVOICE") {
         const inv = await tx.orm.public.Invoice.where({ tenantId, id: p.invoiceId }).select("status", "paidTotal").first();

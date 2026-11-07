@@ -225,6 +225,7 @@ model Tenant {
   journalLines       JournalLine[]
   paymentRefunds     PaymentRefund[]
   obligations        Obligation[]
+  paymentAllocations PaymentAllocation[]
   reconciliationRuns ReconciliationRun[]
   supplierPayments   SupplierPayment[]
   numberingResolutions NumberingResolution[]
