@@ -56,7 +56,7 @@ export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; 
         aria-label={`${brandName}: inicio`}
         className={cn(styles.brand, "pl-[max(16px,env(safe-area-inset-left,0px))] outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring md:pl-3")}
       >
-        <span className={cn(styles.logo, styles.mark)}>
+        <span className={cn(styles.logo, styles.mark)} style={atHome ? { ["--w" as string]: "34px" } : undefined}>
           <svg role="img" aria-label="NEXUS THRIVE" viewBox="387.6 239.9 744.4 779.5" shapeRendering="geometricPrecision">
             <path d={N_PATH} fill="currentColor" />
             <g className={styles.letters}>
@@ -76,8 +76,8 @@ export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; 
       </Link>
 
       {atHome ? (
-        <div className="relative flex flex-1 items-center justify-end gap-2 pe-3">
-          {switcher}
+        <div className="relative flex flex-1 items-center justify-end gap-3 pe-3">
+          <span className="truncate text-sm font-medium text-muted-foreground">{brandName}</span>
           <AccountButton />
         </div>
       ) : (
