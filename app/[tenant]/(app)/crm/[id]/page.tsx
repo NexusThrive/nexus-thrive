@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
+import { commercialTimeline, mergeTimeline } from "@/lib/business/growth/commercial-timeline";
 import { customerProfileExtras } from "@/lib/business/customers/customers-db";
 import { tenantWithModules } from "@/lib/core/tenancy/membership";
 import { buildCustomer360, createTenantDb } from "@/lib/core/tenancy/db";
@@ -72,7 +73,9 @@ export default async function CustomerPage({
   const { memberships } = gym;
 
   const terms = getVerticalTerms(tenantRecord.vertical);
-  const { customer, payments, paymentsTotal, notes, timeline, metrics } = details;
+  const { customer, payments, paymentsTotal, notes, metrics } = details;
+  // Una sola línea de tiempo: pagos, membresías y notas + oportunidades, cotizaciones, pedidos, tareas y documentos.
+  const timeline = mergeTimeline(details.timeline, await commercialTimeline(tenantRecord.id, id));
 
   // Tabs según módulos ACTIVOS del tenant (spec: no mostrar pestañas de
   // módulos inactivos; no existen modelos Order/Booking en el schema).
@@ -115,7 +118,7 @@ export default async function CustomerPage({
     null;
 
   // (corrección: "último movimiento" ≠ "último pago aprobado")
-  const lastMovement = timeline[0] ?? null;
+  const lastMovement = details.timeline[0] ?? null;
   const lastApprovedPayment =
     payments.find((payment) => payment.status === "APPROVED") ?? null;
 

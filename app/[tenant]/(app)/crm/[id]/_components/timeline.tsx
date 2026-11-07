@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { StickyNote, Wallet, BadgeCheck } from "lucide-react";
+import { BadgeCheck, CheckSquare, FileText, Package, StickyNote, Target, Wallet } from "lucide-react";
 import type { CustomerTimelineEvent } from "@/lib/core/tenancy/db";
 import { formatCurrency, formatDateTime } from "@/lib/foundation/format";
 import { cn } from "@/lib/cn";
@@ -8,17 +8,27 @@ const EVENT_ICON: Record<CustomerTimelineEvent["type"], LucideIcon> = {
   payment: Wallet,
   membership: BadgeCheck,
   note: StickyNote,
+  opportunity: Target,
+  quote: FileText,
+  order: Package,
+  task: CheckSquare,
+  document: FileText,
 };
 
 const EVENT_TONE: Record<CustomerTimelineEvent["type"], string> = {
   payment: "bg-success/10 text-success",
   membership: "bg-accent-subtle text-accent-text",
   note: "bg-muted text-muted-foreground",
+  opportunity: "bg-accent-subtle text-accent-text",
+  quote: "bg-accent-subtle text-accent-text",
+  order: "bg-success/10 text-success",
+  task: "bg-muted text-muted-foreground",
+  document: "bg-muted text-muted-foreground",
 };
 
 /**
  * Timeline unificado de la ficha 360° (Server Component): eventos de
- * pagos, membresías y notas ordenados por fecha descendente.
+ * pagos, membresías, notas, oportunidades, cotizaciones, pedidos, tareas y documentos, ordenados por fecha descendente.
  */
 export default function TimelinePanel({
   events,
