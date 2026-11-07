@@ -377,7 +377,7 @@ export default async function TenantDashboard({
           },
         }}
         header={
-          <div className="flex w-full items-center justify-end">
+          <div key="resumen-controles" className="flex w-full items-center justify-end">
           <div className="flex w-full items-center justify-end gap-2">
             <UrlSegmentedControl
               param="p"
