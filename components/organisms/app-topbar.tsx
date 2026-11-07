@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useCallback, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ChevronLeft, Plus, Search } from "lucide-react";
@@ -191,6 +191,13 @@ function ModuleBar({
   notifications?: ReactNode;
 }) {
   const Icon = group.icon ?? group.items[0]!.icon;
+  const navRef = useRef<HTMLElement>(null);
+  const [bubble, setBubble] = useState<{ left: number; width: number } | null>(null);
+  const measure = useCallback((link: HTMLAnchorElement | null) => {
+    if (!link) return;
+    const next = { left: link.offsetLeft, width: link.offsetWidth };
+    setBubble((current) => (current && current.left === next.left && current.width === next.width ? current : next));
+  }, []);
   return (
     <header
       data-app-topbar=""
@@ -200,26 +207,37 @@ function ModuleBar({
       <Link
         href={hrefFor("")}
         aria-label="Volver al inicio"
-        className="grid size-9 shrink-0 place-items-center rounded-lg border border-border bg-card text-foreground outline-none hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        className="group grid size-9 shrink-0 place-items-center rounded-lg text-foreground outline-none hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       >
-        <ChevronLeft aria-hidden="true" className="size-5" />
+        <svg aria-hidden="true" viewBox="387.6 239.9 744.4 779.5" className="size-5 group-hover:hidden group-focus-visible:hidden">
+          <path d={N_PATH} fill="currentColor" />
+        </svg>
+        <ChevronLeft aria-hidden="true" className="hidden size-5 group-hover:block group-focus-visible:block" />
       </Link>
-      <span aria-hidden="true" className="hidden h-6 w-px shrink-0 bg-border sm:block" />
       <div className="flex min-w-0 shrink-0 items-center gap-2">
         <Icon aria-hidden="true" className="size-5 text-accent-text" />
         <span className="truncate text-base font-semibold text-foreground">{group.label === "General" ? group.items[0]!.label : group.label}</span>
       </div>
-      <nav aria-label={`Secciones de ${group.label}`} className="ms-2 flex min-w-0 flex-1 items-center gap-1 overflow-x-auto">
+      <nav ref={navRef} aria-label={`Secciones de ${group.label}`} className="relative ms-2 flex min-w-0 flex-1 items-center gap-1 self-stretch overflow-x-auto">
+        {/* Burbuja de la pestaña activa: cuelga del borde superior y se desliza al cambiar (sin movimiento si se pide reducirlo). */}
+        {bubble ? (
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute top-0 h-11 rounded-b-xl bg-surface-muted transition-[left,width] duration-(--d3) ease-(--nx-ease-out) motion-reduce:transition-none"
+            style={{ left: bubble.left, width: bubble.width }}
+          />
+        ) : null}
         {group.items.map((item) => {
           const active = item.key === activeKey;
           return (
             <Link
               key={item.key}
+              ref={active ? measure : undefined}
               href={hrefFor(item.href)}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "shrink-0 rounded-md px-3 py-1.5 text-sm outline-none transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-                active ? "bg-surface-muted font-medium text-foreground" : "text-muted-foreground hover:bg-surface-muted/60 hover:text-foreground",
+                "relative mt-3 shrink-0 self-start rounded-md px-3 py-1.5 text-sm outline-none transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+                active ? "font-medium text-foreground" : "text-muted-foreground hover:text-foreground",
               )}
             >
               {item.label}
