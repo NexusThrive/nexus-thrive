@@ -1,11 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useTransition } from "react";
+import { useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Archive, ArchiveRestore, CalendarClock, ChevronLeft, ChevronRight, Download, LayoutGrid, List, Map, MoreVertical, Plus, Settings, SlidersHorizontal, Trash2, X } from "lucide-react";
 import CustomerSearch from "./customer-search";
-import CustomerQuickCreate from "./customer-quick-create";
 import { useCustomerSelection } from "./customer-selection";
 import type { CustomerStatus } from "./customer-filters";
 import { useVerticalTerms } from "../../vertical-terms-context";
@@ -41,7 +40,6 @@ export default function CustomerToolbar({
   totalPages: number;
   total: number;
 }) {
-  const [isFormOpen, setIsFormOpen] = useState(false);
   const terms = useVerticalTerms();
   const router = useRouter();
   const pathname = usePathname();
@@ -78,10 +76,10 @@ export default function CustomerToolbar({
       <div suppressHydrationWarning className="grid items-center gap-x-4 gap-y-3 px-5 py-4 min-[1100px]:grid-cols-[1fr_minmax(0,543px)_1fr]">
         {/* Izquierda: alta, título y ⋮ */}
         <div className="flex min-w-0 items-center gap-3 justify-self-start">
-          <button type="button" onClick={() => setIsFormOpen(true)} className={buttonVariants({ variant: "accent", size: "sm", className: "h-[34px]" })}>
+          <Link href={`/${tenantSlug}/contactos/nuevo`} className={buttonVariants({ variant: "accent", size: "sm", className: "h-[34px]" })}>
             <Plus aria-hidden="true" className="size-4" />
             Nuevo
-          </button>
+          </Link>
           <h1 className="truncate text-lg font-medium text-foreground">{terms.customers}</h1>
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
@@ -218,7 +216,6 @@ export default function CustomerToolbar({
         </div>
       </div>
 
-      {isFormOpen ? <CustomerQuickCreate tenantSlug={tenantSlug} onClose={() => setIsFormOpen(false)} /> : null}
     </>
   );
 }

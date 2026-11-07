@@ -6,7 +6,7 @@ test.describe("Lista de Contactos", () => {
   test("panel de control, columnas de negocio y selección con «Acciones»", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 800 });
     await openStory(page, "páginas-clientes-y-agenda-contactos--con-clientes");
-    await expect(page.getByRole("button", { name: "Nuevo" }).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: "Nuevo" })).toHaveAttribute("href", "/demo/contactos/nuevo");
     await expect(page.getByRole("searchbox")).toBeVisible();
     await expect(page.getByText("1-8 / 8")).toBeVisible();
     await expect(page.getByRole("button", { name: "Página anterior" })).toBeDisabled();

@@ -140,6 +140,23 @@ export async function createParty(tenantId: string, input: PartyInput): Promise<
   return { ok: true, party: toRow(created as unknown as Record<string, unknown>, roles), possibleDuplicates };
 }
 
+/** Datos fiscales del tercero que no salen de la ficha del cliente (alta completa). El correo para facturas reemplaza al de contacto. */
+export async function updatePartyDetails(
+  tenantId: string,
+  partyId: string,
+  details: { kind: "PERSON" | "COMPANY"; documentType: string | null; addressLine: string | null; region: string | null; countryCode: string; taxResponsibility: string | null; invoiceEmail: string | null },
+): Promise<void> {
+  await db.orm.public.Party.where({ tenantId, id: partyId }).update({
+    kind: details.kind,
+    documentType: details.documentType,
+    addressLine: details.addressLine,
+    region: details.region,
+    countryCode: details.countryCode,
+    taxResponsibility: details.taxResponsibility,
+    ...(details.invoiceEmail ? { email: details.invoiceEmail } : {}),
+  });
+}
+
 /**
  * Garantiza que el cliente tenga su tercero (y el rol CUSTOMER) y lo mantiene al
  * día con los datos del cliente. Si el documento del cliente ya es de otro

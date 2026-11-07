@@ -1,0 +1,86 @@
+[
+  {
+    "id": "column.public.Party.region",
+    "label": "Add column \"region\" to \"Party\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "region",
+        "table": "Party"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"region\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Party",
+          "region"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"region\"",
+        "sql": "ALTER TABLE \"public\".\"Party\" ADD COLUMN \"region\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"region\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Party",
+          "region"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Party.taxResponsibility",
+    "label": "Add column \"taxResponsibility\" to \"Party\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "taxResponsibility",
+        "table": "Party"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"taxResponsibility\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Party",
+          "taxResponsibility"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"taxResponsibility\"",
+        "sql": "ALTER TABLE \"public\".\"Party\" ADD COLUMN \"taxResponsibility\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"taxResponsibility\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Party",
+          "taxResponsibility"
+        ]
+      }
+    ]
+  }
+]

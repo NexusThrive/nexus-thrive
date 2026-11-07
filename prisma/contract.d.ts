@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'0e2cdf9de1498e23c2426a80e6d107464e1b77ea51f8aa42a5daf74206c07922'>;
+  StorageHashBase<'302a8abc1f598de2ed98979344c1899ede8dd2bdbcac47b87c032a55ae21c174'>;
 export type ExecutionHash =
   ExecutionHashBase<'0eff205c26a57e5fe4aff620cca9db0b05a467ca55ded3e10e874770e4bc6b59'>;
 export type ProfileHash =
@@ -1208,6 +1208,8 @@ export type FieldOutputTypes = {
       readonly kind: CodecTypes['pg/text@1']['output'];
       readonly legalName: CodecTypes['pg/text@1']['output'];
       readonly phone: CodecTypes['pg/text@1']['output'] | null;
+      readonly region: CodecTypes['pg/text@1']['output'] | null;
+      readonly taxResponsibility: CodecTypes['pg/text@1']['output'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly tradeName: CodecTypes['pg/text@1']['output'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -3164,6 +3166,8 @@ export type FieldInputTypes = {
       readonly kind: CodecTypes['pg/text@1']['input'];
       readonly legalName: CodecTypes['pg/text@1']['input'];
       readonly phone: CodecTypes['pg/text@1']['input'] | null;
+      readonly region: CodecTypes['pg/text@1']['input'] | null;
+      readonly taxResponsibility: CodecTypes['pg/text@1']['input'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly tradeName: CodecTypes['pg/text@1']['input'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -5120,6 +5124,8 @@ export type StorageColumnTypes = {
       readonly kind: CodecTypes['pg/text@1']['output'];
       readonly legalName: CodecTypes['pg/text@1']['output'];
       readonly phone: CodecTypes['pg/text@1']['output'] | null;
+      readonly region: CodecTypes['pg/text@1']['output'] | null;
+      readonly taxResponsibility: CodecTypes['pg/text@1']['output'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly tradeName: CodecTypes['pg/text@1']['output'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -7076,6 +7082,8 @@ export type StorageColumnInputTypes = {
       readonly kind: CodecTypes['pg/text@1']['input'];
       readonly legalName: CodecTypes['pg/text@1']['input'];
       readonly phone: CodecTypes['pg/text@1']['input'] | null;
+      readonly region: CodecTypes['pg/text@1']['input'] | null;
+      readonly taxResponsibility: CodecTypes['pg/text@1']['input'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly tradeName: CodecTypes['pg/text@1']['input'] | null;
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -9236,6 +9244,8 @@ export namespace Models {
     kind: CodecTypes['pg/text@1']['output'];
     legalName: CodecTypes['pg/text@1']['output'];
     phone: CodecTypes['pg/text@1']['output'] | null;
+    region: CodecTypes['pg/text@1']['output'] | null;
+    taxResponsibility: CodecTypes['pg/text@1']['output'] | null;
     tenantId: CodecTypes['pg/text@1']['output'];
     tradeName: CodecTypes['pg/text@1']['output'] | null;
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -18044,6 +18054,16 @@ type ContractBase = Omit<
                   readonly nullable: false;
                 };
                 readonly phone: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly region: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly taxResponsibility: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
@@ -33237,6 +33257,14 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly region: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly taxResponsibility: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly tenantId: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -33328,6 +33356,8 @@ type ContractBase = Omit<
                 readonly kind: { readonly column: 'kind' };
                 readonly legalName: { readonly column: 'legalName' };
                 readonly phone: { readonly column: 'phone' };
+                readonly region: { readonly column: 'region' };
+                readonly taxResponsibility: { readonly column: 'taxResponsibility' };
                 readonly tenantId: { readonly column: 'tenantId' };
                 readonly tradeName: { readonly column: 'tradeName' };
                 readonly updatedAt: { readonly column: 'updatedAt' };

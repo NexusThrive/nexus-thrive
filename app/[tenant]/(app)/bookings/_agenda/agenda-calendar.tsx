@@ -311,7 +311,7 @@ export default function AgendaCalendar({
         {live.length} {live.length === 1 ? "cita" : "citas"} en este periodo · toca un día o una hora para agendar.
       </p>
 
-      {create ? <BookingSheet slug={slug} day={create.day} time={create.time} booking={null} customers={customers} services={services} staff={staff} onClose={() => setCreate(null)} /> : null}
+      {create ? <BookingSheet slug={slug} day={create.day} time={create.time} booking={null} initialCustomerId={params.get("cliente") ?? undefined} customers={customers} services={services} staff={staff} onClose={() => setCreate(null)} /> : null}
       {editing ? <BookingSheet slug={slug} day={cursor} time="09:00" booking={editing} customers={customers} services={services} staff={staff} onClose={() => setEditing(null)} /> : null}
       {open ? <BookingDetail slug={slug} booking={open} business={business} onEdit={() => { setEditing(open); setOpen(null); }} onClose={() => setOpen(null)} /> : null}
     </div>

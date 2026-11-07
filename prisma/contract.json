@@ -12381,6 +12381,20 @@
                   "kind": "scalar"
                 }
               },
+              "region": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "taxResponsibility": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "tenantId": {
                 "nullable": false,
                 "type": {
@@ -12521,6 +12535,12 @@
                 },
                 "phone": {
                   "column": "phone"
+                },
+                "region": {
+                  "column": "region"
+                },
+                "taxResponsibility": {
+                  "column": "taxResponsibility"
                 },
                 "tenantId": {
                   "column": "tenantId"
@@ -35551,6 +35571,16 @@
                   "nativeType": "text",
                   "nullable": true
                 },
+                "region": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "taxResponsibility": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "tenantId": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -45463,7 +45493,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "0e2cdf9de1498e23c2426a80e6d107464e1b77ea51f8aa42a5daf74206c07922"
+    "storageHash": "302a8abc1f598de2ed98979344c1899ede8dd2bdbcac47b87c032a55ae21c174"
   },
   "execution": {
     "executionHash": "0eff205c26a57e5fe4aff620cca9db0b05a467ca55ded3e10e874770e4bc6b59",

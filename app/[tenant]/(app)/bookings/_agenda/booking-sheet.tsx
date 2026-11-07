@@ -16,10 +16,10 @@ import { Select } from "@/components/atoms/select";
 import { DateInput } from "@/components/molecules/date-input";
 
 /** Datos de la cita al tocar un día u hora del calendario (o al editarla). */
-export default function BookingSheet({ slug, day, time, booking, customers, services, staff, onClose }: { slug: string; day: string; time: string; booking: AgendaBooking | null; customers: AgendaOption[]; services: AgendaService[]; staff: AgendaOption[]; onClose: () => void }) {
+export default function BookingSheet({ slug, day, time, booking, customers, services, staff, onClose, initialCustomerId }: { /** Cliente ya elegido al abrir (p. ej. tras «Guardar y agendar cita»). */ initialCustomerId?: string; slug: string; day: string; time: string; booking: AgendaBooking | null; customers: AgendaOption[]; services: AgendaService[]; staff: AgendaOption[]; onClose: () => void }) {
   const p = booking ? bogotaParts(booking.start) : null;
   const [v, setV] = useState({
-    customerId: booking?.customerId ?? "",
+    customerId: booking?.customerId ?? initialCustomerId ?? "",
     productId: booking?.productId ?? "",
     serviceName: booking?.serviceName ?? "",
     day: p?.day ?? day,
