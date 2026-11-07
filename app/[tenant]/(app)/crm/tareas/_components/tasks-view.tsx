@@ -21,9 +21,10 @@ import type { TaskView } from "@/lib/business/customers/tasks";
 type Dialog = { kind: "new" } | { kind: "edit"; row: TaskRow } | null;
 
 /** Tareas con fecha y responsable. Las vencidas se avisan arriba; «Mis tareas» son las asignadas a ti. */
-export default function TasksView({ slug, mine, overdue, all, team, customers, projects = [], today, me }: { slug: string; mine: TaskRow[]; overdue: TaskRow[]; all: TaskRow[]; team: { id: string; name: string }[]; customers: { id: string; name: string }[]; projects?: { id: string; name: string }[]; today: string; me: string }) {
+export default function TasksView({ slug, mine, overdue, all, team, customers, projects = [], today, me, initialCustomerId }: { initialCustomerId?: string; slug: string; mine: TaskRow[]; overdue: TaskRow[]; all: TaskRow[]; team: { id: string; name: string }[]; customers: { id: string; name: string }[]; projects?: { id: string; name: string }[]; today: string; me: string }) {
   const [view, setView] = useState<TaskView>("mine");
-  const [dialog, setDialog] = useState<Dialog>(null);
+  // `?nuevo=1&cliente=` (desde la ficha del cliente) abre la tarea con el cliente elegido.
+  const [dialog, setDialog] = useState<Dialog>(initialCustomerId ? { kind: "new" } : null);
   const router = useRouter();
   const { toast } = useToast();
   const [project, setProject] = useState("");
@@ -121,7 +122,7 @@ export default function TasksView({ slug, mine, overdue, all, team, customers, p
             </Field>
             <Field label="Contacto">
               {(c) => (
-                <Select {...c} name="customerId" defaultValue="">
+                <Select {...c} name="customerId" defaultValue={initialCustomerId && customers.some((x) => x.id === initialCustomerId) ? initialCustomerId : ""}>
                   <option value="">Ninguno</option>
                   {customers.map((u) => <option key={u.id} value={u.id}>{u.name}</option>)}
                 </Select>

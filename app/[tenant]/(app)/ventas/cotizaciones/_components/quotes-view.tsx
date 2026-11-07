@@ -21,8 +21,9 @@ type Line = { productId: string; quantity: number; unitPrice: number };
 const TONE = { DRAFT: "secondary", SENT: "warning", APPROVED: "success", REJECTED: "destructive" } as const;
 
 /** Cotizaciones comerciales: armar con el catálogo, enviar y aprobar (nace el pedido con su anticipo) o rechazar con motivo. */
-export default function QuotesView({ slug, quotes, customers, products, today }: { slug: string; quotes: QuoteRow[]; customers: { id: string; name: string }[]; products: { id: string; name: string; price: number }[]; today: string }) {
-  const [creating, setCreating] = useState(false);
+export default function QuotesView({ slug, quotes, customers, products, today, initialCustomerId }: { initialCustomerId?: string; slug: string; quotes: QuoteRow[]; customers: { id: string; name: string }[]; products: { id: string; name: string; price: number }[]; today: string }) {
+  // `?nuevo=1&cliente=` (desde la ficha del cliente) abre la cotización con el cliente elegido.
+  const [creating, setCreating] = useState(Boolean(initialCustomerId));
   const [rejecting, setRejecting] = useState<QuoteRow | null>(null);
   const [lines, setLines] = useState<Line[]>([{ productId: products[0]?.id ?? "", quantity: 1, unitPrice: products[0]?.price ?? 0 }]);
   const [deposit, setDeposit] = useState(50);
@@ -99,7 +100,7 @@ export default function QuotesView({ slug, quotes, customers, products, today }:
           <div className="grid gap-3">
             <Field label="Cliente" required>
               {(c) => (
-                <Select {...c} name="customerId" defaultValue={customers[0]?.id}>
+                <Select {...c} name="customerId" defaultValue={initialCustomerId && customers.some((c) => c.id === initialCustomerId) ? initialCustomerId : customers[0]?.id}>
                   {customers.map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}
                 </Select>
               )}

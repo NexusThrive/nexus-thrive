@@ -34,6 +34,8 @@ const config: StorybookConfig = {
       "@/app/[tenant]/(app)/_actions/quick-create": path.resolve(import.meta.dirname, "mocks/quick-create.ts"),
       "@/app/[tenant]/(app)/finanzas/actions": path.resolve(import.meta.dirname, "mocks/finance-actions.ts"),
       "@/app/[tenant]/(app)/contactos/nuevo/actions": path.resolve(import.meta.dirname, "mocks/nuevo-cliente-actions.ts"),
+      "@/app/[tenant]/(app)/contactos/[id]/ficha-actions": path.resolve(import.meta.dirname, "mocks/ficha-actions.ts"),
+      "@/app/[tenant]/(app)/contactos/[id]/actions": path.resolve(import.meta.dirname, "mocks/ficha-notes-actions.ts"),
       "@/app/[tenant]/(app)/contactos/actions": path.resolve(import.meta.dirname, "mocks/contactos-actions.ts"),
       "@/app/[tenant]/(app)/contactos/profile-actions": path.resolve(import.meta.dirname, "mocks/profile-actions.ts"),
       // Acciones de compras: en Storybook hay datos de muestra.

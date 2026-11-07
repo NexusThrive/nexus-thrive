@@ -129,6 +129,9 @@ export default function CustomerTable({
   showMembership?: boolean;
 }) {
   const router = useRouter();
+  // La ficha recibe la búsqueda, el filtro y el orden de esta lista para que su paginador recorra los mismos clientes.
+  const listQuery = new URLSearchParams({ ...(query ? { q: query } : {}), ...(status !== "active" ? { status } : {}), ...(sort !== "recent" ? { sort } : {}) }).toString();
+  const fichaHref = (id: string) => `/${tenantSlug}/contactos/${id}${listQuery ? `?${listQuery}` : ""}`;
   const quick = useQuickCreate();
   const columns = useColumnPrefs();
   const [boxWidth, setBoxWidth] = useState(0);
@@ -284,7 +287,7 @@ export default function CustomerTable({
       window.open(`/${tenantSlug}/contactos/${id}`, "_blank");
       return;
     }
-    router.push(`/${tenantSlug}/contactos/${id}`);
+    router.push(fichaHref(id));
   };
 
   const isArchivedView = status === "archived";
@@ -426,7 +429,7 @@ export default function CustomerTable({
                     <td className={cn("sticky z-(--z-raised) px-3", stickyBg(selected.has(row.id)))} style={{ left: stickyName }}>
                       <p className="flex min-w-0 items-center gap-2 font-medium text-foreground">
                         <Link
-                          href={`/${tenantSlug}/contactos/${row.id}`}
+                          href={fichaHref(row.id)}
                           className="truncate text-foreground transition-colors hover:text-accent-text hover:underline"
                           title={`Ver ficha de ${row.name}`}
                         >
@@ -511,7 +514,7 @@ export default function CustomerTable({
                           : []),
                       ]}
                     >
-                      <Link href={`/${tenantSlug}/contactos/${row.id}`} draggable={false} className="flex items-center gap-3 px-5 py-2.5">
+                      <Link href={fichaHref(row.id)} draggable={false} className="flex items-center gap-3 px-5 py-2.5">
                         <Face row={row} className="grid size-8 shrink-0 place-items-center rounded-md bg-accent-subtle text-2xs font-semibold text-accent-text" />
                         <span className="min-w-0 flex-1">
                           <b className="block truncate font-medium">{row.name}</b>

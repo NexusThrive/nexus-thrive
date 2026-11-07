@@ -7,7 +7,11 @@ import { customerAgendaSummary } from "./customer-agenda";
  * Datos de la ficha del cliente que no trae la vista 360: identidad fiscal (tercero), citas, facturas, saldo y la posición del
  * cliente en la lista de la que vino. Solo lectura, por `tenantId`.
  */
+/** Tipo de adjunto para los archivos que se suben desde la actividad de la ficha. */
+export const CUSTOMER_FILE = "CUSTOMER_FILE";
+
 export type FichaBooking = { id: string; start: string; title: string; status: string };
+export type FichaFile = { id: string; name: string; createdAt: string };
 export type FichaInvoice = { id: string; number: string; issueDate: string; total: number; status: string };
 export type CustomerFichaData = {
   kind: "PERSON" | "COMPANY";
@@ -26,17 +30,19 @@ export type CustomerFichaData = {
   invoices: FichaInvoice[];
   invoicedTotal: number;
   owed: number;
+  files: FichaFile[];
 };
 
 export async function customerFicha(tenantId: string, customerId: string): Promise<CustomerFichaData | null> {
   const customer = await db.orm.public.Customer.where({ tenantId, id: customerId }).first();
   if (!customer) return null;
-  const [party, bookings, bookingsCount, invoices, agenda] = await Promise.all([
+  const [party, bookings, bookingsCount, invoices, agenda, files] = await Promise.all([
     customer.partyId ? db.orm.public.Party.where({ tenantId, id: customer.partyId }).first() : Promise.resolve(null),
     db.orm.public.Booking.where({ tenantId, customerId }).orderBy((b) => b.startDate.desc()).limit(30).select("id", "startDate", "serviceName", "status").all(),
     db.orm.public.Booking.where({ tenantId, customerId }).aggregate((a) => ({ n: a.count() })),
     db.orm.public.Invoice.where({ tenantId, customerId }).orderBy((i) => i.issueDate.desc()).limit(200).select("id", "number", "prefix", "issueDate", "total", "status").all(),
     customerAgendaSummary(tenantId, [customerId]),
+    db.orm.public.Attachment.where({ tenantId, kind: CUSTOMER_FILE, ownerId: customerId }).orderBy((a) => a.createdAt.desc()).limit(50).select("id", "fileName", "createdAt").all(),
   ]);
   const live = invoices.filter((i) => i.status !== "VOID");
   return {
@@ -56,6 +62,7 @@ export async function customerFicha(tenantId: string, customerId: string): Promi
     invoices: invoices.slice(0, 30).map((i) => ({ id: i.id, number: `${i.prefix ?? ""}${i.number}`, issueDate: String(i.issueDate), total: toNumber(i.total), status: String(i.status) })),
     invoicedTotal: Math.round(live.reduce((sum, i) => sum + toNumber(i.total), 0) * 100) / 100,
     owed: agenda.get(customerId)?.owed ?? 0,
+    files: files.map((f) => ({ id: f.id, name: f.fileName, createdAt: String(f.createdAt) })),
   };
 }
 
@@ -73,4 +80,9 @@ export async function customerNeighbors(
   const index = ids.indexOf(customerId);
   if (index === -1) return null;
   return { index: index + 1, total: Math.min(result.total, ids.length), prev: ids[index - 1] ?? null, next: ids[index + 1] ?? null };
+}
+
+/** ¿El cliente es de este negocio? */
+export async function customerExists(tenantId: string, customerId: string): Promise<boolean> {
+  return Boolean(await db.orm.public.Customer.where({ tenantId, id: customerId }).select("id").first());
 }

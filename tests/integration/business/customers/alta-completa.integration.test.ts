@@ -3,7 +3,8 @@ import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
 import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
 import { EMPTY_NEW_CUSTOMER } from "@/lib/business/customers/new-customer";
-import { createFullCustomer, findCustomerByContact } from "@/lib/business/customers/new-customer-db";
+import { createFullCustomer, customerFormValues, customerHasHistory, duplicateCustomer, findCustomerByContact, updateFullCustomer } from "@/lib/business/customers/new-customer-db";
+import { customerFicha, customerNeighbors } from "@/lib/business/customers/customer-ficha-db";
 
 /** Vista «Nuevo cliente»: el alta guarda el tercero fiscal completo, el origen y la nota; los duplicados se avisan sin bloquear. */
 const TEST_URL = process.env.TEST_DATABASE_URL;
@@ -48,5 +49,29 @@ describe.skipIf(!TEST_URL)("alta completa de cliente (integración)", () => {
     expect(await findCustomerByContact(b, { phone: "310 555 0101" })).toBeNull();
     // No bloquea: se puede crear otro con el mismo teléfono.
     expect((await createFullCustomer(a, { ...EMPTY_NEW_CUSTOMER, name: "María P.", phone: "310 555 0101" }, null)).ok).toBe(true);
+  });
+
+  test("ficha: edita, duplica sin documento, lee sus datos y no se cruza de negocio", async () => {
+    const r = await createFullCustomer(a, { ...EMPTY_NEW_CUSTOMER, name: "Lucía Gómez", phone: "311 222 3344", documentNumber: "1.047.000.111", city: "Cartagena" }, null);
+    if (!r.ok) throw new Error(r.message);
+    const values = await customerFormValues(a, r.id);
+    expect(values).toMatchObject({ name: "Lucía Gómez", phone: "3112223344", documentNumber: "1047000111", city: "Cartagena", country: "CO" });
+    expect(await customerFormValues(b, r.id)).toBeNull();
+
+    const u = await updateFullCustomer(a, r.id, { ...values!, address: "Cra 5 # 10-20", region: "Bolívar", tags: "VIP, VIP, Referido", source: "Instagram" });
+    expect(u).toMatchObject({ ok: true, id: r.id });
+    const ficha = await customerFicha(a, r.id);
+    expect(ficha).toMatchObject({ address: "Cra 5 # 10-20", region: "Bolívar", city: "Cartagena", source: "Instagram", tags: ["VIP", "Referido"], bookingsCount: 0, invoicedTotal: 0 });
+    expect(await customerFicha(b, r.id)).toBeNull();
+    expect(await updateFullCustomer(b, r.id, values!)).toMatchObject({ ok: false });
+
+    const copy = await duplicateCustomer(a, r.id, null);
+    if (!copy.ok) throw new Error(copy.message);
+    expect(await customerFormValues(a, copy.id)).toMatchObject({ name: "Lucía Gómez (copia)", documentNumber: "" });
+    expect(await customerHasHistory(a, r.id)).toBe(false);
+
+    const pos = await customerNeighbors(a, r.id, { sort: "name_asc" });
+    expect(pos?.index).toBeGreaterThan(0);
+    expect(await customerNeighbors(b, r.id, {})).toBeNull();
   });
 });

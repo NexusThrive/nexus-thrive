@@ -10,8 +10,9 @@ import TasksView from "./_components/tasks-view";
 export const metadata: Metadata = { title: "Tareas" };
 
 /** Tareas: lo que hay que hacer, con fecha y responsable. «Mis tareas» y «Vencidas» funcionan en el celular. */
-export default async function TareasPage({ params }: { params: Promise<{ tenant: string }> }) {
+export default async function TareasPage({ params, searchParams }: { params: Promise<{ tenant: string }>; searchParams: Promise<{ nuevo?: string; cliente?: string }> }) {
   const { tenant } = await params;
+  const sp = await searchParams;
   const ctx = await requireTenantContext(tenant, "/crm/tareas");
   if (!ctx) notFound();
   const today = todayCO();
@@ -19,7 +20,7 @@ export default async function TareasPage({ params }: { params: Promise<{ tenant:
   return (
     <div className="grid gap-5">
       <PageHeader title="Tareas" description="Que nadie olvide el siguiente paso: por cliente, por proyecto y por persona." />
-      <TasksView slug={tenant} mine={mine} overdue={overdue} all={all} team={team} customers={customers} projects={projects} today={today} me={ctx.memberId} />
+      <TasksView slug={tenant} mine={mine} overdue={overdue} all={all} team={team} customers={customers} projects={projects} today={today} me={ctx.memberId} initialCustomerId={sp.nuevo === "1" ? sp.cliente : undefined} />
     </div>
   );
 }
