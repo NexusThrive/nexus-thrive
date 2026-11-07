@@ -264,6 +264,10 @@
       "model": "Opportunity",
       "namespace": "public"
     },
+    "OrderStatusChange": {
+      "model": "OrderStatusChange",
+      "namespace": "public"
+    },
     "OutboxEvent": {
       "model": "OutboxEvent",
       "namespace": "public"
@@ -11673,6 +11677,130 @@
               "table": "Opportunity"
             }
           },
+          "OrderStatusChange": {
+            "fields": {
+              "byId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "fromStatus": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "note": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "orderId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "toStatus": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "order": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "orderId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "StoreOrder",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "byId": {
+                  "column": "byId"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "fromStatus": {
+                  "column": "fromStatus"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "note": {
+                  "column": "note"
+                },
+                "orderId": {
+                  "column": "orderId"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "toStatus": {
+                  "column": "toStatus"
+                }
+              },
+              "namespaceId": "public",
+              "table": "OrderStatusChange"
+            }
+          },
           "OutboxEvent": {
             "fields": {
               "createdAt": {
@@ -19334,6 +19462,13 @@
                   "kind": "scalar"
                 }
               },
+              "fulfillment": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "id": {
                 "nullable": false,
                 "type": {
@@ -19435,6 +19570,21 @@
                   "namespace": "public"
                 }
               },
+              "statusChanges": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "orderId"
+                  ]
+                },
+                "to": {
+                  "model": "OrderStatusChange",
+                  "namespace": "public"
+                }
+              },
               "tenant": {
                 "cardinality": "N:1",
                 "nullable": false,
@@ -19477,6 +19627,9 @@
                 },
                 "email": {
                   "column": "email"
+                },
+                "fulfillment": {
+                  "column": "fulfillment"
                 },
                 "id": {
                   "column": "id"
@@ -21847,6 +22000,21 @@
                 },
                 "to": {
                   "model": "Opportunity",
+                  "namespace": "public"
+                }
+              },
+              "orderStatusChanges": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "OrderStatusChange",
                   "namespace": "public"
                 }
               },
@@ -25445,6 +25613,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "Opportunity"
+            },
+            "OrderStatusChange": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "OrderStatusChange"
             },
             "OutboxEvent": {
               "kind": "rls",
@@ -34167,6 +34340,124 @@
                 }
               ]
             },
+            "OrderStatusChange": {
+              "columns": {
+                "byId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "fromStatus": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "note": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "orderId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "toStatus": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "OrderStatusChange"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "orderId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "OrderStatusChange"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "StoreOrder"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "orderId"
+                  ],
+                  "name": "OrderStatusChange_orderId_idx_d284871b",
+                  "prefix": "OrderStatusChange_orderId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "OrderStatusChange_tenantId_idx_c93ed4f1",
+                  "prefix": "OrderStatusChange_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "orderId",
+                    "createdAt"
+                  ],
+                  "name": "OrderStatusChange_tenantId_orderId_createdAt_idx_646b049b",
+                  "prefix": "OrderStatusChange_tenantId_orderId_createdAt_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
             "OutboxEvent": {
               "columns": {
                 "createdAt": {
@@ -40433,6 +40724,15 @@
                   "nativeType": "text",
                   "nullable": true
                 },
+                "fulfillment": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "RECEIVED"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
                 "id": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -44090,10 +44390,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "94d21b5a060af17494f5e25390e85b2cb3e5fc03b396d2d5cb7206425cf07c55"
+    "storageHash": "b115839d78e08ee65bc68952fc4c3565ab00c122dc57a6c3b712c3f296542cde"
   },
   "execution": {
-    "executionHash": "97d94784b5b3ba64ed3f8ddbc2202628caf08864367b8dc33cc78a251621454e",
+    "executionHash": "4892769aa1af8a9ae8f0cef2e1eef8957b3b174c515f60c5ec25dd0c191fc0e8",
     "mutations": {
       "defaults": [
         {
@@ -45229,6 +45529,17 @@
           "ref": {
             "entry": "Opportunity",
             "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "OrderStatusChange",
+            "field": "id",
             "namespace": "public"
           }
         },

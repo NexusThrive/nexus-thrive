@@ -87,6 +87,7 @@ export async function approveSalesQuote(tenantId: string, id: string, decidedByN
         const last = await tx.orm.public.StoreOrder.where({ tenantId }).orderBy((o) => o.number.desc()).first();
         const order = await tx.orm.public.StoreOrder.create({ tenantId, number: (last?.number ?? 0) + 1, customerId: q.customerId, quoteId: id, customerName: (customer?.name ?? "Cliente").slice(0, 120), phone: (customer?.phone ?? "").slice(0, 30), email: customer?.email ?? null, city: customer?.city ?? null, notes: `Cotización COT-${String(q.number).padStart(4, "0")}`, total: dec(toNumber(q.total)) });
         await tx.orm.public.StoreOrderLine.createAll(lines.map((l) => ({ tenantId, orderId: order.id, productId: l.productId, name: l.name, quantity: l.quantity, unitPrice: dec(toNumber(l.unitPrice)), taxRatePct: dec(toNumber(l.taxRatePct)) }))).toArray();
+        await tx.orm.public.OrderStatusChange.create({ tenantId, orderId: order.id, fromStatus: null, toStatus: "RECEIVED", note: `Nació de la cotización COT-${String(q.number).padStart(4, "0")}` });
         await tx.orm.public.SalesQuote.where({ tenantId, id }).update({ orderId: order.id });
         const total = toNumber(q.total);
         const { deposit, balance } = splitDeposit(total, toNumber(q.depositPct));
