@@ -313,3 +313,9 @@ export async function rejectProof(tenantId: string, id: string, reason: string):
   if ((await db.transaction((tx) => tx.query(plan))).length === 0) return { ok: false, message: "Solo se rechazan los cobros en verificación." };
   return { ok: true };
 }
+
+/** Transferencias que el cliente avisó y falta verificar (insignia de Ventas y cobros en Inicio). */
+export async function intentsToVerifyCount(tenantId: string): Promise<number> {
+  const r = await db.orm.public.PaymentIntent.where({ tenantId, status: "VERIFYING" }).aggregate((a) => ({ n: a.count() }));
+  return Number(r.n ?? 0);
+}

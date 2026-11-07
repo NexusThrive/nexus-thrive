@@ -54,20 +54,63 @@ function TableSkeleton({ rows = 7 }: { rows?: number }) {
   );
 }
 
-/** Cajón de aplicaciones (raíz): saludo centrado y la grilla de 4 columnas de iconos con su nombre, sobre el fondo de cuadros. */
+/** Inicio (raíz): saludo y pastilla de prueba; debajo «Este mes», el cajón de 9 apps en 4 columnas, y «Hoy» y «Atención». */
 function AppsSkeleton({ label }: { label: string }) {
+  const side = "grid w-full max-w-xl gap-4 pt-2 min-[1100px]:w-auto min-[1100px]:min-w-[220px] min-[1100px]:max-w-[290px] min-[1100px]:flex-[1_1_240px]";
   return (
-    <div role="status" aria-busy="true" aria-label={label} className="relative isolate -mx-4 flex min-h-[calc(100dvh-var(--topbar-height)-8.25rem-env(safe-area-inset-bottom,0px))] md:min-h-[calc(100dvh-var(--topbar-height)-5.5rem)] flex-col items-center overflow-hidden px-4 pb-10 pt-8 sm:-mx-6 sm:px-6">
-      <GridBackdrop />
-      <Skeleton className="mb-8 h-3 w-52" />
-      <ul className="mx-auto grid w-full max-w-lg grid-cols-4 justify-items-center gap-x-8 gap-y-12">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <li key={i} className="grid w-24 justify-items-center gap-2 p-2">
-            <Skeleton className="size-20 rounded-2xl sm:size-22" />
-            <Skeleton className="h-2.5" style={{ width: `${44 + ((i * 13) % 24)}px` }} />
-          </li>
-        ))}
-      </ul>
+    <div data-bleed="" role="status" aria-busy="true" aria-label={label} className="relative isolate min-h-[calc(100dvh-var(--topbar-height)-7rem-env(safe-area-inset-bottom,0px))] overflow-hidden md:min-h-[calc(100dvh-var(--topbar-height)-4rem)]">
+      <GridBackdrop variant="home" />
+      <div className="mx-auto flex max-w-[1240px] flex-col gap-7 px-6 pb-20 pt-5">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="grid gap-2.5">
+            <Skeleton className="h-2.5 w-36" />
+            <Skeleton className="h-7 w-72 max-w-full" />
+          </div>
+          <Skeleton className="h-10 w-80 max-w-full rounded-[10px]" />
+        </div>
+        <div className="flex flex-wrap items-start justify-center gap-8">
+          <div className={side}>
+            <Skeleton className="h-2.5 w-20" />
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="grid gap-2 py-2">
+                <Skeleton className="h-3 w-24" />
+                <Skeleton className="h-6 w-36" />
+                <Skeleton className="h-3 w-44" />
+              </div>
+            ))}
+          </div>
+          <ul className="mx-auto grid w-fit grid-cols-[repeat(2,112px)] justify-center gap-x-7 gap-y-[30px] pt-2 min-[420px]:grid-cols-[repeat(3,112px)] min-[600px]:grid-cols-[repeat(4,112px)] min-[1100px]:mx-0">
+            {Array.from({ length: 9 }).map((_, i) => (
+              <li key={i} className="grid justify-items-center gap-3">
+                <Skeleton className="size-[84px] rounded-[22px]" />
+                <Skeleton className="h-2.5" style={{ width: `${48 + ((i * 13) % 30)}px` }} />
+              </li>
+            ))}
+          </ul>
+          <div className={side}>
+            <Skeleton className="h-2.5 w-12" />
+            {Array.from({ length: 2 }).map((_, i) => (
+              <div key={i} className="flex gap-3 py-1">
+                <Skeleton className="mt-1 size-2 shrink-0 rounded-full" />
+                <div className="grid flex-1 gap-1.5">
+                  <Skeleton className="h-3 w-4/5" />
+                  <Skeleton className="h-2.5 w-1/2" />
+                </div>
+              </div>
+            ))}
+            <Skeleton className="mt-3 h-2.5 w-20" />
+            {Array.from({ length: 2 }).map((_, i) => (
+              <div key={i} className="flex gap-3 py-1">
+                <Skeleton className="mt-1 size-2 shrink-0 rounded-full" />
+                <div className="grid flex-1 gap-1.5">
+                  <Skeleton className="h-3 w-3/4" />
+                  <Skeleton className="h-2.5 w-2/5" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

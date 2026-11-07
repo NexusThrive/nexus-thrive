@@ -132,7 +132,23 @@ export function PaletteList({
       {idle ? (
         <>
         {/* La lista sigue en el documento (el campo la referencia con aria-controls) aunque no haya nada que mostrar. */}
-        <Command.List hidden />
+        {/* Primeras sugerencias: las acciones rápidas (antes en Resumen). La lista sigue en el documento: el campo la referencia. */}
+        <Command.List className={cn("shrink-0 p-1.5", NO_SCROLLBAR)} hidden={actions.length === 0}>
+          <Command.Group heading="Crear" className={groupClass}>
+            {actions.map((action) => (
+              <Command.Item
+                key={action.key}
+                value={`sugerencia crear ${action.label}`}
+                onSelect={() => run(() => { if (!quick.open(action.key)) router.push(hrefFor(action.href)); })}
+                className={itemClass}
+              >
+                <action.icon aria-hidden="true" />
+                <span>{action.label}</span>
+                <small className="ml-auto text-xs text-muted-foreground">{action.hint}</small>
+              </Command.Item>
+            ))}
+          </Command.Group>
+        </Command.List>
         <div className="grid flex-1 content-center justify-items-center gap-3 px-6 py-10 text-center">
           <span aria-hidden="true" className="grid size-14 place-items-center rounded-full bg-surface-muted ring-1 ring-border">
             <Search className="size-6 text-muted-foreground" strokeWidth={1.6} />
@@ -170,7 +186,8 @@ export function PaletteList({
           </Command.Group>
         ) : null}
         <Command.Group heading="Ir a" className={groupClass}>
-          {groups.flatMap((g) => g.items).map((item) => (
+          {/* Resumen ya no es un destino del sistema (su ruta se conserva, sin enlaces). */}
+          {groups.flatMap((g) => g.items).filter((item) => item.href !== "/resumen").map((item) => (
             <Command.Item
               key={item.key}
               value={`ir ${item.label}`}

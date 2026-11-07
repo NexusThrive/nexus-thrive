@@ -110,3 +110,9 @@ export async function openConversation(tenantId: string, conversationId: string)
 }
 
 export { whatsappHandle };
+
+/** Conversaciones con mensajes sin leer (insignia de Canales en Inicio). */
+export async function unreadConversationsCount(tenantId: string): Promise<number> {
+  const r = await db.orm.public.BusinessConversation.where({ tenantId }).where((c) => c.unread.gt(0)).aggregate((a) => ({ n: a.count() }));
+  return Number(r.n ?? 0);
+}

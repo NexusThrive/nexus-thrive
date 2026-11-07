@@ -43,7 +43,7 @@ const nextConfig: NextConfig = {
       // Ficha de contacto: antes vivía en /crm/<id>; /crm ahora es el embudo comercial.
       { source: "/:tenant/crm/:id([0-9a-f-]{36})", destination: "/:tenant/contactos/:id", permanent: true },
       { source: "/:tenant/crm/:id([0-9a-f-]{36})/:path*", destination: "/:tenant/contactos/:id/:path*", permanent: true },
-      { source: "/:tenant/inicio", destination: "/:tenant/resumen", permanent: true },
+      { source: "/:tenant/inicio", destination: "/:tenant", permanent: true },
       { source: "/:tenant/quotes/projects", destination: "/:tenant/proyectos", permanent: true },
       { source: "/:tenant/quotes/projects/:path*", destination: "/:tenant/proyectos/:path*", permanent: true },
       { source: "/:tenant/quotes/import", destination: "/:tenant/inventario/productos/import", permanent: true },
