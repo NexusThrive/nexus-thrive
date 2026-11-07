@@ -44,7 +44,7 @@ export function AppTopbar({ actions, notifications, search, switcher }: { action
   const atHome = pathname.replace(/\/$/, "") === hrefFor("");
   // Dentro de un módulo (no en Inicio ni en Sistema) la barra cambia a la barra de módulo: «<», módulo, secciones y utilidades.
   const moduleGroup = atHome ? undefined : groups.find((g) => g.label !== "Sistema" && g.items.some((i) => i.key === activeKey));
-  if (moduleGroup) return <ModuleBar group={moduleGroup} activeKey={activeKey} hrefFor={hrefFor} openSearch={openSearch} notifications={notifications} />;
+  if (moduleGroup) return <ModuleBar group={moduleGroup} activeKey={activeKey} hrefFor={hrefFor} openSearch={openSearch} notifications={notifications} brandName={brandName} />;
 
   return (
     <header
@@ -182,7 +182,9 @@ function ModuleBar({
   hrefFor,
   openSearch,
   notifications,
+  brandName,
 }: {
+  brandName: string;
   group: NavGroup;
   activeKey: string | undefined;
   hrefFor: (href: string) => string;
@@ -238,7 +240,10 @@ function ModuleBar({
           <Kbd className="max-md:hidden">Ctrl K</Kbd>
         </button>
         {notifications}
-        <AccountButton />
+        <span className="flex items-center gap-2">
+          <span className="text-sm font-medium text-muted-foreground max-md:hidden">{brandName}</span>
+          <AccountButton />
+        </span>
       </div>
     </header>
   );

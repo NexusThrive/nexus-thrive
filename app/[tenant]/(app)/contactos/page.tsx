@@ -5,6 +5,7 @@ import { createMembershipsDb } from "@/lib/industry/gym/memberships-repo";
 import { LiveRefresh } from "@/components/molecules/live-refresh";
 import CustomerToolbar from "./_components/customer-toolbar";
 import CustomerTable, { type CustomerRow } from "./_components/customer-table";
+import { customerAgendaSummary } from "@/lib/business/customers/customer-agenda";
 import type { CustomerSort, CustomerStatus } from "./_components/customer-filters";
 import { requirePageContext } from "@/lib/core/tenancy/context";
 import { can } from "@/lib/core/auth/permissions";
@@ -102,6 +103,7 @@ export default async function CrmPage({
     ? await createMembershipsDb(tenantRecord.id).activeCustomerIds(result.rows.map((row) => row.id))
     : new Set<string>([]);
 
+  const agenda = await customerAgendaSummary(tenantRecord.id, result.rows.map((row) => row.id));
   const customerRows: CustomerRow[] = result.rows.map((row) => ({
     id: row.id,
     name: row.name,
@@ -113,6 +115,8 @@ export default async function CrmPage({
     tags: [...(row.tags ?? [])],
     documentId: row.documentId,
     hasMembership: activeMembers.has(row.id),
+    nextAppointment: agenda.get(row.id)?.nextAppointment ?? null,
+    owed: agenda.get(row.id)?.owed ?? 0,
   }));
 
 

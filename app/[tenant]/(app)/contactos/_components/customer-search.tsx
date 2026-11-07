@@ -77,7 +77,7 @@ export default function CustomerSearch() {
         type="text"
         role="searchbox"
         aria-label={`Buscar ${terms.customers.toLowerCase()}`}
-        placeholder="Buscar por nombre, correo o teléfono…"
+        placeholder="Buscar…"
         value={value}
         onChange={(event) => setValue(event.target.value)}
         className="h-10 w-full rounded-lg border border-border bg-card pr-9 pl-9 text-sm text-foreground transition placeholder:text-muted-foreground hover:border-foreground/20 focus:border-gold-500 focus:outline-2 focus:outline-gold-600/30"

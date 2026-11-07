@@ -1,10 +1,11 @@
 "use client";
 
+import { formatCurrency } from "@/lib/foundation/format";
 import { useEffect, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { SwipeCard } from "@/components/molecules/swipe-card";
-import { Archive, Banknote, ChevronLeft, ChevronRight, Mail, MessageCircle, Pencil, Phone, Plus, RotateCcw, Trash2, X } from "lucide-react";
+import { Archive, Banknote, ChevronLeft, ChevronRight, MessageCircle, Pencil, Plus, RotateCcw, Trash2, X } from "lucide-react";
 import { NLoader } from "@/components/atoms/n-loader";
 import {
   archiveCustomerAction,
@@ -20,6 +21,10 @@ import { EmptyState } from "@/components/molecules/empty-state";
 import { useQuickCreate } from "@/components/organisms/quick-create-host";
 
 export type CustomerRow = {
+  /** Próxima cita (ISO) o null. */
+  nextAppointment: string | null;
+  /** Saldo abierto por cobrar en pesos (0 si no debe nada). */
+  owed: number;
   id: string;
   name: string;
   email: string;
@@ -68,6 +73,10 @@ function initialsOf(name: string): string {
   const parts = name.trim().split(/\s+/).slice(0, 2);
   return parts.map((part) => part.charAt(0).toUpperCase()).join("") || "?";
 }
+
+/** Próxima cita en la lista: «7 nov, 10:30» (hora de Bogotá). */
+const formatAppointment = (iso: string) =>
+  new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }).format(new Date(iso));
 
 export default function CustomerTable({
   tenantSlug,
@@ -315,13 +324,19 @@ export default function CustomerTable({
                     {terms.customer}
                   </th>
                   <th scope="col" className="px-5 py-2">
+                    Correo electrónico
+                  </th>
+                  <th scope="col" className="px-5 py-2">
                     Teléfono
                   </th>
                   <th scope="col" className="px-5 py-2">
-                    Registrado
+                    Próxima cita
                   </th>
-                  <th scope="col" className="px-4 py-3 text-right">
-                    Acciones
+                  <th scope="col" className="px-5 py-2">
+                    Por cobrar
+                  </th>
+                  <th scope="col" className="px-5 py-2">
+                    Registrado
                   </th>
                 </tr>
               </thead>
@@ -344,91 +359,30 @@ export default function CustomerTable({
                       </td>
                     ) : null}
                     <td className="px-5 py-2">
-                      <div className="flex items-center gap-3">
-                        <Face row={row} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-accent-subtle text-xs font-semibold text-accent-text" />
-                        <div className="min-w-0">
-                          <p className="flex items-center gap-2 font-medium text-foreground">
-                            <Link
-                              href={`/${tenantSlug}/contactos/${row.id}`}
-                              className="truncate text-foreground transition-colors hover:text-accent-text hover:underline"
-                              title={`Ver ficha de ${row.name}`}
-                            >
-                              {row.name}
-                            </Link>
-                            {isArchivedView ? (
-                              <span className="rounded bg-muted px-1.5 py-0.5 text-2xs font-semibold uppercase text-muted-foreground">
-                                Archivado
-                              </span>
-                            ) : null}
-                            {showMembership && !row.hasMembership ? <MembershipAlert /> : null}
-                          </p>
-                          {row.email ? (
-                            <p className="flex items-center gap-1 truncate text-xs text-muted-foreground">
-                              <Mail aria-hidden="true" className="h-3 w-3 shrink-0" />
-                              <span className="truncate">{row.email}</span>
-                            </p>
+                      <div className="flex min-w-0 items-center gap-3">
+                        <Face row={row} className="flex size-[22px] shrink-0 items-center justify-center rounded-[5px] bg-accent-subtle text-2xs font-semibold text-accent-text" />
+                        <p className="flex min-w-0 items-center gap-2 font-medium text-foreground">
+                          <Link
+                            href={`/${tenantSlug}/contactos/${row.id}`}
+                            className="truncate text-foreground transition-colors hover:text-accent-text hover:underline"
+                            title={`Ver ficha de ${row.name}`}
+                          >
+                            {row.name}
+                          </Link>
+                          {isArchivedView ? (
+                            <span className="rounded bg-muted px-1.5 py-0.5 text-2xs font-semibold uppercase text-muted-foreground">
+                              Archivado
+                            </span>
                           ) : null}
-                        </div>
+                          {showMembership && !row.hasMembership ? <MembershipAlert /> : null}
+                        </p>
                       </div>
                     </td>
-                    <td className="px-5 py-2">
-                      {row.phone ? (
-                        <span className="flex items-center gap-1 text-muted-foreground">
-                          <Phone aria-hidden="true" className="h-3.5 w-3.5 text-muted-foreground" />
-                          {row.phone}
-                        </span>
-                      ) : (
-                        <span className="text-muted-foreground/50">—</span>
-                      )}
-                    </td>
+                    <td className="max-w-[260px] truncate px-5 py-2 text-muted-foreground">{row.email || "—"}</td>
+                    <td className="px-5 py-2 text-muted-foreground">{row.phone || "—"}</td>
+                    <td className="px-5 py-2 text-muted-foreground">{row.nextAppointment ? formatAppointment(row.nextAppointment) : "—"}</td>
+                    <td className="px-5 py-2">{row.owed > 0 ? <span className="font-medium text-danger">{formatCurrency(row.owed)}</span> : <span className="text-muted-foreground">—</span>}</td>
                     <td className="px-5 py-2 text-muted-foreground">{row.createdAt}</td>
-                    <td className="px-5 py-2">
-                      <div className="flex items-center justify-end gap-1.5">
-                        {isArchivedView ? (
-                          canRemove ? (
-                            <button
-                              type="button"
-                              title="Restaurar"
-                              aria-label={`Restaurar a ${row.name}`}
-                              disabled={isPending}
-                              onClick={() =>
-                                runAction(() => restoreCustomerAction(tenantSlug, row.id))
-                              }
-                              className={`${ICON_BUTTON} border-success/20 text-success hover:border-success/40 hover:bg-success/10 hover:text-success`}
-                            >
-                              <RotateCcw aria-hidden="true" className="h-4 w-4" />
-                            </button>
-                          ) : null
-                        ) : (
-                          <>
-                            {canRemove ? (
-                              <button
-                                type="button"
-                                title="Archivar"
-                                aria-label={`Archivar a ${row.name}`}
-                                disabled={isPending}
-                                onClick={() =>
-                                  runAction(() => archiveCustomerAction(tenantSlug, row.id))
-                                }
-                                className={ICON_BUTTON}
-                              >
-                                <Archive aria-hidden="true" className="h-4 w-4" />
-                              </button>
-                            ) : null}
-                            <button
-                              type="button"
-                              title="Editar"
-                              aria-label={`Editar a ${row.name}`}
-                              disabled={isPending}
-                              onClick={() => setEditTarget(row)}
-                              className={ICON_BUTTON}
-                            >
-                              <Pencil aria-hidden="true" className="h-4 w-4" />
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </td>
                   </tr>
                 ))}
               </tbody>
