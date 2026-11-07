@@ -56,7 +56,9 @@ function greetingLine(now: Date): string {
  * Pantalla de aplicaciones de Nexus (App Home): la entrada del negocio. No es el dashboard: no muestra cifras. Cada tarjeta es un
  * área habilitada para la organización y el rol; abre su espacio de trabajo. Inicio es una aplicación más.
  */
-export function AppHome() {
+export type AppHomeTrial = { daysLeft: number; level: "ok" | "soon" | "ended"; planHref: string };
+
+export function AppHome({ trial }: { trial?: AppHomeTrial | null }) {
   const { groups, hrefFor } = useShell();
   const raw = useSyncExternalStore(subscribeFavorites, readRaw, () => "[]");
   const favorites = useMemo(() => parseFavorites(raw), [raw]);
@@ -102,6 +104,12 @@ export function AppHome() {
   return (
     <div className="relative isolate -mx-4 flex min-h-[calc(100dvh-var(--topbar-height))] flex-col items-center overflow-hidden px-4 pb-10 pt-8 sm:-mx-6 sm:px-6">
       <GridBackdrop />
+      {trial ? (
+        <div className="mb-4 w-full rounded-lg border border-border bg-card/60 px-4 py-2.5 text-center text-sm text-foreground backdrop-blur-sm">
+          {trial.level === "ended" ? "Tu prueba gratuita terminó. " : `Tu prueba gratuita termina en ${trial.daysLeft} ${trial.daysLeft === 1 ? "día" : "días"}. `}
+          <a href={trial.planHref} className="font-medium underline underline-offset-2 hover:text-accent-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">Elige un plan</a>
+        </div>
+      ) : null}
       <p suppressHydrationWarning className="mb-8 w-full text-center text-xs text-muted-foreground">{greetingLine(new Date())}</p>
       {visible.length === 0 ? (
         <p className="text-center text-sm text-muted-foreground">No hay aplicaciones disponibles para tu cuenta.</p>
