@@ -372,7 +372,7 @@ export default function CustomerTable({
                   <th scope="col" className="sticky z-(--z-raised) bg-background px-2" style={{ left: stickyAvatar }}>
                     <span className="sr-only">Foto</span>
                   </th>
-                  <th scope="col" className="sticky z-(--z-raised) bg-background px-3" style={{ left: stickyName }} aria-sort={sort === "name_asc" ? "ascending" : sort === "name_desc" ? "descending" : "none"}>
+                  <th scope="col" className="group/th sticky z-(--z-raised) bg-background px-3" style={{ left: stickyName }} aria-sort={sort === "name_asc" ? "ascending" : sort === "name_desc" ? "descending" : "none"}>
                     <button type="button" onClick={() => setSort(nameSort)} className="inline-flex max-w-full items-center gap-1 truncate outline-none hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
                       {terms.customer}
                       {sortIcon(sort !== "recent", sort === "name_desc")}
@@ -383,7 +383,7 @@ export default function CustomerTable({
                     <th
                       key={column.key}
                       scope="col"
-                      className="relative px-3"
+                      className="group/th relative px-3"
                       aria-sort={column.key === "created" ? (sort === "recent" ? "descending" : "none") : undefined}
                     >
                       {column.key === "created" ? (
@@ -402,7 +402,7 @@ export default function CustomerTable({
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border">
+              <tbody className="divide-y divide-border border-b border-border">
                 {rows.map((row) => (
                   <tr
                     key={row.id}

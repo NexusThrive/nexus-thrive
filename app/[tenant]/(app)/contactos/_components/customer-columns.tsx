@@ -165,7 +165,7 @@ export function ResizeHandle({ columnKey, label, prefs, scale = 1 }: { columnKey
       onPointerDown={onPointerDown}
       onKeyDown={onKeyDown}
       onClick={(event) => event.stopPropagation()}
-      className="absolute inset-y-0 right-0 flex w-3 cursor-col-resize touch-none items-center justify-center outline-none after:h-4 after:w-px after:bg-border hover:after:w-0.5 hover:after:bg-accent focus-visible:after:w-0.5 focus-visible:after:bg-accent"
+      className="absolute inset-y-0 right-0 flex w-3 cursor-col-resize touch-none items-center justify-center outline-none after:h-4 after:w-px after:bg-transparent group-hover/th:after:bg-border hover:after:w-0.5 hover:after:bg-accent focus-visible:after:w-0.5 focus-visible:after:bg-accent"
     />
   );
 }
