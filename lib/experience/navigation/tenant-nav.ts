@@ -77,7 +77,7 @@ const allowedFor = (role: string | undefined, href: string): boolean => {
   return !role || !permission || can(role, permission);
 };
 
-const LEAN_HIDDEN: readonly string[] = ["/oportunidades", "/tareas", "/formularios"];
+const LEAN_HIDDEN: readonly string[] = ["/oportunidades", "/tareas", "/formularios", "/entregables"];
 /** Grupo de cada función: su categoría en el registro (la misma que ve en «Funciones»). */
 const MODULE_GROUP: Partial<Record<string, GroupName>> = Object.fromEntries(CAPABILITIES.map((c) => [c.id, c.category]));
 

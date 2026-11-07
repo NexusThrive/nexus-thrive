@@ -15,7 +15,7 @@ describe("buildTenantNav", () => {
   it("solo muestra funciones activas y siempre Funciones y Configuración", () => {
     const groups = buildTenantNav("retail", ["dashboard", "crm"]);
     expect(groups.map((g) => g.label)).toEqual(["General", "Clientes y agenda", "Sistema"]);
-    expect(groups.flatMap((g) => g.items).map((i) => i.href)).toEqual(["", "/crm", "/oportunidades", "/tareas", "/formularios", "/functions", "/data", "/integrations", "/settings"]);
+    expect(groups.flatMap((g) => g.items).map((i) => i.href)).toEqual(["", "/crm", "/oportunidades", "/tareas", "/entregables", "/formularios", "/functions", "/data", "/integrations", "/settings"]);
   });
 
   it("agrupa por trabajo, con todas las categorías desplegables, y omite los grupos vacíos", () => {
@@ -49,7 +49,7 @@ describe("buildTenantNav", () => {
     const items = groups.flatMap((g) => g.items);
     expect(items.map((i) => i.href)).toEqual(["", "/crm", "/memberships", "/checkin", "/finance", "/dinero", "/sitio", "/settings"]);
     expect(items.find((i) => i.href === "/sitio")?.label).toBe("Panel de registro de cliente");
-    for (const hidden of ["/orders", "/oportunidades", "/tareas", "/formularios"]) expect(items.map((i) => i.href)).not.toContain(hidden);
+    for (const hidden of ["/orders", "/oportunidades", "/tareas", "/formularios", "/entregables"]) expect(items.map((i) => i.href)).not.toContain(hidden);
   });
 
   it("sin facturación ni gastos no aparecen esas categorías", () => {

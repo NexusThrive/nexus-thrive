@@ -169,3 +169,35 @@ model LeadForm {
   @@index([tenantId])
   @@rls
 }
+
+/// Entregable (HU-entregables-01): algo que el negocio entrega a un cliente y que el cliente aprueba o devuelve con cambios, sin
+/// iniciar sesión (enlace de un solo propósito). Los archivos son adjuntos (`Attachment` con `kind = DELIVERABLE`).
+///
+/// Campos:
+/// - `status`: DRAFT (en preparación) | IN_REVIEW (enviado al cliente) | APPROVED | CHANGES_REQUESTED.
+/// - `reviewTokenHash`: SHA-256 del enlace enviado al cliente (el enlace en claro nunca se guarda); `reviewTokenExpiresAt` lo caduca.
+/// - `decidedAt`, `decidedByName`, `clientComment`: la decisión del cliente, con fecha y el nombre que dejó.
+/// - `projectId`, `taskId`, `customerId`: a qué proyecto, tarea o contacto pertenece (opcionales).
+model Deliverable {
+  id                   String    @id @default(uuid())
+  tenantId             String
+  tenant               Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  title                String
+  description          String?
+  status               String    @default("DRAFT")
+  projectId            String?
+  taskId               String?
+  customerId           String?
+  reviewTokenHash      String?   @unique
+  reviewTokenExpiresAt DateTime?
+  sentAt               DateTime?
+  decidedAt            DateTime?
+  decidedByName        String?
+  clientComment        String?
+  createdById          String?
+  createdAt            DateTime  @default(now())
+
+  @@index([tenantId, status])
+  @@index([tenantId, projectId])
+  @@rls
+}

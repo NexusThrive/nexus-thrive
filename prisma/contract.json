@@ -160,6 +160,10 @@
       "model": "CustomerTierSetting",
       "namespace": "public"
     },
+    "Deliverable": {
+      "model": "Deliverable",
+      "namespace": "public"
+    },
     "Delivery": {
       "model": "Delivery",
       "namespace": "public"
@@ -7466,6 +7470,194 @@
               },
               "namespaceId": "public",
               "table": "CustomerTierSetting"
+            }
+          },
+          "Deliverable": {
+            "fields": {
+              "clientComment": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdById": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "customerId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "decidedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "decidedByName": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "description": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "projectId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "reviewTokenExpiresAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "reviewTokenHash": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "sentAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "taskId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "title": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "clientComment": {
+                  "column": "clientComment"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "createdById": {
+                  "column": "createdById"
+                },
+                "customerId": {
+                  "column": "customerId"
+                },
+                "decidedAt": {
+                  "column": "decidedAt"
+                },
+                "decidedByName": {
+                  "column": "decidedByName"
+                },
+                "description": {
+                  "column": "description"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "projectId": {
+                  "column": "projectId"
+                },
+                "reviewTokenExpiresAt": {
+                  "column": "reviewTokenExpiresAt"
+                },
+                "reviewTokenHash": {
+                  "column": "reviewTokenHash"
+                },
+                "sentAt": {
+                  "column": "sentAt"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "taskId": {
+                  "column": "taskId"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "title": {
+                  "column": "title"
+                }
+              },
+              "namespaceId": "public",
+              "table": "Deliverable"
             }
           },
           "Delivery": {
@@ -22040,6 +22232,21 @@
                   "namespace": "public"
                 }
               },
+              "deliverables": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "Deliverable",
+                  "namespace": "public"
+                }
+              },
               "deliveries": {
                 "cardinality": "1:N",
                 "on": {
@@ -25880,6 +26087,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "CustomerTierSetting"
+            },
+            "Deliverable": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "Deliverable"
             },
             "Delivery": {
               "kind": "rls",
@@ -31287,6 +31499,157 @@
                 ]
               },
               "uniques": []
+            },
+            "Deliverable": {
+              "columns": {
+                "clientComment": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "createdById": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "customerId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "decidedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "decidedByName": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "description": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "projectId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "reviewTokenExpiresAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "reviewTokenHash": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "sentAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "DRAFT"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "taskId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "title": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Deliverable"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "Deliverable_tenantId_idx_c93ed4f1",
+                  "prefix": "Deliverable_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "projectId"
+                  ],
+                  "name": "Deliverable_tenantId_projectId_idx_e88197e4",
+                  "prefix": "Deliverable_tenantId_projectId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "status"
+                  ],
+                  "name": "Deliverable_tenantId_status_idx_d3d04256",
+                  "prefix": "Deliverable_tenantId_status_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "reviewTokenHash"
+                  ]
+                }
+              ]
             },
             "Delivery": {
               "columns": {
@@ -45100,10 +45463,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "075110c693a9bbee2030000e222dc3a901cc14843336cbd786b6afd0284e7c07"
+    "storageHash": "0e2cdf9de1498e23c2426a80e6d107464e1b77ea51f8aa42a5daf74206c07922"
   },
   "execution": {
-    "executionHash": "9741558c30a083adedd1276151e02850c5c78d7c15cf0011f57b9f0385eb689c",
+    "executionHash": "0eff205c26a57e5fe4aff620cca9db0b05a467ca55ded3e10e874770e4bc6b59",
     "mutations": {
       "defaults": [
         {
@@ -45724,6 +46087,17 @@
           "ref": {
             "entry": "CustomerTierSetting",
             "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "Deliverable",
+            "field": "id",
             "namespace": "public"
           }
         },

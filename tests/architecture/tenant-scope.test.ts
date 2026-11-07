@@ -26,6 +26,7 @@ const PLATFORM_DIRS = ["lib/platform/admin/", "lib/platform/team/", "lib/platfor
 const PLATFORM_FILES = ["lib/core/events/dispatcher.ts", "lib/integrations/providers/inbound.ts", "lib/integrations/channels/webhook-handler.ts"];
 
 const SCOPED_ELSEWHERE: { file: string; model: string; why: string }[] = [
+  { file: "lib/business/customers/deliverables-db.ts", model: "Deliverable", why: "Enlace público de revisión: se busca por la huella SHA-256 del token (único y de 256 bits); después se usa el tenantId del entregable." },
   { file: "lib/core/files/stored-files.ts", model: "Attachment", why: "Se pide por id desde una URL; después se exige membresía del negocio del archivo." },
   { file: "lib/core/files/stored-files.ts", model: "ApuImage", why: "Igual que Attachment." },
   { file: "lib/business/sales/finance-db.ts", model: "Payment", why: "Recibo público por token firmado y referencia del proveedor, única en toda la plataforma (solo sí/no)." },

@@ -239,6 +239,7 @@ model Tenant {
   orderStatusChanges OrderStatusChange[]
   productionOrders   ProductionOrder[]
   deliveries         Delivery[]
+  deliverables       Deliverable[]
   whatsappNotices    WhatsappNotice[]
   salesQuotes        SalesQuote[]
   salesQuoteLines    SalesQuoteLine[]

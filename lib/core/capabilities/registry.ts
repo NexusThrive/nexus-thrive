@@ -123,6 +123,7 @@ export const CAPABILITIES = [
       { href: "/crm", icon: Users, label: (terms) => terms.customers },
       { href: "/oportunidades", icon: Target, label: () => "Oportunidades" },
       { href: "/tareas", icon: CheckSquare, label: () => "Tareas" },
+      { href: "/entregables", icon: FileCheck2, label: () => "Entregables" },
       { href: "/formularios", icon: Link2, label: () => "Formularios web" },
     ],
   },
