@@ -1,5 +1,4 @@
 import { createTenantDb } from "@/lib/core/tenancy/db";
-import { getVerticalTerms } from "@/lib/core/sectors/terms";
 import { profileFor } from "@/lib/business/customers/customer-fields";
 import { isRouteEnabled } from "@/lib/core/tenancy/context";
 import { createMembershipsDb } from "@/lib/industry/gym/memberships-repo";
