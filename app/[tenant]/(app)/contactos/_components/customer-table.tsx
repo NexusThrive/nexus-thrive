@@ -288,15 +288,15 @@ export default function CustomerTable({
       ) : (
         <>
           {/* ---------- Tabla (desktop) ---------- */}
-          <div className="hidden overflow-hidden rounded-lg border border-border bg-card sm:block">
+          <div className="hidden overflow-x-auto border-t border-border sm:block">
             <table className="w-full text-left text-sm">
               <caption className="sr-only">
                 {terms.customers} de {tenantSlug}
               </caption>
-              <thead className="border-b border-border bg-muted text-xs font-semibold text-muted-foreground">
+              <thead className="sticky top-0 z-10 border-b border-border bg-background text-sm font-medium text-muted-foreground">
                 <tr>
                   {selectable ? (
-                    <th scope="col" className="w-10 px-4 py-3">
+                    <th scope="col" className="w-10 px-5 py-2">
                       <input
                         type="checkbox"
                         aria-label={`Seleccionar todos los ${customersLabel} de esta página`}
@@ -311,13 +311,13 @@ export default function CustomerTable({
                       />
                     </th>
                   ) : null}
-                  <th scope="col" className="px-4 py-3">
+                  <th scope="col" className="px-5 py-2">
                     {terms.customer}
                   </th>
-                  <th scope="col" className="px-4 py-3">
+                  <th scope="col" className="px-5 py-2">
                     Teléfono
                   </th>
-                  <th scope="col" className="px-4 py-3">
+                  <th scope="col" className="px-5 py-2">
                     Registrado
                   </th>
                   <th scope="col" className="px-4 py-3 text-right">
@@ -333,7 +333,7 @@ export default function CustomerTable({
                     className="cursor-pointer transition hover:bg-muted/60"
                   >
                     {selectable ? (
-                      <td className="px-4 py-3">
+                      <td className="px-5 py-2">
                         <input
                           type="checkbox"
                           aria-label={`Seleccionar a ${row.name}`}
@@ -343,7 +343,7 @@ export default function CustomerTable({
                         />
                       </td>
                     ) : null}
-                    <td className="px-4 py-3">
+                    <td className="px-5 py-2">
                       <div className="flex items-center gap-3">
                         <Face row={row} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm bg-accent-subtle text-xs font-semibold text-accent-text" />
                         <div className="min-w-0">
@@ -371,7 +371,7 @@ export default function CustomerTable({
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-5 py-2">
                       {row.phone ? (
                         <span className="flex items-center gap-1 text-muted-foreground">
                           <Phone aria-hidden="true" className="h-3.5 w-3.5 text-muted-foreground" />
@@ -381,8 +381,8 @@ export default function CustomerTable({
                         <span className="text-muted-foreground/50">—</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-muted-foreground">{row.createdAt}</td>
-                    <td className="px-4 py-3">
+                    <td className="px-5 py-2 text-muted-foreground">{row.createdAt}</td>
+                    <td className="px-5 py-2">
                       <div className="flex items-center justify-end gap-1.5">
                         {isArchivedView ? (
                           canRemove ? (
