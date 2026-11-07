@@ -372,7 +372,7 @@ export default function CustomerTable({
                   <th scope="col" className="sticky z-(--z-raised) bg-background px-2" style={{ left: stickyAvatar }}>
                     <span className="sr-only">Foto</span>
                   </th>
-                  <th scope="col" className="sticky z-(--z-raised) border-r border-border bg-background px-3" style={{ left: stickyName }} aria-sort={sort === "name_asc" ? "ascending" : sort === "name_desc" ? "descending" : "none"}>
+                  <th scope="col" className="sticky z-(--z-raised) bg-background px-3" style={{ left: stickyName }} aria-sort={sort === "name_asc" ? "ascending" : sort === "name_desc" ? "descending" : "none"}>
                     <button type="button" onClick={() => setSort(nameSort)} className="inline-flex max-w-full items-center gap-1 truncate outline-none hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
                       {terms.customer}
                       {sortIcon(sort !== "recent", sort === "name_desc")}
@@ -423,7 +423,7 @@ export default function CustomerTable({
                     <td className={cn("sticky z-(--z-raised) px-2", stickyBg(selected.has(row.id)))} style={{ left: stickyAvatar }}>
                       <Face row={row} className="flex size-[22px] items-center justify-center rounded-[5px] bg-accent-subtle text-2xs font-semibold text-accent-text" />
                     </td>
-                    <td className={cn("sticky z-(--z-raised) border-r border-border px-3", stickyBg(selected.has(row.id)))} style={{ left: stickyName }}>
+                    <td className={cn("sticky z-(--z-raised) px-3", stickyBg(selected.has(row.id)))} style={{ left: stickyName }}>
                       <p className="flex min-w-0 items-center gap-2 font-medium text-foreground">
                         <Link
                           href={`/${tenantSlug}/contactos/${row.id}`}
