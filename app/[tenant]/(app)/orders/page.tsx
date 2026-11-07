@@ -1,17 +1,32 @@
-import { ShoppingCart } from "lucide-react";
-import ModulePlaceholder from "@/components/templates/module-placeholder";
-import { requirePageContext } from "@/lib/core/tenancy/context";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { PageHeader } from "@/components/molecules/page-header";
+import { PermissionNotice } from "@/components/molecules/permission-notice";
+import { listOrders } from "@/lib/business/store/store-db";
+import { can } from "@/lib/core/auth/permissions";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
+import OrdersView from "./_components/orders-view";
 
-/** Módulo Pedidos: habilitado por TenantModule; implementación en roadmap. */
+export const metadata: Metadata = { title: "Pedidos" };
+
+/** Pedidos: de la tienda y de las cotizaciones aprobadas, con su cumplimiento (recibido → entregado) separado del pago. */
 export default async function OrdersPage({ params }: { params: Promise<{ tenant: string }> }) {
-  const { tenant: tenantSlug } = await params;
-  // Aunque es un marcador, solo se ve con el módulo activo (SEC-06).
-  await requirePageContext(tenantSlug, "/orders");
+  const { tenant } = await params;
+  const ctx = await requireTenantContext(tenant, "/orders");
+  if (!ctx) notFound();
+  const header = <PageHeader title="Pedidos" description="Lo que piden tus clientes y en qué paso va cada uno, desde que lo recibes hasta que lo entregas." />;
+  if (!can(ctx.role, "money.handle")) {
+    return (
+      <div className="grid gap-5">
+        {header}
+        <PermissionNotice permission="money.handle" action="manejar los pedidos" />
+      </div>
+    );
+  }
   return (
-    <ModulePlaceholder
-      title="Pedidos"
-      description="Registra los pedidos de tu negocio y da seguimiento hasta la entrega."
-      icon={ShoppingCart}
-    />
+    <div className="grid gap-5">
+      {header}
+      <OrdersView slug={tenant} orders={await listOrders(ctx.tenantId, 200)} />
+    </div>
   );
 }

@@ -430,7 +430,7 @@ export const CAPABILITIES = [
     general: true,
     nav: [
       { href: "/sitio", icon: Globe, label: (terms) => terms.siteLabel ?? "Mi sitio web" },
-      { href: "/pedidos-tienda", icon: PackageCheck, label: () => "Pedidos de la tienda" },
+      { href: "/orders", icon: PackageCheck, label: () => "Pedidos" },
     ],
   },
   {

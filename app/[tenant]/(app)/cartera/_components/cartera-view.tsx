@@ -94,7 +94,7 @@ function Panel({ slug, side, cartera }: { slug: string; side: Side; cartera: Car
               cell: (r) =>
                 // Un pedido o una membresía se cobra desde su propia pantalla; solo las cuentas se abonan aquí.
                 r.origin === "STORE_ORDER" || r.origin === "MEMBERSHIP" ? (
-                  <Link href={`/${slug}/${r.origin === "STORE_ORDER" ? "pedidos-tienda" : "memberships"}`} aria-label={`Ver ${r.origin === "STORE_ORDER" ? "pedido" : "membresía"} · ${r.party} ${r.number}`} className={buttonVariants({ variant: "outline", size: "sm" })}>
+                  <Link href={`/${slug}/${r.origin === "STORE_ORDER" ? "orders" : "memberships"}`} aria-label={`Ver ${r.origin === "STORE_ORDER" ? "pedido" : "membresía"} · ${r.party} ${r.number}`} className={buttonVariants({ variant: "outline", size: "sm" })}>
                     {r.origin === "STORE_ORDER" ? "Ver pedido" : "Ver membresía"}
                   </Link>
                 ) : (

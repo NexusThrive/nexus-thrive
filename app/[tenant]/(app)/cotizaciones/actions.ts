@@ -9,7 +9,7 @@ export type QuoteResult = { ok: true; message: string } | { ok: false; message: 
 const refresh = (slug: string) => {
   revalidatePath(`/${slug}/cotizaciones`);
   revalidatePath(`/${slug}/cartera`);
-  revalidatePath(`/${slug}/pedidos-tienda`);
+  revalidatePath(`/${slug}/orders`);
 };
 const NO_ACCESS: QuoteResult = { ok: false, message: "No tienes acceso a este negocio." };
 

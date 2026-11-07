@@ -40,7 +40,7 @@ describe("buildTenantNav", () => {
     const labels = (mods: Parameters<typeof buildTenantNav>[1]) => buildTenantNav("retail", mods).flatMap((g) => g.items).map((i) => i.label);
     const base = labels(["dashboard", "crm", "payments", "finance", "billing"]);
     for (const hidden of ["Punto de venta", "Cobros en línea", "Cartera", "Contabilidad", "Impuestos y numeración", "Factura electrónica", "Mi sitio web", "Ficha de Google", "Campañas y reseñas"]) expect(base).not.toContain(hidden);
-    expect(labels(["dashboard", "pos", "website", "google", "growth"])).toEqual(expect.arrayContaining(["Punto de venta", "Mi sitio web", "Pedidos de la tienda", "Ficha de Google", "Campañas y reseñas"]));
+    expect(labels(["dashboard", "pos", "website", "google", "growth"])).toEqual(expect.arrayContaining(["Punto de venta", "Mi sitio web", "Pedidos", "Ficha de Google", "Campañas y reseñas"]));
     expect(buildTenantNav("retail", ["dashboard", "website"]).map((g) => g.label)).toContain("Presencia en línea");
   });
 
@@ -49,7 +49,7 @@ describe("buildTenantNav", () => {
     const items = groups.flatMap((g) => g.items);
     expect(items.map((i) => i.href)).toEqual(["", "/crm", "/memberships", "/checkin", "/finance", "/dinero", "/sitio", "/settings"]);
     expect(items.find((i) => i.href === "/sitio")?.label).toBe("Panel de registro de cliente");
-    for (const hidden of ["/pedidos-tienda", "/oportunidades", "/tareas", "/formularios"]) expect(items.map((i) => i.href)).not.toContain(hidden);
+    for (const hidden of ["/orders", "/oportunidades", "/tareas", "/formularios"]) expect(items.map((i) => i.href)).not.toContain(hidden);
   });
 
   it("sin facturación ni gastos no aparecen esas categorías", () => {
