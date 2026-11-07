@@ -122,6 +122,7 @@ model Opportunity {
 /// - `dueDay`: Día de vencimiento «AAAA-MM-DD» en hora de Bogotá; vacío = sin fecha.
 /// - `status`: OPEN | DONE. Al completarla se guarda `doneAt` y quién (`doneById`).
 /// - `customerId`, `opportunityId`: A quién o a qué oportunidad se refiere (opcionales).
+/// - `projectId`: Proyecto al que pertenece (opcional); las tareas de un proyecto se ven por proyecto y por persona (HU-tareas-01).
 model Task {
   id            String    @id @default(uuid())
   tenantId      String
@@ -132,6 +133,7 @@ model Task {
   assigneeId    String?
   customerId    String?
   opportunityId String?
+  projectId     String?
   status        String    @default("OPEN")
   doneAt        DateTime?
   doneById      String?
@@ -141,6 +143,7 @@ model Task {
   @@index([tenantId, status, dueDay])
   @@index([tenantId, assigneeId, status])
   @@index([tenantId, customerId])
+  @@index([tenantId, projectId, status])
   @@rls
 }
 

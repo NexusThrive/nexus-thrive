@@ -3,15 +3,16 @@ import { db } from "@/prisma/db";
 import { isTaskOverdue, sortTasks, validateTask, type TaskView } from "./tasks";
 
 /** Tareas del negocio (HU-actividades-01). Todo por `tenantId`. */
-export type TaskRow = { id: string; title: string; notes: string | null; dueDay: string | null; assigneeId: string | null; assigneeName: string | null; customerId: string | null; customerName: string | null; status: "OPEN" | "DONE"; overdue: boolean; createdAt: string };
+export type TaskRow = { id: string; title: string; notes: string | null; dueDay: string | null; assigneeId: string | null; assigneeName: string | null; customerId: string | null; customerName: string | null; projectId: string | null; projectName: string | null; status: "OPEN" | "DONE"; overdue: boolean; createdAt: string };
 type Result<T = object> = ({ ok: true } & T) | { ok: false; message: string };
 
-export async function createTask(tenantId: string, input: { title: string; notes?: string | null; dueDay?: string | null; assigneeId?: string | null; customerId?: string | null; opportunityId?: string | null }, createdById: string): Promise<Result<{ id: string }>> {
+export async function createTask(tenantId: string, input: { title: string; notes?: string | null; dueDay?: string | null; assigneeId?: string | null; customerId?: string | null; opportunityId?: string | null; projectId?: string | null }, createdById: string): Promise<Result<{ id: string }>> {
   const problem = validateTask(input);
   if (problem) return { ok: false, message: problem };
   if (input.customerId && !(await db.orm.public.Customer.where({ tenantId, id: input.customerId }).select("id").first())) return { ok: false, message: "El contacto no existe en este negocio." };
   if (input.assigneeId && !(await db.orm.public.User.where({ id: input.assigneeId, tenantId }).select("id").first())) return { ok: false, message: "Esa persona no es del equipo de este negocio." };
-  const t = await db.orm.public.Task.create({ tenantId, title: input.title.trim().slice(0, 200), notes: input.notes?.trim().slice(0, 500) || null, dueDay: input.dueDay || null, assigneeId: input.assigneeId ?? null, customerId: input.customerId ?? null, opportunityId: input.opportunityId ?? null, createdById });
+  if (input.projectId && !(await db.orm.public.Project.where({ tenantId, id: input.projectId }).select("id").first())) return { ok: false, message: "El proyecto no existe en este negocio." };
+  const t = await db.orm.public.Task.create({ tenantId, title: input.title.trim().slice(0, 200), notes: input.notes?.trim().slice(0, 500) || null, dueDay: input.dueDay || null, assigneeId: input.assigneeId ?? null, customerId: input.customerId ?? null, opportunityId: input.opportunityId ?? null, projectId: input.projectId ?? null, createdById });
   return { ok: true, id: t.id };
 }
 
@@ -40,13 +41,16 @@ export async function listTasks(tenantId: string, view: TaskView, memberId: stri
   const picked = open.filter((t) => (view === "mine" ? t.assigneeId === memberId : view === "overdue" ? isTaskOverdue(t, today) : true)).slice(0, limit);
   const customerIds = [...new Set(picked.map((t) => t.customerId).filter((x): x is string => Boolean(x)))];
   const assigneeIds = [...new Set(picked.map((t) => t.assigneeId).filter((x): x is string => Boolean(x)))];
-  const [customers, users] = await Promise.all([
+  const projectIds = [...new Set(picked.map((t) => t.projectId).filter((x): x is string => Boolean(x)))];
+  const [projects, customers, users] = await Promise.all([
+    projectIds.length ? db.orm.public.Project.where({ tenantId }).where((p) => p.id.in(projectIds)).select("id", "name").all() : Promise.resolve([]),
     customerIds.length ? db.orm.public.Customer.where({ tenantId }).where((c) => c.id.in(customerIds)).select("id", "name").all() : Promise.resolve([]),
     assigneeIds.length ? db.orm.public.User.where({ tenantId }).where((u) => u.id.in(assigneeIds)).select("id", "name").all() : Promise.resolve([]),
   ]);
+  const pn = new Map(projects.map((p) => [p.id, p.name]));
   const cn = new Map(customers.map((c) => [c.id, c.name]));
   const un = new Map(users.map((u) => [u.id, u.name]));
-  return sortTasks(picked.map((t) => ({ id: t.id, title: t.title, notes: t.notes, dueDay: t.dueDay, assigneeId: t.assigneeId, assigneeName: t.assigneeId ? (un.get(t.assigneeId) ?? null) : null, customerId: t.customerId, customerName: t.customerId ? (cn.get(t.customerId) ?? null) : null, status: "OPEN" as const, overdue: isTaskOverdue(t, today), createdAt: String(t.createdAt) })));
+  return sortTasks(picked.map((t) => ({ id: t.id, title: t.title, notes: t.notes, dueDay: t.dueDay, assigneeId: t.assigneeId, assigneeName: t.assigneeId ? (un.get(t.assigneeId) ?? null) : null, customerId: t.customerId, customerName: t.customerId ? (cn.get(t.customerId) ?? null) : null, projectId: t.projectId, projectName: t.projectId ? (pn.get(t.projectId) ?? null) : null, status: "OPEN" as const, overdue: isTaskOverdue(t, today), createdAt: String(t.createdAt) })));
 }
 
 /** Cuántas tareas abiertas y vencidas tiene asignadas una persona (la campana avisa). */
@@ -59,4 +63,9 @@ export async function overdueCountFor(tenantId: string, memberId: string, today 
 export async function teamOptions(tenantId: string): Promise<{ id: string; name: string }[]> {
   const users = await db.orm.public.User.where({ tenantId }).select("id", "name").limit(200).all();
   return users.map((u) => ({ id: u.id, name: u.name ?? "Integrante" })).sort((a, b) => a.name.localeCompare(b.name, "es"));
+}
+
+/** Proyectos del negocio para ligar tareas (id y nombre), los más recientes primero. */
+export async function projectOptions(tenantId: string): Promise<{ id: string; name: string }[]> {
+  return (await db.orm.public.Project.where({ tenantId }).orderBy((p) => p.createdAt.desc()).select("id", "name").limit(200).all()).map((p) => ({ id: p.id, name: p.name }));
 }

@@ -11,10 +11,10 @@ const refresh = (slug: string) => {
 };
 const NO_ACCESS: TaskResult = { ok: false, message: "No tienes acceso a este negocio." };
 
-export async function createTaskAction(slug: string, input: { title: string; dueDay: string; assigneeId: string; customerId: string; notes: string }): Promise<TaskResult> {
+export async function createTaskAction(slug: string, input: { title: string; dueDay: string; assigneeId: string; customerId: string; projectId?: string; notes: string }): Promise<TaskResult> {
   const ctx = await requireTenantContext(slug, "/tareas");
   if (!ctx) return NO_ACCESS;
-  const r = await createTask(ctx.tenantId, { title: input.title, notes: input.notes, dueDay: input.dueDay || null, assigneeId: input.assigneeId || null, customerId: input.customerId || null }, ctx.memberId);
+  const r = await createTask(ctx.tenantId, { title: input.title, notes: input.notes, dueDay: input.dueDay || null, assigneeId: input.assigneeId || null, customerId: input.customerId || null, projectId: input.projectId || null }, ctx.memberId);
   if (!r.ok) return r;
   refresh(slug);
   return { ok: true, message: "Tarea creada" };

@@ -21,12 +21,15 @@ import type { TaskView } from "@/lib/business/customers/tasks";
 type Dialog = { kind: "new" } | { kind: "edit"; row: TaskRow } | null;
 
 /** Tareas con fecha y responsable. Las vencidas se avisan arriba; «Mis tareas» son las asignadas a ti. */
-export default function TasksView({ slug, mine, overdue, all, team, customers, today, me }: { slug: string; mine: TaskRow[]; overdue: TaskRow[]; all: TaskRow[]; team: { id: string; name: string }[]; customers: { id: string; name: string }[]; today: string; me: string }) {
+export default function TasksView({ slug, mine, overdue, all, team, customers, projects = [], today, me }: { slug: string; mine: TaskRow[]; overdue: TaskRow[]; all: TaskRow[]; team: { id: string; name: string }[]; customers: { id: string; name: string }[]; projects?: { id: string; name: string }[]; today: string; me: string }) {
   const [view, setView] = useState<TaskView>("mine");
   const [dialog, setDialog] = useState<Dialog>(null);
   const router = useRouter();
   const { toast } = useToast();
-  const rows = view === "mine" ? mine : view === "overdue" ? overdue : all;
+  const [project, setProject] = useState("");
+  const [person, setPerson] = useState("");
+  const base = view === "mine" ? mine : view === "overdue" ? overdue : all;
+  const rows = base.filter((t) => (!project || t.projectId === project) && (!person || t.assigneeId === person));
   const myOverdue = mine.filter((t) => t.overdue).length;
   const done = (message?: string) => {
     if (message) toast(message, "success");
@@ -51,6 +54,23 @@ export default function TasksView({ slug, mine, overdue, all, team, customers, t
         </button>
       </div>
 
+      {projects.length > 0 || view !== "mine" ? (
+        <div className="flex flex-wrap gap-2">
+          {projects.length > 0 ? (
+            <Select aria-label="Filtrar por proyecto" value={project} onChange={(e) => setProject(e.target.value)}>
+              <option value="">Todos los proyectos</option>
+              {projects.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+            </Select>
+          ) : null}
+          {view !== "mine" ? (
+            <Select aria-label="Filtrar por persona" value={person} onChange={(e) => setPerson(e.target.value)}>
+              <option value="">Todas las personas</option>
+              {team.map((u) => <option key={u.id} value={u.id}>{u.id === me ? `${u.name} (yo)` : u.name}</option>)}
+            </Select>
+          ) : null}
+        </div>
+      ) : null}
+
       {rows.length === 0 ? (
         <EmptyState title={view === "mine" ? "No tienes tareas asignadas" : view === "overdue" ? "Nada vencido" : "Sin tareas abiertas"} description={view === "overdue" ? "Todo lo que tiene fecha va al día." : "Crea una para que nadie olvide el siguiente paso con un cliente."} />
       ) : (
@@ -62,6 +82,7 @@ export default function TasksView({ slug, mine, overdue, all, team, customers, t
                 <p className="break-words text-ui font-medium">{t.title}</p>
                 <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
                   {t.dueDay ? <span className={t.overdue ? "font-medium text-danger" : undefined}>{t.overdue ? `Vencida · ${t.dueDay}` : t.dueDay === today ? "Hoy" : t.dueDay}</span> : <span>Sin fecha</span>}
+                  {t.projectName ? <span>· Proyecto {t.projectName}</span> : null}
                   {t.customerName ? <span>· {t.customerName}</span> : null}
                   <span>· {t.assigneeId === me ? "Para ti" : (t.assigneeName ?? "Sin asignar")}</span>
                 </p>
@@ -81,7 +102,7 @@ export default function TasksView({ slug, mine, overdue, all, team, customers, t
         submitLabel="Crear"
         pendingLabel="Creando…"
         onSubmit={async (d) => {
-          const r = await createTaskAction(slug, { title: String(d.get("title") ?? ""), dueDay: String(d.get("dueDay") ?? ""), assigneeId: String(d.get("assigneeId") ?? ""), customerId: String(d.get("customerId") ?? ""), notes: String(d.get("notes") ?? "") });
+          const r = await createTaskAction(slug, { title: String(d.get("title") ?? ""), dueDay: String(d.get("dueDay") ?? ""), assigneeId: String(d.get("assigneeId") ?? ""), customerId: String(d.get("customerId") ?? ""), projectId: String(d.get("projectId") ?? ""), notes: String(d.get("notes") ?? "") });
           return r.ok ? { ok: true, message: r.message } : { ok: false, message: r.message, fieldErrors: { title: r.message } };
         }}
         onSuccess={({ message }) => done(message)}
@@ -106,6 +127,16 @@ export default function TasksView({ slug, mine, overdue, all, team, customers, t
                 </Select>
               )}
             </Field>
+            {projects.length > 0 ? (
+              <Field label="Proyecto">
+                {(c) => (
+                  <Select {...c} name="projectId" defaultValue="">
+                    <option value="">Ninguno</option>
+                    {projects.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+                  </Select>
+                )}
+              </Field>
+            ) : null}
             <Field label="Notas">{(c) => <input {...c} name="notes" autoComplete="off" maxLength={500} className={inputClasses} />}</Field>
           </div>
         )}

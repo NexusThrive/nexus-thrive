@@ -20988,6 +20988,13 @@
                   "kind": "scalar"
                 }
               },
+              "projectId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "status": {
                 "nullable": false,
                 "type": {
@@ -21059,6 +21066,9 @@
                 },
                 "opportunityId": {
                   "column": "opportunityId"
+                },
+                "projectId": {
+                  "column": "projectId"
                 },
                 "status": {
                   "column": "status"
@@ -42315,6 +42325,11 @@
                   "nativeType": "text",
                   "nullable": true
                 },
+                "projectId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "status": {
                   "codecId": "pg/text@1",
                   "default": {
@@ -42380,6 +42395,16 @@
                   ],
                   "name": "Task_tenantId_idx_c93ed4f1",
                   "prefix": "Task_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "projectId",
+                    "status"
+                  ],
+                  "name": "Task_tenantId_projectId_status_idx_68cd0149",
+                  "prefix": "Task_tenantId_projectId_status_idx",
                   "unique": false
                 },
                 {
@@ -45075,7 +45100,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "35f49d1db560ddae70a4f93360841ef22a1c5b80ff57c763c78ce1a901fedb0a"
+    "storageHash": "075110c693a9bbee2030000e222dc3a901cc14843336cbd786b6afd0284e7c07"
   },
   "execution": {
     "executionHash": "9741558c30a083adedd1276151e02850c5c78d7c15cf0011f57b9f0385eb689c",

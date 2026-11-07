@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
 import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
-import { createTask, listTasks, overdueCountFor, setTaskDone, teamOptions, updateTask } from "@/lib/business/customers/tasks-db";
+import { createTask, listTasks, overdueCountFor, projectOptions, setTaskDone, teamOptions, updateTask } from "@/lib/business/customers/tasks-db";
 
 /** HU-actividades-01: tareas con fecha y responsable, sin cruzar negocios. */
 const TEST_URL = process.env.TEST_DATABASE_URL;
@@ -70,5 +70,17 @@ describe.skipIf(!TEST_URL)("tareas (integración)", () => {
     expect(await updateTask(a, first!.id, { dueDay: "mañana" })).toMatchObject({ ok: false });
     expect((await listTasks(a, "mine", ana, TODAY)).map((t) => t.title)).toContain("Llamar a Camila");
     expect(await listTasks(b, "all", outsider, TODAY)).toEqual([]);
+  });
+
+  test("una tarea se liga a un proyecto del mismo negocio y se lista con su nombre", async () => {
+    const project = await db.orm.public.Project.create({ tenantId: a, customerId, code: `PROY-${suffix}`, name: "Campaña de marca" } as never);
+    const foreign = await db.orm.public.Customer.create({ tenantId: b, name: "Ajena" });
+    const foreignProject = await db.orm.public.Project.create({ tenantId: b, customerId: foreign.id, code: `PROY-B-${suffix}`, name: "Ajeno" } as never);
+    expect(await createTask(a, { title: "Diseñar el logo", projectId: foreignProject.id }, me)).toMatchObject({ ok: false, message: "El proyecto no existe en este negocio." });
+    expect(await createTask(a, { title: "Diseñar el logo", projectId: project.id, assigneeId: ana }, me)).toMatchObject({ ok: true });
+    const row = (await listTasks(a, "all", me, TODAY)).find((t) => t.title === "Diseñar el logo");
+    expect(row).toMatchObject({ projectId: project.id, projectName: "Campaña de marca", assigneeName: "Ana" });
+    expect((await projectOptions(a)).map((p) => p.name)).toContain("Campaña de marca");
+    expect(await projectOptions(b)).toEqual([{ id: foreignProject.id, name: "Ajeno" }]);
   });
 });

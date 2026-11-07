@@ -1,0 +1,83 @@
+[
+  {
+    "id": "column.public.Task.projectId",
+    "label": "Add column \"projectId\" to \"Task\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "projectId",
+        "table": "Task"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"projectId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Task",
+          "projectId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"projectId\"",
+        "sql": "ALTER TABLE \"public\".\"Task\" ADD COLUMN \"projectId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"projectId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Task",
+          "projectId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Task.Task_tenantId_projectId_status_idx_68cd0149",
+    "label": "Create index \"Task_tenantId_projectId_status_idx_68cd0149\" on \"Task\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Task_tenantId_projectId_status_idx_68cd0149",
+        "table": "Task"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Task_tenantId_projectId_status_idx_68cd0149\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Task_tenantId_projectId_status_idx_68cd0149\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Task_tenantId_projectId_status_idx_68cd0149\"",
+        "sql": "CREATE INDEX \"Task_tenantId_projectId_status_idx_68cd0149\" ON \"public\".\"Task\" (\"tenantId\", \"projectId\", \"status\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Task_tenantId_projectId_status_idx_68cd0149\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Task_tenantId_projectId_status_idx_68cd0149\""
+        ]
+      }
+    ]
+  }
+]

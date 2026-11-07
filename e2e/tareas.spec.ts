@@ -13,7 +13,7 @@ test.describe("Tareas", () => {
     await expect(page.getByText("Tarea completada")).toBeVisible();
     await page.getByRole("button", { name: /Vencidas/ }).click();
     await expect(page.getByText("Cobrar el saldo del pedido P-0040")).toBeVisible();
-    await expect(page.getByText(/Ana Ruiz/)).toBeVisible();
+    await expect(page.getByRole("listitem").getByText(/Ana Ruiz/)).toBeVisible();
     await expectNoAxeViolations(page);
   });
 
@@ -37,4 +37,19 @@ test.describe("Tareas", () => {
       await expect(page.getByText("No tienes tareas asignadas")).toBeVisible();
     });
   }
+});
+
+test.describe("Tareas de proyecto", () => {
+  test("filtrar por proyecto y por persona en el celular, sin desbordar", async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 800 });
+    await openStory(page, "páginas-ventas-tareas--default");
+    await page.getByRole("button", { name: /^Todas/ }).or(page.getByRole("radio", { name: /^Todas/ })).first().click();
+    await expect(page.getByText("Proyecto Campaña de marca")).toBeVisible();
+    await page.getByLabel("Filtrar por proyecto").click();
+    await page.getByRole("option", { name: "Campaña de marca" }).click();
+    await expect(page.getByText("Cobrar el saldo del pedido P-0040")).toHaveCount(0);
+    await expect(page.getByText("Enviar la cotización de las gorras")).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    await expectNoAxeViolations(page);
+  });
 });
