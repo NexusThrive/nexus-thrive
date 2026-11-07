@@ -1,12 +1,12 @@
 "use client";
 
 import { formatCurrency } from "@/lib/foundation/format";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState, useTransition, type ReactNode } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { SwipeCard } from "@/components/molecules/swipe-card";
-import { ArrowDown, ArrowUp, Archive, Banknote, MessageCircle, Pencil, Plus, RotateCcw, SlidersHorizontal, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Archive, Banknote, MessageCircle, Pencil, Plus, RotateCcw, X } from "lucide-react";
 import {
   archiveCustomerAction,
   deleteCustomersAction,
@@ -20,12 +20,16 @@ import { buttonVariants } from "@/components/atoms/button-variants";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { useQuickCreate } from "@/components/organisms/quick-create-host";
 import { useCustomerSelection } from "./customer-selection";
+import { ColumnChooser, ResizeHandle, useColumnPrefs, type ColumnKey } from "./customer-columns";
 
 export type CustomerRow = {
   /** Próxima cita (ISO) o null. */
   nextAppointment: string | null;
   /** Saldo abierto por cobrar en pesos (0 si no debe nada). */
   owed: number;
+  /** Parte del saldo ya vencida. */
+  overdue: number;
+  city: string;
   id: string;
   name: string;
   email: string;
@@ -47,7 +51,7 @@ function Face({ row, className }: { row: CustomerRow; className: string }) {
     <img src={`/api/files/${row.photoId}`} alt="" className={`${className} object-cover`} />
   ) : (
     <span aria-hidden="true" className={className}>
-      {initialsOf(row.name)}
+      {row.name.trim().charAt(0).toUpperCase() || "?"}
     </span>
   );
 }
@@ -79,6 +83,31 @@ function initialsOf(name: string): string {
 const formatAppointment = (iso: string) =>
   new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }).format(new Date(iso));
 
+/** Contenido de cada columna configurable; los vacíos se muestran con «—». */
+function cellFor(key: ColumnKey, row: CustomerRow): ReactNode {
+  const empty = <span className="text-muted-foreground/70">—</span>;
+  switch (key) {
+    case "email":
+      return row.email || empty;
+    case "phone":
+      return row.phone || empty;
+    case "next":
+      return row.nextAppointment ? formatAppointment(row.nextAppointment) : empty;
+    case "owed":
+      return row.owed > 0 ? <span className="font-medium text-danger">{formatCurrency(row.owed)}</span> : empty;
+    case "overdue":
+      return row.overdue > 0 ? <span className="font-medium text-danger">{formatCurrency(row.overdue)}</span> : empty;
+    case "document":
+      return row.documentId || empty;
+    case "city":
+      return row.city || empty;
+    case "tags":
+      return row.tags.length ? row.tags.join(", ") : empty;
+    case "created":
+      return row.createdAt;
+  }
+}
+
 export default function CustomerTable({
   tenantSlug,
   rows,
@@ -101,6 +130,7 @@ export default function CustomerTable({
 }) {
   const router = useRouter();
   const quick = useQuickCreate();
+  const columns = useColumnPrefs();
   const setSort = (next: "recent" | "name_asc" | "name_desc") => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("sort", next);
@@ -251,6 +281,7 @@ export default function CustomerTable({
   const isArchivedView = status === "archived";
   // Seleccionar es para eliminar: sin ese permiso no hay casillas ni barra.
   const selectable = canRemove;
+  const tableMinWidth = (selectable ? 44 : 0) + 36 + columns.widthOf("name") + columns.visible.reduce((sum, column) => sum + columns.widthOf(column.key), 0) + 44;
 
   return (
     <div className="flex flex-col">
@@ -290,14 +321,23 @@ export default function CustomerTable({
         <>
           {/* ---------- Tabla (desktop) ---------- */}
           <div className="hidden overflow-x-auto sm:block">
-            <table className="w-full text-left text-sm">
+            <table className="w-full table-fixed text-left text-sm" style={{ minWidth: tableMinWidth }}>
               <caption className="sr-only">
                 {terms.customers} de {tenantSlug}
               </caption>
-              <thead className="sticky top-0 z-10 h-[38px] border-b border-border bg-background text-xs font-medium text-muted-foreground">
-                <tr>
+              <colgroup>
+                {selectable ? <col style={{ width: 44 }} /> : null}
+                <col style={{ width: 36 }} />
+                <col style={{ width: columns.widthOf("name") }} />
+                {columns.visible.map((column) => (
+                  <col key={column.key} style={{ width: columns.widthOf(column.key) }} />
+                ))}
+                <col style={{ width: 44 }} />
+              </colgroup>
+              <thead className="sticky top-0 z-10 border-b border-border bg-background text-xs font-medium text-muted-foreground">
+                <tr className="h-[38px]">
                   {selectable ? (
-                    <th scope="col" className="w-10 h-[38px] px-5 py-0">
+                    <th scope="col" className="ps-5 pe-0">
                       <input
                         type="checkbox"
                         aria-label={`Seleccionar todos los ${customersLabel} de esta página`}
@@ -312,37 +352,36 @@ export default function CustomerTable({
                       />
                     </th>
                   ) : null}
-                  <th scope="col" className="h-[38px] w-9 px-2 py-0">
+                  <th scope="col" className="px-2">
                     <span className="sr-only">Foto</span>
                   </th>
-                  <th scope="col" className="h-[38px] px-5 py-0" aria-sort={sort === "name_asc" ? "ascending" : sort === "name_desc" ? "descending" : "none"}>
-                    <button type="button" onClick={() => setSort(nameSort)} className="inline-flex items-center gap-1 outline-none hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
+                  <th scope="col" className="relative px-3" aria-sort={sort === "name_asc" ? "ascending" : sort === "name_desc" ? "descending" : "none"}>
+                    <button type="button" onClick={() => setSort(nameSort)} className="inline-flex max-w-full items-center gap-1 truncate outline-none hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
                       {terms.customer}
                       {sortIcon(sort !== "recent", sort === "name_desc")}
                     </button>
+                    <ResizeHandle columnKey="name" label={terms.customer} prefs={columns} />
                   </th>
-                  <th scope="col" className="h-[38px] px-5 py-0">
-                    Correo electrónico
-                  </th>
-                  <th scope="col" className="h-[38px] px-5 py-0">
-                    Teléfono
-                  </th>
-                  <th scope="col" className="h-[38px] px-5 py-0">
-                    Próxima cita
-                  </th>
-                  <th scope="col" className="h-[38px] px-5 py-0">
-                    Por cobrar
-                  </th>
-                  <th scope="col" className="h-[38px] px-5 py-0" aria-sort={sort === "recent" ? "descending" : "none"}>
-                    <button type="button" onClick={() => setSort("recent")} className="inline-flex items-center gap-1 outline-none hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
-                      Registrado
-                      {sortIcon(sort === "recent", true)}
-                    </button>
-                  </th>
-                  <th scope="col" className="h-[38px] w-9 px-2 py-0">
-                    <button type="button" disabled aria-label="Elegir columnas (próximamente)" className="grid size-7 place-items-center rounded-md text-muted-foreground/50">
-                      <SlidersHorizontal aria-hidden="true" className="size-4" />
-                    </button>
+                  {columns.visible.map((column) => (
+                    <th
+                      key={column.key}
+                      scope="col"
+                      className="relative px-3"
+                      aria-sort={column.key === "created" ? (sort === "recent" ? "descending" : "none") : undefined}
+                    >
+                      {column.key === "created" ? (
+                        <button type="button" onClick={() => setSort("recent")} className="inline-flex max-w-full items-center gap-1 truncate outline-none hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
+                          {column.label}
+                          {sortIcon(sort === "recent", true)}
+                        </button>
+                      ) : (
+                        <span className="block truncate">{column.label}</span>
+                      )}
+                      <ResizeHandle columnKey={column.key} label={column.label} prefs={columns} />
+                    </th>
+                  ))}
+                  <th scope="col" className="px-2">
+                    <ColumnChooser prefs={columns} />
                   </th>
                 </tr>
               </thead>
@@ -351,10 +390,10 @@ export default function CustomerTable({
                   <tr
                     key={row.id}
                     onClick={(event) => openProfile(event, row.id)}
-                    className={cn("cursor-pointer transition hover:bg-muted/60", selected.has(row.id) && "bg-accent-subtle/30")}
+                    className={cn("h-[38px] cursor-pointer transition hover:bg-muted/60", selected.has(row.id) && "bg-accent-subtle/30")}
                   >
                     {selectable ? (
-                      <td className="px-5 py-2">
+                      <td className="ps-5 pe-0">
                         <input
                           type="checkbox"
                           aria-label={`Seleccionar a ${row.name}`}
@@ -364,34 +403,30 @@ export default function CustomerTable({
                         />
                       </td>
                     ) : null}
-                    <td className="w-9 px-2 py-2">
+                    <td className="px-2">
                       <Face row={row} className="flex size-[22px] items-center justify-center rounded-[5px] bg-accent-subtle text-2xs font-semibold text-accent-text" />
                     </td>
-                    <td className="px-5 py-2">
-                      <div className="flex min-w-0 items-center gap-2">
-                        <p className="flex min-w-0 items-center gap-2 font-medium text-foreground">
-                          <Link
-                            href={`/${tenantSlug}/contactos/${row.id}`}
-                            className="truncate text-foreground transition-colors hover:text-accent-text hover:underline"
-                            title={`Ver ficha de ${row.name}`}
-                          >
-                            {row.name}
-                          </Link>
-                          {isArchivedView ? (
-                            <span className="rounded bg-muted px-1.5 py-0.5 text-2xs font-semibold uppercase text-muted-foreground">
-                              Archivado
-                            </span>
-                          ) : null}
-                          {showMembership && !row.hasMembership ? <MembershipAlert /> : null}
-                        </p>
-                      </div>
+                    <td className="px-3">
+                      <p className="flex min-w-0 items-center gap-2 font-medium text-foreground">
+                        <Link
+                          href={`/${tenantSlug}/contactos/${row.id}`}
+                          className="truncate text-foreground transition-colors hover:text-accent-text hover:underline"
+                          title={`Ver ficha de ${row.name}`}
+                        >
+                          {row.name}
+                        </Link>
+                        {isArchivedView ? (
+                          <span className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-2xs font-semibold uppercase text-muted-foreground">Archivado</span>
+                        ) : null}
+                        {showMembership && !row.hasMembership ? <MembershipAlert /> : null}
+                      </p>
                     </td>
-                    <td className="max-w-[260px] truncate px-5 py-2 text-muted-foreground">{row.email || "—"}</td>
-                    <td className="px-5 py-2 text-muted-foreground">{row.phone || "—"}</td>
-                    <td className="px-5 py-2 text-muted-foreground">{row.nextAppointment ? formatAppointment(row.nextAppointment) : "—"}</td>
-                    <td className="px-5 py-2">{row.owed > 0 ? <span className="font-medium text-danger">{formatCurrency(row.owed)}</span> : <span className="text-muted-foreground">—</span>}</td>
-                    <td className="px-5 py-2 text-muted-foreground">{row.createdAt}</td>
-                    <td className="w-9 px-2 py-2" aria-hidden="true" />
+                    {columns.visible.map((column) => (
+                      <td key={column.key} className="truncate px-3 text-muted-foreground">
+                        {cellFor(column.key, row)}
+                      </td>
+                    ))}
+                    <td aria-hidden="true" />
                   </tr>
                 ))}
               </tbody>

@@ -118,6 +118,8 @@ export default async function CrmPage({
     hasMembership: activeMembers.has(row.id),
     nextAppointment: agenda.get(row.id)?.nextAppointment ?? null,
     owed: agenda.get(row.id)?.owed ?? 0,
+    overdue: agenda.get(row.id)?.overdue ?? 0,
+    city: row.city ?? "",
   }));
 
 

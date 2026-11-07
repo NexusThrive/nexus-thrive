@@ -24,13 +24,15 @@ const row = (id: string, name: string, extra: Partial<CustomerRow> = {}): Custom
   hasMembership: true,
   nextAppointment: null,
   owed: 0,
+  overdue: 0,
+  city: "Bogotá",
   ...extra,
 });
 
 const ROWS: CustomerRow[] = [
-  row("1", "María Pérez", { nextAppointment: "2026-11-09T15:30:00.000Z", owed: 120_000, createdAt: "7 nov 2026" }),
+  row("1", "María Pérez", { nextAppointment: "2026-11-09T15:30:00.000Z", owed: 120_000, overdue: 60_000, documentId: "1.020.345.678", tags: ["VIP"], createdAt: "7 nov 2026" }),
   row("2", "Andrés Gómez", { email: "andres.gomez@empresa-de-logistica.com", createdAt: "6 nov 2026" }),
-  row("3", "Restaurante Sol", { phone: "601 555 0101", owed: 850_000, createdAt: "5 nov 2026" }),
+  row("3", "Restaurante Sol", { phone: "601 555 0101", owed: 850_000, overdue: 850_000, documentId: "900.123.456-7", city: "Medellín", tags: ["Empresa", "Mayorista"], createdAt: "5 nov 2026" }),
   row("4", "Camila Torres", { nextAppointment: "2026-11-08T13:00:00.000Z", createdAt: "3 nov 2026" }),
   row("5", "Gym Center", { email: "", phone: "", createdAt: "2 nov 2026" }),
   row("6", "Laura Restrepo", { owed: 45_000, createdAt: "1 nov 2026" }),
