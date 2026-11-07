@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 import CustomerSearch from "./customer-search";
 import CustomerFilters, { type CustomerSort, type CustomerStatus } from "./customer-filters";
-import CustomerSheet from "./customer-sheet";
+import CustomerQuickCreate from "./customer-quick-create";
 import { useVerticalTerms } from "../../vertical-terms-context";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { cn } from "@/lib/utils";
@@ -64,7 +64,7 @@ export default function CustomerToolbar({
       </div>
 
       {isFormOpen ? (
-        <CustomerSheet tenantSlug={tenantSlug} onClose={() => setIsFormOpen(false)} />
+        <CustomerQuickCreate tenantSlug={tenantSlug} onClose={() => setIsFormOpen(false)} />
       ) : null}
     </>
   );

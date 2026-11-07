@@ -19,7 +19,10 @@ export async function customerFormDataAction() {
 export async function getCustomerForEditAction(): Promise<CustomerEdit | null> {
   return null;
 }
-export async function saveCustomerAction(_form: FormData): Promise<CustomerSaveResult> {
+export async function saveCustomerAction(form: FormData): Promise<CustomerSaveResult> {
   await new Promise((resolve) => setTimeout(resolve, 400));
+  const name = String(form.get("name") ?? "").trim();
+  if (name.length < 3) return { ok: false, message: "Revisa los campos marcados.", errors: { name: "Escribe el nombre del cliente." } };
+  if (name === "caida") return { ok: false, message: "No se pudo guardar. Intenta de nuevo." };
   return { ok: true, id: "c-nuevo", message: "Cliente guardado" };
 }

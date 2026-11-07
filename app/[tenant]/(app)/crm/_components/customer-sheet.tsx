@@ -33,8 +33,6 @@ export default function CustomerSheet({ tenantSlug, customerId, onClose, onSaved
   const [loading, setLoading] = useState(!!customerId);
   const [photo, setPhoto] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-  const [planId, setPlanId] = useState("");
-  const [method, setMethod] = useState("CASH");
   const [membershipChoice, setMembershipChoice] = useState("");
   const [membershipMethod, setMembershipMethod] = useState("NONE");
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -61,7 +59,6 @@ export default function CustomerSheet({ tenantSlug, customerId, onClose, onSaved
   const profile = profileFor(meta?.vertical ?? "");
   const setP = (k: string, val: string) => setV((x) => ({ ...x, profile: { ...x.profile, [k]: val } }));
   const b = bmi(Number(String(v.profile.weightKg ?? "").replace(",", ".")) || undefined, Number(v.profile.heightCm) || undefined);
-  const plan = meta?.plans.find((p) => p.id === planId);
   const membershipPlan = meta?.plans.find((p) => p.id === membershipChoice);
 
   const save = () =>
@@ -72,10 +69,6 @@ export default function CustomerSheet({ tenantSlug, customerId, onClose, onSaved
       for (const k of ["name", "email", "phone", "documentId", "birthDate", "city", "tags"] as const) fd.set(k, v[k]);
       for (const [k, val] of Object.entries(v.profile)) fd.set(`p_${k}`, String(val ?? ""));
       if (photo) fd.set("photo", photo);
-      if (planId) {
-        fd.set("planId", planId);
-        fd.set("paymentMethod", method);
-      }
       if (customerId) {
         fd.set("membershipChoice", membershipChoice);
         if (membershipPlan) fd.set("paymentMethod", membershipMethod === "NONE" ? "" : membershipMethod);
@@ -146,7 +139,7 @@ export default function CustomerSheet({ tenantSlug, customerId, onClose, onSaved
             Cancelar
           </button>
           <button type="button" disabled={pending || loading} onClick={save} className={buttonVariants()}>
-            {pending ? "Guardando…" : customerId ? "Guardar cambios" : plan ? `Registrar y cobrar ${formatCurrency(plan.price)}` : "Registrar"}
+            {pending ? "Guardando…" : "Guardar cambios"}
           </button>
         </>
       }
@@ -202,43 +195,6 @@ export default function CustomerSheet({ tenantSlug, customerId, onClose, onSaved
                 {b ? <span className="font-mono text-xs font-normal text-muted-foreground">IMC {b.value.toLocaleString("es-CO")} · {b.label}</span> : null}
               </h3>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">{profile.fields.map(renderField)}</div>
-            </section>
-          ) : null}
-          {!customerId && profile.planOnCreate ? (
-            <section className="grid gap-3 rounded-md bg-surface-muted p-3.5">
-              <h3 className="text-ui font-semibold">Plan con el que entra</h3>
-              {meta?.plans.length ? (
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <Field label="Plan">
-                    {(c) => (
-                      <Select {...c} value={planId} onChange={(e) => setPlanId(e.target.value)}>
-                        <option value="">Sin plan por ahora</option>
-                        {meta.plans.map((p) => (
-                          <option key={p.id} value={p.id}>
-                            {p.name} · {formatCurrency(p.price)} · {p.days} días
-                          </option>
-                        ))}
-                      </Select>
-                    )}
-                  </Field>
-                  {planId ? (
-                    <Field label="Cobro">
-                      {(c) => (
-                        <Select {...c} value={method} onChange={(e) => setMethod(e.target.value)}>
-                          {PAYMENT_METHODS.map((m) => (
-                            <option key={m.value} value={m.value}>
-                              {m.label}
-                            </option>
-                          ))}
-                          <option value="NONE">Aún no paga</option>
-                        </Select>
-                      )}
-                    </Field>
-                  ) : null}
-                </div>
-              ) : (
-                <p className="text-ui text-muted-foreground">Crea tus planes en Catálogo → Planes para inscribir desde aquí.</p>
-              )}
             </section>
           ) : null}
           {customerId && profile.planOnCreate ? (

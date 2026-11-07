@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { loadQuickCreateDataAction, type QuickCreateData } from "@/app/[tenant]/(app)/_actions/quick-create";
-import CustomerSheet from "@/app/[tenant]/(app)/crm/_components/customer-sheet";
+import CustomerQuickCreate from "@/app/[tenant]/(app)/crm/_components/customer-quick-create";
 import { ConnectedExpenseSheet, ConnectedPaymentSheet } from "@/app/[tenant]/(app)/finance/_components/finance-sheets";
 import { SkeletonRows } from "@/components/molecules/skeleton-rows";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
@@ -116,11 +116,7 @@ export function QuickCreateProvider({ children }: { children: ReactNode }) {
       ) : null}
 
       {sheet === "customer" ? (
-        <CustomerSheet
-          tenantSlug={slug}
-          onClose={close}
-          fullHref={hrefFor("/crm")}
-        />
+        <CustomerQuickCreate tenantSlug={slug} onClose={close} fullHref={hrefFor("/crm")} />
       ) : null}
     </QuickCreateContext.Provider>
   );
