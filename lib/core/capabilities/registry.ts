@@ -199,6 +199,7 @@ export const CAPABILITIES = [
     included: true,
     nav: [
       { href: "/finance", icon: Wallet, label: () => "Finanzas" },
+      { href: "/dinero", icon: Banknote, label: () => "¿Dónde está mi dinero?" },
     ],
   },
   {

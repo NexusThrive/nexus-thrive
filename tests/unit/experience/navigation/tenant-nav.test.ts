@@ -29,7 +29,7 @@ describe("buildTenantNav", () => {
     const gastos = groups.find((g) => g.label === "Compras y gastos")!;
     expect(gastos.collapsible).toBe(true);
     expect(gastos.items.map((i) => i.label)).toEqual(["Gastos"]);
-    expect(groups.find((g) => g.label === "Finanzas y contabilidad")?.items.map((i) => i.label)).toEqual(["Finanzas", "Cartera", "Contabilidad", "Impuestos y numeración"]);
+    expect(groups.find((g) => g.label === "Finanzas y contabilidad")?.items.map((i) => i.label)).toEqual(["Finanzas", "¿Dónde está mi dinero?", "Cartera", "Contabilidad", "Impuestos y numeración"]);
     // Toda categoría es una opción desplegable con su icono; Inicio (General) y Sistema no.
     expect(groups.find((g) => g.label === "Clientes y agenda")?.collapsible).toBe(true);
     expect(groups.find((g) => g.label === "Clientes y agenda")?.icon).toBeDefined();
@@ -47,7 +47,7 @@ describe("buildTenantNav", () => {
   it("el gimnasio trae un menú reducido: sin Funciones, datos, integraciones, Gastos ni tienda", () => {
     const groups = buildTenantNav("gym", ["dashboard", "crm", "memberships", "finance", "website"]);
     const items = groups.flatMap((g) => g.items);
-    expect(items.map((i) => i.href)).toEqual(["", "/crm", "/memberships", "/checkin", "/finance", "/sitio", "/settings"]);
+    expect(items.map((i) => i.href)).toEqual(["", "/crm", "/memberships", "/checkin", "/finance", "/dinero", "/sitio", "/settings"]);
     expect(items.find((i) => i.href === "/sitio")?.label).toBe("Panel de registro de cliente");
     expect(items.map((i) => i.href)).not.toContain("/pedidos-tienda");
   });
