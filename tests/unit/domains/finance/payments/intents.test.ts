@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { MANUAL_PROVIDER, effectiveStatus, newReference, parseReport, payButtonHtml, pickGateway, reconcile, validateIntent, wompiEnvironment } from "@/lib/domains/finance/payments/intents";
+import { CONFIRMABLE_STATUSES, MANUAL_PROVIDER, STATUS_LABELS, effectiveStatus, validateProof, validateRejection, newReference, parseReport, payButtonHtml, pickGateway, reconcile, validateIntent, wompiEnvironment } from "@/lib/domains/finance/payments/intents";
 import { sandboxPaymentsAllowed } from "@/lib/foundation/environment";
 
 describe("cobros en línea", () => {
@@ -64,5 +64,22 @@ describe("pasarela de prueba en producción", () => {
     expect(sandboxPaymentsAllowed({ NODE_ENV: "development" })).toBe(true);
     expect(sandboxPaymentsAllowed({ NODE_ENV: "production" })).toBe(false);
     expect(sandboxPaymentsAllowed({ NODE_ENV: "production", ALLOW_SANDBOX_PAYMENTS: "true" })).toBe(true);
+  });
+});
+
+describe("transferencia en verificación (HU-verificacion-01)", () => {
+  it("un comprobante exige referencia y no es largo de más", () => {
+    expect(validateProof("Bancolombia 88231")).toBeNull();
+    expect(validateProof("ab")).toContain("referencia");
+    expect(validateProof("x".repeat(201))).toContain("largo");
+  });
+  it("rechazar exige un motivo", () => {
+    expect(validateRejection("El monto no coincide")).toBeNull();
+    expect(validateRejection(" ")).toContain("por qué");
+  });
+  it("en verificación todavía se puede confirmar, y no vence solo", () => {
+    expect(CONFIRMABLE_STATUSES).toEqual(["PENDING", "VERIFYING"]);
+    expect(effectiveStatus("VERIFYING", "2020-01-01T00:00:00Z", Date.parse("2026-11-01T00:00:00Z"))).toBe("VERIFYING");
+    expect(STATUS_LABELS.VERIFYING).toBe("En verificación");
   });
 });

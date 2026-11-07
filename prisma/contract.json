@@ -11299,6 +11299,20 @@
                   "kind": "scalar"
                 }
               },
+              "proofAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "proofNote": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "provider": {
                 "nullable": false,
                 "type": {
@@ -11324,6 +11338,13 @@
                 "nullable": false,
                 "type": {
                   "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "rejectionReason": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
@@ -11416,6 +11437,12 @@
                 "paymentId": {
                   "column": "paymentId"
                 },
+                "proofAt": {
+                  "column": "proofAt"
+                },
+                "proofNote": {
+                  "column": "proofNote"
+                },
                 "provider": {
                   "column": "provider"
                 },
@@ -11427,6 +11454,9 @@
                 },
                 "refundedTotal": {
                   "column": "refundedTotal"
+                },
+                "rejectionReason": {
+                  "column": "rejectionReason"
                 },
                 "status": {
                   "column": "status"
@@ -31237,6 +31267,16 @@
                   "nativeType": "text",
                   "nullable": true
                 },
+                "proofAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "proofNote": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "provider": {
                   "codecId": "pg/text@1",
                   "default": {
@@ -31264,6 +31304,11 @@
                   },
                   "nativeType": "numeric",
                   "nullable": false
+                },
+                "rejectionReason": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
                 },
                 "status": {
                   "codecId": "pg/text@1",
@@ -39537,7 +39582,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "74edc8efd274a0096cccffaa9480fda48511c122b0307360432c0778a154409e"
+    "storageHash": "9ed1f54e32ae6c51941d0175744c5cd16cd77ba61fba583b31b1c5581e04956e"
   },
   "execution": {
     "executionHash": "b3c7b5d32051253ae48e138e3a50fe7bd6e2d37d8329259f29b14a81e4d672a2",

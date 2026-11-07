@@ -6,7 +6,7 @@ import { todayCO } from "@/lib/domains/finance/tax/tax";
 import { checkoutPort } from "./checkout-port";
 import { settleStoreOrder, storeOrderLines } from "@/lib/business/store/store-settle";
 import { db } from "@/prisma/db";
-import { effectiveStatus, newReference, pickGateway, reconcile, validateIntent, type IntentStatus, type Reconciliation, type ReportRow } from "./intents";
+import { effectiveStatus, newReference, pickGateway, reconcile, validateIntent, validateProof, validateRejection, type IntentStatus, type Reconciliation, type ReportRow } from "./intents";
 
 /**
  * Cobros en línea (servidor). Una intención de cobro se vuelve ingreso solo con el estado
@@ -32,6 +32,10 @@ export type IntentRow = {
   confirmedBy: string | null;
   refundedTotal: number;
   createdAt: string;
+  /** Lo que escribió el cliente al avisar su transferencia, y cuándo. */
+  proofNote: string | null;
+  proofAt: string | null;
+  rejectionReason: string | null;
 };
 
 const toRow = (i: Record<string, unknown>, now = Date.now()): IntentRow => ({
@@ -48,6 +52,9 @@ const toRow = (i: Record<string, unknown>, now = Date.now()): IntentRow => ({
   confirmedBy: (i.confirmedBy as string | null) ?? null,
   refundedTotal: toNumber(i.refundedTotal as never),
   createdAt: String(i.createdAt),
+  proofNote: (i.proofNote as string | null) ?? null,
+  proofAt: i.proofAt ? String(i.proofAt) : null,
+  rejectionReason: (i.rejectionReason as string | null) ?? null,
 });
 
 /**
@@ -139,7 +146,7 @@ export async function confirmIntent(tenantId: string, reference: string, by: { k
       if (by.kind === "MANUAL" && by.evidence.trim().length < 4) throw new MoneyError("Escribe la referencia o evidencia de la transferencia.");
       // Reclamo único: solo pasa de pendiente (o vencido sin cancelar) a pagado una vez.
       const claim = tx.sql.public.PaymentIntent.update({ status: "PAID", paidAt: instant(Date.now()), confirmedBy: by.kind, evidence: by.kind === "MANUAL" ? by.evidence.trim().slice(0, 200) : null, providerRefId: by.kind === "PROVIDER" ? by.externalId : null })
-        .where((f, fns) => fns.and(fns.eq(f.id, intent.id), fns.eq(f.tenantId, tenantId), fns.eq(f.status, "PENDING")))
+        .where((f, fns) => fns.and(fns.eq(f.id, intent.id), fns.eq(f.tenantId, tenantId), fns.or(fns.eq(f.status, "PENDING"), fns.eq(f.status, "VERIFYING"))))
         .returning("id")
         .build();
       if ((await tx.query(claim)).length === 0) return { ok: true as const, already: true };
@@ -229,4 +236,38 @@ export async function runReconciliation(tenantId: string, provider: string, day:
 export async function listReconciliations(tenantId: string, limit = 15) {
   const rows = await db.orm.public.ReconciliationRun.where({ tenantId }).orderBy((r) => r.createdAt.desc()).limit(limit).all();
   return rows.map((r) => ({ id: r.id, provider: r.provider, day: r.day, expected: toNumber(r.expected), reported: toNumber(r.reported), matched: r.matched, differences: (r.differences ?? []) as unknown as Reconciliation["differences"] }));
+}
+
+export type ProofResult = { ok: true } | { ok: false; message: string };
+
+/**
+ * El cliente avisa que pagó por transferencia (enlace público). El cobro pasa a «en verificación» con lo que escribió; NO se
+ * registra ningún ingreso: solo una persona autorizada (`confirmIntent`) o el proveedor lo confirman. Un cobro que no está
+ * pendiente, o que ya venció, no admite aviso.
+ */
+export async function submitProof(reference: string, note: string): Promise<ProofResult> {
+  if (!/^[a-z0-9]{10,30}$/.test(reference)) return { ok: false, message: "El enlace no es válido." };
+  const problem = validateProof(note);
+  if (problem) return { ok: false, message: problem };
+  const intent = await db.orm.public.PaymentIntent.where({ reference }).first();
+  if (!intent) return { ok: false, message: "El enlace no es válido." };
+  if (effectiveStatus(String(intent.status), String(intent.expiresAt)) !== "PENDING") return { ok: false, message: "Este cobro ya no está pendiente." };
+  const plan = db.sql.public.PaymentIntent.update({ status: "VERIFYING", proofNote: note.trim().slice(0, 200), proofAt: instant(Date.now()), rejectionReason: null })
+    .where((f, fns) => fns.and(fns.eq(f.id, intent.id), fns.eq(f.status, "PENDING")))
+    .returning("id")
+    .build();
+  if ((await db.transaction((tx) => tx.query(plan))).length === 0) return { ok: false, message: "Este cobro ya no está pendiente." };
+  return { ok: true };
+}
+
+/** Una persona autorizada rechaza el comprobante con un motivo: el cobro vuelve a pendiente para que el cliente reintente. */
+export async function rejectProof(tenantId: string, id: string, reason: string): Promise<ProofResult> {
+  const problem = validateRejection(reason);
+  if (problem) return { ok: false, message: problem };
+  const plan = db.sql.public.PaymentIntent.update({ status: "PENDING", rejectionReason: reason.trim().slice(0, 200) })
+    .where((f, fns) => fns.and(fns.eq(f.id, id), fns.eq(f.tenantId, tenantId), fns.eq(f.status, "VERIFYING")))
+    .returning("id")
+    .build();
+  if ((await db.transaction((tx) => tx.query(plan))).length === 0) return { ok: false, message: "Solo se rechazan los cobros en verificación." };
+  return { ok: true };
 }

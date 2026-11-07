@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { can } from "@/lib/core/auth/permissions";
-import { cancelIntent, confirmIntent, createIntent, refundIntent, runReconciliation, type IntentRow } from "@/lib/domains/finance/payments/intents-db";
+import { cancelIntent, confirmIntent, createIntent, refundIntent, rejectProof, runReconciliation, type IntentRow } from "@/lib/domains/finance/payments/intents-db";
 import { parseReport } from "@/lib/domains/finance/payments/intents";
 import type { Reconciliation } from "@/lib/domains/finance/payments/intents";
 import { logTenantAction } from "@/lib/core/tenancy/audit";
@@ -44,6 +44,17 @@ export async function confirmManualAction(slug: string, reference: string, evide
   await logTenantAction(ctx, "BIZ_ONLINE_PAYMENT", { action: "confirm_manual", reference });
   refresh(slug);
   return { ok: true, message: r.already ? "Ese cobro ya estaba pagado" : "Pago confirmado" };
+}
+
+/** Rechaza el comprobante de una transferencia en verificación: el cobro vuelve a pendiente con el motivo. */
+export async function rejectProofAction(slug: string, id: string, reason: string): Promise<CobroResult> {
+  const ctx = await ctxFor(slug, "business.manage");
+  if (!ctx) return { ok: false, message: "Solo el dueño o administración verifica pagos." };
+  const r = await rejectProof(ctx.tenantId, id, reason);
+  if (!r.ok) return r;
+  await logTenantAction(ctx, "BIZ_ONLINE_PAYMENT", { action: "reject_proof", id });
+  refresh(slug);
+  return { ok: true, message: "Comprobante rechazado: el cobro vuelve a pendiente" };
 }
 
 export async function refundAction(slug: string, id: string, amount: number, reason: string): Promise<CobroResult> {

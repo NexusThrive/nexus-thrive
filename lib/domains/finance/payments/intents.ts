@@ -12,8 +12,27 @@ export function newReference(): string {
   return [...bytes].map((b) => ALPHABET[b % ALPHABET.length]).join("");
 }
 
-export type IntentStatus = "PENDING" | "PAID" | "EXPIRED" | "FAILED" | "CANCELED";
-export const STATUS_LABELS: Record<IntentStatus, string> = { PENDING: "Pendiente", PAID: "Pagado", EXPIRED: "Vencido", FAILED: "Fallido", CANCELED: "Cancelado" };
+export type IntentStatus = "PENDING" | "VERIFYING" | "PAID" | "EXPIRED" | "FAILED" | "CANCELED";
+export const STATUS_LABELS: Record<IntentStatus, string> = { PENDING: "Pendiente", VERIFYING: "En verificación", PAID: "Pagado", EXPIRED: "Vencido", FAILED: "Fallido", CANCELED: "Cancelado" };
+
+/** Estados desde los que un cobro todavía puede confirmarse: pendiente, o con comprobante esperando verificación. */
+export const CONFIRMABLE_STATUSES = ["PENDING", "VERIFYING"] as const;
+
+/** Comprobante que escribe el cliente (número de transferencia, banco…): 4 a 200 caracteres. Un comprobante NO confirma el pago. */
+export function validateProof(note: string): string | null {
+  const t = note.trim();
+  if (t.length < 4) return "Escribe el número o referencia de tu transferencia.";
+  if (t.length > 200) return "El comprobante es muy largo (máximo 200 caracteres).";
+  return null;
+}
+
+/** Motivo de rechazo de un comprobante: 3 a 200 caracteres. */
+export function validateRejection(reason: string): string | null {
+  const t = reason.trim();
+  if (t.length < 3) return "Escribe por qué rechazas el comprobante.";
+  if (t.length > 200) return "El motivo es muy largo (máximo 200 caracteres).";
+  return null;
+}
 
 /** Un enlace pendiente cuyo plazo pasó se ve como vencido. */
 export function effectiveStatus(status: string, expiresAt: string | number, now: number = Date.now()): IntentStatus {

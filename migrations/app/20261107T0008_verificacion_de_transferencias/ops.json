@@ -1,0 +1,128 @@
+[
+  {
+    "id": "column.public.PaymentIntent.proofAt",
+    "label": "Add column \"proofAt\" to \"PaymentIntent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "proofAt",
+        "table": "PaymentIntent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"proofAt\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentIntent",
+          "proofAt"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"proofAt\"",
+        "sql": "ALTER TABLE \"public\".\"PaymentIntent\" ADD COLUMN \"proofAt\" timestamptz"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"proofAt\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentIntent",
+          "proofAt"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.PaymentIntent.proofNote",
+    "label": "Add column \"proofNote\" to \"PaymentIntent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "proofNote",
+        "table": "PaymentIntent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"proofNote\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentIntent",
+          "proofNote"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"proofNote\"",
+        "sql": "ALTER TABLE \"public\".\"PaymentIntent\" ADD COLUMN \"proofNote\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"proofNote\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentIntent",
+          "proofNote"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.PaymentIntent.rejectionReason",
+    "label": "Add column \"rejectionReason\" to \"PaymentIntent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "rejectionReason",
+        "table": "PaymentIntent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"rejectionReason\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentIntent",
+          "rejectionReason"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"rejectionReason\"",
+        "sql": "ALTER TABLE \"public\".\"PaymentIntent\" ADD COLUMN \"rejectionReason\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"rejectionReason\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentIntent",
+          "rejectionReason"
+        ]
+      }
+    ]
+  }
+]

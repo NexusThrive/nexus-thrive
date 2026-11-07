@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'74edc8efd274a0096cccffaa9480fda48511c122b0307360432c0778a154409e'>;
+  StorageHashBase<'9ed1f54e32ae6c51941d0175744c5cd16cd77ba61fba583b31b1c5581e04956e'>;
 export type ExecutionHash =
   ExecutionHashBase<'b3c7b5d32051253ae48e138e3a50fe7bd6e2d37d8329259f29b14a81e4d672a2'>;
 export type ProfileHash =
@@ -1107,10 +1107,13 @@ export type FieldOutputTypes = {
       readonly invoiceId: CodecTypes['pg/text@1']['output'] | null;
       readonly paidAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly paymentId: CodecTypes['pg/text@1']['output'] | null;
+      readonly proofAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly proofNote: CodecTypes['pg/text@1']['output'] | null;
       readonly provider: CodecTypes['pg/text@1']['output'];
       readonly providerRefId: CodecTypes['pg/text@1']['output'] | null;
       readonly reference: CodecTypes['pg/text@1']['output'];
       readonly refundedTotal: CodecTypes['pg/numeric@1']['output'];
+      readonly rejectionReason: CodecTypes['pg/text@1']['output'] | null;
       readonly status: CodecTypes['pg/text@1']['output'];
       readonly tenantId: CodecTypes['pg/text@1']['output'];
     };
@@ -2795,10 +2798,13 @@ export type FieldInputTypes = {
       readonly invoiceId: CodecTypes['pg/text@1']['input'] | null;
       readonly paidAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly paymentId: CodecTypes['pg/text@1']['input'] | null;
+      readonly proofAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly proofNote: CodecTypes['pg/text@1']['input'] | null;
       readonly provider: CodecTypes['pg/text@1']['input'];
       readonly providerRefId: CodecTypes['pg/text@1']['input'] | null;
       readonly reference: CodecTypes['pg/text@1']['input'];
       readonly refundedTotal: CodecTypes['pg/numeric@1']['input'];
+      readonly rejectionReason: CodecTypes['pg/text@1']['input'] | null;
       readonly status: CodecTypes['pg/text@1']['input'];
       readonly tenantId: CodecTypes['pg/text@1']['input'];
     };
@@ -4483,10 +4489,13 @@ export type StorageColumnTypes = {
       readonly invoiceId: CodecTypes['pg/text@1']['output'] | null;
       readonly paidAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly paymentId: CodecTypes['pg/text@1']['output'] | null;
+      readonly proofAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly proofNote: CodecTypes['pg/text@1']['output'] | null;
       readonly provider: CodecTypes['pg/text@1']['output'];
       readonly providerRefId: CodecTypes['pg/text@1']['output'] | null;
       readonly reference: CodecTypes['pg/text@1']['output'];
       readonly refundedTotal: CodecTypes['pg/numeric@1']['output'];
+      readonly rejectionReason: CodecTypes['pg/text@1']['output'] | null;
       readonly status: CodecTypes['pg/text@1']['output'];
       readonly tenantId: CodecTypes['pg/text@1']['output'];
     };
@@ -6171,10 +6180,13 @@ export type StorageColumnInputTypes = {
       readonly invoiceId: CodecTypes['pg/text@1']['input'] | null;
       readonly paidAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly paymentId: CodecTypes['pg/text@1']['input'] | null;
+      readonly proofAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly proofNote: CodecTypes['pg/text@1']['input'] | null;
       readonly provider: CodecTypes['pg/text@1']['input'];
       readonly providerRefId: CodecTypes['pg/text@1']['input'] | null;
       readonly reference: CodecTypes['pg/text@1']['input'];
       readonly refundedTotal: CodecTypes['pg/numeric@1']['input'];
+      readonly rejectionReason: CodecTypes['pg/text@1']['input'] | null;
       readonly status: CodecTypes['pg/text@1']['input'];
       readonly tenantId: CodecTypes['pg/text@1']['input'];
     };
@@ -8053,10 +8065,13 @@ export namespace Models {
     invoiceId: CodecTypes['pg/text@1']['output'] | null;
     paidAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
     paymentId: CodecTypes['pg/text@1']['output'] | null;
+    proofAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+    proofNote: CodecTypes['pg/text@1']['output'] | null;
     provider: CodecTypes['pg/text@1']['output'];
     providerRefId: CodecTypes['pg/text@1']['output'] | null;
     reference: CodecTypes['pg/text@1']['output'];
     refundedTotal: CodecTypes['pg/numeric@1']['output'];
+    rejectionReason: CodecTypes['pg/text@1']['output'] | null;
     status: CodecTypes['pg/text@1']['output'];
     tenantId: CodecTypes['pg/text@1']['output'];
     refunds: public_PaymentRefund[];
@@ -15866,6 +15881,16 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
                 };
+                readonly proofAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: true;
+                };
+                readonly proofNote: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
                 readonly provider: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
@@ -15893,6 +15918,11 @@ type ContractBase = Omit<
                     readonly kind: 'literal';
                     readonly value: DefaultLiteralValue<'pg/numeric@1', '0'>;
                   };
+                };
+                readonly rejectionReason: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
                 };
                 readonly status: {
                   readonly nativeType: 'text';
@@ -29077,6 +29107,17 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly proofAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly proofNote: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly provider: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -29092,6 +29133,10 @@ type ContractBase = Omit<
               readonly refundedTotal: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly rejectionReason: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly status: {
                 readonly nullable: false;
@@ -29144,10 +29189,13 @@ type ContractBase = Omit<
                 readonly invoiceId: { readonly column: 'invoiceId' };
                 readonly paidAt: { readonly column: 'paidAt' };
                 readonly paymentId: { readonly column: 'paymentId' };
+                readonly proofAt: { readonly column: 'proofAt' };
+                readonly proofNote: { readonly column: 'proofNote' };
                 readonly provider: { readonly column: 'provider' };
                 readonly providerRefId: { readonly column: 'providerRefId' };
                 readonly reference: { readonly column: 'reference' };
                 readonly refundedTotal: { readonly column: 'refundedTotal' };
+                readonly rejectionReason: { readonly column: 'rejectionReason' };
                 readonly status: { readonly column: 'status' };
                 readonly tenantId: { readonly column: 'tenantId' };
               };

@@ -9,6 +9,10 @@ export async function confirmManualAction(_s: string, _r: string, evidence: stri
   await wait();
   return evidence.length < 4 ? { ok: false as const, message: "Escribe la referencia o evidencia de la transferencia." } : { ok: true as const, message: "Pago confirmado" };
 }
+export async function rejectProofAction(_s: string, _id: string, reason: string) {
+  await wait();
+  return reason.trim().length < 3 ? { ok: false as const, message: "Escribe por qué rechazas el comprobante." } : { ok: true as const, message: "Comprobante rechazado: el cobro vuelve a pendiente" };
+}
 export async function refundAction(_s: string, _id: string, amount: number) {
   await wait();
   return amount > 150000 ? { ok: false as const, message: "Solo se puede reembolsar 150.000." } : { ok: true as const, message: "Reembolso registrado. Quedan 0 cobrados" };

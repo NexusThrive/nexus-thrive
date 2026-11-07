@@ -15,7 +15,7 @@ import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useToast } from "@/components/molecules/toast";
 import { FormDialog } from "@/components/organisms/form-sheet";
 import { AdaptiveTable } from "@/components/organisms/adaptive-table";
-import { cancelIntentAction, confirmManualAction, createIntentAction, reconcileAction, refundAction } from "@/app/[tenant]/(app)/cobros/actions";
+import { cancelIntentAction, confirmManualAction, createIntentAction, reconcileAction, refundAction, rejectProofAction } from "@/app/[tenant]/(app)/cobros/actions";
 import { STATUS_LABELS, payButtonHtml, type Reconciliation } from "@/lib/domains/finance/payments/intents";
 import type { IntentRow } from "@/lib/domains/finance/payments/intents-db";
 import { formatCurrency } from "@/lib/foundation/format";
@@ -23,8 +23,8 @@ import { DateInput } from "@/components/molecules/date-input";
 
 type Run = { id: string; provider: string; day: string; expected: number; reported: number; matched: number; differences: Reconciliation["differences"] };
 type Tab = "links" | "recon";
-type Small = { kind: "confirm" | "refund" | "share"; row: IntentRow } | null;
-const TONE = { PENDING: "warning", PAID: "success", EXPIRED: "secondary", FAILED: "destructive", CANCELED: "secondary" } as const;
+type Small = { kind: "confirm" | "reject" | "refund" | "share"; row: IntentRow } | null;
+const TONE = { PENDING: "warning", VERIFYING: "warning", PAID: "success", EXPIRED: "secondary", FAILED: "destructive", CANCELED: "secondary" } as const;
 const KIND_TEXT = { missing_in_nexus: "El proveedor lo reporta y NEXUS no lo tiene", missing_in_provider: "NEXUS lo confirmó y el proveedor no lo reporta", amount_mismatch: "El monto no coincide" } as const;
 
 export default function CobrosView({ slug, baseUrl, intents, runs, canAdmin, today, gateways = [] }: { slug: string; baseUrl: string; intents: IntentRow[]; runs: Run[]; canAdmin: boolean; today: string; gateways?: { value: string; label: string }[] }) {
@@ -50,7 +50,7 @@ export default function CobrosView({ slug, baseUrl, intents, runs, canAdmin, tod
     <div className="grid gap-4">
       {canAdmin ? (
         <div className="max-w-full overflow-x-auto pb-1">
-          <SegmentedControl ariaLabel="Sección" value={tab} onChange={setTab} options={[{ value: "links", label: "Enlaces de cobro", count: intents.filter((i) => i.status === "PENDING").length || undefined }, { value: "recon", label: "Conciliación" }]} />
+          <SegmentedControl ariaLabel="Sección" value={tab} onChange={setTab} options={[{ value: "links", label: "Enlaces de cobro", count: intents.filter((i) => i.status === "PENDING" || i.status === "VERIFYING").length || undefined }, { value: "recon", label: "Conciliación" }]} />
         </div>
       ) : null}
 
@@ -61,6 +61,11 @@ export default function CobrosView({ slug, baseUrl, intents, runs, canAdmin, tod
               <Plus aria-hidden="true" className="size-4" /> Nuevo cobro
             </button>
           </div>
+          {canAdmin && intents.some((i) => i.status === "VERIFYING") ? (
+            <Alert tone="warning">
+              {intents.filter((i) => i.status === "VERIFYING").length === 1 ? "Hay 1 transferencia por verificar." : `Hay ${intents.filter((i) => i.status === "VERIFYING").length} transferencias por verificar.`} El comprobante no marca el pago como recibido: confírmalo cuando lo veas en tu banco.
+            </Alert>
+          ) : null}
           {intents.length === 0 ? (
             <EmptyState title="Aún no hay cobros en línea" description="Crea un enlace, compártelo por WhatsApp o ponlo como botón en tu página. Se marca pagado cuando llega la confirmación oficial." action={<button type="button" onClick={() => setCreating(true)} className={buttonVariants()}><Plus aria-hidden="true" className="size-4" /> Nuevo cobro</button>} />
           ) : (
@@ -76,12 +81,20 @@ export default function CobrosView({ slug, baseUrl, intents, runs, canAdmin, tod
                   <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                     <span>Vence {r.expiresAt.slice(0, 10)}</span>
                     {r.confirmedBy ? <span>· confirmado por {r.confirmedBy === "PROVIDER" ? "la pasarela" : "una persona"}</span> : null}
+                    {r.status === "VERIFYING" && r.proofNote ? <span>· el cliente avisó: «{r.proofNote}»</span> : null}
+                    {r.status === "PENDING" && r.rejectionReason ? <span>· comprobante rechazado: {r.rejectionReason}</span> : null}
                     <span className="ml-auto flex flex-wrap gap-2">
                       {r.status === "PENDING" ? (
                         <>
                           <button type="button" onClick={() => setSmall({ kind: "share", row: r })} className={buttonVariants({ variant: "outline", size: "sm" })}>Compartir</button>
                           {canAdmin ? <button type="button" onClick={() => setSmall({ kind: "confirm", row: r })} className={buttonVariants({ variant: "outline", size: "sm" })}>Confirmar pago</button> : null}
                           <button type="button" aria-label={`Cancelar ${r.description}`} onClick={async () => { const x = await cancelIntentAction(slug, r.id); toast(x.message, x.ok ? "success" : "error"); if (x.ok) router.refresh(); }} className={buttonVariants({ variant: "ghost", size: "sm" })}>Cancelar</button>
+                        </>
+                      ) : null}
+                      {r.status === "VERIFYING" && canAdmin ? (
+                        <>
+                          <button type="button" onClick={() => setSmall({ kind: "confirm", row: r })} className={buttonVariants({ variant: "outline", size: "sm" })}>Confirmar pago</button>
+                          <button type="button" onClick={() => setSmall({ kind: "reject", row: r })} className={buttonVariants({ variant: "ghost", size: "sm" })}>Rechazar comprobante</button>
                         </>
                       ) : null}
                       {r.status === "PAID" && canAdmin && r.refundedTotal < r.amount ? <button type="button" onClick={() => setSmall({ kind: "refund", row: r })} className={buttonVariants({ variant: "outline", size: "sm" })}>Reembolsar</button> : null}
@@ -164,6 +177,23 @@ export default function CobrosView({ slug, baseUrl, intents, runs, canAdmin, tod
         onSuccess={({ message }) => done(message)}
       >
         {({ fieldErrors }) => <Field label="Referencia o evidencia" required error={fieldErrors.evidence}>{(c) => <input {...c} name="evidence" autoComplete="off" maxLength={200} className={inputClasses} placeholder="Referencia del pago" />}</Field>}
+      </FormDialog>
+
+      <FormDialog
+        open={small?.kind === "reject"}
+        onOpenChange={(o) => !o && setSmall(null)}
+        title="Rechazar comprobante"
+        description={small ? `${small.row.description} · ${formatCurrency(small.row.amount)}. El cobro vuelve a pendiente y se lo puedes decir al cliente.` : undefined}
+        submitLabel="Rechazar comprobante"
+        pendingLabel="Rechazando…"
+        destructive
+        onSubmit={async (d) => {
+          const r = await rejectProofAction(slug, small!.row.id, String(d.get("reason") ?? ""));
+          return r.ok ? { ok: true, message: r.message } : { ok: false, message: r.message, fieldErrors: { reason: r.message } };
+        }}
+        onSuccess={({ message }) => done(message)}
+      >
+        {({ fieldErrors }) => <Field label="Motivo" required error={fieldErrors.reason}>{(c) => <input {...c} name="reason" autoComplete="off" maxLength={200} className={inputClasses} placeholder="Por ejemplo: el monto no coincide" />}</Field>}
       </FormDialog>
 
       <FormDialog

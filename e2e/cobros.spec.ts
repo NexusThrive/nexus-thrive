@@ -69,4 +69,21 @@ test.describe("Cobros en línea", () => {
     await page.getByRole("option", { name: "Pasarela de prueba" }).click();
     await expect(pasarela).toContainText("Pasarela de prueba");
   });
+
+  test("transferencia en verificación: aviso arriba, confirmar o rechazar con motivo", async ({ page }) => {
+    await openStory(page, "páginas-dinero-cobros-en-línea--en-verificacion");
+    await expect(page.getByText("Hay 1 transferencia por verificar.")).toBeVisible();
+    await expect(page.getByText("En verificación")).toBeVisible();
+    await expect(page.getByText(/el cliente avisó: «Bancolombia 88231»/)).toBeVisible();
+    await expect(page.getByText(/comprobante rechazado: El monto no coincide/)).toBeVisible();
+    await page.getByRole("button", { name: "Rechazar comprobante" }).click();
+    const d = page.getByRole("dialog", { name: "Rechazar comprobante" });
+    await d.getByLabel(/Motivo/).fill("x");
+    await d.getByRole("button", { name: "Rechazar comprobante" }).click();
+    await expect(d.getByText(/por qué rechazas/).first()).toBeVisible();
+    await d.getByLabel(/Motivo/).fill("El monto no coincide");
+    await d.getByRole("button", { name: "Rechazar comprobante" }).click();
+    await expect(page.getByText("Comprobante rechazado: el cobro vuelve a pendiente")).toBeVisible();
+    await expectNoAxeViolations(page);
+  });
 });

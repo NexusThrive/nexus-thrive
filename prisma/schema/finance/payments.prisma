@@ -62,9 +62,12 @@ model Payment {
 /// Campos:
 /// - `reference`: Código público del enlace (`/pay/<reference>`): imposible de adivinar, único en
 ///   toda la plataforma.
-/// - `status`: PENDING | PAID | EXPIRED | FAILED | CANCELED
+/// - `status`: PENDING | VERIFYING | PAID | EXPIRED | FAILED | CANCELED. VERIFYING = el cliente avisó que pagó por
+///   transferencia y una persona autorizada debe verificarlo; un comprobante nunca marca el pago como recibido.
 /// - `channel`: LINK | QR
 /// - `invoiceId`: Cuenta de cobro que paga (el cobro baja su saldo).
+/// - `proofNote`: Referencia o comprobante que el cliente escribió al avisar su pago (queda como historia).
+/// - `rejectionReason`: Por qué una persona rechazó el comprobante; el cobro vuelve a PENDING.
 /// - `confirmedBy`: Cómo se confirmó: PROVIDER (webhook) | MANUAL (transferencia con evidencia).
 model PaymentIntent {
   id            String   @id @default(uuid())
@@ -82,6 +85,9 @@ model PaymentIntent {
   paidAt        DateTime?
   confirmedBy   String?
   evidence      String?
+  proofNote     String?
+  proofAt       DateTime?
+  rejectionReason String?
   providerRefId String?
   paymentId     String?
   refundedTotal Decimal  @default(0)
