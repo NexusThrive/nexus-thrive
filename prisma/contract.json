@@ -232,6 +232,10 @@
       "model": "NumberingResolution",
       "namespace": "public"
     },
+    "Obligation": {
+      "model": "Obligation",
+      "namespace": "public"
+    },
     "OutboxEvent": {
       "model": "OutboxEvent",
       "namespace": "public"
@@ -10307,6 +10311,164 @@
               "table": "NumberingResolution"
             }
           },
+          "Obligation": {
+            "fields": {
+              "amount": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "customerId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "debtorName": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "description": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "dueDate": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "originId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "originType": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "paidTotal": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "amount": {
+                  "column": "amount"
+                },
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "customerId": {
+                  "column": "customerId"
+                },
+                "debtorName": {
+                  "column": "debtorName"
+                },
+                "description": {
+                  "column": "description"
+                },
+                "dueDate": {
+                  "column": "dueDate"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "originId": {
+                  "column": "originId"
+                },
+                "originType": {
+                  "column": "originType"
+                },
+                "paidTotal": {
+                  "column": "paidTotal"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "Obligation"
+            }
+          },
           "OutboxEvent": {
             "fields": {
               "createdAt": {
@@ -19375,6 +19537,21 @@
                   "namespace": "public"
                 }
               },
+              "obligations": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "Obligation",
+                  "namespace": "public"
+                }
+              },
               "outboxEvents": {
                 "cardinality": "1:N",
                 "on": {
@@ -22677,6 +22854,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "NumberingResolution"
+            },
+            "Obligation": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "Obligation"
             },
             "OutboxEvent": {
               "kind": "rls",
@@ -30232,6 +30414,140 @@
                 ]
               },
               "uniques": []
+            },
+            "Obligation": {
+              "columns": {
+                "amount": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "createdAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "customerId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "debtorName": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "description": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "dueDate": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "originId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "originType": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "paidTotal": {
+                  "codecId": "pg/numeric@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "0"
+                  },
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "OPEN"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Obligation"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "Obligation_tenantId_idx_c93ed4f1",
+                  "prefix": "Obligation_tenantId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "status",
+                    "dueDate"
+                  ],
+                  "name": "Obligation_tenantId_status_dueDate_idx_8121dcd9",
+                  "prefix": "Obligation_tenantId_status_dueDate_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tenantId",
+                    "originType",
+                    "originId"
+                  ]
+                }
+              ]
             },
             "OutboxEvent": {
               "columns": {
@@ -39221,10 +39537,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "fbe4a87ab93b742a4693ff5c0c38c3298161bfc6048ebf61ac2309e6605547cf"
+    "storageHash": "74edc8efd274a0096cccffaa9480fda48511c122b0307360432c0778a154409e"
   },
   "execution": {
-    "executionHash": "780b65cd4291ef2d83f36d9d8692990b1b6223156b9157c28c4a5b6821b37541",
+    "executionHash": "b3c7b5d32051253ae48e138e3a50fe7bd6e2d37d8329259f29b14a81e4d672a2",
     "mutations": {
       "defaults": [
         {
@@ -40212,6 +40528,32 @@
           "ref": {
             "entry": "NumberingResolution",
             "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "Obligation",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "Obligation",
+            "field": "updatedAt",
             "namespace": "public"
           }
         },

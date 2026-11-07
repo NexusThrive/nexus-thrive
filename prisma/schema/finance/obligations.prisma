@@ -1,0 +1,30 @@
+// use prisma-8
+
+/// Obligación: lo que un cliente le debe al negocio por un pedido de la tienda o una membresía, con monto, saldo y
+/// vencimiento. Las facturas y cuentas de cobro ya son su propia obligación (`Invoice.total` y `Invoice.paidTotal`), por
+/// eso no se duplican aquí. La cartera junta ambas (HU-obligaciones-01, ADR 0008).
+///
+/// Campos:
+/// - `originType`: STORE_ORDER | MEMBERSHIP. Con `originId` es único por negocio: un origen tiene una sola obligación.
+/// - `status`: OPEN | PAID | VOID. Se paga cuando `paidTotal` alcanza `amount`; se anula si el origen se cancela.
+/// - `debtorName`: Nombre de quien debe, tal como estaba al crearla (no cambia si luego se edita el cliente).
+model Obligation {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  originType  String
+  originId    String
+  customerId  String?
+  debtorName  String
+  description String
+  amount      Decimal
+  paidTotal   Decimal  @default(0)
+  dueDate     DateTime
+  status      String   @default("OPEN")
+  createdAt   DateTime @default(now())
+  updatedAt   temporal.updatedAt()
+
+  @@unique([tenantId, originType, originId])
+  @@index([tenantId, status, dueDate])
+  @@rls
+}

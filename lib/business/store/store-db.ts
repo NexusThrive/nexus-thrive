@@ -2,6 +2,7 @@ import { emitEvent } from "@/lib/core/events/outbox";
 import { toNumber } from "@/lib/foundation/format";
 import { canTransitionOrder, resolveLimits, validateAmount } from "@/lib/foundation/kernel/integrity";
 import { paymentGatewayPort } from "./payment-gateway-port";
+import { openObligation, voidObligations } from "@/lib/business/sales/obligations";
 import { db } from "@/prisma/db";
 import { sanitizeOrigin } from "@/lib/business/growth/growth";
 import { ABANDON_AFTER_MINUTES, isAbandoned, normalizeCart, orderCode, orderMessage, orderTotals, validateCustomer, type CartLine, type CustomerData } from "./cart";
@@ -47,6 +48,8 @@ export async function placeOrder(siteSlug: string, input: { customer: CustomerDa
         const number = (last?.number ?? 0) + 1;
         const created = await tx.orm.public.StoreOrder.create({ tenantId, number, customerName: c.name.trim().slice(0, 120), phone: c.phone.trim().slice(0, 30), email: c.email.trim().toLowerCase().slice(0, 120) || null, address: c.address.trim().slice(0, 200) || null, city: c.city.trim().slice(0, 80) || null, notes: c.notes.trim().slice(0, 300) || null, total: total.toFixed(2), origin: sanitizeOrigin(input.origin) as never });
         await tx.orm.public.StoreOrderLine.createAll(lines.map((l) => ({ tenantId, orderId: created.id, productId: l.productId, name: l.name.slice(0, 160), quantity: l.quantity, unitPrice: l.unitPrice.toFixed(2), taxRatePct: l.taxRatePct.toFixed(2) }))).toArray();
+        // Lo que el cliente debe: aparece en cartera con su saldo y vence cuando vence el enlace de cobro (72 h).
+        await openObligation(tx, tenantId, { originType: "STORE_ORDER", originId: created.id, debtorName: c.name, description: `Pedido ${orderCode(number)}`, amount: total, dueDate: Temporal.Instant.fromEpochMilliseconds(Date.now() + 72 * 3_600_000) });
         return created;
       });
       const intent = await paymentGatewayPort.use().createIntent(tenantId, { amount: total, description: `Pedido ${orderCode(order.number)} · ${tenant.name}`, expiresInHours: 72 }, "tienda");
@@ -87,6 +90,7 @@ export async function cancelOrder(tenantId: string, id: string): Promise<{ ok: t
   if (!canTransitionOrder(o.status, "CANCELED")) return { ok: false, message: "Este pedido ya no se puede cancelar." };
   await db.transaction(async (tx) => {
     await tx.orm.public.StoreOrder.where({ tenantId, id }).update({ status: "CANCELED" });
+    await voidObligations(tx, tenantId, "STORE_ORDER", id);
     await emitEvent(tx, tenantId, { type: "order.canceled", resourceType: "store_order", resourceId: id, payload: { order_id: id, code: orderCode(o.number), total: toNumber(o.total), currency: "COP" } });
   });
   if (o.intentId) {
@@ -111,6 +115,7 @@ export async function markAbandonedOrders(nowMs = Date.now(), tenantIds?: readon
     const claim = db.sql.public.StoreOrder.update({ status: "ABANDONED", abandonedNotifiedAt: Temporal.Instant.fromEpochMilliseconds(nowMs) }).where((f, fns) => fns.and(fns.eq(f.id, o.id), fns.eq(f.status, "PENDING_PAYMENT"))).returning("id").build();
     const won = await db.transaction(async (tx) => {
       if ((await tx.query(claim)).length === 0) return false;
+      await voidObligations(tx, o.tenantId, "STORE_ORDER", o.id);
       await emitEvent(tx, o.tenantId, { type: "cart.abandoned", resourceType: "store_order", resourceId: o.id, payload: { order_id: o.id, code: orderCode(o.number), total: toNumber(o.total), customer: { name: o.customerName, phone: o.phone, email: o.email } } });
       return true;
     });

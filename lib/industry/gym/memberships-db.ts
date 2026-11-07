@@ -1,5 +1,6 @@
 import { recordCharge } from "@/lib/business/sales/charge";
 import { moneyTransaction } from "@/lib/business/sales/money-service";
+import { openMembershipDebt } from "./membership-debt";
 import type { db } from "@/prisma/db";
 
 /**
@@ -32,6 +33,7 @@ export async function createMembershipWithCharge(
   const { charge, ...fields } = input;
   await moneyTransaction(async (tx) => {
     const membership = await tx.orm.public.Membership.create({ tenantId, ...fields });
+    await openMembershipDebt(tx, tenantId, { membershipId: membership.id, customerId: fields.customerId, amount: Number(fields.price), description: "Membresía — inscripción", dueDate: fields.startDate });
     if (charge) {
       await recordCharge(
         tenantId,
@@ -66,6 +68,7 @@ export async function renewMembershipWithCharge(
 ) {
   await moneyTransaction(async (tx) => {
     await tx.orm.public.Membership.where({ id: input.membershipId, tenantId }).update({ endDate: input.endDate, status: input.status });
+    await openMembershipDebt(tx, tenantId, { membershipId: input.membershipId, renewalOf: input.endDate, customerId: input.customerId, amount: Number(input.price), description: "Membresía — renovación", dueDate: Temporal.Instant.fromEpochMilliseconds(Date.now()) });
     if (input.charge) {
       await recordCharge(
         tenantId,

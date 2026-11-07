@@ -3,6 +3,7 @@ import { emitEvent } from "@/lib/core/events/outbox";
 import { toNumber } from "@/lib/foundation/format";
 import { applyStockMovement, StockError } from "@/lib/business/inventory/stock-service";
 import type { MoneyTx } from "@/lib/business/sales/money-service";
+import { applyToObligation } from "@/lib/business/sales/obligations";
 import { orderCode } from "./cart";
 
 /**
@@ -35,6 +36,7 @@ export async function settleStoreOrder(tx: MoneyTx, tenantId: string, orderId: s
       review = `Sin existencias suficientes de «${p.name}»: revisa el pedido y coordina con el cliente.`;
     }
   }
+  await applyToObligation(tx, tenantId, "STORE_ORDER", orderId, toNumber(order.total));
   await tx.orm.public.StoreOrder.where({ tenantId, id: orderId }).update({ status: "PAID", paidAt: Temporal.Instant.fromEpochMilliseconds(Date.now()), documentId, review });
   await emitEvent(tx, tenantId, { type: "order.paid", resourceType: "store_order", resourceId: orderId, payload: { order_id: orderId, code: orderCode(order.number), total: toNumber(order.total), currency: "COP", needs_review: review !== null, document_id: documentId } });
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Badge } from "@/components/atoms/badge";
@@ -90,11 +91,17 @@ function Panel({ slug, side, cartera }: { slug: string; side: Side; cartera: Car
               key: "actions",
               header: "Acciones",
               role: "action",
-              cell: (r) => (
-                <button type="button" onClick={() => setPaying(r)} aria-label={`${word.action} · ${r.party} ${r.number}`} className={buttonVariants({ variant: "outline", size: "sm" })}>
-                  {word.action}
-                </button>
-              ),
+              cell: (r) =>
+                // Un pedido o una membresía se cobra desde su propia pantalla; solo las cuentas se abonan aquí.
+                r.origin === "STORE_ORDER" || r.origin === "MEMBERSHIP" ? (
+                  <Link href={`/${slug}/${r.origin === "STORE_ORDER" ? "pedidos-tienda" : "memberships"}`} aria-label={`Ver ${r.origin === "STORE_ORDER" ? "pedido" : "membresía"} · ${r.party} ${r.number}`} className={buttonVariants({ variant: "outline", size: "sm" })}>
+                    {r.origin === "STORE_ORDER" ? "Ver pedido" : "Ver membresía"}
+                  </Link>
+                ) : (
+                  <button type="button" onClick={() => setPaying(r)} aria-label={`${word.action} · ${r.party} ${r.number}`} className={buttonVariants({ variant: "outline", size: "sm" })}>
+                    {word.action}
+                  </button>
+                ),
             },
           ]}
         />

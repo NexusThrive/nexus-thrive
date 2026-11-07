@@ -22,7 +22,7 @@ Prisma lee todos los `.prisma` de esta carpeta como **un solo esquema** (`prisma
 | `core/` | Organización, identidad y seguridad compartidas | `tenant`, `identity`, `team`, `parties`, `audit`, `files` |
 | `platform/` | Operación global de Nexus como SaaS | `settings`, `crm`, `support`, `billing` |
 | `business/` | Capacidades empresariales generales | `customers`, `catalog`, `inventory`, `sales`, `purchasing`, `pos`, `store`, `scheduling`, `inbox`, `benefits` |
-| `finance/` | Dinero: pagos, caja, impuestos, contabilidad | `payments`, `cash`, `tax`, `payables`, `accounting` |
+| `finance/` | Dinero: pagos, caja, impuestos, contabilidad | `payments`, `cash`, `tax`, `payables`, `obligations`, `accounting` |
 | `integrations/` | API, eventos y proveedores externos | `api`, `events`, `providers` |
 | `experience/` | Presencia digital, sitio y reputación | `presence`, `site`, `reputation` |
 | `industry/construction/` | Obras: APU, presupuesto, planificación, bitácora | `apu`, `quotes`, `projects`, `budget`, `planning`, `field-log` |

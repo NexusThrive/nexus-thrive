@@ -9,6 +9,7 @@ import { DUPLICATE_WINDOW_SECONDS, isDuplicatePayment, resolveLimits, validateAm
 import { accountingPort } from "./accounting-port";
 import { todayCO } from "@/lib/foundation/dates/plain-date";
 import { MoneyError } from "./money-error";
+import { applyToObligation } from "./obligations";
 import { receiptCode } from "./invoice";
 import type { DocumentLineInput } from "./commercial-document";
 import { insertDocument, issueCreditNote, saleDocumentOfPayment } from "./documents-db";
@@ -153,6 +154,8 @@ export async function recordIncome(tx: MoneyTx, tenantId: string, input: IncomeI
   });
 
   const receipt = receiptCode(receiptNumber);
+  // El cobro baja el saldo de la deuda de la membresía (si la había): inscripción o renovación.
+  if (status === "APPROVED" && input.sourceType === "MEMBERSHIP" && input.sourceId) await applyToObligation(tx, tenantId, "MEMBERSHIP", input.sourceId, Number(amount));
   if (status === "APPROVED") {
     const payer = input.customerId ? await tx.orm.public.Customer.where({ tenantId, id: input.customerId }).select("partyId").first() : null;
     await accountingPort.use().record(

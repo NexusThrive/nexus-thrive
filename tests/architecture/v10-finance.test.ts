@@ -130,9 +130,9 @@ describe("M5.5 · domains/finance/receivables", () => {
     expect(c?.byPath).toBe(true);
   });
 
-  test("solo depende de Foundation, del kernel, de Business (dinero), de accounting y de tax", () => {
+  test("solo depende de Foundation, del kernel, de Business (dinero y obligaciones), de accounting y de tax", () => {
     const permitidos =
-      /^(@\/prisma\/db|@\/lib\/foundation\/format|@\/lib\/foundation\/kernel\/aging|@\/lib\/business\/sales\/money-service|@\/lib\/domains\/finance\/(accounting\/ledger-db|tax\/tax))$/;
+      /^(@\/prisma\/db|@\/lib\/foundation\/format|@\/lib\/foundation\/kernel\/aging|@\/lib\/business\/sales\/money-service|@\/lib\/business\/sales\/obligations|@\/lib\/domains\/finance\/(accounting\/ledger-db|tax\/tax))$/;
     for (const spec of importsOf(file)) expect(spec).toMatch(permitidos);
   });
 

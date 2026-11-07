@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'fbe4a87ab93b742a4693ff5c0c38c3298161bfc6048ebf61ac2309e6605547cf'>;
+  StorageHashBase<'74edc8efd274a0096cccffaa9480fda48511c122b0307360432c0778a154409e'>;
 export type ExecutionHash =
-  ExecutionHashBase<'780b65cd4291ef2d83f36d9d8692990b1b6223156b9157c28c4a5b6821b37541'>;
+  ExecutionHashBase<'b3c7b5d32051253ae48e138e3a50fe7bd6e2d37d8329259f29b14a81e4d672a2'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -1020,6 +1020,21 @@ export type FieldOutputTypes = {
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly validFrom: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly validTo: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
+    readonly Obligation: {
+      readonly amount: CodecTypes['pg/numeric@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly customerId: CodecTypes['pg/text@1']['output'] | null;
+      readonly debtorName: CodecTypes['pg/text@1']['output'];
+      readonly description: CodecTypes['pg/text@1']['output'];
+      readonly dueDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly originId: CodecTypes['pg/text@1']['output'];
+      readonly originType: CodecTypes['pg/text@1']['output'];
+      readonly paidTotal: CodecTypes['pg/numeric@1']['output'];
+      readonly status: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly OutboxEvent: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -2694,6 +2709,21 @@ export type FieldInputTypes = {
       readonly validFrom: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly validTo: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
+    readonly Obligation: {
+      readonly amount: CodecTypes['pg/numeric@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly customerId: CodecTypes['pg/text@1']['input'] | null;
+      readonly debtorName: CodecTypes['pg/text@1']['input'];
+      readonly description: CodecTypes['pg/text@1']['input'];
+      readonly dueDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly originId: CodecTypes['pg/text@1']['input'];
+      readonly originType: CodecTypes['pg/text@1']['input'];
+      readonly paidTotal: CodecTypes['pg/numeric@1']['input'];
+      readonly status: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
     readonly OutboxEvent: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
@@ -4367,6 +4397,21 @@ export type StorageColumnTypes = {
       readonly validFrom: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly validTo: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
+    readonly Obligation: {
+      readonly amount: CodecTypes['pg/numeric@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly customerId: CodecTypes['pg/text@1']['output'] | null;
+      readonly debtorName: CodecTypes['pg/text@1']['output'];
+      readonly description: CodecTypes['pg/text@1']['output'];
+      readonly dueDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly originId: CodecTypes['pg/text@1']['output'];
+      readonly originType: CodecTypes['pg/text@1']['output'];
+      readonly paidTotal: CodecTypes['pg/numeric@1']['output'];
+      readonly status: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    };
     readonly OutboxEvent: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
@@ -6039,6 +6084,21 @@ export type StorageColumnInputTypes = {
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly validFrom: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly validTo: CodecTypes['pg/timestamptz-temporal@1']['input'];
+    };
+    readonly Obligation: {
+      readonly amount: CodecTypes['pg/numeric@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly customerId: CodecTypes['pg/text@1']['input'] | null;
+      readonly debtorName: CodecTypes['pg/text@1']['input'];
+      readonly description: CodecTypes['pg/text@1']['input'];
+      readonly dueDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly originId: CodecTypes['pg/text@1']['input'];
+      readonly originType: CodecTypes['pg/text@1']['input'];
+      readonly paidTotal: CodecTypes['pg/numeric@1']['input'];
+      readonly status: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
     readonly OutboxEvent: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -7888,6 +7948,23 @@ export namespace Models {
     tenant: public_Tenant;
     readonly [RelationKeys]?: 'tenant';
   };
+  export type public_Obligation = {
+    amount: CodecTypes['pg/numeric@1']['output'];
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    customerId: CodecTypes['pg/text@1']['output'] | null;
+    debtorName: CodecTypes['pg/text@1']['output'];
+    description: CodecTypes['pg/text@1']['output'];
+    dueDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    id: CodecTypes['pg/text@1']['output'];
+    originId: CodecTypes['pg/text@1']['output'];
+    originType: CodecTypes['pg/text@1']['output'];
+    paidTotal: CodecTypes['pg/numeric@1']['output'];
+    status: CodecTypes['pg/text@1']['output'];
+    tenantId: CodecTypes['pg/text@1']['output'];
+    updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'tenant';
+  };
   export type public_OutboxEvent = {
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     id: CodecTypes['pg/text@1']['output'];
@@ -8819,6 +8896,7 @@ export namespace Models {
     memberships: public_Membership[];
     modules: public_TenantModule[];
     numberingResolutions: public_NumberingResolution[];
+    obligations: public_Obligation[];
     outboxEvents: public_OutboxEvent[];
     parties: public_Party[];
     partyRoles: public_PartyRole[];
@@ -8915,6 +8993,7 @@ export namespace Models {
       | 'memberships'
       | 'modules'
       | 'numberingResolutions'
+      | 'obligations'
       | 'outboxEvents'
       | 'parties'
       | 'partyRoles'
@@ -9263,6 +9342,7 @@ export declare const models: {
     Membership: Models.public_Membership;
     ModuleSetting: Models.public_ModuleSetting;
     NumberingResolution: Models.public_NumberingResolution;
+    Obligation: Models.public_Obligation;
     OutboxEvent: Models.public_OutboxEvent;
     Party: Models.public_Party;
     PartyRole: Models.public_PartyRole;
@@ -15115,6 +15195,116 @@ type ContractBase = Omit<
                   readonly source: {
                     readonly namespaceId: 'public' & NamespaceId;
                     readonly tableName: 'NumberingResolution';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly Obligation: {
+              columns: {
+                readonly amount: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly customerId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly debtorName: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly description: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly dueDate: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly originId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly originType: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly paidTotal: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/numeric@1', '0'>;
+                  };
+                };
+                readonly status: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'OPEN'>;
+                  };
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly updatedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [
+                { readonly columns: readonly ['tenantId', 'originType', 'originId'] },
+              ];
+              indexes: readonly [
+                {
+                  readonly name: 'Obligation_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'Obligation_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'Obligation_tenantId_status_dueDate_idx_8121dcd9';
+                  readonly prefix: 'Obligation_tenantId_status_dueDate_idx';
+                  readonly columns: readonly ['tenantId', 'status', 'dueDate'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Obligation';
                     readonly columns: readonly ['tenantId'];
                   };
                   readonly target: {
@@ -22446,6 +22636,10 @@ type ContractBase = Omit<
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'NumberingResolution';
     };
+    readonly Obligation: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'Obligation';
+    };
     readonly OutboxEvent: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'OutboxEvent';
@@ -28266,6 +28460,104 @@ type ContractBase = Omit<
               };
             };
           };
+          readonly Obligation: {
+            readonly fields: {
+              readonly amount: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly customerId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly debtorName: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly description: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly dueDate: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly originId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly originType: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly paidTotal: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly status: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+            };
+            readonly relations: {
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'Obligation';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly amount: { readonly column: 'amount' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly customerId: { readonly column: 'customerId' };
+                readonly debtorName: { readonly column: 'debtorName' };
+                readonly description: { readonly column: 'description' };
+                readonly dueDate: { readonly column: 'dueDate' };
+                readonly id: { readonly column: 'id' };
+                readonly originId: { readonly column: 'originId' };
+                readonly originType: { readonly column: 'originType' };
+                readonly paidTotal: { readonly column: 'paidTotal' };
+                readonly status: { readonly column: 'status' };
+                readonly tenantId: { readonly column: 'tenantId' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+              };
+            };
+          };
           readonly OutboxEvent: {
             readonly fields: {
               readonly createdAt: {
@@ -33976,6 +34268,17 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['tenantId'];
                 };
               };
+              readonly obligations: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Obligation';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
               readonly outboxEvents: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -36896,6 +37199,23 @@ type ContractBase = Omit<
           readonly ref: {
             readonly entry: 'NumberingResolution';
             readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'Obligation';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'Obligation';
+            readonly field: 'updatedAt';
             readonly namespace: 'public';
           };
         },

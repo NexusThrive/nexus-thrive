@@ -71,6 +71,7 @@ export const TENANT_DELETION_TABLES: readonly string[] = [
   "LeadActivity",
   "LookaheadTask",
   "Membership",
+  "Obligation",
   "OutboxEvent",
   "Party",
   "PartyRole",
@@ -309,6 +310,7 @@ export async function deleteTenantCompletely(
   count("OutboxEvent", await tx.orm.public.OutboxEvent.where({ tenantId }).deleteAll());
   count("ApiRequestLog", await tx.orm.public.ApiRequestLog.where({ tenantId }).deleteAll());
   count("IdempotencyRecord", await tx.orm.public.IdempotencyRecord.where({ tenantId }).deleteAll());
+  count("Obligation", await tx.orm.public.Obligation.where({ tenantId }).deleteAll());
   count("ApiKey", await tx.orm.public.ApiKey.where({ tenantId }).deleteAll());
   count("Attachment", await tx.orm.public.Attachment.where({ tenantId }).deleteAll());
   count("Attendance", await tx.orm.public.Attendance.where({ tenantId }).deleteAll());
