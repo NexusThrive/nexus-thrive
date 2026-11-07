@@ -119,7 +119,7 @@ export function AppHome({ trial }: { trial?: AppHomeTrial | null }) {
       {visible.length === 0 ? (
         <p className="text-center text-sm text-muted-foreground">No hay aplicaciones disponibles para tu cuenta.</p>
       ) : (
-        <ul className="mx-auto grid w-full max-w-4xl grid-cols-3 justify-items-center gap-x-4 gap-y-8 sm:grid-cols-6">{visible.map(tile)}</ul>
+        <ul className="mx-auto grid w-full max-w-lg grid-cols-4 justify-items-center gap-x-8 gap-y-12">{visible.map(tile)}</ul>
       )}
     </div>
   );

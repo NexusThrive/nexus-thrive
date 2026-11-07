@@ -1,4 +1,3 @@
-import { auth, currentUser } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 import { HandCoins, MinusCircle, TrendingUp, Users, Wallet } from "lucide-react";
 import { tenantWithModules } from "@/lib/core/tenancy/membership";
@@ -6,20 +5,18 @@ import { createTenantDb } from "@/lib/core/tenancy/db";
 import { getVerticalTerms } from "@/lib/core/sectors/terms";
 import { formatCurrency, formatRelativeTime } from "@/lib/foundation/format";
 import type { RecentActivityItem } from "@/lib/experience/dashboard/types";
-import { greetingFor, greetingName, percentChange } from "@/lib/experience/dashboard/index";
+import { percentChange } from "@/lib/experience/dashboard/index";
 import { GRANULARITIES, HISTORY_DAYS, bogotaDayKey, chartBuckets, runningBalance, type FinanceSeries, type Granularity } from "@/lib/foundation/kernel/finance-series";
 import { sortModules, isModule } from "@/lib/core/capabilities/modules";
 import { quickCreateActions } from "@/lib/experience/navigation/quick-create";
 import { CHART_CATALOG } from "@/lib/experience/dashboard/chart-catalog";
-import { cashFlow, comparison, countLabel, daysUntil, updatedLabel } from "@/lib/experience/dashboard/insights";
+import { cashFlow, comparison, countLabel, daysUntil } from "@/lib/experience/dashboard/insights";
 import { receivables } from "@/lib/domains/finance/receivables/receivables-db";
 import { typeLabel } from "@/lib/industry/gym/memberships";
 import { paymentMethodLabel } from "@/lib/foundation/kernel/payment-vocabulary";
 import { Delta } from "@/components/atoms/delta";
-import { RevealText } from "@/components/atoms/reveal-text";
 import { KpiCard } from "@/components/molecules/kpi-card";
 import { can } from "@/lib/core/auth/permissions";
-import { PageHeader } from "@/components/molecules/page-header";
 import QuickActions from "@/components/organisms/quick-actions";
 import type { ChartPoint } from "@/components/organisms/income-chart";
 import { IncomeChartPanel } from "../_components/income-chart-panel";
@@ -91,21 +88,7 @@ export default async function TenantDashboard({
   // El saludo prefiere el nombre vivo de Clerk (si cambia en la cuenta, se
   // refleja al instante); el nombre del equipo (Ajustes → Equipo) es el
   // fallback, y el usuario del correo el último recurso.
-  const clerkUser = await currentUser();
-  const greetingLabel = greetingName({
-    accountFirstName: clerkUser?.firstName,
-    accountUsername: clerkUser?.username,
-    teamName: localUser?.name,
-    email: clerkUser?.primaryEmailAddress?.emailAddress ?? localUser?.email,
-  });
 
-  const rawDate = new Intl.DateTimeFormat("es-CO", {
-    timeZone: "America/Bogota",
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-  }).format(new Date());
-  const formattedDate = rawDate.charAt(0).toUpperCase() + rawDate.slice(1);
 
   // Datos reales (mismo mes Bogotá que usa Finanzas) y el mes anterior para
   // la variación de cada KPI.
@@ -393,13 +376,8 @@ export default async function TenantDashboard({
           },
         }}
         header={
-      <PageHeader
-        eyebrow={formattedDate}
-        title={<RevealText parts={[`${greetingFor()}, `, { text: greetingLabel, gold: true }]} />}
-        descriptionClassName="max-sm:hidden"
-        description={`Así va ${tenantRecord.name} ${periodText}. ${countLabel(current.count, "cobro registrado", "cobros registrados", "Sin cobros registrados")}. ${updatedLabel()}`}
-        actions={
-          <div className="flex w-full items-center justify-end gap-2 sm:w-auto">
+          <div className="flex w-full items-center justify-end">
+          <div className="flex w-full items-center justify-end gap-2">
             <UrlSegmentedControl
               param="p"
               ariaLabel="Periodo"
@@ -414,8 +392,7 @@ export default async function TenantDashboard({
             />
             <DashboardMenu />
           </div>
-        }
-      />
+          </div>
         }
       />
     </PullToRefresh>

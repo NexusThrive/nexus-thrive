@@ -43,7 +43,7 @@ export function AppTopbar({ actions, notifications, search, switcher }: { action
   // En la raíz (pantalla de aplicaciones) la barra queda reducida y transparente: solo logo, cambio de empresa y cuenta.
   const atHome = pathname.replace(/\/$/, "") === hrefFor("");
   // Dentro de un módulo (no en Inicio ni en Sistema) la barra cambia a la barra de módulo: «<», módulo, secciones y utilidades.
-  const moduleGroup = atHome ? undefined : groups.find((g) => g.label !== "General" && g.label !== "Sistema" && g.items.some((i) => i.key === activeKey));
+  const moduleGroup = atHome ? undefined : groups.find((g) => g.label !== "Sistema" && g.items.some((i) => i.key === activeKey));
   if (moduleGroup) return <ModuleBar group={moduleGroup} activeKey={activeKey} hrefFor={hrefFor} openSearch={openSearch} notifications={notifications} />;
 
   return (
@@ -206,7 +206,7 @@ function ModuleBar({
       <span aria-hidden="true" className="hidden h-6 w-px shrink-0 bg-border sm:block" />
       <div className="flex min-w-0 shrink-0 items-center gap-2">
         <Icon aria-hidden="true" className="size-5 text-accent-text" />
-        <span className="truncate text-base font-semibold text-foreground">{group.label}</span>
+        <span className="truncate text-base font-semibold text-foreground">{group.label === "General" ? group.items[0]!.label : group.label}</span>
       </div>
       <nav aria-label={`Secciones de ${group.label}`} className="ms-2 flex min-w-0 flex-1 items-center gap-1 overflow-x-auto">
         {group.items.map((item) => {
