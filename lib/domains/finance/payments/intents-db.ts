@@ -36,6 +36,9 @@ export type IntentRow = {
   proofNote: string | null;
   proofAt: string | null;
   rejectionReason: string | null;
+  /** Intentos fallidos que reportó la pasarela y cómo terminó el último. */
+  failedAttempts: number;
+  lastAttemptResult: "DECLINED" | "ERROR" | "VOIDED" | null;
 };
 
 const toRow = (i: Record<string, unknown>, now = Date.now()): IntentRow => ({
@@ -55,6 +58,8 @@ const toRow = (i: Record<string, unknown>, now = Date.now()): IntentRow => ({
   proofNote: (i.proofNote as string | null) ?? null,
   proofAt: i.proofAt ? String(i.proofAt) : null,
   rejectionReason: (i.rejectionReason as string | null) ?? null,
+  failedAttempts: 0,
+  lastAttemptResult: null,
 });
 
 /**
@@ -80,7 +85,11 @@ export async function createIntent(tenantId: string, input: { amount: number; de
 /** Intenciones de cobro del negocio, las más recientes primero (100 por defecto). */
 export async function listIntents(tenantId: string, limit = 100): Promise<IntentRow[]> {
   const rows = await db.orm.public.PaymentIntent.where({ tenantId }).orderBy((i) => i.createdAt.desc()).limit(limit).all();
-  return rows.map((r) => toRow(r as unknown as Record<string, unknown>));
+  const attempts = rows.length ? await db.orm.public.PaymentAttempt.where({ tenantId }).where((a) => a.intentId.in(rows.map((r) => r.id))).select("intentId", "result", "createdAt").all() : [];
+  return rows.map((r) => {
+    const mine = attempts.filter((a) => a.intentId === r.id).sort((x, y) => String(y.createdAt).localeCompare(String(x.createdAt)));
+    return { ...toRow(r as unknown as Record<string, unknown>), failedAttempts: mine.length, lastAttemptResult: (mine[0]?.result as AttemptResult | undefined) ?? null };
+  });
 }
 
 /** Lo que ve quien abre el enlace público: el negocio, el valor, la descripción y el estado; nada más. */
@@ -212,11 +221,36 @@ export async function handlePaymentEvent(tenantId: string, event: { type: string
     const r = await confirmIntent(tenantId, event.reference, { kind: "PROVIDER", externalId: event.paymentRef ?? event.externalId, amount: Number(event.amount ?? NaN) });
     return r.ok ? null : r.message;
   }
-  if (event.type === "payment.failed") {
-    const plan = db.sql.public.PaymentIntent.update({ status: "FAILED" }).where((f, fns) => fns.and(fns.eq(f.reference, event.reference!), fns.eq(f.tenantId, tenantId), fns.eq(f.status, "PENDING"))).returning("id").build();
-    await db.transaction((tx) => tx.query(plan));
+  if (event.type === "payment.failed" || event.type === "payment.voided") {
+    // Un rechazo es un INTENTO, no el fin del cobro: queda registrado y el cobro sigue abierto para que el cliente reintente.
+    await recordAttempt(tenantId, event.reference, { provider: "wompi", externalId: event.externalId, result: event.type === "payment.voided" ? "VOIDED" : "DECLINED", amount: event.amount ?? null });
   }
   return null;
+}
+
+export type AttemptResult = "DECLINED" | "ERROR" | "VOIDED";
+export type AttemptRow = { id: string; provider: string; externalId: string; result: AttemptResult; amount: number | null; createdAt: string };
+
+/** Registra un intento fallido de un cobro abierto. El mismo aviso repetido no lo duplica. Un cobro ya pagado o cerrado no lo recibe. */
+export async function recordAttempt(tenantId: string, reference: string, input: { provider: string; externalId: string; result: AttemptResult; amount?: string | null }): Promise<boolean> {
+  const intent = await db.orm.public.PaymentIntent.where({ tenantId, reference }).select("id", "status", "provider").first();
+  if (!intent || (intent.status !== "PENDING" && intent.status !== "VERIFYING")) return false;
+  const exists = await db.orm.public.PaymentAttempt.where({ tenantId, intentId: intent.id, externalId: input.externalId }).select("id").first();
+  if (exists) return false;
+  const amount = input.amount != null && Number.isFinite(Number(input.amount)) ? Number(input.amount).toFixed(2) : null;
+  try {
+    await db.orm.public.PaymentAttempt.create({ tenantId, intentId: intent.id, provider: intent.provider || input.provider, externalId: input.externalId.slice(0, 120), result: input.result, amount });
+    return true;
+  } catch (error) {
+    if (/PaymentAttempt_tenantId_intentId_externalId|unique|duplicate/i.test(String((error as Error)?.message ?? error))) return false;
+    throw error;
+  }
+}
+
+/** Intentos de un cobro, el más reciente primero. */
+export async function listAttempts(tenantId: string, intentId: string): Promise<AttemptRow[]> {
+  const rows = await db.orm.public.PaymentAttempt.where({ tenantId, intentId }).orderBy((a) => a.createdAt.desc()).limit(50).all();
+  return rows.map((r) => ({ id: r.id, provider: r.provider, externalId: r.externalId, result: r.result as AttemptResult, amount: r.amount == null ? null : toNumber(r.amount), createdAt: String(r.createdAt) }));
 }
 
 /**

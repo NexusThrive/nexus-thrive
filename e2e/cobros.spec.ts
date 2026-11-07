@@ -86,4 +86,10 @@ test.describe("Cobros en línea", () => {
     await expect(page.getByText("Comprobante rechazado: el cobro vuelve a pendiente")).toBeVisible();
     await expectNoAxeViolations(page);
   });
+
+  test("un cobro con intentos fallidos sigue abierto y lo dice", async ({ page }) => {
+    await openStory(page, "páginas-dinero-cobros-en-línea--con-intentos-fallidos");
+    await expect(page.getByText(/2 intentos fallidos en la pasarela; el cobro sigue abierto/)).toBeVisible();
+    await expect(page.getByText("Pendiente")).toBeVisible();
+  });
 });

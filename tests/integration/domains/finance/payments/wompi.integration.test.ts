@@ -6,7 +6,7 @@ import { receiveProviderWebhook } from "@/lib/integrations/providers/inbound";
 import { wompiChecksum } from "@/lib/integrations/providers/wompi";
 import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
 import { todayCO } from "@/lib/domains/finance/tax/tax";
-import { createIntent, listIntents, publicIntent, runReconciliation } from "@/lib/domains/finance/payments/intents-db";
+import { createIntent, listAttempts, listIntents, publicIntent, runReconciliation } from "@/lib/domains/finance/payments/intents-db";
 
 /** Wompi de punta a punta (webhook firmado → cobro confirmado → conciliación), contra Postgres real. */
 const TEST_URL = process.env.TEST_DATABASE_URL;
@@ -47,13 +47,32 @@ describe.skipIf(!TEST_URL)("pago de prueba con Wompi (integración)", () => {
     expect((await db.orm.public.Payment.where({ tenantId: a }).all()).filter((p) => p.status === "APPROVED")).toHaveLength(1);
   });
 
-  test("un pago rechazado deja el cobro fallido y la conciliación cuadra con el id de Wompi", async () => {
+  test("un pago rechazado queda como intento, el cobro sigue abierto y la conciliación cuadra con el id de Wompi", async () => {
     const bad = await createIntent(a, { amount: 40_000, description: "Rechazado", provider: "wompi" }, "u");
     if (!bad.ok) throw new Error(bad.message);
     await wompiEvent("tx-2", "DECLINED", bad.reference, 4_000_000);
-    expect((await publicIntent(bad.reference))!.status).toBe("FAILED");
+    expect((await publicIntent(bad.reference))!.status).toBe("PENDING");
     const r = await runReconciliation(a, "wompi", todayCO(), [{ externalId: "tx-1", amount: 99_900 }], "u");
     if (!r.ok) throw new Error(r.message);
     expect(r.result).toMatchObject({ matched: 1, differences: [] });
+  });
+
+  test("el rechazo deja un intento (sin pago), no se duplica y el cobro se puede pagar después", async () => {
+    const i = await createIntent(a, { amount: 55_000, description: "Reintento", provider: "wompi" }, "u");
+    if (!i.ok) throw new Error(i.message);
+    const paymentsBefore = (await db.orm.public.Payment.where({ tenantId: a }).all()).length;
+    await wompiEvent("tx-3", "DECLINED", i.reference, 5_500_000);
+    expect(await wompiEvent("tx-3", "DECLINED", i.reference, 5_500_000)).toMatchObject({ body: { duplicate: true } });
+    await wompiEvent("tx-4", "ERROR", i.reference, 5_500_000);
+    const attempts = await listAttempts(a, i.id);
+    expect(attempts).toHaveLength(2);
+    expect(attempts[0]).toMatchObject({ result: "DECLINED", amount: 55_000 });
+    expect((await listIntents(a)).find((x) => x.id === i.id)).toMatchObject({ status: "PENDING", failedAttempts: 2, lastAttemptResult: "DECLINED" });
+    expect((await db.orm.public.Payment.where({ tenantId: a }).all()).length).toBe(paymentsBefore);
+    await wompiEvent("tx-5", "APPROVED", i.reference, 5_500_000);
+    expect((await publicIntent(i.reference))!.status).toBe("PAID");
+    // Un aviso fallido tardío sobre un cobro ya pagado no se registra.
+    await wompiEvent("tx-6", "DECLINED", i.reference, 5_500_000);
+    expect(await listAttempts(a, i.id)).toHaveLength(2);
   });
 });

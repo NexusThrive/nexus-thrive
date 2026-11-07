@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { withShell } from "../../../../../.storybook/decorators";
 import CobrosView from "./cobros-view";
 
-const row = (id: string, description: string, amount: number, status: "PENDING" | "VERIFYING" | "PAID" | "EXPIRED", extra = {}) => ({ id, reference: `ref${id}abcdefghijk`, amount, description, status, channel: "LINK", provider: "sandbox", invoiceId: null, expiresAt: "2026-10-30T12:00:00.000Z", paidAt: null, confirmedBy: null, refundedTotal: 0, createdAt: "2026-10-24T12:00:00.000Z", proofNote: null, proofAt: null, rejectionReason: null, ...extra });
+const row = (id: string, description: string, amount: number, status: "PENDING" | "VERIFYING" | "PAID" | "EXPIRED", extra = {}) => ({ id, reference: `ref${id}abcdefghijk`, amount, description, status, channel: "LINK", provider: "sandbox", invoiceId: null, expiresAt: "2026-10-30T12:00:00.000Z", paidAt: null, confirmedBy: null, refundedTotal: 0, createdAt: "2026-10-24T12:00:00.000Z", proofNote: null, proofAt: null, rejectionReason: null, failedAttempts: 0, lastAttemptResult: null, ...extra });
 const intents = [row("1", "Matrícula anual", 150_000, "PENDING"), row("2", "Mensualidad octubre", 80_000, "PAID", { confirmedBy: "PROVIDER" }), row("3", "Clase de prueba", 30_000, "EXPIRED")];
 
 const meta = {
@@ -18,6 +18,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {};
 export const EnVerificacion: Story = { args: { intents: [row("4", "Pedido P-0042", 140_000, "VERIFYING", { proofNote: "Bancolombia 88231", proofAt: "2026-10-24T13:00:00.000Z" }), row("5", "Plan trimestral", 99_000, "PENDING", { rejectionReason: "El monto no coincide" })] } };
+export const ConIntentosFallidos: Story = { args: { intents: [row("6", "Pedido P-0050", 80_000, "PENDING", { failedAttempts: 2, lastAttemptResult: "DECLINED" })] } };
 export const SinCobros: Story = { args: { intents: [] } };
 export const SoloCrear: Story = { args: { canAdmin: false } };
 export const DosPasarelas: Story = { args: { gateways: [{ value: "wompi", label: "Wompi" }, { value: "sandbox", label: "Pasarela de prueba" }] } };

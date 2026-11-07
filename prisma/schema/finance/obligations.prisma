@@ -51,3 +51,25 @@ model PaymentAllocation {
   @@index([tenantId, targetType, targetId])
   @@rls
 }
+
+/// Intento de pago de un cobro (HU-intentos-01): lo que la pasarela reportó cada vez que el cliente intentó pagar. Un
+/// intento fallido NO crea un pago y el cobro sigue abierto para reintentar; un intento aprobado es el pago confirmado.
+///
+/// Campos:
+/// - `result`: DECLINED | ERROR | VOIDED (los aprobados se registran como pago, no aquí).
+/// - `externalId`: Id del intento en el proveedor (único por cobro: el mismo aviso repetido no duplica).
+model PaymentAttempt {
+  id         String   @id @default(uuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  intentId   String
+  provider   String
+  externalId String
+  result     String
+  amount     Decimal?
+  createdAt  DateTime @default(now())
+
+  @@unique([tenantId, intentId, externalId])
+  @@index([tenantId, intentId])
+  @@rls
+}

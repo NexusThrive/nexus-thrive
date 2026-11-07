@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'953e4d106a57aefda8e12e3671823b2b7ac1df966b02bc1ccf71bda6764f4935'>;
+  StorageHashBase<'59fdc0abebafd593ad3630fbe2448f921141c3f7155c7b77a74d2fcf9e502398'>;
 export type ExecutionHash =
-  ExecutionHashBase<'3b8a532f05d72a944ed296535335aa4c91ea9e44b7027e31e8a12b63d9f8e64b'>;
+  ExecutionHashBase<'8cfdcc476aca70950a872572102b6487ea57e2bd77cd9780e93e1bd01a7b7097'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -1100,6 +1100,16 @@ export type FieldOutputTypes = {
       readonly paymentId: CodecTypes['pg/text@1']['output'];
       readonly targetId: CodecTypes['pg/text@1']['output'];
       readonly targetType: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+    };
+    readonly PaymentAttempt: {
+      readonly amount: CodecTypes['pg/numeric@1']['output'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly externalId: CodecTypes['pg/text@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly intentId: CodecTypes['pg/text@1']['output'];
+      readonly provider: CodecTypes['pg/text@1']['output'];
+      readonly result: CodecTypes['pg/text@1']['output'];
       readonly tenantId: CodecTypes['pg/text@1']['output'];
     };
     readonly PaymentIntent: {
@@ -2802,6 +2812,16 @@ export type FieldInputTypes = {
       readonly targetType: CodecTypes['pg/text@1']['input'];
       readonly tenantId: CodecTypes['pg/text@1']['input'];
     };
+    readonly PaymentAttempt: {
+      readonly amount: CodecTypes['pg/numeric@1']['input'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly externalId: CodecTypes['pg/text@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly intentId: CodecTypes['pg/text@1']['input'];
+      readonly provider: CodecTypes['pg/text@1']['input'];
+      readonly result: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+    };
     readonly PaymentIntent: {
       readonly amount: CodecTypes['pg/numeric@1']['input'];
       readonly channel: CodecTypes['pg/text@1']['input'];
@@ -4502,6 +4522,16 @@ export type StorageColumnTypes = {
       readonly targetType: CodecTypes['pg/text@1']['output'];
       readonly tenantId: CodecTypes['pg/text@1']['output'];
     };
+    readonly PaymentAttempt: {
+      readonly amount: CodecTypes['pg/numeric@1']['output'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly externalId: CodecTypes['pg/text@1']['output'];
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly intentId: CodecTypes['pg/text@1']['output'];
+      readonly provider: CodecTypes['pg/text@1']['output'];
+      readonly result: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+    };
     readonly PaymentIntent: {
       readonly amount: CodecTypes['pg/numeric@1']['output'];
       readonly channel: CodecTypes['pg/text@1']['output'];
@@ -6200,6 +6230,16 @@ export type StorageColumnInputTypes = {
       readonly paymentId: CodecTypes['pg/text@1']['input'];
       readonly targetId: CodecTypes['pg/text@1']['input'];
       readonly targetType: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+    };
+    readonly PaymentAttempt: {
+      readonly amount: CodecTypes['pg/numeric@1']['input'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly externalId: CodecTypes['pg/text@1']['input'];
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly intentId: CodecTypes['pg/text@1']['input'];
+      readonly provider: CodecTypes['pg/text@1']['input'];
+      readonly result: CodecTypes['pg/text@1']['input'];
       readonly tenantId: CodecTypes['pg/text@1']['input'];
     };
     readonly PaymentIntent: {
@@ -8098,6 +8138,18 @@ export namespace Models {
     tenant: public_Tenant;
     readonly [RelationKeys]?: 'tenant';
   };
+  export type public_PaymentAttempt = {
+    amount: CodecTypes['pg/numeric@1']['output'] | null;
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    externalId: CodecTypes['pg/text@1']['output'];
+    id: CodecTypes['pg/text@1']['output'];
+    intentId: CodecTypes['pg/text@1']['output'];
+    provider: CodecTypes['pg/text@1']['output'];
+    result: CodecTypes['pg/text@1']['output'];
+    tenantId: CodecTypes['pg/text@1']['output'];
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'tenant';
+  };
   export type public_PaymentIntent = {
     amount: CodecTypes['pg/numeric@1']['output'];
     channel: CodecTypes['pg/text@1']['output'];
@@ -8963,6 +9015,7 @@ export namespace Models {
     parties: public_Party[];
     partyRoles: public_PartyRole[];
     paymentAllocations: public_PaymentAllocation[];
+    paymentAttempts: public_PaymentAttempt[];
     paymentIntents: public_PaymentIntent[];
     paymentRefunds: public_PaymentRefund[];
     payments: public_Payment[];
@@ -9061,6 +9114,7 @@ export namespace Models {
       | 'parties'
       | 'partyRoles'
       | 'paymentAllocations'
+      | 'paymentAttempts'
       | 'paymentIntents'
       | 'paymentRefunds'
       | 'payments'
@@ -9412,6 +9466,7 @@ export declare const models: {
     PartyRole: Models.public_PartyRole;
     Payment: Models.public_Payment;
     PaymentAllocation: Models.public_PaymentAllocation;
+    PaymentAttempt: Models.public_PaymentAttempt;
     PaymentIntent: Models.public_PaymentIntent;
     PaymentRefund: Models.public_PaymentRefund;
     PlanSetting: Models.public_PlanSetting;
@@ -15925,6 +15980,83 @@ type ContractBase = Omit<
                   readonly source: {
                     readonly namespaceId: 'public' & NamespaceId;
                     readonly tableName: 'PaymentAllocation';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly PaymentAttempt: {
+              columns: {
+                readonly amount: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: true;
+                };
+                readonly createdAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                };
+                readonly externalId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly intentId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly provider: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly result: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [
+                { readonly columns: readonly ['tenantId', 'intentId', 'externalId'] },
+              ];
+              indexes: readonly [
+                {
+                  readonly name: 'PaymentAttempt_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'PaymentAttempt_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'PaymentAttempt_tenantId_intentId_idx_78c4c2b6';
+                  readonly prefix: 'PaymentAttempt_tenantId_intentId_idx';
+                  readonly columns: readonly ['tenantId', 'intentId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'PaymentAttempt';
                     readonly columns: readonly ['tenantId'];
                   };
                   readonly target: {
@@ -22807,6 +22939,10 @@ type ContractBase = Omit<
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'PaymentAllocation';
     };
+    readonly PaymentAttempt: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'PaymentAttempt';
+    };
     readonly PaymentIntent: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'PaymentIntent';
@@ -29236,6 +29372,73 @@ type ContractBase = Omit<
               };
             };
           };
+          readonly PaymentAttempt: {
+            readonly fields: {
+              readonly amount: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly externalId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly intentId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly provider: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly result: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'PaymentAttempt';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly amount: { readonly column: 'amount' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly externalId: { readonly column: 'externalId' };
+                readonly id: { readonly column: 'id' };
+                readonly intentId: { readonly column: 'intentId' };
+                readonly provider: { readonly column: 'provider' };
+                readonly result: { readonly column: 'result' };
+                readonly tenantId: { readonly column: 'tenantId' };
+              };
+            };
+          };
           readonly PaymentIntent: {
             readonly fields: {
               readonly amount: {
@@ -34563,6 +34766,17 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['tenantId'];
                 };
               };
+              readonly paymentAttempts: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'PaymentAttempt';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
               readonly paymentIntents: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -37524,6 +37738,14 @@ type ContractBase = Omit<
           readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
           readonly ref: {
             readonly entry: 'PaymentAllocation';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'PaymentAttempt';
             readonly field: 'id';
             readonly namespace: 'public';
           };

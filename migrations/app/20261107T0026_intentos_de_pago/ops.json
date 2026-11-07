@@ -1,0 +1,242 @@
+[
+  {
+    "id": "table.PaymentAttempt",
+    "label": "Create table \"PaymentAttempt\"",
+    "summary": "Creates table \"PaymentAttempt\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "PaymentAttempt"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"PaymentAttempt\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PaymentAttempt\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"PaymentAttempt\"",
+        "sql": "CREATE TABLE \"public\".\"PaymentAttempt\" (\n  \"amount\" numeric,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"externalId\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"intentId\" text NOT NULL,\n  \"provider\" text NOT NULL,\n  \"result\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"PaymentAttempt\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PaymentAttempt\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.PaymentAttempt.PaymentAttempt_tenantId_intentId_externalId_key",
+    "label": "Add unique constraint on \"PaymentAttempt\" (tenantId, intentId, externalId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "PaymentAttempt_tenantId_intentId_externalId_key",
+        "table": "PaymentAttempt"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"PaymentAttempt_tenantId_intentId_externalId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PaymentAttempt_tenantId_intentId_externalId_key",
+          "public",
+          "\"public\".\"PaymentAttempt\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"PaymentAttempt_tenantId_intentId_externalId_key\"",
+        "sql": "ALTER TABLE \"public\".\"PaymentAttempt\" ADD CONSTRAINT \"PaymentAttempt_tenantId_intentId_externalId_key\" UNIQUE (\"tenantId\", \"intentId\", \"externalId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"PaymentAttempt_tenantId_intentId_externalId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PaymentAttempt_tenantId_intentId_externalId_key",
+          "public",
+          "\"public\".\"PaymentAttempt\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PaymentAttempt.PaymentAttempt_tenantId_idx_c93ed4f1",
+    "label": "Create index \"PaymentAttempt_tenantId_idx_c93ed4f1\" on \"PaymentAttempt\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PaymentAttempt_tenantId_idx_c93ed4f1",
+        "table": "PaymentAttempt"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PaymentAttempt_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PaymentAttempt_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PaymentAttempt_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"PaymentAttempt_tenantId_idx_c93ed4f1\" ON \"public\".\"PaymentAttempt\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PaymentAttempt_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PaymentAttempt_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PaymentAttempt.PaymentAttempt_tenantId_intentId_idx_78c4c2b6",
+    "label": "Create index \"PaymentAttempt_tenantId_intentId_idx_78c4c2b6\" on \"PaymentAttempt\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PaymentAttempt_tenantId_intentId_idx_78c4c2b6",
+        "table": "PaymentAttempt"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PaymentAttempt_tenantId_intentId_idx_78c4c2b6\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PaymentAttempt_tenantId_intentId_idx_78c4c2b6\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PaymentAttempt_tenantId_intentId_idx_78c4c2b6\"",
+        "sql": "CREATE INDEX \"PaymentAttempt_tenantId_intentId_idx_78c4c2b6\" ON \"public\".\"PaymentAttempt\" (\"tenantId\", \"intentId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PaymentAttempt_tenantId_intentId_idx_78c4c2b6\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PaymentAttempt_tenantId_intentId_idx_78c4c2b6\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.PaymentAttempt.PaymentAttempt_tenantId_fkey",
+    "label": "Add foreign key \"PaymentAttempt_tenantId_fkey\" on \"PaymentAttempt\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "PaymentAttempt_tenantId_fkey",
+        "table": "PaymentAttempt"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"PaymentAttempt_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PaymentAttempt_tenantId_fkey",
+          "public",
+          "\"public\".\"PaymentAttempt\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"PaymentAttempt_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"PaymentAttempt\"\nADD CONSTRAINT \"PaymentAttempt_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"PaymentAttempt_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PaymentAttempt_tenantId_fkey",
+          "public",
+          "\"public\".\"PaymentAttempt\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.PaymentAttempt",
+    "label": "Enable row-level security on \"PaymentAttempt\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "PaymentAttempt"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"PaymentAttempt\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentAttempt"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"PaymentAttempt\"",
+        "sql": "ALTER TABLE \"public\".\"PaymentAttempt\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"PaymentAttempt\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentAttempt"
+        ]
+      }
+    ]
+  }
+]
