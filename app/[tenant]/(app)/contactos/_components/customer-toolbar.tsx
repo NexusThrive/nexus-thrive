@@ -173,7 +173,7 @@ export default function CustomerToolbar({
         )}
 
         {/* Derecha: paginación y vistas */}
-        <div className="flex flex-wrap items-center justify-start gap-3 justify-self-start min-[1100px]:justify-self-end">
+        <div className="flex flex-wrap items-center justify-start gap-2 justify-self-start min-[1100px]:flex-nowrap min-[1100px]:justify-self-end">
           <p aria-live="polite" className="whitespace-nowrap text-sm text-foreground/80">
             {total === 0 ? "0" : `${from}-${to} / ${total}`}
             <span className="sr-only"> {label}</span>

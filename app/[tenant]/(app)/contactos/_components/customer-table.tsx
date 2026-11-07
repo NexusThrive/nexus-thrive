@@ -281,6 +281,9 @@ export default function CustomerTable({
   const isArchivedView = status === "archived";
   // Seleccionar es para eliminar: sin ese permiso no hay casillas ni barra.
   const selectable = canRemove;
+  const stickyAvatar = selectable ? 44 : 0;
+  const stickyName = stickyAvatar + 36;
+  const stickyBg = (isSelected: boolean) => (isSelected ? "bg-accent-subtle" : "bg-background group-hover:bg-surface-muted");
   const tableMinWidth = (selectable ? 44 : 0) + 36 + columns.widthOf("name") + columns.visible.reduce((sum, column) => sum + columns.widthOf(column.key), 0) + 44;
 
   return (
@@ -334,10 +337,10 @@ export default function CustomerTable({
                 ))}
                 <col style={{ width: 44 }} />
               </colgroup>
-              <thead className="sticky top-0 z-10 border-b border-border bg-background text-xs font-medium text-muted-foreground">
+              <thead className="sticky top-0 z-(--z-sticky) border-b border-border bg-background text-xs font-medium text-muted-foreground">
                 <tr className="h-[38px]">
                   {selectable ? (
-                    <th scope="col" className="ps-5 pe-0">
+                    <th scope="col" className="sticky left-0 z-(--z-raised) bg-background ps-5 pe-0">
                       <input
                         type="checkbox"
                         aria-label={`Seleccionar todos los ${customersLabel} de esta página`}
@@ -352,10 +355,10 @@ export default function CustomerTable({
                       />
                     </th>
                   ) : null}
-                  <th scope="col" className="px-2">
+                  <th scope="col" className="sticky z-(--z-raised) bg-background px-2" style={{ left: stickyAvatar }}>
                     <span className="sr-only">Foto</span>
                   </th>
-                  <th scope="col" className="relative px-3" aria-sort={sort === "name_asc" ? "ascending" : sort === "name_desc" ? "descending" : "none"}>
+                  <th scope="col" className="sticky z-(--z-raised) border-r border-border bg-background px-3" style={{ left: stickyName }} aria-sort={sort === "name_asc" ? "ascending" : sort === "name_desc" ? "descending" : "none"}>
                     <button type="button" onClick={() => setSort(nameSort)} className="inline-flex max-w-full items-center gap-1 truncate outline-none hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
                       {terms.customer}
                       {sortIcon(sort !== "recent", sort === "name_desc")}
@@ -380,7 +383,7 @@ export default function CustomerTable({
                       <ResizeHandle columnKey={column.key} label={column.label} prefs={columns} />
                     </th>
                   ))}
-                  <th scope="col" className="px-2">
+                  <th scope="col" className="sticky right-0 z-(--z-raised) bg-background px-2">
                     <ColumnChooser prefs={columns} />
                   </th>
                 </tr>
@@ -390,10 +393,10 @@ export default function CustomerTable({
                   <tr
                     key={row.id}
                     onClick={(event) => openProfile(event, row.id)}
-                    className={cn("h-[38px] cursor-pointer transition hover:bg-muted/60", selected.has(row.id) && "bg-accent-subtle/30")}
+                    className={cn("group h-[38px] cursor-pointer transition hover:bg-muted/60", selected.has(row.id) && "bg-accent-subtle/30")}
                   >
                     {selectable ? (
-                      <td className="ps-5 pe-0">
+                      <td className={cn("sticky left-0 z-(--z-raised) ps-5 pe-0", stickyBg(selected.has(row.id)))}>
                         <input
                           type="checkbox"
                           aria-label={`Seleccionar a ${row.name}`}
@@ -403,10 +406,10 @@ export default function CustomerTable({
                         />
                       </td>
                     ) : null}
-                    <td className="px-2">
+                    <td className={cn("sticky z-(--z-raised) px-2", stickyBg(selected.has(row.id)))} style={{ left: stickyAvatar }}>
                       <Face row={row} className="flex size-[22px] items-center justify-center rounded-[5px] bg-accent-subtle text-2xs font-semibold text-accent-text" />
                     </td>
-                    <td className="px-3">
+                    <td className={cn("sticky z-(--z-raised) border-r border-border px-3", stickyBg(selected.has(row.id)))} style={{ left: stickyName }}>
                       <p className="flex min-w-0 items-center gap-2 font-medium text-foreground">
                         <Link
                           href={`/${tenantSlug}/contactos/${row.id}`}
@@ -426,7 +429,7 @@ export default function CustomerTable({
                         {cellFor(column.key, row)}
                       </td>
                     ))}
-                    <td aria-hidden="true" />
+                    <td aria-hidden="true" className={cn("sticky right-0 z-(--z-raised)", stickyBg(selected.has(row.id)))} />
                   </tr>
                 ))}
               </tbody>
