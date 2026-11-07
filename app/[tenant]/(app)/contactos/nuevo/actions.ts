@@ -4,12 +4,12 @@ import { revalidatePath } from "next/cache";
 import { addAttachment } from "@/lib/business/sales/finance-db";
 import { setCustomerPhoto } from "@/lib/business/customers/customers-db";
 import { EMPTY_NEW_CUSTOMER, type NewCustomerInput } from "@/lib/business/customers/new-customer";
-import { createFullCustomer, findCustomerByContact } from "@/lib/business/customers/new-customer-db";
+import { createFullCustomer, findCustomerByContact, updateFullCustomer } from "@/lib/business/customers/new-customer-db";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
 
 export type NewCustomerActionResult = { ok: true; id: string; message: string } | { ok: false; message: string; errors?: Partial<Record<keyof NewCustomerInput, string>> };
 
-/** Crea el cliente completo desde la vista «Nuevo cliente». La foto viaja en `photo`; los datos, en `data` (JSON). */
+/** Crea el cliente completo desde «Nuevo cliente», o lo actualiza si viene `id` (edición desde la ficha). La foto viaja en `photo`; los datos, en `data` (JSON). */
 export async function createNewCustomerAction(form: FormData): Promise<NewCustomerActionResult> {
   const slug = String(form.get("slug") ?? "");
   const ctx = await requireTenantContext(slug, "/contactos");
@@ -20,7 +20,9 @@ export async function createNewCustomerAction(form: FormData): Promise<NewCustom
   } catch {
     return { ok: false, message: "No se pudieron leer los datos del formulario." };
   }
-  const r = await createFullCustomer(ctx.tenantId, input, ctx.memberId);
+  // Con `id` es la edición desde la ficha (?editar=1); sin `id`, un alta.
+  const editId = String(form.get("id") ?? "");
+  const r = editId ? await updateFullCustomer(ctx.tenantId, editId, input) : await createFullCustomer(ctx.tenantId, input, ctx.memberId);
   if (!r.ok) return r;
   const photo = form.get("photo");
   if (photo instanceof File && photo.size > 0) {
@@ -32,7 +34,8 @@ export async function createNewCustomerAction(form: FormData): Promise<NewCustom
     }
   }
   revalidatePath(`/${slug}/contactos`);
-  return { ok: true, id: r.id, message: "Cliente guardado" };
+  if (editId) revalidatePath(`/${slug}/contactos/${editId}`);
+  return { ok: true, id: r.id, message: editId ? "Cambios guardados" : "Cliente guardado" };
 }
 
 /** Aviso de posible duplicado al salir del teléfono o del correo. No bloquea el alta. */

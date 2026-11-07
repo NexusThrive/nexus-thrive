@@ -36,12 +36,31 @@ const cardTitle = "mb-4 text-base font-semibold text-foreground";
  * Vista «Nuevo cliente»: panel de control (volver, ruta, guardar), formulario en tarjetas y, a la derecha, la vista previa en
  * vivo y lo que se podrá hacer al guardar. Solo el nombre es obligatorio. Salir con cambios sin guardar pide confirmación.
  */
-export default function NewCustomerForm({ slug, customersLabel, canBook }: { slug: string; customersLabel: string; canBook: boolean }) {
+export default function NewCustomerForm({
+  slug,
+  customersLabel,
+  canBook,
+  editId,
+  initial,
+  customerName,
+  focusField,
+}: {
+  slug: string;
+  customersLabel: string;
+  canBook: boolean;
+  /** Edición desde la ficha (?editar=1): el cliente que se edita. */
+  editId?: string;
+  initial?: NewCustomerInput;
+  customerName?: string;
+  /** Campo que recibe el foco al abrir (enlaces «Añadir» de la ficha). */
+  focusField?: keyof NewCustomerInput;
+}) {
   const router = useRouter();
   const { toast } = useToast();
   const [confirm, confirmDialog] = useConfirm();
   const [pending, start] = useTransition();
-  const [v, setV] = useState<NewCustomerInput>(EMPTY_NEW_CUSTOMER);
+  const base = initial ?? EMPTY_NEW_CUSTOMER;
+  const [v, setV] = useState<NewCustomerInput>(base);
   const [errors, setErrors] = useState<Errors>({});
   const [photo, setPhoto] = useState<{ file: File; url: string } | null>(null);
   const [duplicate, setDuplicate] = useState<Duplicate>(null);
@@ -49,17 +68,23 @@ export default function NewCustomerForm({ slug, customersLabel, canBook }: { slu
   const nameRef = useRef<HTMLInputElement>(null);
   const photoRef = useRef<HTMLInputElement>(null);
   const listHref = `/${slug}/contactos`;
+  const fichaHref = editId ? `/${slug}/contactos/${editId}` : null;
+  const backHref = fichaHref ?? listHref;
 
-  const dirty = photo !== null || (Object.keys(EMPTY_NEW_CUSTOMER) as (keyof NewCustomerInput)[]).some((k) => v[k] !== EMPTY_NEW_CUSTOMER[k]);
+  const dirty = photo !== null || (Object.keys(EMPTY_NEW_CUSTOMER) as (keyof NewCustomerInput)[]).some((k) => v[k] !== base[k]);
   const set = (key: keyof NewCustomerInput) => (value: string) => {
     setV((current) => ({ ...current, [key]: value }));
     if (errors[key]) setErrors((current) => ({ ...current, [key]: undefined }));
   };
 
-  // El nombre recibe el foco al entrar.
+  // Al entrar, el foco va al nombre o al campo que pidió el enlace «Añadir» (abriendo su sección si está plegada).
   useEffect(() => {
-    nameRef.current?.focus();
-  }, []);
+    const target = focusField ? formRef.current?.querySelector<HTMLElement>(`[name="${focusField}"]`) : null;
+    if (target) {
+      target.closest("details")?.setAttribute("open", "");
+      target.focus();
+    } else nameRef.current?.focus();
+  }, [focusField]);
 
   // La vista previa de la foto se libera al cambiarla o al salir.
   useEffect(() => () => {
@@ -100,7 +125,7 @@ export default function NewCustomerForm({ slug, customersLabel, canBook }: { slu
 
   const discard = async () => {
     if (dirty && !(await confirm({ title: "¿Descartar este cliente?", description: "Se borra lo que escribiste.", confirmLabel: "Descartar", tone: "danger" }))) return;
-    router.push(listHref);
+    router.push(backHref);
   };
 
   const reset = () => {
@@ -122,6 +147,7 @@ export default function NewCustomerForm({ slug, customersLabel, canBook }: { slu
       const fd = new FormData();
       fd.set("slug", slug);
       fd.set("data", JSON.stringify(v));
+      if (editId) fd.set("id", editId);
       if (photo) fd.set("photo", photo.file);
       const r = await createNewCustomerAction(fd);
       if (!r.ok) {
@@ -131,6 +157,7 @@ export default function NewCustomerForm({ slug, customersLabel, canBook }: { slu
         return;
       }
       toast(r.message, "success");
+      if (editId) return router.push(`/${slug}/contactos/${editId}`);
       if (mode === "another") return reset();
       // Ya guardado: se sale sin preguntar (el formulario queda limpio antes de navegar).
       setV(EMPTY_NEW_CUSTOMER);
@@ -139,7 +166,7 @@ export default function NewCustomerForm({ slug, customersLabel, canBook }: { slu
     });
   };
 
-  const field = (key: keyof NewCustomerInput) => ({ value: v[key], onChange: (event: { target: { value: string } }) => set(key)(event.target.value) });
+  const field = (key: keyof NewCustomerInput) => ({ name: key, value: v[key], onChange: (event: { target: { value: string } }) => set(key)(event.target.value) });
   const previewName = v.name.trim();
   const previewPhone = phoneDigits(v.phone);
 
@@ -148,7 +175,7 @@ export default function NewCustomerForm({ slug, customersLabel, canBook }: { slu
       {/* Panel de control */}
       <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
         <div className="flex min-w-0 items-center gap-3">
-          <Link href={listHref} aria-label={`Volver a ${customersLabel}`} className="grid size-[34px] shrink-0 place-items-center rounded-lg border border-border text-foreground outline-none hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
+          <Link href={backHref} aria-label={editId ? `Volver a la ficha de ${customerName ?? "este cliente"}` : `Volver a ${customersLabel}`} className="grid size-[34px] shrink-0 place-items-center rounded-lg border border-border text-foreground outline-none hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
             <ArrowLeft aria-hidden="true" className="size-4" />
           </Link>
           <nav aria-label="Ruta" className="min-w-0">
@@ -162,7 +189,7 @@ export default function NewCustomerForm({ slug, customersLabel, canBook }: { slu
                 <ChevronRight className="size-4 text-muted-foreground" />
               </li>
               <li aria-current="page" className="truncate text-foreground">
-                Nuevo cliente
+                {editId ? (customerName ?? "Editar cliente") : "Nuevo cliente"}
               </li>
             </ol>
           </nav>
@@ -355,7 +382,7 @@ export default function NewCustomerForm({ slug, customersLabel, canBook }: { slu
                   )}
                 </Field>
               </div>
-              <Field label="Notas internas">{(c) => <textarea {...c} {...field("notes")} rows={3} maxLength={2000} className={textareaClasses} />}</Field>
+              {editId ? null : <Field label="Notas internas">{(c) => <textarea {...c} {...field("notes")} rows={3} maxLength={2000} className={textareaClasses} />}</Field>}
             </div>
           </details>
 
@@ -390,16 +417,18 @@ export default function NewCustomerForm({ slug, customersLabel, canBook }: { slu
           {/* Acciones */}
           <div className="flex flex-wrap gap-3">
             <button type="submit" disabled={pending} className={buttonVariants({ variant: "accent", className: "h-[38px] font-semibold" })}>
-              Guardar
+              {editId ? "Guardar cambios" : "Guardar"}
             </button>
-            {canBook ? (
+            {canBook && !editId ? (
               <button type="button" disabled={pending} onClick={() => save("book")} className={cn(buttonVariants({ variant: "outline" }), "h-[38px] border border-border")}>
                 Guardar y agendar cita
               </button>
             ) : null}
-            <button type="button" disabled={pending} onClick={() => save("another")} className={cn(buttonVariants({ variant: "outline" }), "h-[38px] border border-border")}>
-              Guardar y crear otro
-            </button>
+            {editId ? null : (
+              <button type="button" disabled={pending} onClick={() => save("another")} className={cn(buttonVariants({ variant: "outline" }), "h-[38px] border border-border")}>
+                Guardar y crear otro
+              </button>
+            )}
           </div>
         </form>
 

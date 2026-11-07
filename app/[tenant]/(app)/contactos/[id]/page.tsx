@@ -24,8 +24,11 @@ import MembershipsTable from "./_components/memberships-table";
 import NotesPanel from "./_components/notes-panel";
 import AccessCard from "./_components/access-card";
 import { memberStatus } from "@/lib/industry/gym/gym-db";
-import { requirePageContext } from "@/lib/core/tenancy/context";
+import { isRouteEnabled, requirePageContext } from "@/lib/core/tenancy/context";
 import { can } from "@/lib/core/auth/permissions";
+import { customerFormValues } from "@/lib/business/customers/new-customer-db";
+import NewCustomerForm from "../nuevo/_components/new-customer-form";
+import type { NewCustomerInput } from "@/lib/business/customers/new-customer";
 
 /**
  * FICHA DEL CLIENTE 360° — expediente centralizado de un cliente.
@@ -56,6 +59,24 @@ export default async function CustomerPage({
   const tenantRecord = await tenantWithModules(pageCtx.tenantId);
   if (!tenantRecord) {
     notFound();
+  }
+
+  // ?editar=1 abre el formulario de cliente precargado; ?campo= pone el foco en ese dato (enlaces «Añadir»).
+  if (sp.editar === "1") {
+    const initial = await customerFormValues(pageCtx.tenantId, id);
+    if (!initial) notFound();
+    const campo = typeof sp.campo === "string" && sp.campo in initial ? (sp.campo as keyof NewCustomerInput) : undefined;
+    return (
+      <NewCustomerForm
+        slug={tenantSlug}
+        customersLabel={getVerticalTerms(tenantRecord.vertical).customers}
+        canBook={await isRouteEnabled(pageCtx.tenantId, "/bookings")}
+        editId={id}
+        initial={initial}
+        customerName={initial.name}
+        focusField={campo}
+      />
+    );
   }
 
   // Devuelve `null` si el cliente no existe o es de otro tenant → 404.
