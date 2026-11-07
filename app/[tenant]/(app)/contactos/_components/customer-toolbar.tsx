@@ -70,17 +70,17 @@ export default function CustomerToolbar({
 
   return (
     <>
-      <div className="grid items-center gap-x-4 gap-y-3 px-5 py-4 lg:grid-cols-[1fr_minmax(0,543px)_1fr]">
+      <div className="grid items-center gap-x-4 gap-y-3 px-5 py-4 min-[1100px]:grid-cols-[1fr_minmax(0,543px)_1fr]">
         {/* Izquierda: alta, título y ⋮ */}
-        <div className="flex min-w-0 items-center gap-3">
-          <button type="button" onClick={() => setIsFormOpen(true)} className={buttonVariants({ variant: "accent", size: "sm" })}>
+        <div className="flex min-w-0 items-center gap-3 justify-self-start">
+          <button type="button" onClick={() => setIsFormOpen(true)} className={buttonVariants({ variant: "accent", size: "sm", className: "h-[34px]" })}>
             <Plus aria-hidden="true" className="size-4" />
             Nuevo
           </button>
           <h1 className="truncate text-lg font-medium text-foreground">{terms.customers}</h1>
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
-              <button type="button" aria-label="Más acciones" className={buttonVariants({ variant: "ghost", size: "icon" })}>
+              <button type="button" aria-label="Más acciones" className={buttonVariants({ variant: "ghost", size: "icon", className: "size-[34px]" })}>
                 <MoreVertical aria-hidden="true" className="size-4" />
               </button>
             </DropdownMenuTrigger>
@@ -92,14 +92,12 @@ export default function CustomerToolbar({
           </DropdownMenu>
         </div>
 
-        {/* Centro: búsqueda y filtros (estado) */}
-        <div className="flex min-w-0 items-center gap-2">
-          <div className="min-w-0 flex-1">
-            <CustomerSearch />
-          </div>
+        {/* Centro: una sola caja de búsqueda de 543px, centrada en la pantalla, con el filtro dentro */}
+        <div className="relative h-[34px] w-full justify-self-center max-w-[543px] [&_input]:h-full [&_input]:w-full [&_input]:rounded-lg [&_input]:border-border [&_input]:bg-card">
+          <CustomerSearch />
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
-              <button type="button" aria-label="Filtros" className={buttonVariants({ variant: "outline", size: "icon" })}>
+              <button type="button" aria-label="Filtros" className="absolute right-[3px] top-[3px] grid size-7 place-items-center rounded-md text-muted-foreground outline-none hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-ring">
                 <SlidersHorizontal aria-hidden="true" className="size-4" />
               </button>
             </DropdownMenuTrigger>
@@ -115,7 +113,7 @@ export default function CustomerToolbar({
             <button
               type="button"
               onClick={() => setStatus("active")}
-              className="inline-flex shrink-0 items-center gap-1 rounded-md border border-border bg-surface-muted px-2 py-1 text-xs text-foreground"
+              className="absolute right-10 top-[7px] inline-flex items-center gap-1 rounded-md border border-border bg-surface-muted px-2 py-0.5 text-xs text-foreground"
             >
               Archivados
               <X aria-hidden="true" className="size-3" />
@@ -125,7 +123,7 @@ export default function CustomerToolbar({
         </div>
 
         {/* Derecha: paginación y vistas */}
-        <div className="flex flex-wrap items-center justify-start gap-3 lg:justify-end">
+        <div className="flex flex-wrap items-center justify-start gap-3 justify-self-start min-[1100px]:justify-self-end">
           <p aria-live="polite" className="whitespace-nowrap text-sm text-foreground/80">
             {total === 0 ? "0" : `${from}-${to} / ${total}`}
             <span className="sr-only"> {label}</span>
@@ -136,7 +134,7 @@ export default function CustomerToolbar({
               aria-label="Página anterior"
               disabled={page <= 1 || isPending}
               onClick={() => goToPage(page - 1)}
-              className="grid h-8 w-8 place-items-center rounded-lg border border-border text-foreground outline-none hover:bg-surface-muted disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-ring"
+              className="grid h-[34px] w-[34px] place-items-center rounded-lg border border-border text-foreground outline-none hover:bg-surface-muted disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-ring"
             >
               <ChevronLeft aria-hidden="true" className="size-4" />
             </button>
@@ -151,8 +149,8 @@ export default function CustomerToolbar({
             </button>
           </div>
           {/* Vistas: solo la lista existe; las demás aparecen desactivadas hasta que se construyan. */}
-          <div role="group" aria-label="Vista" className="flex items-center rounded-lg border border-border p-0.5">
-            <span aria-pressed="true" aria-label="Vista de lista" className="grid h-7 w-8 place-items-center rounded-md bg-surface-muted text-accent-text">
+          <div role="group" aria-label="Vista" className="flex h-[34px] items-center rounded-lg border border-border p-0.5">
+            <span aria-pressed="true" aria-label="Vista de lista" className="grid h-[28px] w-8 place-items-center rounded-md bg-surface-muted text-accent-text">
               <List aria-hidden="true" className="size-4" />
             </span>
             {[
@@ -160,7 +158,7 @@ export default function CustomerToolbar({
               { label: "Vista de mapa", Icon: Map },
               { label: "Vista de actividades", Icon: CalendarClock },
             ].map(({ label: viewLabel, Icon }) => (
-              <button key={viewLabel} type="button" disabled aria-label={`${viewLabel} (próximamente)`} className={cn("grid h-7 w-8 place-items-center rounded-md text-muted-foreground/40")}>
+              <button key={viewLabel} type="button" disabled aria-label={`${viewLabel} (próximamente)`} className={cn("grid h-[28px] w-8 place-items-center rounded-md text-muted-foreground/40")}>
                 <Icon aria-hidden="true" className="size-4" />
               </button>
             ))}

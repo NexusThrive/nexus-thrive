@@ -34,6 +34,7 @@
 .view:has([data-bleed]) {
   max-width: none;
   padding-inline: 0;
+  padding-top: 0;
 }
 @media (min-width: 1024px) {
   .view {

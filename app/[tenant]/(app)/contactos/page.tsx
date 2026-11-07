@@ -121,7 +121,7 @@ export default async function CrmPage({
 
 
   return (
-    <div className="space-y-6" data-bleed="">
+    <div className="flex flex-col" data-bleed="">
       <LiveRefresh everyMs={8000} />
       <CustomerToolbar
         tenantSlug={tenantSlug}

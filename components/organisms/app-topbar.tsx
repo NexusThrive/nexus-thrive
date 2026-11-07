@@ -7,7 +7,6 @@ import { ChevronLeft, Plus, Search } from "lucide-react";
 import { N_PATH, THRIVE_LETTERS } from "@nexus/brand/BrandLogo";
 import { Button } from "@/components/atoms/button";
 import { Kbd } from "@/components/atoms/kbd";
-import { ThemeToggle } from "@/components/atoms/theme-toggle";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -82,8 +81,7 @@ export function AppTopbar({ actions, notifications, search, switcher }: { action
       {atHome ? (
         <div className="relative flex flex-1 items-center justify-end gap-3 pe-3">
           <span className="truncate text-sm font-medium text-muted-foreground">{brandName}</span>
-          <ThemeToggle />
-          <AccountButton />
+            <AccountButton />
         </div>
       ) : (
       <div className="relative flex min-w-fit flex-1 items-center justify-end gap-2 md:min-w-0 lg:grid lg:grid-cols-[minmax(max-content,1fr)_minmax(0,440px)_minmax(max-content,1fr)] border-b border-[var(--sidebar-border)] bg-[var(--sidebar-bg)] px-3 text-[var(--sidebar-fg)] md:gap-4 md:px-6 xl:px-8">
@@ -155,7 +153,6 @@ export function AppTopbar({ actions, notifications, search, switcher }: { action
           <div className="flex items-center gap-1 md:gap-0.5">
             {actions}
             {notifications}
-            <ThemeToggle className="max-md:hidden" />
           </div>
           <span aria-hidden="true" className="mx-1 hidden h-6 w-px bg-[var(--sidebar-border)] md:block" />
           {/* En móvil la cuenta vive en «Más» (barra inferior). */}
@@ -241,7 +238,6 @@ function ModuleBar({
           <Kbd className="max-md:hidden">Ctrl K</Kbd>
         </button>
         {notifications}
-        <ThemeToggle />
         <span className="flex items-center gap-2">
           <span className="text-sm font-medium text-muted-foreground max-md:hidden">{brandName}</span>
           <AccountButton />

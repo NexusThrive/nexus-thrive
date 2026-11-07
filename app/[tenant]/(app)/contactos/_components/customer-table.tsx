@@ -5,7 +5,7 @@ import { useEffect, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { SwipeCard } from "@/components/molecules/swipe-card";
-import { ArrowDown, ArrowUp, Archive, Banknote, MessageCircle, Pencil, Plus, RotateCcw, Trash2, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Archive, Banknote, MessageCircle, Pencil, Plus, RotateCcw, SlidersHorizontal, Trash2, X } from "lucide-react";
 import { NLoader } from "@/components/atoms/n-loader";
 import {
   archiveCustomerAction,
@@ -303,7 +303,7 @@ export default function CustomerTable({
               <caption className="sr-only">
                 {terms.customers} de {tenantSlug}
               </caption>
-              <thead className="sticky top-0 z-10 border-b border-border bg-background text-sm font-medium text-muted-foreground">
+              <thead className="sticky top-0 z-10 h-[38px] border-b border-border bg-background text-xs font-medium text-muted-foreground">
                 <tr>
                   {selectable ? (
                     <th scope="col" className="w-10 px-5 py-2">
@@ -321,6 +321,9 @@ export default function CustomerTable({
                       />
                     </th>
                   ) : null}
+                  <th scope="col" className="w-9 px-2 py-2">
+                    <span className="sr-only">Foto</span>
+                  </th>
                   <th scope="col" className="px-5 py-2" aria-sort={sort === "name_asc" ? "ascending" : sort === "name_desc" ? "descending" : "none"}>
                     <button type="button" onClick={() => setSort(nameSort)} className="inline-flex items-center gap-1 outline-none hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
                       {terms.customer}
@@ -345,6 +348,11 @@ export default function CustomerTable({
                       {sortIcon(sort === "recent", true)}
                     </button>
                   </th>
+                  <th scope="col" className="w-9 px-2 py-2">
+                    <button type="button" disabled aria-label="Elegir columnas (próximamente)" className="grid size-[34px] place-items-center rounded-md text-muted-foreground/50">
+                      <SlidersHorizontal aria-hidden="true" className="size-4" />
+                    </button>
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -365,9 +373,11 @@ export default function CustomerTable({
                         />
                       </td>
                     ) : null}
+                    <td className="w-9 px-2 py-2">
+                      <Face row={row} className="flex size-[22px] items-center justify-center rounded-[5px] bg-accent-subtle text-2xs font-semibold text-accent-text" />
+                    </td>
                     <td className="px-5 py-2">
-                      <div className="flex min-w-0 items-center gap-3">
-                        <Face row={row} className="flex size-[22px] shrink-0 items-center justify-center rounded-[5px] bg-accent-subtle text-2xs font-semibold text-accent-text" />
+                      <div className="flex min-w-0 items-center gap-2">
                         <p className="flex min-w-0 items-center gap-2 font-medium text-foreground">
                           <Link
                             href={`/${tenantSlug}/contactos/${row.id}`}
