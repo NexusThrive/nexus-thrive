@@ -82,6 +82,11 @@ export const TENANT_DELETION_TABLES: readonly string[] = [
   "Membership",
   "Obligation",
   "Opportunity",
+  "OpportunityEvent",
+  "CrmStage",
+  "CrmLostReason",
+  "CrmTag",
+  "CrmTeam",
   "Task",
   "SalesQuote",
   "SalesQuoteLine",
@@ -330,6 +335,11 @@ export async function deleteTenantCompletely(
   count("IdempotencyRecord", await tx.orm.public.IdempotencyRecord.where({ tenantId }).deleteAll());
   count("Obligation", await tx.orm.public.Obligation.where({ tenantId }).deleteAll());
   count("Opportunity", await tx.orm.public.Opportunity.where({ tenantId }).deleteAll());
+  count("OpportunityEvent", await tx.orm.public.OpportunityEvent.where({ tenantId }).deleteAll());
+  count("CrmStage", await tx.orm.public.CrmStage.where({ tenantId }).deleteAll());
+  count("CrmLostReason", await tx.orm.public.CrmLostReason.where({ tenantId }).deleteAll());
+  count("CrmTag", await tx.orm.public.CrmTag.where({ tenantId }).deleteAll());
+  count("CrmTeam", await tx.orm.public.CrmTeam.where({ tenantId }).deleteAll());
   count("LeadForm", await tx.orm.public.LeadForm.where({ tenantId }).deleteAll());
   count("BusinessMessage", await tx.orm.public.BusinessMessage.where({ tenantId }).deleteAll());
   count("Deliverable", await tx.orm.public.Deliverable.where({ tenantId }).deleteAll());

@@ -10,10 +10,10 @@ export type OpportunityRow = { id: string; customerId: string; customerName: str
 type Result<T = object> = ({ ok: true } & T) | { ok: false; message: string };
 
 /** Crea una oportunidad para un contacto del negocio. */
-export async function createOpportunity(tx: DbWriter, tenantId: string, input: { customerId: string; interest: string; estimatedValue?: number | null; nextAction?: string | null; nextActionAt?: Temporal.Instant | null; ownerId?: string | null; source?: string | null; leadId?: string | null }): Promise<Result<{ id: string }>> {
+export async function createOpportunity(tx: DbWriter, tenantId: string, input: { customerId: string | null; interest: string; estimatedValue?: number | null; nextAction?: string | null; nextActionAt?: Temporal.Instant | null; ownerId?: string | null; source?: string | null; leadId?: string | null }): Promise<Result<{ id: string }>> {
   const problem = validateOpportunity(input);
   if (problem) return { ok: false, message: problem };
-  if (!(await tx.orm.public.Customer.where({ tenantId, id: input.customerId }).select("id").first())) return { ok: false, message: "El contacto no existe en este negocio." };
+  if (input.customerId && !(await tx.orm.public.Customer.where({ tenantId, id: input.customerId }).select("id").first())) return { ok: false, message: "El contacto no existe en este negocio." };
   const created = await tx.orm.public.Opportunity.create({
     tenantId,
     customerId: input.customerId,
@@ -55,8 +55,8 @@ export async function winOpportunity(tx: DbWriter, tenantId: string, id: string,
   const o = await tx.orm.public.Opportunity.where({ tenantId, id }).first();
   if (!o || o.status !== "OPEN") return { ok: false, message: "La oportunidad ya está cerrada o no existe." };
   await tx.orm.public.Opportunity.where({ tenantId, id }).update({ status: "WON", closedAt: closedAt(), orderId: orderId ?? null, nextAction: null, nextActionAt: null });
-  const customer = await tx.orm.public.Customer.where({ tenantId, id: o.customerId }).select("stage").first();
-  if (customer?.stage === "PROSPECT") await tx.orm.public.Customer.where({ tenantId, id: o.customerId }).update({ stage: "CUSTOMER" });
+  const customer = o.customerId ? await tx.orm.public.Customer.where({ tenantId, id: o.customerId }).select("stage").first() : null;
+  if (o.customerId && customer?.stage === "PROSPECT") await tx.orm.public.Customer.where({ tenantId, id: o.customerId }).update({ stage: "CUSTOMER" });
   return { ok: true };
 }
 
@@ -81,10 +81,10 @@ export async function winOpenOpportunitiesOf(tx: DbWriter, tenantId: string, cus
 /** Oportunidades del negocio, las de acción vencida o más cercana primero. */
 export async function listOpportunities(tenantId: string, status: OpportunityStatus = "OPEN", limit = 300): Promise<OpportunityRow[]> {
   const rows = await db.orm.public.Opportunity.where({ tenantId, status }).orderBy((o) => o.createdAt.desc()).limit(limit).all();
-  const ids = [...new Set(rows.map((r) => r.customerId))];
+  const ids = [...new Set(rows.map((r) => r.customerId).filter((id): id is string => Boolean(id)))];
   const customers = ids.length ? await db.orm.public.Customer.where({ tenantId }).where((c) => c.id.in(ids)).select("id", "name").all() : [];
   const names = new Map(customers.map((c) => [c.id, c.name]));
-  return byUrgency(rows.map((o) => ({ id: o.id, customerId: o.customerId, customerName: names.get(o.customerId) ?? "Contacto", interest: o.interest, estimatedValue: o.estimatedValue == null ? null : toNumber(o.estimatedValue), stage: o.stage as OpportunityStage, status: o.status as OpportunityStatus, nextAction: o.nextAction, nextActionAt: o.nextActionAt ? String(o.nextActionAt) : null, lostReason: o.lostReason, source: o.source, createdAt: String(o.createdAt) })));
+  return byUrgency(rows.map((o) => ({ id: o.id, customerId: o.customerId ?? "", customerName: (o.customerId && names.get(o.customerId)) || "Sin contacto", interest: o.interest, estimatedValue: o.estimatedValue == null ? null : toNumber(o.estimatedValue), stage: o.stage as OpportunityStage, status: o.status as OpportunityStatus, nextAction: o.nextAction, nextActionAt: o.nextActionAt ? String(o.nextActionAt) : null, lostReason: o.lostReason, source: o.source, createdAt: String(o.createdAt) })));
 }
 
 /**

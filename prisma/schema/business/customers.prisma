@@ -79,8 +79,8 @@ model CustomerNote {
   @@rls
 }
 
-/// Oportunidad (HU-leads-01): seguir a cada interesado hasta que compra o se pierde. Siempre ligada a UN contacto (`Customer`):
-/// ganar una oportunidad no duplica a la persona. No es el CRM comercial de Nexus (`platform/crm`): es el del negocio.
+/// Oportunidad (HU-leads-01): seguir a cada interesado hasta que compra o se pierde. Ligada a UN contacto (`Customer`) cuando se
+/// conoce (en la creación rápida del CRM solo el nombre es obligatorio, como en Odoo): ganar una oportunidad no duplica a la persona. No es el CRM comercial de Nexus (`platform/crm`): es el del negocio.
 ///
 /// Campos:
 /// - `stage`: NEW | CONTACTED | QUOTED | NEGOTIATING (mientras está abierta).
@@ -88,11 +88,16 @@ model CustomerNote {
 /// - `leadId`: `ContactLead` de donde nació (los contactos del formulario que ya existían se migran con él).
 /// - `orderId`: Pedido de la tienda con el que se ganó, si lo hubo.
 /// - `nextAction`, `nextActionAt`: El siguiente paso y cuándo; la base de las tareas del seguimiento.
+/// - `stageId`: Etapa del pipeline (`CrmStage`); vacío en las anteriores al pipeline configurable (se ubican por `stage`).
+/// - `probability`: 0–100; al cambiar de etapa toma la de la etapa (editable después). `priority`: 0–3 estrellas.
+/// - `expectedClose`: Cierre previsto «AAAA-MM-DD». `tags`: etiquetas. `description`: notas del trato.
+/// - `stageSince`: Desde cuándo está en la etapa actual. `position`: orden manual dentro de la columna (menor = arriba).
+/// - `teamId`: Equipo de ventas (`CrmTeam`), opcional.
 model Opportunity {
   id            String    @id @default(uuid())
   tenantId      String
   tenant        Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  customerId    String
+  customerId    String?
   interest      String
   estimatedValue Decimal?
   stage         String    @default("NEW")
@@ -105,6 +110,15 @@ model Opportunity {
   orderId       String?
   lostReason    String?
   closedAt      DateTime?
+  stageId       String?
+  probability   Int?
+  priority      Int       @default(0)
+  expectedClose String?
+  tags          String[]  @default([])
+  description   String?
+  stageSince    DateTime?
+  position      Float?
+  teamId        String?
   createdAt     DateTime  @default(now())
   updatedAt     temporal.updatedAt()
 
@@ -123,6 +137,7 @@ model Opportunity {
 /// - `status`: OPEN | DONE. Al completarla se guarda `doneAt` y quién (`doneById`).
 /// - `customerId`, `opportunityId`: A quién o a qué oportunidad se refiere (opcionales).
 /// - `projectId`: Proyecto al que pertenece (opcional); las tareas de un proyecto se ven por proyecto y por persona (HU-tareas-01).
+/// - `kind`: CALL | MEETING | PROPOSAL | OTHER (actividad del CRM); vacío = tarea general. `dueAt`: fecha y hora exactas.
 model Task {
   id            String    @id @default(uuid())
   tenantId      String
@@ -134,6 +149,8 @@ model Task {
   customerId    String?
   opportunityId String?
   projectId     String?
+  kind          String?
+  dueAt         DateTime?
   status        String    @default("OPEN")
   doneAt        DateTime?
   doneById      String?
@@ -199,5 +216,75 @@ model Deliverable {
 
   @@index([tenantId, status])
   @@index([tenantId, projectId])
+  @@rls
+}
+
+/// Etapa del pipeline de oportunidades del negocio (CRM). Configurable: nombre, orden y probabilidad por defecto. `isWon` marca la
+/// etapa ganada (una por negocio). Las iniciales (Nuevo 20 %, Calificado 40 %, Propuesta 60 %, Ganado 100 %) se crean al abrir el CRM.
+model CrmStage {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name        String
+  position    Int
+  probability Int      @default(0)
+  isWon       Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([tenantId, position])
+  @@rls
+}
+
+/// Motivo de pérdida configurable del CRM (al perder se elige uno, más texto libre).
+model CrmLostReason {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name      String
+  position  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([tenantId])
+  @@rls
+}
+
+/// Etiqueta del CRM (las oportunidades guardan el nombre en `tags`; aquí se listan para elegirlas y renombrarlas).
+model CrmTag {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name      String
+  createdAt DateTime @default(now())
+
+  @@unique([tenantId, name])
+  @@rls
+}
+
+/// Equipo de ventas del CRM: nombre e integrantes (`User.id` del negocio).
+model CrmTeam {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name      String
+  memberIds String[] @default([])
+  createdAt DateTime @default(now())
+
+  @@index([tenantId])
+  @@rls
+}
+
+/// Historial de una oportunidad: CREATED | STAGE | NOTE | MESSAGE | ACTIVITY | WON | LOST | REOPENED | FIELD. `data` guarda el
+/// detalle legible (p. ej. `{from, to}` de un cambio de etapa); `authorId` es el `User.id` de quien lo hizo.
+model OpportunityEvent {
+  id            String   @id @default(uuid())
+  tenantId      String
+  tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  opportunityId String
+  kind          String
+  data          Json?
+  authorId      String?
+  createdAt     DateTime @default(now())
+
+  @@index([tenantId, opportunityId, createdAt])
   @@rls
 }

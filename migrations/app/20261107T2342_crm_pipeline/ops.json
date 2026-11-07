@@ -1,0 +1,1421 @@
+[
+  {
+    "id": "table.CrmLostReason",
+    "label": "Create table \"CrmLostReason\"",
+    "summary": "Creates table \"CrmLostReason\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "CrmLostReason"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"CrmLostReason\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CrmLostReason\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"CrmLostReason\"",
+        "sql": "CREATE TABLE \"public\".\"CrmLostReason\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"name\" text NOT NULL,\n  \"position\" int4 DEFAULT 0 NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"CrmLostReason\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CrmLostReason\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.CrmStage",
+    "label": "Create table \"CrmStage\"",
+    "summary": "Creates table \"CrmStage\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "CrmStage"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"CrmStage\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CrmStage\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"CrmStage\"",
+        "sql": "CREATE TABLE \"public\".\"CrmStage\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"isWon\" bool DEFAULT false NOT NULL,\n  \"name\" text NOT NULL,\n  \"position\" int4 NOT NULL,\n  \"probability\" int4 DEFAULT 0 NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"CrmStage\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CrmStage\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.CrmTag",
+    "label": "Create table \"CrmTag\"",
+    "summary": "Creates table \"CrmTag\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "CrmTag"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"CrmTag\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CrmTag\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"CrmTag\"",
+        "sql": "CREATE TABLE \"public\".\"CrmTag\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"name\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"CrmTag\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CrmTag\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.CrmTeam",
+    "label": "Create table \"CrmTeam\"",
+    "summary": "Creates table \"CrmTeam\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "CrmTeam"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"CrmTeam\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CrmTeam\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"CrmTeam\"",
+        "sql": "CREATE TABLE \"public\".\"CrmTeam\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"memberIds\" text[] DEFAULT '{}' NOT NULL,\n  \"name\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"CrmTeam_memberIds_elem_not_null_2683b194\" CHECK (array_position(\"memberIds\", NULL) IS NULL)\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"CrmTeam\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CrmTeam\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.OpportunityEvent",
+    "label": "Create table \"OpportunityEvent\"",
+    "summary": "Creates table \"OpportunityEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "OpportunityEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"OpportunityEvent\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"OpportunityEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"OpportunityEvent\"",
+        "sql": "CREATE TABLE \"public\".\"OpportunityEvent\" (\n  \"authorId\" text,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"data\" json,\n  \"id\" text NOT NULL,\n  \"kind\" text NOT NULL,\n  \"opportunityId\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"OpportunityEvent\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"OpportunityEvent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Opportunity.description",
+    "label": "Add column \"description\" to \"Opportunity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "description",
+        "table": "Opportunity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"description\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Opportunity",
+          "description"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"description\"",
+        "sql": "ALTER TABLE \"public\".\"Opportunity\" ADD COLUMN \"description\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"description\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Opportunity",
+          "description"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Opportunity.expectedClose",
+    "label": "Add column \"expectedClose\" to \"Opportunity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "expectedClose",
+        "table": "Opportunity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"expectedClose\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Opportunity",
+          "expectedClose"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"expectedClose\"",
+        "sql": "ALTER TABLE \"public\".\"Opportunity\" ADD COLUMN \"expectedClose\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"expectedClose\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Opportunity",
+          "expectedClose"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Opportunity.position",
+    "label": "Add column \"position\" to \"Opportunity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "position",
+        "table": "Opportunity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"position\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Opportunity",
+          "position"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"position\"",
+        "sql": "ALTER TABLE \"public\".\"Opportunity\" ADD COLUMN \"position\" float8"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"position\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Opportunity",
+          "position"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Opportunity.priority",
+    "label": "Add column \"priority\" to \"Opportunity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "priority",
+        "table": "Opportunity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"priority\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Opportunity",
+          "priority"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"priority\"",
+        "sql": "ALTER TABLE \"public\".\"Opportunity\" ADD COLUMN \"priority\" int4 DEFAULT 0 NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"priority\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Opportunity",
+          "priority"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Opportunity.probability",
+    "label": "Add column \"probability\" to \"Opportunity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "probability",
+        "table": "Opportunity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"probability\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Opportunity",
+          "probability"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"probability\"",
+        "sql": "ALTER TABLE \"public\".\"Opportunity\" ADD COLUMN \"probability\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"probability\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Opportunity",
+          "probability"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Opportunity.stageId",
+    "label": "Add column \"stageId\" to \"Opportunity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "stageId",
+        "table": "Opportunity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"stageId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Opportunity",
+          "stageId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"stageId\"",
+        "sql": "ALTER TABLE \"public\".\"Opportunity\" ADD COLUMN \"stageId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"stageId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Opportunity",
+          "stageId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Opportunity.stageSince",
+    "label": "Add column \"stageSince\" to \"Opportunity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "stageSince",
+        "table": "Opportunity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"stageSince\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Opportunity",
+          "stageSince"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"stageSince\"",
+        "sql": "ALTER TABLE \"public\".\"Opportunity\" ADD COLUMN \"stageSince\" timestamptz"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"stageSince\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Opportunity",
+          "stageSince"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Opportunity.tags",
+    "label": "Add column \"tags\" to \"Opportunity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "tags",
+        "table": "Opportunity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"tags\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Opportunity",
+          "tags"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"tags\"",
+        "sql": "ALTER TABLE \"public\".\"Opportunity\" ADD COLUMN \"tags\" text[] DEFAULT '{}' NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"tags\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Opportunity",
+          "tags"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Opportunity.teamId",
+    "label": "Add column \"teamId\" to \"Opportunity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "teamId",
+        "table": "Opportunity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"teamId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Opportunity",
+          "teamId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"teamId\"",
+        "sql": "ALTER TABLE \"public\".\"Opportunity\" ADD COLUMN \"teamId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"teamId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Opportunity",
+          "teamId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Task.dueAt",
+    "label": "Add column \"dueAt\" to \"Task\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "dueAt",
+        "table": "Task"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"dueAt\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Task",
+          "dueAt"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"dueAt\"",
+        "sql": "ALTER TABLE \"public\".\"Task\" ADD COLUMN \"dueAt\" timestamptz"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"dueAt\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Task",
+          "dueAt"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Task.kind",
+    "label": "Add column \"kind\" to \"Task\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "kind",
+        "table": "Task"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"kind\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Task",
+          "kind"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"kind\"",
+        "sql": "ALTER TABLE \"public\".\"Task\" ADD COLUMN \"kind\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"kind\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Task",
+          "kind"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.CrmTag.CrmTag_tenantId_name_key",
+    "label": "Add unique constraint on \"CrmTag\" (tenantId, name)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "CrmTag_tenantId_name_key",
+        "table": "CrmTag"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"CrmTag_tenantId_name_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "CrmTag_tenantId_name_key",
+          "public",
+          "\"public\".\"CrmTag\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"CrmTag_tenantId_name_key\"",
+        "sql": "ALTER TABLE \"public\".\"CrmTag\" ADD CONSTRAINT \"CrmTag_tenantId_name_key\" UNIQUE (\"tenantId\", \"name\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"CrmTag_tenantId_name_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "CrmTag_tenantId_name_key",
+          "public",
+          "\"public\".\"CrmTag\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.Opportunity.Opportunity_tags_elem_not_null_aecbe9e2",
+    "label": "Add check constraint \"Opportunity_tags_elem_not_null_aecbe9e2\" on \"Opportunity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "checkConstraint",
+        "name": "Opportunity_tags_elem_not_null_aecbe9e2",
+        "table": "Opportunity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Opportunity_tags_elem_not_null_aecbe9e2\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Opportunity_tags_elem_not_null_aecbe9e2",
+          "public",
+          "\"public\".\"Opportunity\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"Opportunity_tags_elem_not_null_aecbe9e2\"",
+        "sql": "ALTER TABLE \"public\".\"Opportunity\" ADD CONSTRAINT \"Opportunity_tags_elem_not_null_aecbe9e2\" CHECK (array_position(\"tags\", NULL) IS NULL)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Opportunity_tags_elem_not_null_aecbe9e2\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Opportunity_tags_elem_not_null_aecbe9e2",
+          "public",
+          "\"public\".\"Opportunity\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.CrmLostReason.CrmLostReason_tenantId_idx_c93ed4f1",
+    "label": "Create index \"CrmLostReason_tenantId_idx_c93ed4f1\" on \"CrmLostReason\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "CrmLostReason_tenantId_idx_c93ed4f1",
+        "table": "CrmLostReason"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"CrmLostReason_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CrmLostReason_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"CrmLostReason_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"CrmLostReason_tenantId_idx_c93ed4f1\" ON \"public\".\"CrmLostReason\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"CrmLostReason_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CrmLostReason_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.CrmStage.CrmStage_tenantId_idx_c93ed4f1",
+    "label": "Create index \"CrmStage_tenantId_idx_c93ed4f1\" on \"CrmStage\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "CrmStage_tenantId_idx_c93ed4f1",
+        "table": "CrmStage"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"CrmStage_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CrmStage_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"CrmStage_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"CrmStage_tenantId_idx_c93ed4f1\" ON \"public\".\"CrmStage\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"CrmStage_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CrmStage_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.CrmStage.CrmStage_tenantId_position_idx_2c85c5ec",
+    "label": "Create index \"CrmStage_tenantId_position_idx_2c85c5ec\" on \"CrmStage\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "CrmStage_tenantId_position_idx_2c85c5ec",
+        "table": "CrmStage"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"CrmStage_tenantId_position_idx_2c85c5ec\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CrmStage_tenantId_position_idx_2c85c5ec\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"CrmStage_tenantId_position_idx_2c85c5ec\"",
+        "sql": "CREATE INDEX \"CrmStage_tenantId_position_idx_2c85c5ec\" ON \"public\".\"CrmStage\" (\"tenantId\", \"position\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"CrmStage_tenantId_position_idx_2c85c5ec\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CrmStage_tenantId_position_idx_2c85c5ec\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.CrmTag.CrmTag_tenantId_idx_c93ed4f1",
+    "label": "Create index \"CrmTag_tenantId_idx_c93ed4f1\" on \"CrmTag\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "CrmTag_tenantId_idx_c93ed4f1",
+        "table": "CrmTag"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"CrmTag_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CrmTag_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"CrmTag_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"CrmTag_tenantId_idx_c93ed4f1\" ON \"public\".\"CrmTag\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"CrmTag_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CrmTag_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.CrmTeam.CrmTeam_tenantId_idx_c93ed4f1",
+    "label": "Create index \"CrmTeam_tenantId_idx_c93ed4f1\" on \"CrmTeam\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "CrmTeam_tenantId_idx_c93ed4f1",
+        "table": "CrmTeam"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"CrmTeam_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CrmTeam_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"CrmTeam_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"CrmTeam_tenantId_idx_c93ed4f1\" ON \"public\".\"CrmTeam\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"CrmTeam_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"CrmTeam_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.OpportunityEvent.OpportunityEvent_tenantId_idx_c93ed4f1",
+    "label": "Create index \"OpportunityEvent_tenantId_idx_c93ed4f1\" on \"OpportunityEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "OpportunityEvent_tenantId_idx_c93ed4f1",
+        "table": "OpportunityEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"OpportunityEvent_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"OpportunityEvent_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"OpportunityEvent_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"OpportunityEvent_tenantId_idx_c93ed4f1\" ON \"public\".\"OpportunityEvent\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"OpportunityEvent_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"OpportunityEvent_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.OpportunityEvent.OpportunityEvent_tenantId_opportunityId_createdAt_idx_ba6e9aa1",
+    "label": "Create index \"OpportunityEvent_tenantId_opportunityId_createdAt_idx_ba6e9aa1\" on \"OpportunityEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "OpportunityEvent_tenantId_opportunityId_createdAt_idx_ba6e9aa1",
+        "table": "OpportunityEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"OpportunityEvent_tenantId_opportunityId_createdAt_idx_ba6e9aa1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"OpportunityEvent_tenantId_opportunityId_createdAt_idx_ba6e9aa1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"OpportunityEvent_tenantId_opportunityId_createdAt_idx_ba6e9aa1\"",
+        "sql": "CREATE INDEX \"OpportunityEvent_tenantId_opportunityId_createdAt_idx_ba6e9aa1\" ON \"public\".\"OpportunityEvent\" (\"tenantId\", \"opportunityId\", \"createdAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"OpportunityEvent_tenantId_opportunityId_createdAt_idx_ba6e9aa1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"OpportunityEvent_tenantId_opportunityId_createdAt_idx_ba6e9aa1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.CrmLostReason.CrmLostReason_tenantId_fkey",
+    "label": "Add foreign key \"CrmLostReason_tenantId_fkey\" on \"CrmLostReason\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "CrmLostReason_tenantId_fkey",
+        "table": "CrmLostReason"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"CrmLostReason_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "CrmLostReason_tenantId_fkey",
+          "public",
+          "\"public\".\"CrmLostReason\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"CrmLostReason_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"CrmLostReason\"\nADD CONSTRAINT \"CrmLostReason_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"CrmLostReason_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "CrmLostReason_tenantId_fkey",
+          "public",
+          "\"public\".\"CrmLostReason\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.CrmStage.CrmStage_tenantId_fkey",
+    "label": "Add foreign key \"CrmStage_tenantId_fkey\" on \"CrmStage\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "CrmStage_tenantId_fkey",
+        "table": "CrmStage"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"CrmStage_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "CrmStage_tenantId_fkey",
+          "public",
+          "\"public\".\"CrmStage\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"CrmStage_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"CrmStage\"\nADD CONSTRAINT \"CrmStage_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"CrmStage_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "CrmStage_tenantId_fkey",
+          "public",
+          "\"public\".\"CrmStage\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.CrmTag.CrmTag_tenantId_fkey",
+    "label": "Add foreign key \"CrmTag_tenantId_fkey\" on \"CrmTag\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "CrmTag_tenantId_fkey",
+        "table": "CrmTag"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"CrmTag_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "CrmTag_tenantId_fkey",
+          "public",
+          "\"public\".\"CrmTag\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"CrmTag_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"CrmTag\"\nADD CONSTRAINT \"CrmTag_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"CrmTag_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "CrmTag_tenantId_fkey",
+          "public",
+          "\"public\".\"CrmTag\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.CrmTeam.CrmTeam_tenantId_fkey",
+    "label": "Add foreign key \"CrmTeam_tenantId_fkey\" on \"CrmTeam\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "CrmTeam_tenantId_fkey",
+        "table": "CrmTeam"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"CrmTeam_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "CrmTeam_tenantId_fkey",
+          "public",
+          "\"public\".\"CrmTeam\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"CrmTeam_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"CrmTeam\"\nADD CONSTRAINT \"CrmTeam_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"CrmTeam_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "CrmTeam_tenantId_fkey",
+          "public",
+          "\"public\".\"CrmTeam\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.OpportunityEvent.OpportunityEvent_tenantId_fkey",
+    "label": "Add foreign key \"OpportunityEvent_tenantId_fkey\" on \"OpportunityEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "OpportunityEvent_tenantId_fkey",
+        "table": "OpportunityEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"OpportunityEvent_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "OpportunityEvent_tenantId_fkey",
+          "public",
+          "\"public\".\"OpportunityEvent\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"OpportunityEvent_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"OpportunityEvent\"\nADD CONSTRAINT \"OpportunityEvent_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"OpportunityEvent_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "OpportunityEvent_tenantId_fkey",
+          "public",
+          "\"public\".\"OpportunityEvent\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.CrmLostReason",
+    "label": "Enable row-level security on \"CrmLostReason\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "CrmLostReason"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"CrmLostReason\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "CrmLostReason"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"CrmLostReason\"",
+        "sql": "ALTER TABLE \"public\".\"CrmLostReason\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"CrmLostReason\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "CrmLostReason"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.CrmStage",
+    "label": "Enable row-level security on \"CrmStage\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "CrmStage"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"CrmStage\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "CrmStage"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"CrmStage\"",
+        "sql": "ALTER TABLE \"public\".\"CrmStage\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"CrmStage\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "CrmStage"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.CrmTag",
+    "label": "Enable row-level security on \"CrmTag\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "CrmTag"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"CrmTag\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "CrmTag"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"CrmTag\"",
+        "sql": "ALTER TABLE \"public\".\"CrmTag\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"CrmTag\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "CrmTag"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.CrmTeam",
+    "label": "Enable row-level security on \"CrmTeam\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "CrmTeam"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"CrmTeam\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "CrmTeam"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"CrmTeam\"",
+        "sql": "ALTER TABLE \"public\".\"CrmTeam\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"CrmTeam\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "CrmTeam"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.OpportunityEvent",
+    "label": "Enable row-level security on \"OpportunityEvent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "OpportunityEvent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"OpportunityEvent\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "OpportunityEvent"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"OpportunityEvent\"",
+        "sql": "ALTER TABLE \"public\".\"OpportunityEvent\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"OpportunityEvent\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "OpportunityEvent"
+        ]
+      }
+    ]
+  }
+]
