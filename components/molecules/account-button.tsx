@@ -11,8 +11,9 @@ const noop = () => () => undefined;
  * hidratar y, mientras tanto, un hueco del mismo tamaño evita el salto de diseño.
  * `showName` muestra el nombre al lado del avatar (la hoja «Más» del móvil).
  */
-export function AccountButton({ showName = false }: { showName?: boolean }) {
+export function AccountButton({ showName = false, compact = false }: { showName?: boolean; /** Avatar de 28px (barra de módulo). */ compact?: boolean }) {
   const mounted = useSyncExternalStore(noop, () => true, () => false);
-  if (!mounted) return <span aria-hidden="true" className="inline-block size-[34px] pointer-coarse:size-11 rounded-[4px] bg-surface-muted" />;
-  return <UserButton showName={showName} appearance={{ elements: { userButtonAvatarBox: "size-[34px] pointer-coarse:size-11 rounded-[4px]" } }} />;
+  const box = compact ? "size-7 pointer-coarse:size-10 rounded-[4px]" : "size-[34px] pointer-coarse:size-11 rounded-[4px]";
+  if (!mounted) return <span aria-hidden="true" className={`inline-block ${box} bg-surface-muted`} />;
+  return <UserButton showName={showName} appearance={{ elements: { userButtonAvatarBox: box } }} />;
 }

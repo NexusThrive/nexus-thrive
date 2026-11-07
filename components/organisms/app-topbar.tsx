@@ -44,7 +44,7 @@ export function AppTopbar({ actions, notifications, search, switcher }: { action
   const atHome = pathname.replace(/\/$/, "") === hrefFor("");
   // Dentro de un módulo (no en Inicio ni en Sistema) la barra cambia a la barra de módulo: «<», módulo, secciones y utilidades.
   const moduleGroup = atHome ? undefined : groups.find((g) => g.label !== "Sistema" && g.items.some((i) => i.key === activeKey));
-  if (moduleGroup) return <ModuleBar group={moduleGroup} activeKey={activeKey} hrefFor={hrefFor} openSearch={openSearch} notifications={notifications} brandName={brandName} />;
+  if (moduleGroup) return <ModuleBar group={moduleGroup} activeKey={activeKey} hrefFor={hrefFor} notifications={notifications} brandName={brandName} />;
 
   return (
     <header
@@ -181,7 +181,6 @@ function ModuleBar({
   group,
   activeKey,
   hrefFor,
-  openSearch,
   notifications,
   brandName,
 }: {
@@ -189,7 +188,6 @@ function ModuleBar({
   group: NavGroup;
   activeKey: string | undefined;
   hrefFor: (href: string) => string;
-  openSearch: () => void;
   notifications?: ReactNode;
 }) {
   const Icon = group.icon ?? group.items[0]!.icon;
@@ -197,7 +195,7 @@ function ModuleBar({
     <header
       data-app-topbar=""
       data-module-bar=""
-      className="fixed inset-x-0 top-0 z-(--z-topbar) flex h-[calc(56px+env(safe-area-inset-top,0px))] items-center gap-3 border-b border-border bg-background px-3 pt-[env(safe-area-inset-top,0px)] md:px-4"
+      className="fixed inset-x-0 top-0 z-(--z-topbar) flex h-[calc(56px+env(safe-area-inset-top,0px))] items-center gap-3 bg-background px-3 pt-[env(safe-area-inset-top,0px)] md:px-4"
     >
       <Link
         href={hrefFor("")}
@@ -230,21 +228,11 @@ function ModuleBar({
         })}
       </nav>
       <div className="flex shrink-0 items-center gap-2">
-        <button
-          type="button"
-          onClick={openSearch}
-          aria-keyshortcuts="Control+K"
-          className="inline-flex h-9 items-center gap-2 rounded-lg border border-border bg-card px-2.5 text-sm text-muted-foreground outline-none hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-        >
-          <Search aria-hidden="true" className="size-4" />
-          <span className="max-md:sr-only">Buscar</span>
-          <Kbd aria-hidden="true" className="max-md:hidden">Ctrl K</Kbd>
-        </button>
-        {notifications}
-        <ThemeToggle />
+        <span className="flex items-center [&_button]:size-8 [&_svg]:size-4">{notifications}</span>
+        <ThemeToggle className="size-8 pointer-coarse:size-10 [&_svg]:size-4" />
         <span className="flex items-center gap-2">
-          <span className="text-sm font-medium text-muted-foreground max-md:hidden">{brandName}</span>
-          <AccountButton />
+          <span className="text-xs font-medium text-muted-foreground max-md:hidden">{brandName}</span>
+          <AccountButton compact />
         </span>
       </div>
     </header>
