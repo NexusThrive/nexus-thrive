@@ -1,6 +1,6 @@
 import { Clock } from "lucide-react";
 import type { CardChip } from "@/lib/business/growth/pipeline";
-import { initialsOf } from "@/lib/business/growth/pipeline";
+import { CustomerAvatar } from "@/components/atoms/customer-avatar";
 import { cn } from "@/lib/utils";
 
 /** Piezas del CRM que comparten el tablero, la lista y el detalle: estrellas, chip de actividad y avatares. */
@@ -62,12 +62,11 @@ export function ActivityChip({ chip, className }: { chip: CardChip; className?: 
   );
 }
 
-/** Avatar con iniciales: 20 px (contacto en la tarjeta), 24 px (responsable) o 28 px (detalle). */
-export function Initials({ name, size = 20, tone = "muted", className }: { name: string; size?: 20 | 24 | 28; tone?: "muted" | "accent"; className?: string }) {
+/**
+ * Avatar de una persona (cliente o integrante del equipo): su blobatar determinista, como en el resto de la app. 20 px (contacto en
+ * la tarjeta), 24 px (responsable) o 28 px (detalle). Decorativo: el nombre siempre va escrito al lado o en el lector de pantalla.
+ */
+export function Initials({ name, id, email, size = 20, className }: { name: string; id?: string | null; email?: string | null; size?: 20 | 24 | 28; tone?: "muted" | "accent"; className?: string }) {
   const box = size === 28 ? "size-7 rounded-lg" : size === 24 ? "size-6 rounded-lg" : "size-5 rounded-md";
-  return (
-    <span aria-hidden="true" className={cn("grid shrink-0 place-items-center text-2xs font-semibold", box, tone === "accent" ? "bg-accent-subtle text-accent-text" : "bg-surface-muted text-foreground", className)}>
-      {size === 24 ? (initialsOf(name)[0] ?? "?") : initialsOf(name)}
-    </span>
-  );
+  return <CustomerAvatar identity={{ name, id, email }} className={cn(box, className)} />;
 }

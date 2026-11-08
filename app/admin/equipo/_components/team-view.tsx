@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Copy, KeyRound, Link2, Plus, ShieldCheck, Trash2, UserPlus } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
+import { CustomerAvatar } from "@/components/atoms/customer-avatar";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { inputClasses } from "@/components/atoms/input";
 import { Alert } from "@/components/molecules/alert";
@@ -28,7 +29,6 @@ function seen(iso: string | null): string {
   if (Math.abs(min) < 1440) return rel.format(Math.round(min / 60), "hour");
   return rel.format(Math.round(min / 1440), "day");
 }
-const initials = (s: string) => s.split(/[\s@.]+/).filter(Boolean).slice(0, 2).map((w) => w[0]?.toUpperCase()).join("");
 
 /**
  * Equipo NEXUS: integrantes (invitar, cambiar rol, desactivar) y roles con
@@ -128,7 +128,7 @@ export default function TeamView({
             return (
               <li key={m.id} className="flex min-w-0 flex-col gap-3 rounded-lg border border-border bg-surface p-4">
                 <div className="flex items-center gap-3">
-                  <span className="grid size-10 shrink-0 place-items-center rounded-md bg-primary font-display text-sm font-bold text-primary-foreground">{initials(m.name ?? m.email)}</span>
+                  <CustomerAvatar identity={{ name: m.name, email: m.email, id: m.id }} className="size-10 rounded-md" />
                   <div className="min-w-0 flex-1">
                     <b className="block truncate font-medium">
                       {m.name ?? m.email} {isMe ? <span className="text-xs font-normal text-muted-foreground">(tú)</span> : null}

@@ -4,6 +4,7 @@ import { Check } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { NMark } from "@/components/atoms/n-mark";
 import { burstFrom, spring } from "@/lib/experience/motion/index";
+import { CustomerAvatar } from "@/components/atoms/customer-avatar";
 import { cn } from "@/lib/utils";
 
 export type AgendaItem = {
@@ -13,6 +14,8 @@ export type AgendaItem = {
   title: string;
   subtitle: string;
   initials: string;
+  /** Persona de la cita: con ella se muestra su avatar (blobatar) en lugar de las iniciales. */
+  person?: { name?: string | null; id?: string | null; email?: string | null; phone?: string | null };
   done: boolean;
   /** Cancelada: se muestra tachada y sin acción. */
   cancelled?: boolean;
@@ -71,14 +74,18 @@ export function AgendaTimeline({
                 row.done ? "border-l-success opacity-[.62]" : row.cancelled ? "border-l-border-strong opacity-50" : "border-l-accent",
               )}
             >
-              <span
-                className={cn(
-                  "grid size-7 shrink-0 place-items-center rounded-md font-display text-2xs font-bold",
-                  row.done || row.cancelled ? "bg-surface-muted text-foreground" : "bg-primary text-primary-foreground",
-                )}
-              >
-                {row.initials}
-              </span>
+              {row.person ? (
+                <CustomerAvatar identity={row.person} className={cn("size-7 rounded-md", (row.done || row.cancelled) && "opacity-70")} />
+              ) : (
+                <span
+                  className={cn(
+                    "grid size-7 shrink-0 place-items-center rounded-md font-display text-2xs font-bold",
+                    row.done || row.cancelled ? "bg-surface-muted text-foreground" : "bg-primary text-primary-foreground",
+                  )}
+                >
+                  {row.initials}
+                </span>
+              )}
               <div className="min-w-0 flex-1">
                 <b className={cn("block truncate font-semibold", (row.done || row.cancelled) && "line-through decoration-muted-foreground")}>{row.title}</b>
                 <small className="block truncate text-xs text-muted-foreground">{row.subtitle}</small>

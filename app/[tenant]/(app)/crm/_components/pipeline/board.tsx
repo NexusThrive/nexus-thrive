@@ -59,7 +59,7 @@ function CardBody({ card, now }: { card: PipelineCard; now: number }) {
         <ActivityChip chip={cardChip(card, now)} className="ms-auto" />
         {card.owner ? (
           <span title={`Responsable: ${card.owner.name}`}>
-            <Initials name={card.owner.name} size={24} tone="accent" />
+            <Initials name={card.owner.name} id={card.owner.id} size={24} />
             <span className="sr-only">Responsable: {card.owner.name}</span>
           </span>
         ) : null}
