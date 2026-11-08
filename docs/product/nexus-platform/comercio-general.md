@@ -353,11 +353,13 @@ Cada punto se confirma leyendo el código al abrir su historia; nada de esto se 
 
 | # | Historia | Estado |
 |---|---|---|
-| 0 | Barra de módulo con *Informes ▾* y *Configuración ▾*; Punto de venta, Inventario y Facturación como apps | **Hecho.** Entradas sin pantalla se ven apagadas con «Pronto». |
-| 1 | Catálogo: tarjetas y tabla, categorías en árbol, atributos y variantes, producto en página con previsualización, listas de precios | **Hecho** (falta: precios por cantidad y asignar una lista a clientes, grupos o canales; importación masiva con categorías, código de barras y atributos). |
-| 2 | Medios de pago del negocio | **Pendiente.** Hoy el sistema solo distingue efectivo y transferencia (`PaymentProvider`); abrirlo toca el dinero y 20 pantallas. |
-| 3 | POS en `/pos`, pantalla completa, cliente opcional, categorías, F4, renglón a medida | **Hecho** (falta: lista de precios del cliente en el POS, factura POS numerada y el modo sin conexión). |
-| 4 | Inventario pulido (tablero, formulario de movimiento, proveedores con contacto) | **Pendiente.** Existen existencias, traslados, conteos y reposición. |
-| 5 | Facturación electrónica estructurada (tablero, series, pendientes) | **Pendiente.** Los menús ya apuntan a Impuestos y numeración. |
-| 6–10 | Ventas (listas con cifras), pedido multicanal, canales, reportes, ficha del comprador | **Pendiente.** |
-
+| 0 | Barra de módulo con *Informes ▾* y *Configuración ▾*; Punto de venta, Inventario y Facturación como apps | **Hecho.** Las entradas sin pantalla se ven apagadas con «Pronto». |
+| 1 | Catálogo: tarjetas y tabla, categorías en árbol, atributos y variantes, producto en página con previsualización, listas de precios, importación masiva | **Hecho** (faltan: precios por cantidad y asignar una lista a clientes, grupos o canales). |
+| 2 | Medios de pago del negocio | **Hecho para el POS** (`/pos/medios-de-pago`: efectivo o transferencia/billetera con nombre, instrucciones y orden). Faltan pasarela, crédito/fiado y que membresías, cartera y facturación usen esta lista. |
+| 3 | POS en `/pos`, pantalla completa, cliente opcional, categorías, F4, renglón a medida | **Hecho** (faltan: lista de precios del cliente en el POS, factura POS numerada y modo sin conexión). |
+| 4 | Inventario pulido | **Hecho:** cifras, pestaña Movimientos (kardex general) y «Nuevo movimiento» (entrada, salida, ajuste). Falta: proveedores con persona de contacto. |
+| 5 | Facturación electrónica estructurada | **Parcial:** contadores por estado, cola y reintentos (ya existían). Faltan series propias del POS y los bloques de Inicio. |
+| 6 | Pedido multicanal | **Hecho:** operación `orders.create` (API/MCP) con canal e identificador externo idempotente; la lista de pedidos muestra el canal. Falta: reservar existencias al crear. |
+| 7 | Canales | **Parcial:** la API sirve a la landing, Shopify, WooCommerce y n8n (las líneas se identifican por `sku`). Faltan los conectores con su propio secreto y el flujo de WhatsApp con AURI (espera el modelo). |
+| 8 | Informes | **Parcial:** informe de ventas del mostrador (`/pos/informes`). Faltan turnos, valorización y kardex por producto. |
+| 9 | Ficha del cliente comprador | **Hecho:** pestaña «Productos comprados» (gasto, veces, recompra, devoluciones). |

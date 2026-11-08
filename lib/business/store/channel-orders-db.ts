@@ -78,3 +78,20 @@ export async function createChannelOrder(tenantId: string, input: ChannelOrderIn
     }
   }
 }
+
+/** Líneas de un canal externo: por id del producto o por SKU. Devuelve las líneas con id o el SKU que no se encontró. */
+export async function resolveLineProducts(tenantId: string, lines: { product_id?: string; sku?: string; quantity: number }[]): Promise<{ ok: true; lines: CartLine[] } | { ok: false; message: string }> {
+  const skus = [...new Set(lines.flatMap((l) => (l.sku ? [l.sku.trim()] : [])))];
+  const bySku = new Map<string, string>();
+  if (skus.length) {
+    const found = await db.orm.public.Product.where({ tenantId, active: true }).where((p) => p.sku.in(skus)).select("id", "sku").limit(200).all();
+    for (const p of found) if (p.sku) bySku.set(p.sku, p.id);
+  }
+  const out: CartLine[] = [];
+  for (const l of lines) {
+    const productId = l.product_id ?? bySku.get((l.sku ?? "").trim());
+    if (!productId) return { ok: false, message: `No encontramos el producto con SKU «${l.sku}» en este negocio.` };
+    out.push({ productId, quantity: l.quantity });
+  }
+  return { ok: true, lines: out };
+}

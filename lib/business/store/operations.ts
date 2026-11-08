@@ -8,7 +8,7 @@ import { advanceOrder } from "./fulfillment-db";
 import { FULFILLMENT_STATES } from "./fulfillment";
 import { cancelOrder } from "./store-db";
 import { ORDER_CHANNELS } from "./cart";
-import { createChannelOrder } from "./channel-orders-db";
+import { createChannelOrder, resolveLineProducts } from "./channel-orders-db";
 
 export const storeOperations: OperationDefinition[] = [
   defineOperation({
@@ -16,7 +16,7 @@ export const storeOperations: OperationDefinition[] = [
     rest: { method: "POST", path: "/orders" },
     title: "Crear un pedido desde un canal",
     description:
-      "Crea un pedido que entró por un canal (API, WhatsApp, Shopify, WooCommerce…). El precio y los impuestos salen del catálogo del negocio, no de quien llama. Con `external_id` es idempotente: repetir el mismo pedido del canal devuelve el que ya existe (`duplicate: true`). El pedido queda por cobrar en cartera; el negocio cobra por el medio que acordó con el cliente.",
+      "Crea un pedido que entró por un canal (API, WhatsApp, Shopify, WooCommerce…). El precio y los impuestos salen del catálogo del negocio, no de quien llama. Cada línea identifica el producto por `product_id` o por `sku`. Con `external_id` es idempotente: repetir el mismo pedido del canal devuelve el que ya existe (`duplicate: true`). El pedido queda por cobrar en cartera; el negocio cobra por el medio que acordó con el cliente.",
     module: "website",
     permission: "money.handle",
     risk: "write",
@@ -26,11 +26,17 @@ export const storeOperations: OperationDefinition[] = [
       channel: z.enum(ORDER_CHANNELS.filter((c) => c !== "WEB") as [string, ...string[]]),
       external_id: z.string().trim().max(80).optional(),
       customer: z.object({ name: z.string().trim().min(3).max(120), phone: z.string().trim().min(10).max(30), email: z.string().trim().max(120).optional(), address: z.string().trim().max(200).optional(), city: z.string().trim().max(80).optional(), notes: z.string().trim().max(300).optional() }),
-      lines: z.array(z.object({ product_id: z.string().uuid(), quantity: z.number().int().min(1).max(99) })).min(1).max(40),
+      lines: z
+        .array(z.object({ product_id: z.string().uuid().optional(), sku: z.string().trim().min(1).max(60).optional(), quantity: z.number().int().min(1).max(99) }).refine((l) => Boolean(l.product_id) !== Boolean(l.sku), { message: "Cada línea lleva product_id o sku (uno de los dos)." }))
+        .min(1)
+        .max(40),
     }),
     output: z.object({ id: z.string(), code: z.string(), total: z.number(), duplicate: z.boolean() }),
     handler: async (ctx, input) => {
-      const result = await createChannelOrder(ctx.tenantId, { channel: input.channel as never, externalId: input.external_id, customer: input.customer, lines: input.lines.map((l) => ({ productId: l.product_id, quantity: l.quantity })) });
+      // Shopify, WooCommerce y n8n conocen el SKU, no nuestro id: se resuelve aquí, en el negocio de quien llama.
+      const resolved = await resolveLineProducts(ctx.tenantId, input.lines);
+      if (!resolved.ok) throw new OperationError("invalid_input", resolved.message, 422);
+      const result = await createChannelOrder(ctx.tenantId, { channel: input.channel as never, externalId: input.external_id, customer: input.customer, lines: resolved.lines });
       if (!result.ok) throw new OperationError(result.code === "invalid" ? "invalid_input" : "rule_violation", result.message, 422);
       return { id: result.id, code: result.code, total: result.total, duplicate: result.duplicate };
     },
