@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { CustomerAvatar } from "@/components/atoms/customer-avatar";
 import type { PipelineCard, PipelineStage } from "@/lib/business/growth/pipeline-db";
 import { ACTIVITY_LABEL, bogotaDay, cardChip, shortMoney, type ActivityKind } from "@/lib/business/growth/pipeline";
 import { monthGrid } from "@/lib/business/scheduling/calendar";
@@ -40,7 +41,12 @@ export function ListView({ slug, cards, stages, now }: { slug: string; cards: Pi
                     {c.name}
                   </Link>
                 </td>
-                <td className="px-5 text-muted-foreground">{c.customer?.name ?? "—"}</td>
+                <td className="px-5 text-muted-foreground">
+                  <span className="flex items-center gap-2">
+                    {c.customer ? <CustomerAvatar identity={c.customer} className="size-5 rounded-md" /> : null}
+                    <span className="truncate">{c.customer?.name ?? "—"}</span>
+                  </span>
+                </td>
                 <td className="px-5 text-muted-foreground">{stageName.get(c.stageId)}</td>
                 <td className="px-5 text-right tabular-nums text-foreground">{shortMoney(c.value)}</td>
                 <td className="px-5 text-right tabular-nums text-muted-foreground">{c.probability} %</td>
@@ -57,6 +63,7 @@ export function ListView({ slug, cards, stages, now }: { slug: string; cards: Pi
         {cards.map((c) => (
           <li key={c.id} className="border-b border-border/60 last:border-b-0">
             <Link href={`/${slug}/crm/oportunidades/${c.id}`} className="flex items-center gap-3 px-5 py-2.5">
+              {c.customer ? <CustomerAvatar identity={c.customer} className="size-8 shrink-0 rounded-md" /> : null}
               <span className="grid min-w-0 flex-1 gap-0.5">
                 <span className="truncate text-sm font-medium text-foreground">{c.name}</span>
                 <span className="truncate text-xs text-muted-foreground">{[c.customer?.name, stageName.get(c.stageId)].filter(Boolean).join(" · ")}</span>

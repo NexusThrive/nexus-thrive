@@ -26,6 +26,7 @@ import type { PipelineCard, PipelineStage } from "@/lib/business/growth/pipeline
 import type { PickerCustomer } from "@/lib/business/growth/pipeline-read";
 import { cardChip, columnBar, shortMoney } from "@/lib/business/growth/pipeline";
 import { cn } from "@/lib/utils";
+import { CustomerAvatar } from "@/components/atoms/customer-avatar";
 import { ActivityChip, Initials, Stars } from "./pipeline-ui";
 import { QuickCreate } from "./quick-create";
 
@@ -39,7 +40,7 @@ function CardBody({ card, now }: { card: PipelineCard; now: number }) {
       </span>
       {card.customer ? (
         <span className="flex min-w-0 items-center gap-2 text-xs text-muted-foreground">
-          <Initials name={card.customer.name} />
+          <CustomerAvatar identity={card.customer} className="size-5 rounded-md" />
           <span className="truncate">{card.customer.name}</span>
         </span>
       ) : null}

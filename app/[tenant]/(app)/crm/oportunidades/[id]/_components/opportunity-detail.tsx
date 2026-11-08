@@ -31,6 +31,7 @@ import type { OpportunityDetail as Detail, OpportunityEventRow } from "@/lib/bus
 import { ACTIVITY_LABEL, activityState, bogotaDay, parseMoney, type ActivityKind } from "@/lib/business/growth/pipeline";
 import { formatCurrency } from "@/lib/foundation/format";
 import { cn } from "@/lib/utils";
+import { CustomerAvatar } from "@/components/atoms/customer-avatar";
 import { Initials, StarsInput } from "../../../_components/pipeline/pipeline-ui";
 
 const card = "rounded-xl border border-border bg-card p-[22px]";
@@ -359,7 +360,7 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
                 <dd className="flex items-center gap-2.5 text-sm">
                   {o.customer ? (
                     <>
-                      <Initials name={o.customer.name} size={28} />
+                      <CustomerAvatar identity={o.customer} className="size-7 rounded-lg" />
                       <Link href={`/${slug}/contactos/${o.customer.id}`} className="text-foreground hover:text-accent-text">
                         {o.customer.name}
                       </Link>

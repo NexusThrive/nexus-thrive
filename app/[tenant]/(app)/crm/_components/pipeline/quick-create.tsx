@@ -4,11 +4,12 @@ import { useEffect, useId, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, Search, X } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
+import { CustomerAvatar } from "@/components/atoms/customer-avatar";
 import { Select } from "@/components/atoms/select";
 import { useToast } from "@/components/molecules/toast";
 import { quickCreateAction, searchContactsAction } from "@/app/[tenant]/(app)/crm/pipeline-actions";
 import type { PickerCustomer } from "@/lib/business/growth/pipeline-read";
-import { initialsOf, validateQuick, type ActivityKind } from "@/lib/business/growth/pipeline";
+import { validateQuick, type ActivityKind } from "@/lib/business/growth/pipeline";
 import { cn } from "@/lib/utils";
 import { StarsInput } from "./pipeline-ui";
 
@@ -194,8 +195,8 @@ export function QuickCreate({ slug, stageId, preset = null, onClose }: { slug: s
                   onMouseEnter={() => setActive(i)}
                   className={cn("flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5", i === active && "bg-surface-muted")}
                 >
-                  <span aria-hidden="true" className={cn("grid size-[26px] shrink-0 place-items-center rounded-md text-2xs font-semibold", i === 0 ? "bg-accent-subtle text-accent-text" : "bg-surface-muted text-foreground")}>
-                    {initialsOf(opt.customer.name)}
+                  <span aria-hidden="true" className={cn("grid size-[26px] shrink-0 place-items-center overflow-hidden rounded-md", i === 0 ? "bg-accent-subtle" : "bg-surface-muted")}>
+                    <CustomerAvatar identity={opt.customer} className="size-full" />
                   </span>
                   <span className="grid min-w-0">
                     <span className="truncate text-ui text-foreground">
