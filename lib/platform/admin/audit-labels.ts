@@ -58,6 +58,7 @@ export const AUDIT_ACTION_LABELS: Record<string, string> = {
   BIZ_ONLINE_PAYMENT: "Negocio · cobro en línea",
   BIZ_INVOICE_NOTE: "Negocio · nota crédito o débito",
   BIZ_POS_TURN: "Negocio · turno de punto de venta",
+  BIZ_PAYMENT_METHOD: "Negocio · medio de pago",
   BIZ_CARTERA_PAYMENT: "Negocio · abono o pago de cartera",
   BIZ_TAX_CHANGE: "Negocio · impuesto o retención",
   BIZ_NUMBERING_CHANGE: "Negocio · resolución de numeración",

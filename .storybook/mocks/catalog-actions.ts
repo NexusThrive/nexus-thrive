@@ -34,3 +34,9 @@ export async function setPriceListActiveAction() { await wait(); return { ok: tr
 export async function makeDefaultPriceListAction() { await wait(); return { ok: true as const }; }
 export async function deletePriceListAction() { await wait(); return { ok: true as const }; }
 export async function savePriceListPricesAction(_s: string, _id: string, prices: unknown[]) { await wait(); return { ok: true as const, saved: prices.length }; }
+
+// Medios de pago del negocio.
+export async function saveMethodAction(_s: string, draft: { name: string }) { await wait(); return draft.name.trim().toLowerCase() === "efectivo" ? { ok: false as const, message: "Ya tienes un medio llamado «Efectivo»." } : { ok: true as const, id: "m-nuevo" }; }
+export async function setMethodActiveAction() { await wait(); return { ok: true as const }; }
+export async function moveMethodAction() { await wait(); return { ok: true as const }; }
+export async function deleteMethodAction() { await wait(); return { ok: true as const }; }

@@ -61,6 +61,7 @@ const RULES: [pattern: string, skeleton: RouteSkeleton][] = [
   ["/ventas/listas-precios/*", { variant: "table", label: "Cargando la lista", kpis: false }],
   ["/inventario/categorias", { variant: "list", label: "Cargando las categorías", kpis: false }],
   ["/inventario/atributos", { variant: "list", label: "Cargando los atributos", kpis: false }],
+  ["/pos/medios-de-pago", { variant: "list", label: "Cargando los medios de pago", kpis: false }],
   ["/pos", { variant: "table", label: "Cargando el punto de venta", kpis: false }],
 ];
 

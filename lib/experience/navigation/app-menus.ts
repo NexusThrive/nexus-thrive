@@ -23,14 +23,14 @@ export const APP_MENUS: Partial<Record<CapabilityCategory, Def>> = {
   "Ventas y cobros": {
     informes: [{ items: [link("cot-anteriores", "Cotizaciones anteriores", "/ventas/cotizaciones/anteriores", "quotes"), soon("ventas", "Ventas"), soon("vendedores", "Vendedores"), soon("productos", "Productos"), soon("clientes", "Clientes")] }],
     configuracion: [
-      { items: [SETTINGS, soon("canales", "Canales de venta"), soon("entregas", "Entregas"), soon("pagos", "Medios de pago")] },
+      { items: [SETTINGS, soon("canales", "Canales de venta"), soon("entregas", "Entregas"), link("pagos", "Medios de pago", "/pos/medios-de-pago", "pos")] },
       { title: "Productos", items: [link("categorias", "Categorías", "/inventario/categorias", "inventory"), link("atributos", "Atributos", "/inventario/atributos", "inventory"), link("listas", "Listas de precios", "/ventas/listas-precios", "inventory")] },
       { title: "Documentos de venta", items: [soon("plantillas", "Plantillas"), soon("pies", "Encabezados y pies de página")] },
     ],
   },
   "Punto de venta": {
     informes: [{ items: [soon("turnos", "Reporte de turnos"), soon("ventas-dia", "Ventas del día"), soon("por-cajero", "Ventas por cajero y producto")] }],
-    configuracion: [{ items: [SETTINGS, soon("cajas", "Cajas y terminales"), soon("comprobante", "Impresión del comprobante")] }],
+    configuracion: [{ items: [SETTINGS, link("pagos", "Medios de pago", "/pos/medios-de-pago", "pos"), soon("cajas", "Cajas y terminales"), soon("comprobante", "Impresión del comprobante")] }],
   },
   Inventario: {
     informes: [{ items: [link("existencias", "Existencias", "/inventario/existencias"), link("reposicion", "Reposición", "/inventario/existencias?tab=reorder"), soon("kardex", "Movimientos (kardex)"), soon("valorizacion", "Valorización")] }],
@@ -43,7 +43,7 @@ export const APP_MENUS: Partial<Record<CapabilityCategory, Def>> = {
     informes: [{ items: [link("emitidas", "Facturas emitidas", "/finanzas/facturacion"), link("electronica", "Factura electrónica", "/finanzas/facturacion-electronica", "einvoicing"), link("cartera", "Cartera", "/finanzas/cartera", "receivables"), soon("pendientes", "Pendientes de facturar")] }],
     configuracion: [
       { items: [SETTINGS, link("series", "Series de comprobantes", "/finanzas/impuestos", "taxes"), link("impuestos", "Impuestos", "/finanzas/impuestos", "taxes"), link("proveedor", "Proveedor tecnológico", "/integrations")] },
-      { items: [soon("medios", "Medios de pago"), soon("terminos", "Términos de pago")] },
+      { items: [link("medios", "Medios de pago", "/pos/medios-de-pago", "pos"), soon("terminos", "Términos de pago")] },
     ],
   },
 };

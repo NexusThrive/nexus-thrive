@@ -52,3 +52,20 @@ export const FiltrandoPorCategoria: Story = {
     await expect(c.getByRole("button", { name: /^Camiseta personalizada/ })).toBeVisible();
   },
 };
+
+/** Los medios son los del negocio: aquí ofrece Nequi, y sus instrucciones salen al elegirlo. */
+export const ConMediosDelNegocio: Story = {
+  args: {
+    turn: { sessionId: "s1", terminalName: "Mostrador 1", openingAmount: 50_000 },
+    methods: [
+      { id: "m1", kind: "CASH", name: "Efectivo", instructions: null, active: true, position: 0 },
+      { id: "m2", kind: "TRANSFER", name: "Nequi", instructions: "Cel. 300 123 4567", active: true, position: 1 },
+    ],
+  },
+  play: async ({ canvasElement }) => {
+    const c = within(canvasElement);
+    await userEvent.click(c.getByRole("combobox", { name: "Medio de pago 1" }));
+    await userEvent.click(await within(document.body).findByRole("option", { name: "Nequi" }));
+    await expect(c.getByText("Cel. 300 123 4567")).toBeVisible();
+  },
+};

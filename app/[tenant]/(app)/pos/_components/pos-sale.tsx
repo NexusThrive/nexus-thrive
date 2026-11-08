@@ -18,14 +18,14 @@ import { closeTurnAction, scanBarcodeAction, sellAction } from "@/app/[tenant]/(
 import { cartTotals, MAX_CUSTOM_NOTE, settlePayments, tipFor } from "@/lib/business/pos/cart";
 import { formatMoneyInput, parseMoney } from "@/lib/business/sales/money";
 import { formatCurrency } from "@/lib/foundation/format";
-import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
+import type { PaymentMethodOption } from "@/lib/business/sales/payment-methods";
 import { cn } from "@/lib/utils";
 
 export type PosProduct = { id: string; name: string; price: number; stock: number | null; sku: string | null; taxRatePct: number; imageUrl?: string | null; categoryId?: string | null; customizable?: boolean; favorite?: boolean };
 export type PosCategory = { id: string; name: string; parentId: string | null };
 export type PosCustomer = { id: string; name: string };
 type Line = { productId: string; quantity: number; discountPct: number; note?: string; unitPrice?: number };
-type Pay = { method: string; amount: string };
+type Pay = { methodId: string; amount: string };
 
 /** Foto del producto o su icono, dentro de una caja `relative` con tamaño propio (la foto nunca la ensancha). */
 function Photo({ src }: { src?: string | null }) {
@@ -82,7 +82,7 @@ function useFullscreen() {
  * impuestos, total y el botón Cobrar (F4). Arriba, la caja, quién atiende y la hora; con «Pantalla completa» queda para trabajar todo
  * el día. Un producto marcado como personalizable se vende «a medida»: nota de lo pedido y precio acordado en su renglón.
  */
-export default function Sale({ slug, turn, products, categories, customers }: { slug: string; turn: { sessionId: string; terminalName: string; openingAmount: number }; products: PosProduct[]; categories: PosCategory[]; customers: PosCustomer[] }) {
+export default function Sale({ slug, turn, products, categories, customers, methods }: { slug: string; turn: { sessionId: string; terminalName: string; openingAmount: number }; products: PosProduct[]; categories: PosCategory[]; customers: PosCustomer[]; methods: PaymentMethodOption[] }) {
   const router = useRouter();
   const { toast } = useToast();
   const cashier = useCurrentUserName();
@@ -101,7 +101,8 @@ export default function Sale({ slug, turn, products, categories, customers }: { 
   const [customerId, setCustomerId] = useState("");
   const [lines, setLines] = useState<Line[]>([]);
   const [tipPct, setTipPct] = useState(0);
-  const [pays, setPays] = useState<Pay[]>([{ method: "CASH", amount: "" }]);
+  const firstMethod = (methods.find((m) => m.kind === "CASH") ?? methods[0])?.id ?? "";
+  const [pays, setPays] = useState<Pay[]>([{ methodId: firstMethod, amount: "" }]);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState<{ id: string; number: number; total: number; tip: number; change: number } | null>(null);
   const [returning, setReturning] = useState(false);
@@ -125,7 +126,8 @@ export default function Sale({ slug, turn, products, categories, customers }: { 
   const totals = cartTotals(docLines);
   const tip = tipFor({ pct: tipPct }, totals);
   const due = totals.total + tip;
-  const payNums = pays.map((p) => ({ method: p.method, amount: Number(p.amount.replace(",", ".")) || 0 }));
+  const methodOf = (id: string) => methods.find((m) => m.id === id);
+  const payNums = pays.map((p) => ({ method: methodOf(p.methodId)?.kind ?? "CASH", methodId: p.methodId, amount: Number(p.amount.replace(",", ".")) || 0 }));
   const settled = settlePayments(due, payNums);
   const canCharge = !pending && lines.length > 0 && !("error" in settled);
 
@@ -139,7 +141,7 @@ export default function Sale({ slug, turn, products, categories, customers }: { 
       if (!r.ok) return setError(r.message);
       setDone({ id: r.documentId, number: r.number, total: r.total, tip: r.tip, change: r.change });
       setLines([]);
-      setPays([{ method: "CASH", amount: "" }]);
+      setPays([{ methodId: firstMethod, amount: "" }]);
       setTipPct(0);
       setCustomerId("");
       toast(`Venta N.º ${r.number} registrada`, "success");
@@ -298,13 +300,14 @@ export default function Sale({ slug, turn, products, categories, customers }: { 
             <div className="grid gap-2">
               {pays.map((p, i) => (
                 <div key={i} className="flex gap-2">
-                  <Select aria-label={`Medio de pago ${i + 1}`} value={p.method} onChange={(e) => setPays((ps) => ps.map((x, j) => (j === i ? { ...x, method: e.target.value } : x)))} className="w-36">
-                    {PAYMENT_METHODS.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
+                  <Select aria-label={`Medio de pago ${i + 1}`} value={p.methodId} onChange={(e) => setPays((ps) => ps.map((x, j) => (j === i ? { ...x, methodId: e.target.value } : x)))} className="w-44">
+                    {methods.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
                   </Select>
                   <MoneyInput aria-label={`Valor del pago ${i + 1}`} value={parseMoney(p.amount)} onValueChange={(v) => setPays((ps) => ps.map((x, j) => (j === i ? { ...x, amount: v == null ? "" : String(v) } : x)))} placeholder={i === 0 ? formatMoneyInput(due) : ""} />
                 </div>
               ))}
-              <button type="button" onClick={() => setPays((ps) => [...ps, { method: "TRANSFER", amount: "" }])} className={buttonVariants({ variant: "ghost", size: "sm", className: "justify-self-start" })}>Agregar otro pago</button>
+              {pays.map((p, i) => (methodOf(p.methodId)?.instructions ? <p key={`i${i}`} className="rounded-md bg-surface-muted px-3 py-2 text-xs text-muted-foreground">{methodOf(p.methodId)!.instructions}</p> : null))}
+              <button type="button" onClick={() => setPays((ps) => [...ps, { methodId: (methods.find((m) => m.kind === "TRANSFER") ?? methods[0])?.id ?? "", amount: "" }])} className={buttonVariants({ variant: "ghost", size: "sm", className: "justify-self-start" })}>Agregar otro pago</button>
               {"error" in settled && lines.length > 0 && payNums.some((x) => x.amount > 0) ? <p className="text-xs text-muted-foreground">{settled.error}</p> : null}
               {!("error" in settled) && settled.change > 0 ? <p className="text-ui font-medium">Cambio: {formatCurrency(settled.change)}</p> : null}
             </div>

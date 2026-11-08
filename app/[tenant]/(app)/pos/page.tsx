@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/molecules/page-header";
 import { can } from "@/lib/core/auth/permissions";
 import { listCategories } from "@/lib/business/catalog/categories-db";
 import { listProducts } from "@/lib/business/catalog/products-db";
+import { offeredPaymentMethods } from "@/lib/business/sales/payment-methods-db";
 import { customerOptions } from "@/lib/business/customers/customers-db";
 import { listTerminals, myTurn } from "@/lib/business/pos/pos-db";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
@@ -23,12 +24,13 @@ export default async function PosPage({ params }: { params: Promise<{ tenant: st
       </div>
     );
   }
-  const [terminals, turn, products, categories, customers] = await Promise.all([
+  const [terminals, turn, products, categories, customers, methods] = await Promise.all([
     listTerminals(ctx.tenantId),
     myTurn(ctx.tenantId, ctx.memberId),
     listProducts(ctx.tenantId, { kind: ["PRODUCT", "SERVICE"], activeOnly: true, limit: 500 }),
     listCategories(ctx.tenantId),
     customerOptions(ctx.tenantId),
+    offeredPaymentMethods(ctx.tenantId),
   ]);
   return (
     <div className="grid gap-5">
@@ -42,6 +44,7 @@ export default async function PosPage({ params }: { params: Promise<{ tenant: st
         products={products.filter((p) => p.sellable && p.posEnabled).map((p) => ({ id: p.id, name: p.name, price: p.price, stock: p.trackStock ? p.stock : null, sku: p.sku, taxRatePct: p.taxRatePct, imageUrl: p.imageUrl, categoryId: p.categoryId, customizable: p.customizable, favorite: p.favorite }))}
         categories={categories.map((c) => ({ id: c.id, name: c.name, parentId: c.parentId }))}
         customers={customers}
+        methods={methods}
       />
     </div>
   );

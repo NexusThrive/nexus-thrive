@@ -100,6 +100,8 @@ export type IncomeInput = {
   membershipId?: string | null;
   invoiceId?: string | null;
   providerRefId?: string | null;
+  /** Nota del pago (p. ej. el medio que el negocio eligió: «Nequi»). */
+  notes?: string | null;
   sourceType?: string | null;
   sourceId?: string | null;
   /**
@@ -153,6 +155,7 @@ export async function recordIncome(tx: MoneyTx, tenantId: string, input: IncomeI
     provider: input.method as "CASH",
     description: input.description ? input.description.slice(0, 200) : null,
     providerRefId: input.providerRefId ?? null,
+    notes: input.notes ? input.notes.slice(0, 200) : null,
     sourceType: input.sourceType ?? null,
     sourceId: input.sourceId ?? null,
     receiptNumber,

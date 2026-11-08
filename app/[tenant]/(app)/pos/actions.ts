@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { can } from "@/lib/core/auth/permissions";
+import { offeredPaymentMethods } from "@/lib/business/sales/payment-methods-db";
 import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
 import { findByBarcode } from "@/lib/business/catalog/catalog-db";
 import { returnSale, saleForReturn, type ReturnInput, type SaleToReturn } from "@/lib/business/pos/returns-db";
@@ -50,7 +51,19 @@ export async function sellAction(slug: string, input: SaleInput): Promise<SaleRe
   const ctx = await cashier(slug);
   if (!ctx) return { ok: false, message: "Tu rol no puede vender en el punto de venta." };
   if (input.payments.some((p) => !PAYMENT_METHODS.some((m) => m.value === p.method))) return { ok: false, message: "Elige un medio de pago válido." };
-  const r = await sellCart(ctx.tenantId, input, ctx.memberId, { canDiscountOver: can(ctx.role, "business.manage") });
+  // El medio lo define el negocio: el nombre y el tipo salen de su configuración, no de lo que mande el navegador.
+  const offered = await offeredPaymentMethods(ctx.tenantId);
+  const payments: SaleInput["payments"] = [];
+  for (const p of input.payments) {
+    if (!p.methodId) {
+      payments.push({ method: p.method, amount: p.amount });
+      continue;
+    }
+    const method = offered.find((m) => m.id === p.methodId);
+    if (!method) return { ok: false, message: "Ese medio de pago ya no está disponible." };
+    payments.push({ method: method.kind, amount: p.amount, methodId: method.id, label: method.kind === "CASH" && method.name === "Efectivo" ? undefined : method.name });
+  }
+  const r = await sellCart(ctx.tenantId, { ...input, payments }, ctx.memberId, { canDiscountOver: can(ctx.role, "business.manage") });
   if (r.ok) revalidatePath(`/${slug}/inventario/productos`);
   return r;
 }

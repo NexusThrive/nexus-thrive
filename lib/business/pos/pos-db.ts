@@ -113,7 +113,7 @@ export async function sellCart(tenantId: string, input: SaleInput, userId: strin
       const receipts: string[] = [];
       let firstPayment: string | null = null;
       for (const pay of settled.applied) {
-        const income = await recordIncome(tx, tenantId, { amount: pay.amount, method: pay.method, customerId: input.customerId ?? null, description: `Venta POS ${terminal.name}`, cashDescription: `Venta POS ${terminal.name}`, sourceType: "POS", sourceId: doc.id, cashSessionId: turn.id, skipDocument: true }, userId);
+        const income = await recordIncome(tx, tenantId, { amount: pay.amount, method: pay.method, notes: pay.label ?? null, customerId: input.customerId ?? null, description: `Venta POS ${terminal.name}`, cashDescription: `Venta POS ${terminal.name}`, sourceType: "POS", sourceId: doc.id, cashSessionId: turn.id, skipDocument: true }, userId);
         receipts.push(income.receipt);
         firstPayment ??= income.paymentId;
       }

@@ -11,14 +11,15 @@ import { Select } from "@/components/atoms/select";
 import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
 import { FormDialog } from "@/components/organisms/form-sheet";
+import { DEFAULT_METHODS, type PaymentMethodOption } from "@/lib/business/sales/payment-methods";
 import Sale, { type PosCategory, type PosCustomer, type PosProduct } from "./pos-sale";
 import { createTerminalAction, openTurnAction } from "@/app/[tenant]/(app)/pos/actions";
 
 export type { PosCategory, PosCustomer, PosProduct } from "./pos-sale";
 export type PosTerminalOption = { id: string; name: string; busy: boolean };
 
-export default function PosView({ slug, canManage, terminals, turn, products, categories = [], customers = [] }: { categories?: PosCategory[]; customers?: PosCustomer[];  slug: string; canManage: boolean; terminals: PosTerminalOption[]; turn: { sessionId: string; terminalName: string; openingAmount: number } | null; products: PosProduct[] }) {
-  return turn ? <Sale slug={slug} turn={turn} products={products} categories={categories} customers={customers} /> : <NoTurn slug={slug} canManage={canManage} terminals={terminals} />;
+export default function PosView({ slug, canManage, terminals, turn, products, categories = [], customers = [], methods = DEFAULT_METHODS as PaymentMethodOption[] }: { categories?: PosCategory[]; customers?: PosCustomer[]; methods?: PaymentMethodOption[];  slug: string; canManage: boolean; terminals: PosTerminalOption[]; turn: { sessionId: string; terminalName: string; openingAmount: number } | null; products: PosProduct[] }) {
+  return turn ? <Sale slug={slug} turn={turn} products={products} categories={categories} customers={customers} methods={methods} /> : <NoTurn slug={slug} canManage={canManage} terminals={terminals} />;
 }
 
 function NoTurn({ slug, canManage, terminals }: { slug: string; canManage: boolean; terminals: PosTerminalOption[] }) {

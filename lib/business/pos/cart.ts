@@ -38,7 +38,8 @@ export function lineDescription(name: string, note?: string | null): string {
   return clean ? `${name} — ${clean}` : name;
 }
 
-export type PaymentInput = { method: string; amount: number };
+/** `methodId` es el medio del negocio que eligió el cajero; el servidor lo resuelve y pone `label` (su nombre). */
+export type PaymentInput = { method: string; amount: number; methodId?: string; label?: string };
 export type Settlement = { applied: PaymentInput[]; change: number; paid: number };
 
 /**
