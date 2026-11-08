@@ -98,7 +98,6 @@ export function QuickCreateProvider({ children }: { children: ReactNode }) {
           tenantSlug={slug}
           open
           onOpenChange={onOpenChange}
-          fullHref={hrefFor("/finanzas?nuevo=pago")}
           business={data?.business ?? { name: "" }}
           customers={data?.customers ?? []}
         />

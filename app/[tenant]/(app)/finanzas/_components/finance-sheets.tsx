@@ -31,7 +31,6 @@ export function ConnectedPaymentSheet({
   tenantSlug,
   open,
   onOpenChange,
-  fullHref,
   business,
   customers,
   defaultCustomerId = "",
@@ -40,7 +39,6 @@ export function ConnectedPaymentSheet({
     <PaymentSheet
       open={open}
       onOpenChange={onOpenChange}
-      fullHref={fullHref}
       business={business}
       defaultCustomerId={customers.some((c) => c.id === defaultCustomerId) ? defaultCustomerId : ""}
       methods={PAYMENT_METHODS}

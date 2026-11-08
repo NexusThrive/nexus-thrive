@@ -75,7 +75,7 @@ test.describe("Punto de venta · código de barras, tiquete y devoluciones", () 
     await page.getByRole("button", { name: /^Barra de proteína/ }).click();
     await page.getByLabel("Valor del pago 1").fill("5000");
     await page.getByRole("button", { name: "Cobrar" }).click();
-    await expect(page.getByRole("link", { name: "Imprimir tiquete" })).toHaveAttribute("href", "/demo/pos/receipt/d1");
+    await expect(page.getByRole("link", { name: "Imprimir tiquete" })).toHaveAttribute("href", "/demo/ventas/pos/receipt/d1");
   });
 
   test("devolución: busca la venta, no deja devolver lo ya devuelto y registra", async ({ page }) => {

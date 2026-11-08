@@ -5,7 +5,7 @@ import { ToastProvider } from "@/components/molecules/toast";
 import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
 import { PaymentSheet } from "./payment-sheet";
 
-function Demo({ fail = false, fullHref }: { fail?: boolean; fullHref?: string }) {
+function Demo({ fail = false }: { fail?: boolean }) {
   const [open, setOpen] = useState(true);
   return (
     <>
@@ -13,12 +13,12 @@ function Demo({ fail = false, fullHref }: { fail?: boolean; fullHref?: string })
       <PaymentSheet
         open={open}
         onOpenChange={setOpen}
-        fullHref={fullHref}
         business={{ name: "Barbería El Caballero", subtitle: "Cartagena" }}
         methods={PAYMENT_METHODS}
         customers={[
           { id: "c1", name: "Carlos Peña", hint: "Plan Plata", phone: "3001234567" },
           { id: "c2", name: "Laura Gómez", hint: "Básico" },
+          { id: "c3", name: "Distribuidora Internacional de Uniformes y Dotaciones del Caribe S.A.S.", hint: "compras@distribuidoracaribe.com.co", phone: "3009876543" },
         ]}
         onCharge={async () => {
           await new Promise((r) => setTimeout(r, 900));
@@ -44,5 +44,3 @@ export const Cobro: StoryObj<typeof meta> = {};
 export const ConError: StoryObj<typeof meta> = { args: { fail: true } };
 export const Movil: StoryObj<typeof meta> = { globals: { viewport: { value: "mobile1" } } };
 
-/** Mini-modal de «Crear»: cobra sin salir de la pantalla y ofrece «Abrir en el panel completo». */
-export const MiniModal: StoryObj<typeof meta> = { args: { fullHref: "/gym-norte/finance?nuevo=pago" } };

@@ -10,7 +10,8 @@ test.describe("Errores de dinero en la interfaz", () => {
     await dialog.getByRole("button", { name: "0", exact: true }).click();
     await dialog.getByRole("button", { name: "0", exact: true }).click();
     await dialog.getByRole("button", { name: "0", exact: true }).click();
-    await dialog.getByRole("button", { name: /^Cobrar/ }).click();
+    // Cobrar es deslizar; con teclado, Enter en el asa.
+    await dialog.getByRole("button", { name: /^Cobrar .*Desliza/ }).press("Enter");
 
     const alert = dialog.getByRole("alert").filter({ hasText: "supera el máximo permitido" });
     await expect(alert).toBeVisible();
