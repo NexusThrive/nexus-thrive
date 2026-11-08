@@ -1,0 +1,128 @@
+[
+  {
+    "id": "column.public.Party.contactEmail",
+    "label": "Add column \"contactEmail\" to \"Party\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "contactEmail",
+        "table": "Party"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"contactEmail\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Party",
+          "contactEmail"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"contactEmail\"",
+        "sql": "ALTER TABLE \"public\".\"Party\" ADD COLUMN \"contactEmail\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"contactEmail\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Party",
+          "contactEmail"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Party.contactName",
+    "label": "Add column \"contactName\" to \"Party\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "contactName",
+        "table": "Party"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"contactName\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Party",
+          "contactName"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"contactName\"",
+        "sql": "ALTER TABLE \"public\".\"Party\" ADD COLUMN \"contactName\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"contactName\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Party",
+          "contactName"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Party.contactPhone",
+    "label": "Add column \"contactPhone\" to \"Party\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "contactPhone",
+        "table": "Party"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"contactPhone\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Party",
+          "contactPhone"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"contactPhone\"",
+        "sql": "ALTER TABLE \"public\".\"Party\" ADD COLUMN \"contactPhone\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"contactPhone\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Party",
+          "contactPhone"
+        ]
+      }
+    ]
+  }
+]

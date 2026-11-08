@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'d4a32467582e5fd89e4b4995660b52ce94c7db188c63688668a231d31acd5d12'>;
+  StorageHashBase<'a9b88b713550292f7a53606a717fc3f12e1ba425706df226c51113aaf3443f67'>;
 export type ExecutionHash =
   ExecutionHashBase<'239610e0d094105e1efe107ff85a1f0dd408a141aefd98be4dcc7f53d5b1b10b'>;
 export type ProfileHash =
@@ -1262,6 +1262,9 @@ export type FieldOutputTypes = {
       readonly addressLine: CodecTypes['pg/text@1']['output'] | null;
       readonly checkDigit: CodecTypes['pg/text@1']['output'] | null;
       readonly city: CodecTypes['pg/text@1']['output'] | null;
+      readonly contactEmail: CodecTypes['pg/text@1']['output'] | null;
+      readonly contactName: CodecTypes['pg/text@1']['output'] | null;
+      readonly contactPhone: CodecTypes['pg/text@1']['output'] | null;
       readonly countryCode: CodecTypes['pg/text@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly documentNumber: CodecTypes['pg/text@1']['output'] | null;
@@ -3356,6 +3359,9 @@ export type FieldInputTypes = {
       readonly addressLine: CodecTypes['pg/text@1']['input'] | null;
       readonly checkDigit: CodecTypes['pg/text@1']['input'] | null;
       readonly city: CodecTypes['pg/text@1']['input'] | null;
+      readonly contactEmail: CodecTypes['pg/text@1']['input'] | null;
+      readonly contactName: CodecTypes['pg/text@1']['input'] | null;
+      readonly contactPhone: CodecTypes['pg/text@1']['input'] | null;
       readonly countryCode: CodecTypes['pg/text@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly documentNumber: CodecTypes['pg/text@1']['input'] | null;
@@ -5450,6 +5456,9 @@ export type StorageColumnTypes = {
       readonly addressLine: CodecTypes['pg/text@1']['output'] | null;
       readonly checkDigit: CodecTypes['pg/text@1']['output'] | null;
       readonly city: CodecTypes['pg/text@1']['output'] | null;
+      readonly contactEmail: CodecTypes['pg/text@1']['output'] | null;
+      readonly contactName: CodecTypes['pg/text@1']['output'] | null;
+      readonly contactPhone: CodecTypes['pg/text@1']['output'] | null;
       readonly countryCode: CodecTypes['pg/text@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly documentNumber: CodecTypes['pg/text@1']['output'] | null;
@@ -7544,6 +7553,9 @@ export type StorageColumnInputTypes = {
       readonly addressLine: CodecTypes['pg/text@1']['input'] | null;
       readonly checkDigit: CodecTypes['pg/text@1']['input'] | null;
       readonly city: CodecTypes['pg/text@1']['input'] | null;
+      readonly contactEmail: CodecTypes['pg/text@1']['input'] | null;
+      readonly contactName: CodecTypes['pg/text@1']['input'] | null;
+      readonly contactPhone: CodecTypes['pg/text@1']['input'] | null;
       readonly countryCode: CodecTypes['pg/text@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly documentNumber: CodecTypes['pg/text@1']['input'] | null;
@@ -9867,6 +9879,9 @@ export namespace Models {
     addressLine: CodecTypes['pg/text@1']['output'] | null;
     checkDigit: CodecTypes['pg/text@1']['output'] | null;
     city: CodecTypes['pg/text@1']['output'] | null;
+    contactEmail: CodecTypes['pg/text@1']['output'] | null;
+    contactName: CodecTypes['pg/text@1']['output'] | null;
+    contactPhone: CodecTypes['pg/text@1']['output'] | null;
     countryCode: CodecTypes['pg/text@1']['output'];
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     documentNumber: CodecTypes['pg/text@1']['output'] | null;
@@ -19308,6 +19323,21 @@ type ContractBase = Omit<
                   readonly nullable: true;
                 };
                 readonly city: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly contactEmail: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly contactName: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly contactPhone: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
@@ -35753,6 +35783,18 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly contactEmail: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly contactName: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly contactPhone: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly countryCode: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -35882,6 +35924,9 @@ type ContractBase = Omit<
                 readonly addressLine: { readonly column: 'addressLine' };
                 readonly checkDigit: { readonly column: 'checkDigit' };
                 readonly city: { readonly column: 'city' };
+                readonly contactEmail: { readonly column: 'contactEmail' };
+                readonly contactName: { readonly column: 'contactName' };
+                readonly contactPhone: { readonly column: 'contactPhone' };
                 readonly countryCode: { readonly column: 'countryCode' };
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly documentNumber: { readonly column: 'documentNumber' };

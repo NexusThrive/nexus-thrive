@@ -13124,6 +13124,27 @@
                   "kind": "scalar"
                 }
               },
+              "contactEmail": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "contactName": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "contactPhone": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "countryCode": {
                 "nullable": false,
                 "type": {
@@ -13314,6 +13335,15 @@
                 },
                 "city": {
                   "column": "city"
+                },
+                "contactEmail": {
+                  "column": "contactEmail"
+                },
+                "contactName": {
+                  "column": "contactName"
+                },
+                "contactPhone": {
+                  "column": "contactPhone"
                 },
                 "countryCode": {
                   "column": "countryCode"
@@ -38293,6 +38323,21 @@
                   "nativeType": "text",
                   "nullable": true
                 },
+                "contactEmail": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "contactName": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "contactPhone": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "countryCode": {
                   "codecId": "pg/text@1",
                   "default": {
@@ -49169,7 +49214,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "d4a32467582e5fd89e4b4995660b52ce94c7db188c63688668a231d31acd5d12"
+    "storageHash": "a9b88b713550292f7a53606a717fc3f12e1ba425706df226c51113aaf3443f67"
   },
   "execution": {
     "executionHash": "239610e0d094105e1efe107ff85a1f0dd408a141aefd98be4dcc7f53d5b1b10b",
