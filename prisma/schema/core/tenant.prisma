@@ -198,6 +198,7 @@ model Tenant {
   productVariants    ProductVariant[]
   productBarcodes    ProductBarcode[]
   priceLists         PriceList[]
+  paymentMethodSettings PaymentMethodSetting[]
   productCategories  ProductCategory[]
   productAttributes  ProductAttribute[]
   productAttributeValues ProductAttributeValue[]

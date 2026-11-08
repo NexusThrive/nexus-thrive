@@ -144,3 +144,28 @@ model ReconciliationRun {
   @@index([tenantId, day])
   @@rls
 }
+
+/// Medio de pago que el negocio ofrece al cobrar (punto de venta y, después, pedidos y canales). Cada uno es de un tipo base
+/// que decide cómo se registra el dinero; el nombre y las instrucciones son del negocio («Nequi 300 123 4567», «Bancolombia
+/// ahorros 123…»). El pago guarda el tipo base como `provider` y el nombre elegido en sus notas.
+///
+/// Campos:
+/// - `kind`: CASH (entra a la caja del turno) | TRANSFER (transferencia o billetera: Nequi, Daviplata, QR del banco…).
+/// - `instructions`: Dónde pagar (cuenta, número, QR); se muestra a quien cobra.
+/// - `position`: Orden en el que se ofrecen.
+model PaymentMethodSetting {
+  id           String   @id @default(uuid())
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  kind         String   @default("TRANSFER")
+  name         String
+  instructions String?
+  active       Boolean  @default(true)
+  position     Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    temporal.updatedAt()
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@rls
+}
