@@ -78,19 +78,17 @@ for (const vp of VIEWPORTS) {
         expect(n.tabbar, "barra inferior móvil").toBe(true);
         expect(n.enlaces, "sin barra lateral").toBe(0);
       } else {
+        // Desde tablet no hay barra inferior ni barra lateral fija: la navegación vive en la barra superior (apps y módulos).
         expect(n.tabbar, "sin barra inferior").toBe(false);
-        expect(n.enlaces, "barra lateral").toBeGreaterThan(0);
       }
     });
 
     // DR-13/DR-14 · riel de 768 a 1023 px (icono + etiqueta abreviada); expandida desde 1024 px.
     if (vp.ancho >= TABLET_MIN) {
-      test("Shell: la barra lateral es riel hasta 1023 px y expandida desde 1024 px", async ({ page }) => {
+      // Nexus Workspace: ya no hay barra lateral fija (la navegación vive en la barra superior).
+      test("Shell: no hay barra lateral fija desde tablet", async ({ page }) => {
         await openStory(page, SHELL);
-        const caja = await page.locator('aside[aria-label="Navegación principal"]').boundingBox();
-        expect(caja, "barra lateral visible").not.toBeNull();
-        if (vp.ancho < 1024) expect(caja!.width, "riel").toBeLessThan(120);
-        else expect(caja!.width, "barra expandida").toBeGreaterThanOrEqual(240);
+        expect(await page.locator('aside[aria-label="Navegación principal"]').count(), "barra lateral").toBe(0);
       });
       test("Shell: toda la navegación lateral tiene etiqueta visible", async ({ page }) => {
         await openStory(page, SHELL);
@@ -165,7 +163,7 @@ for (const vp of VIEWPORTS) {
       expect(await medirSolapes(page)).toEqual([]);
       expect(await medirTopbarFuera(page), "controles fuera de la pantalla").toEqual([]);
       if (vp.ancho < TABLET_MIN) {
-        for (const nombre of ["Buscar", /Notificaciones/]) await expect(page.getByRole("banner").getByRole("button", { name: nombre })).toBeVisible();
+        for (const nombre of [/Cambiar a modo/]) await expect(page.getByRole("banner").getByRole("button", { name: nombre })).toBeVisible();
       }
     });
 
@@ -203,7 +201,7 @@ for (const vp of VIEWPORTS) {
 
     test("Cargando: el esqueleto de la ruta está dentro del shell", async ({ page }) => {
       await openStory(page, FIEL_CARGANDO);
-      await expect(page.getByRole("status", { name: "Cargando inicio" })).toBeVisible();
+      await expect(page.getByRole("status", { name: "Cargando" })).toBeVisible();
     });
 
     if (vp.tactil) {

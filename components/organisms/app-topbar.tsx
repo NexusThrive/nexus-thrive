@@ -309,7 +309,7 @@ function TopbarEnd({ brandName, notifications }: { brandName: string; notificati
         </Shared>
       ) : null}
       <Shared name="theme">
-        <ThemeToggle className="size-8 pointer-coarse:size-10 [&_svg]:size-4" />
+        <ThemeToggle className="size-8 pointer-coarse:size-11 any-pointer-coarse:size-11 [&_svg]:size-4" />
       </Shared>
       <Shared name="brand" className="max-md:hidden">
         <span className="truncate text-xs font-medium text-muted-foreground">{brandName}</span>
