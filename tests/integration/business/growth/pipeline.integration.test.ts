@@ -146,4 +146,18 @@ describe.skipIf(!TEST_URL)("pipeline del CRM (integración)", () => {
     const neg = (await ensureStages(a)).find((x) => x.name === "Negociación")!;
     expect(await deleteStage(a, neg.id)).toMatchObject({ ok: true });
   });
+
+  test("una ganada se edita y se cambia de etapa (se reabre) sin perder su pedido; volver a ganarla no crea otro", async () => {
+    const r = await createQuickOpportunity(a, null, { name: "Ganada editable", newCustomerName: "Cliente Ganado", phone: "3209990000", value: "500000" });
+    if (!r.ok) throw new Error(r.message);
+    const won = await winWithOrder(a, r.id, null);
+    if (!won.ok) throw new Error(won.message);
+    expect(await updateOpportunity(a, r.id, { value: 650_000, tags: ["VIP"] }, null)).toMatchObject({ ok: true });
+    const [, calificado] = await ensureStages(a);
+    expect(await moveToStage(a, r.id, calificado!.id, null)).toMatchObject({ ok: true });
+    expect(await db.orm.public.Opportunity.where({ tenantId: a, id: r.id }).first()).toMatchObject({ status: "OPEN", stageId: calificado!.id, probability: 40, orderId: won.orderId });
+    const again = await winWithOrder(a, r.id, null);
+    expect(again).toMatchObject({ ok: true, orderId: won.orderId });
+    expect(await db.orm.public.StoreOrder.where({ tenantId: a, customerId: r.customerId! }).aggregate((x) => ({ n: x.count() }))).toEqual({ n: 1 });
+  });
 });

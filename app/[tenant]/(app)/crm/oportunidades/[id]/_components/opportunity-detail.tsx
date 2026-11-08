@@ -98,6 +98,8 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
   const fileRef = useRef<HTMLInputElement>(null);
   const nowMs = new Date(now).getTime();
   const open = o.status === "OPEN";
+  // Abiertas y ganadas se editan y cambian de etapa; las perdidas, primero se reabren.
+  const editable = o.status !== "LOST";
 
   const run = (fn: () => Promise<{ ok: boolean; message?: string }>, after?: (r: { ok: boolean; message?: string }) => void) =>
     start(async () => {
@@ -127,7 +129,7 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
 
   /** Celda editable en línea: muestra el valor; al hacer clic, un campo que guarda con Enter o al salir. */
   const inline = ({ k, value, type = "text", placeholder, render, parse }: { k: string; value: string; type?: string; placeholder?: string; render: React.ReactNode; parse: (v: string) => Parameters<typeof updateOpportunityAction>[2] | null }) =>
-    editing === k && open ? (
+    editing === k && editable ? (
       <input
         autoFocus
         type={type}
@@ -146,7 +148,7 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
         }}
       />
     ) : (
-      <button type="button" disabled={!open} onClick={() => setEditing(k)} className="w-fit rounded text-left outline-none focus-visible:outline-2 focus-visible:outline-ring enabled:hover:text-accent-text">
+      <button type="button" disabled={!editable} onClick={() => setEditing(k)} className="w-fit rounded text-left outline-none focus-visible:outline-2 focus-visible:outline-ring enabled:hover:text-accent-text">
         {render}
       </button>
     );
@@ -244,7 +246,7 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
           <section aria-label="Etapa de la oportunidad" className={cn(card, "px-[22px] pb-[18px] pt-5")}>
             <div className="mb-4 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
               <span>{o.status === "LOST" ? `Perdida${o.lostReason ? ` · ${o.lostReason}` : ""}` : `Etapa actual · lleva ${days} ${days === 1 ? "día" : "días"} aquí`}</span>
-              {open ? <span>Haz clic en una etapa para moverla</span> : null}
+              {editable ? <span>Haz clic en una etapa para moverla</span> : null}
             </div>
             <ol className="flex items-start">
               {o.stages.map((s, i) => {
@@ -254,7 +256,7 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
                     {i < o.stages.length - 1 ? <span aria-hidden="true" className="absolute left-[calc(50%+18px)] right-[calc(-50%+18px)] top-[13px] h-0.5 bg-border-strong" /> : null}
                     <button
                       type="button"
-                      disabled={!open || current || pending}
+                      disabled={!editable || current || pending}
                       aria-current={current ? "step" : undefined}
                       aria-label={current ? `${i + 1} · ${s.name} (etapa actual)` : `${i + 1} · Mover a ${s.name}`}
                       onClick={() => run(() => moveStageAction(slug, o.id, s.id))}
@@ -279,7 +281,7 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
                 inline({ k: "name", value: o.name, placeholder: "Nombre de la oportunidad", render: null, parse: (v) => (v.trim().length >= 3 ? { name: v } : null) })
               ) : (
                 <h1 id="opp-nombre" className="text-3xl font-semibold tracking-tight text-foreground">
-                  <button type="button" disabled={!open} onClick={() => setEditing("name")} className="text-left outline-none focus-visible:outline-2 focus-visible:outline-ring enabled:hover:text-accent-text">
+                  <button type="button" disabled={!editable} onClick={() => setEditing("name")} className="text-left outline-none focus-visible:outline-2 focus-visible:outline-ring enabled:hover:text-accent-text">
                     {o.name}
                   </button>
                 </h1>
@@ -287,14 +289,14 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
               {o.tags.map((t) => (
                 <span key={t} className="inline-flex items-center gap-1 rounded-full border border-border-strong px-2.5 py-[3px] text-xs text-foreground">
                   {t}
-                  {open ? (
+                  {editable ? (
                     <button type="button" aria-label={`Quitar etiqueta ${t}`} onClick={() => save({ tags: o.tags.filter((x) => x !== t) })} className="text-muted-foreground hover:text-foreground">
                       <X aria-hidden="true" className="size-3" />
                     </button>
                   ) : null}
                 </span>
               ))}
-              {open ? (
+              {editable ? (
                 editing === "tag" ? (
                   <input
                     autoFocus
@@ -325,14 +327,14 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
               </div>
               <div className={box}>
                 <span className="text-xs text-muted-foreground">Cierre previsto</span>
-                {open && (o.expectedClose || editing === "close") ? (
+                {editable && (o.expectedClose || editing === "close") ? (
                   <DateInput aria-label="Cierre previsto" value={o.expectedClose ?? ""} onChange={(e) => e.target.value !== (o.expectedClose ?? "") && save({ expectedClose: e.target.value || null })} className="h-9" />
                 ) : o.expectedClose ? (
                   <span className="pt-1 text-base font-medium text-foreground">{DAY.format(new Date(`${o.expectedClose}T17:00:00Z`)).replace(".", "").replace(/ de /g, " ")}</span>
                 ) : (
                   <span className="pt-1 text-base font-medium text-muted-foreground">
                     Sin fecha{" "}
-                    {open ? (
+                    {editable ? (
                       <button type="button" onClick={() => setEditing("close")} className={cn(addLink, "ms-1 text-ui")}>
                         Añadir
                       </button>
@@ -343,7 +345,7 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
               <div className={box}>
                 <span className="text-xs text-muted-foreground">Prioridad</span>
                 <span className="pt-1">
-                  <StarsInput size="lg" value={o.priority} onChange={(v) => open && save({ priority: v })} />
+                  <StarsInput size="lg" value={o.priority} onChange={(v) => editable && save({ priority: v })} />
                 </span>
               </div>
             </div>
@@ -386,7 +388,7 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
                       ))}
                     </Select>
                   ) : (
-                    <button type="button" disabled={!open} onClick={() => setEditing("owner")} className="flex items-center gap-2.5 rounded outline-none focus-visible:outline-2 focus-visible:outline-ring enabled:hover:text-accent-text">
+                    <button type="button" disabled={!editable} onClick={() => setEditing("owner")} className="flex items-center gap-2.5 rounded outline-none focus-visible:outline-2 focus-visible:outline-ring enabled:hover:text-accent-text">
                       {o.owner ? <Initials name={o.owner.name} size={28} tone="accent" /> : null}
                       {o.owner?.name ?? <span className="text-muted-foreground">Sin responsable</span>}
                     </button>

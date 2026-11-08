@@ -93,7 +93,8 @@ function Card({
   onMove: (card: PipelineCard, stageId: string) => void;
   onShift: (card: PipelineCard, delta: -1 | 1) => void;
 }) {
-  const movable = !card.won;
+  // Las ganadas también se mueven: sacarlas de Ganado las reabre (el pedido ya creado se conserva).
+  const movable = true;
   const drag = useDraggable({ id: card.id, disabled: !movable });
   const drop = useDroppable({ id: `card:${card.id}`, disabled: !movable });
   const { onKeyDown: handleKeyDown, ...pointerListeners } = (drag.listeners ?? {}) as Record<string, React.EventHandler<never>>;

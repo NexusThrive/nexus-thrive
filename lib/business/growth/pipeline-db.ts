@@ -253,8 +253,15 @@ export async function moveToStage(tenantId: string, id: string, stageId: string,
   if (o.status === "LOST") return { ok: false, message: "Está perdida: reábrela primero." };
   if (target.isWon) return winWithOrder(tenantId, id, userId);
   const from = stageOf(o, stages);
-  if (o.status === "WON") return { ok: false, message: "Ya está ganada." };
   if (from.id === target.id) return { ok: true };
+  if (o.status === "WON") {
+    // Sacarla de Ganado la reabre en la etapa elegida (como en Odoo): toma su probabilidad y conserva el pedido que ya se creó.
+    await db.transaction(async (tx) => {
+      await tx.orm.public.Opportunity.where({ tenantId, id }).update({ status: "OPEN", closedAt: null, stageId: target.id, probability: target.probability, stageSince: now(), position: null });
+      await logEvent(tx, tenantId, id, "STAGE", userId, { from: from.name, to: target.name, reopened: true });
+    });
+    return { ok: true };
+  }
   await db.transaction(async (tx) => {
     await tx.orm.public.Opportunity.where({ tenantId, id }).update({ stageId: target.id, probability: target.probability, stageSince: now(), position: null });
     await logEvent(tx, tenantId, id, "STAGE", userId, { from: from.name, to: target.name });
@@ -264,7 +271,8 @@ export async function moveToStage(tenantId: string, id: string, stageId: string,
 
 /**
  * Gana la oportunidad: queda en la etapa ganada con 100 %, el contacto pasa a cliente, se crea el pedido en Ventas y cobros con el
- * cliente y el valor (enlazado de vuelta en `origin`) y su cobro queda abierto en la cartera. Se registra en el historial.
+ * cliente y el valor (enlazado de vuelta en `origin`) y su cobro queda abierto en la cartera. Se registra en el historial. Si ya
+ * tenía pedido (se ganó, se reabrió y se vuelve a ganar), se reutiliza.
  */
 export async function winWithOrder(tenantId: string, id: string, userId: string | null): Promise<Result<{ won: boolean; orderId: string | null }>> {
   const stages = await ensureStages(tenantId);
@@ -275,8 +283,9 @@ export async function winWithOrder(tenantId: string, id: string, userId: string 
         const o = await tx.orm.public.Opportunity.where({ tenantId, id }).first();
         if (!o || o.status !== "OPEN") return { ok: false as const, message: "La oportunidad ya está cerrada o no existe." };
         const value = o.estimatedValue == null ? 0 : toNumber(o.estimatedValue);
-        let orderId: string | null = null;
-        if (value > 0) {
+        // Si ya se ganó antes (y se reabrió), se reutiliza su pedido: no se crea otro.
+        let orderId: string | null = o.orderId ?? null;
+        if (!orderId && value > 0) {
           const customer = o.customerId ? await tx.orm.public.Customer.where({ tenantId, id: o.customerId }).select("name", "phone", "email", "city").first() : null;
           const last = await tx.orm.public.StoreOrder.where({ tenantId }).orderBy((x) => x.number.desc()).first();
           const order = await tx.orm.public.StoreOrder.create({
