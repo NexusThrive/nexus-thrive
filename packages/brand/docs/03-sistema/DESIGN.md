@@ -301,7 +301,9 @@ Reglas:
   300 px con scroll horizontal, encabezado (nombre, cantidad, total corto «$9,6 M», «+» de 28 px) y barra de 3 px por estado de la
   actividad; tarjetas `bg-card` radio 12, padding 14, gap 10, con estrellas, chip de actividad y responsable. Creación rápida como
   tarjeta con borde y halo dorados al inicio de la columna, con un combobox de contacto que busca o crea. Arrastrar y soltar según
-  `movimiento.md` §6 (asa para teclado, «Mover a», Subir/Bajar, optimista). La etapa ganada lleva borde izquierdo verde.
+  `movimiento.md` §6 (asa para teclado, «Mover a», Subir/Bajar, optimista). La etapa ganada lleva borde izquierdo verde. «+ Etapa» abre una columna de 300 px a la derecha con el formulario (nombre con ✓ y ✕, probabilidad por defecto, «Colocar
+  después de»; Enter crea, Esc cancela; Ganado siempre al final) y tres tarjetas fantasma; el nombre de una etapa se renombra con
+  doble clic (o Enter) y el encabezado se arrastra para reordenar (alternativa con teclado: Configuración › Etapas).
 
 ---
 

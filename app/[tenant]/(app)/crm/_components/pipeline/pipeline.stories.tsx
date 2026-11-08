@@ -53,6 +53,7 @@ function Pipeline({ quick, empty, vista }: { quick: boolean; empty: boolean; vis
           customerName={null}
           preset={null}
           hasAny={!empty}
+          canConfig
         />
       </div>
     </AppShellProvider>

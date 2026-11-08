@@ -26,18 +26,46 @@ export async function crmConfig(tenantId: string) {
   };
 }
 
-/** Crea una etapa antes de la ganada. */
-export async function createStage(tenantId: string, name: string, probability: number): Promise<Result> {
+/** ¿Ya hay otra etapa con ese nombre (sin distinguir mayúsculas)? */
+async function nameTaken(tenantId: string, name: string, exceptId?: string) {
+  const rows = await db.orm.public.CrmStage.where({ tenantId }).select("id", "name").all();
+  return rows.some((r) => r.id !== exceptId && r.name.trim().toLocaleLowerCase("es") === name.toLocaleLowerCase("es"));
+}
+
+/**
+ * Crea una etapa después de `afterId` (por defecto, la última antes de la ganada) y reordena las demás; la ganada siempre queda al
+ * final. No cambia la probabilidad de las oportunidades que ya existen.
+ */
+export async function createStage(tenantId: string, name: string, probability: number, afterId?: string | null): Promise<Result & { id?: string }> {
   const n = cleanName(name, 40);
   if (n.length < 2) return { ok: false, message: "Escribe el nombre de la etapa." };
   if (!(probability >= 0 && probability <= 100)) return { ok: false, message: "La probabilidad va de 0 a 100." };
   const stages = await ensureStages(tenantId);
   if (stages.length >= 12) return { ok: false, message: "Máximo 12 etapas." };
-  const won = stages.find((s) => s.isWon);
+  if (await nameTaken(tenantId, n)) return { ok: false, message: "Ya hay una etapa con ese nombre." };
+  const open = stages.filter((s) => !s.isWon);
+  const won = stages.filter((s) => s.isWon);
+  const after = afterId ? open.findIndex((s) => s.id === afterId) : open.length - 1;
+  const at = after < 0 ? open.length : after + 1;
+  let id = "";
   await db.transaction(async (tx) => {
-    const at = won ? won.position : stages.length;
-    if (won) await tx.orm.public.CrmStage.where({ tenantId, id: won.id }).update({ position: at + 1 });
-    await tx.orm.public.CrmStage.create({ tenantId, name: n, position: at, probability: Math.round(probability) });
+    const created = await tx.orm.public.CrmStage.create({ tenantId, name: n, position: at, probability: Math.round(probability) });
+    id = created.id;
+    const ordered = [...open.slice(0, at).map((s) => s.id), created.id, ...open.slice(at).map((s) => s.id), ...won.map((s) => s.id)];
+    for (const [i, sid] of ordered.entries()) await tx.orm.public.CrmStage.where({ tenantId, id: sid }).update({ position: i });
+  });
+  return { ok: true, id };
+}
+
+/** Orden completo de las etapas (arrastrar encabezados): la ganada se queda al final pase lo que pase. */
+export async function setStageOrder(tenantId: string, orderedIds: string[]): Promise<Result> {
+  const stages = await ensureStages(tenantId);
+  const known = new Set(stages.map((s) => s.id));
+  const open = orderedIds.filter((id) => known.has(id) && !stages.find((s) => s.id === id)!.isWon);
+  const missing = stages.filter((s) => !s.isWon && !open.includes(s.id)).map((s) => s.id);
+  const ordered = [...open, ...missing, ...stages.filter((s) => s.isWon).map((s) => s.id)];
+  await db.transaction(async (tx) => {
+    for (const [i, id] of ordered.entries()) await tx.orm.public.CrmStage.where({ tenantId, id }).update({ position: i });
   });
   return { ok: true };
 }
@@ -48,6 +76,7 @@ export async function updateStage(tenantId: string, id: string, patch: { name?: 
   if (!s) return { ok: false, message: "Esa etapa no existe." };
   const name = patch.name !== undefined ? cleanName(patch.name, 40) : undefined;
   if (name !== undefined && name.length < 2) return { ok: false, message: "Escribe el nombre de la etapa." };
+  if (name !== undefined && (await nameTaken(tenantId, name, id))) return { ok: false, message: "Ya hay una etapa con ese nombre." };
   if (patch.probability !== undefined && !(patch.probability >= 0 && patch.probability <= 100)) return { ok: false, message: "La probabilidad va de 0 a 100." };
   await db.orm.public.CrmStage.where({ tenantId, id }).update({ ...(name ? { name } : {}), ...(patch.probability !== undefined && !s.isWon ? { probability: Math.round(patch.probability) } : {}) });
   return { ok: true };

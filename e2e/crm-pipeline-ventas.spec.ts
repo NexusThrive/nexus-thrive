@@ -72,4 +72,38 @@ test.describe("CRM · pipeline", () => {
     await page.setViewportSize({ width: 390, height: 800 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   });
+
+  test("crear etapa: + Etapa abre la columna con el foco en el nombre; valida, Enter crea y Esc cancela", async ({ page }) => {
+    await openStory(page, "páginas-crm-pipeline--tablero");
+    await page.getByRole("button", { name: "+ Etapa" }).click();
+    const nombre = page.getByLabel("Nombre de la etapa");
+    await expect(nombre).toBeFocused();
+    await expect(page.getByText("Ganado siempre queda al final.", { exact: false })).toBeVisible();
+    await expectNoAxeViolations(page);
+    // Vacío o repetido no se crea.
+    await page.keyboard.press("Enter");
+    await expect(page.getByText("Escribe el nombre de la etapa.")).toBeVisible();
+    await nombre.fill("propuesta");
+    await page.keyboard.press("Enter");
+    await expect(page.getByText("Ya hay una etapa con ese nombre.")).toBeVisible();
+    await nombre.fill("Negociación");
+    await page.keyboard.press("Enter");
+    await expect(page.getByText("Etapa creada")).toBeVisible();
+    await expect(page.getByRole("region", { name: "Nueva etapa", exact: true })).toHaveCount(0);
+    // Esc cancela sin guardar.
+    await page.getByRole("button", { name: "+ Etapa" }).click();
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("region", { name: "Nueva etapa", exact: true })).toHaveCount(0);
+  });
+
+  test("renombrar una etapa con doble clic en su nombre", async ({ page, isMobile }) => {
+    test.skip(isMobile, "Doble clic: escritorio");
+    await openStory(page, "páginas-crm-pipeline--tablero");
+    await page.getByRole("button", { name: "Calificado", exact: true }).dblclick();
+    const input = page.getByLabel("Nuevo nombre de la etapa Calificado");
+    await expect(input).toBeFocused();
+    await input.fill("Interesado");
+    await page.keyboard.press("Enter");
+    await expect(page.getByText("Etapa renombrada")).toBeVisible();
+  });
 });

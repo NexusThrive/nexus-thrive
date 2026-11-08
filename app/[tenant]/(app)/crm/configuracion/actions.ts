@@ -27,7 +27,8 @@ async function apply(slug: string, what: string, fn: (tenantId: string) => Promi
   return { ok: true, message };
 }
 
-export const createStageAction = async (slug: string, name: string, probability: number) => apply(slug, "stage_create", (t) => config.createStage(t, name, probability), "Etapa creada");
+export const createStageAction = async (slug: string, name: string, probability: number, afterId?: string | null) => apply(slug, "stage_create", (t) => config.createStage(t, name, probability, afterId), "Etapa creada");
+export const setStageOrderAction = async (slug: string, orderedIds: string[]) => apply(slug, "stage_order", (t) => config.setStageOrder(t, orderedIds), "Orden guardado");
 export const updateStageAction = async (slug: string, id: string, patch: { name?: string; probability?: number }) => apply(slug, "stage_update", (t) => config.updateStage(t, id, patch), "Etapa guardada");
 export const moveStageOrderAction = async (slug: string, id: string, delta: -1 | 1) => apply(slug, "stage_order", (t) => config.moveStageOrder(t, id, delta), "Orden guardado");
 export const deleteStageAction = async (slug: string, id: string) => apply(slug, "stage_delete", (t) => config.deleteStage(t, id), "Etapa eliminada");

@@ -14,6 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/molecules/
 import { useToast } from "@/components/molecules/toast";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { completeActivityAction, moveStageAction, reopenAction, reorderAction } from "@/app/[tenant]/(app)/crm/pipeline-actions";
+import { createStageAction, setStageOrderAction, updateStageAction } from "@/app/[tenant]/(app)/crm/configuracion/actions";
 import type { PipelineCard, PipelineStage } from "@/lib/business/growth/pipeline-db";
 import type { PickerCustomer } from "@/lib/business/growth/pipeline-read";
 import { shortMoney } from "@/lib/business/growth/pipeline";
@@ -54,7 +55,10 @@ export default function PipelineView({
   customerName,
   preset,
   hasAny,
+  canConfig = false,
 }: {
+  /** Quien gobierna el negocio crea, renombra y reordena etapas desde el tablero (como en Configuración). */
+  canConfig?: boolean;
   slug: string;
   view: PipelineViewName;
   stages: PipelineStage[];
@@ -238,6 +242,27 @@ export default function PipelineView({
           onMove={move}
           onReorder={reorder}
           onShowLost={() => setShowLost(true)}
+          canConfig={canConfig}
+          onCreateStage={async (name, probability, afterId) => {
+            const r = await createStageAction(slug, name, probability, afterId);
+            toast(r.ok ? (r.message ?? "Etapa creada") : r.message, r.ok ? "success" : "error");
+            if (r.ok) router.refresh();
+            return r.ok;
+          }}
+          onRenameStage={(stage, name) =>
+            start(async () => {
+              const r = await updateStageAction(slug, stage.id, { name });
+              toast(r.ok ? "Etapa renombrada" : r.message, r.ok ? "success" : "error");
+              router.refresh();
+            })
+          }
+          onReorderStages={(ids) =>
+            start(async () => {
+              const r = await setStageOrderAction(slug, ids);
+              toast(r.ok ? "Orden de etapas guardado" : r.message, r.ok ? "success" : "error");
+              router.refresh();
+            })
+          }
         />
       ) : view === "lista" ? (
         <ListView slug={slug} cards={shown} stages={stages} now={now} />

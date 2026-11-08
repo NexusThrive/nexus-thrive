@@ -4,6 +4,7 @@ import { ensureStages, loadPipeline, type PipelineFilters } from "@/lib/business
 import { listOpportunities } from "@/lib/business/growth/opportunities-db";
 import { pendingCrmActivities, pickerCustomer } from "@/lib/business/growth/pipeline-read";
 import { bogotaMonth, parseMoney } from "@/lib/business/growth/pipeline";
+import { can } from "@/lib/core/auth/permissions";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
 import PipelineView, { type PipelineViewName } from "./_components/pipeline/pipeline-view";
 
@@ -62,6 +63,7 @@ export default async function PipelinePage({ params, searchParams }: { params: P
       customerName={customer?.name ?? null}
       preset={first(sp.nueva) === "1" ? customer : null}
       hasAny={everything.cards.length > 0 || everything.lost.count > 0}
+      canConfig={can(ctx.role, "business.manage")}
     />
   );
 }

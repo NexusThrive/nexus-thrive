@@ -2,7 +2,7 @@
 
 /* eslint-disable react-hooks/refs -- useDraggable/useDroppable de dnd-kit devuelven refs de callback y listeners, no valores de ref; el lint los confunde. */
 
-import { useState } from "react";
+import { useEffect, useId, useState } from "react";
 import Link from "next/link";
 import {
   DndContext,
@@ -18,8 +18,9 @@ import {
   type DragEndEvent,
   type KeyboardCoordinateGetter,
 } from "@dnd-kit/core";
-import { ArrowDown, ArrowRight, ArrowUp, CalendarClock, Columns3, ExternalLink, GripVertical, MoreHorizontal, Plus, ShoppingBag, Target } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUp, CalendarClock, Check, X, Columns3, ExternalLink, GripVertical, MoreHorizontal, Plus, ShoppingBag, Target } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
+import { Select } from "@/components/atoms/select";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/molecules/dropdown-menu";
 import { useReducedMotion } from "@/lib/experience/hooks/use-reduced-motion";
 import type { PipelineCard, PipelineStage } from "@/lib/business/growth/pipeline-db";
@@ -183,7 +184,11 @@ function Column({
   onCloseQuick,
   onMove,
   onShift,
+  canConfig,
+  onRename,
 }: {
+  canConfig: boolean;
+  onRename: (stage: PipelineStage, name: string) => void;
   slug: string;
   stage: PipelineStage;
   stages: PipelineStage[];
@@ -199,6 +204,11 @@ function Column({
   onShift: (card: PipelineCard, delta: -1 | 1) => void;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: `stage:${stage.id}` });
+  // El encabezado se arrastra para reordenar las etapas (Ganado se queda al final); con teclado, en Configuración.
+  const head = useDraggable({ id: `col:${stage.id}`, disabled: !canConfig || stage.isWon });
+  const { onKeyDown: _headKeys, ...headPointer } = (head.listeners ?? {}) as Record<string, React.EventHandler<never>>;
+  void _headKeys;
+  const [renaming, setRenaming] = useState(false);
   const total = cards.reduce((t, c) => t + c.value, 0);
   const bar = columnBar(cards, now);
   const target = dragging && dragging.stageId !== stage.id;
@@ -208,8 +218,46 @@ function Column({
       aria-label={stage.name}
       className={cn("flex w-[300px] shrink-0 flex-col gap-3 rounded-xl outline-2 -outline-offset-2 outline-transparent transition-[outline-color] duration-(--d1)", target && "outline-dashed outline-border-strong", isOver && target && "outline-solid outline-accent")}
     >
-      <header className="flex items-center gap-2 px-0.5">
-        <h2 className="text-base font-semibold text-foreground">{stage.name}</h2>
+      <header ref={head.setNodeRef} {...(canConfig && !stage.isWon && !renaming ? headPointer : {})} className={cn("flex items-center gap-2 px-0.5", canConfig && !stage.isWon && "cursor-grab active:cursor-grabbing", head.isDragging && "opacity-40")}>
+        {renaming ? (
+          <input
+            autoFocus
+            aria-label={`Nuevo nombre de la etapa ${stage.name}`}
+            defaultValue={stage.name}
+            maxLength={40}
+            className="h-7 min-w-0 flex-1 rounded-lg border border-accent bg-background px-2 text-base font-semibold text-foreground outline-none"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") e.currentTarget.blur();
+              if (e.key === "Escape") setRenaming(false);
+            }}
+            onBlur={(e) => {
+              const v = e.currentTarget.value.trim();
+              setRenaming(false);
+              if (v && v !== stage.name) onRename(stage, v);
+            }}
+          />
+        ) : (
+          <h2 className="min-w-0 truncate text-base font-semibold text-foreground">
+            {canConfig ? (
+              <button
+                type="button"
+                onDoubleClick={() => setRenaming(true)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === "F2") {
+                    e.preventDefault();
+                    setRenaming(true);
+                  }
+                }}
+                aria-describedby="crm-rename-hint"
+                className="max-w-full truncate rounded text-left outline-none focus-visible:outline-2 focus-visible:outline-ring"
+              >
+                {stage.name}
+              </button>
+            ) : (
+              stage.name
+            )}
+          </h2>
+        )}
         <span className="rounded-full bg-surface-muted px-2 py-px text-xs text-muted-foreground" aria-label={`${cards.length} oportunidades`}>
           {cards.length}
         </span>
@@ -235,6 +283,109 @@ function Column({
           <Card key={c.id} slug={slug} card={c} stages={stages} now={now} saving={savingIds.has(c.id)} index={i} count={cards.length} onMove={onMove} onShift={onShift} />
         ))}
       </ul>
+    </section>
+  );
+}
+
+/**
+ * Columna de nueva etapa (se abre con «+ Etapa»): nombre con ✓ y ✕, probabilidad por defecto y después de qué etapa va. Enter crea,
+ * Esc cancela; Ganado siempre queda al final. Debajo, tres tarjetas fantasma de dónde aparecerán sus oportunidades.
+ */
+function NewStageColumn({ stages, onCreate, onCancel }: { stages: PipelineStage[]; onCreate: (name: string, probability: number, afterId: string | null) => Promise<unknown>; onCancel: () => void }) {
+  const open = stages.filter((s) => !s.isWon);
+  const [name, setName] = useState("");
+  const [prob, setProb] = useState("30 %");
+  const [after, setAfter] = useState(open.at(-1)?.id ?? "");
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const errId = useId();
+  // Esc cancela esté donde esté el foco (salvo dentro de un menú o diálogo abierto, que se cierran primero).
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape" || e.defaultPrevented || (e.target as HTMLElement | null)?.closest("[role=dialog],[role=listbox],[role=menu]")) return;
+      onCancel();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onCancel]);
+  const submit = async () => {
+    const n = name.trim();
+    const p = Number(prob.replace(/[^\d]/g, ""));
+    if (n.length < 2) return setError("Escribe el nombre de la etapa.");
+    if (stages.some((s) => s.name.trim().toLocaleLowerCase("es") === n.toLocaleLowerCase("es"))) return setError("Ya hay una etapa con ese nombre.");
+    if (!prob.trim() || !(p >= 0 && p <= 100)) return setError("La probabilidad va de 0 a 100.");
+    setBusy(true);
+    await onCreate(n, p, after || null);
+    setBusy(false);
+  };
+  const square = "grid h-9 w-[34px] shrink-0 place-items-center rounded-lg border border-border outline-none focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-50";
+  return (
+    <section aria-label="Nueva etapa" className="flex w-[300px] shrink-0 flex-col gap-3">
+      <form
+        noValidate
+        onSubmit={(e) => {
+          e.preventDefault();
+          void submit();
+        }}
+        className="flex flex-col gap-3 rounded-xl border border-accent bg-card p-3.5 shadow-[0_0_0_3px_color-mix(in_oklab,var(--accent)_12%,transparent)]"
+      >
+        <div className="flex items-center gap-2">
+          <input
+            autoFocus
+            value={name}
+            onChange={(e) => {
+              setName(e.target.value);
+              setError(null);
+            }}
+            maxLength={40}
+            aria-label="Nombre de la etapa"
+            aria-required="true"
+            aria-invalid={error ? true : undefined}
+            aria-describedby={error ? errId : undefined}
+            placeholder="Nombre de la etapa *"
+            className="h-9 min-w-0 flex-1 rounded-lg border border-border bg-background px-2.5 text-ui font-medium text-foreground outline-none placeholder:text-muted-foreground focus:border-accent focus:shadow-[0_0_0_3px_color-mix(in_oklab,var(--accent)_15%,transparent)] aria-[invalid=true]:border-danger"
+          />
+          <button type="submit" disabled={busy} aria-label="Crear etapa" className={cn(square, "text-success hover:border-success hover:bg-success-subtle")}>
+            <Check aria-hidden="true" className="size-[15px]" strokeWidth={2.4} />
+          </button>
+          <button type="button" onClick={onCancel} aria-label="Cancelar" className={cn(square, "text-danger hover:border-danger/60 hover:bg-danger-subtle")}>
+            <X aria-hidden="true" className="size-3.5" strokeWidth={2.4} />
+          </button>
+        </div>
+        {error ? (
+          <p id={errId} role="alert" className="-mt-1 text-xs text-danger">
+            {error}
+          </p>
+        ) : null}
+        <label className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
+          Probabilidad por defecto
+          <input
+            value={prob}
+            inputMode="numeric"
+            onChange={(e) => setProb(e.target.value)}
+            onBlur={(e) => {
+              const p = e.currentTarget.value.replace(/[^\d]/g, "");
+              if (p) setProb(`${Math.min(100, Number(p))} %`);
+            }}
+            className="h-9 w-[84px] rounded-lg border border-border bg-background px-2.5 text-right text-ui text-foreground outline-none focus:border-accent"
+          />
+        </label>
+        <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
+          <span id={`${errId}-pos`}>Colocar después de</span>
+          <Select aria-labelledby={`${errId}-pos`} value={after} onChange={(e) => setAfter(e.target.value)} className="h-9 w-[140px] text-ui">
+            {[...open].reverse().map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
+              </option>
+            ))}
+          </Select>
+        </div>
+        <p className="text-2xs text-muted-foreground">Enter para crear · Esc para cancelar. Ganado siempre queda al final.</p>
+      </form>
+      {[1, 0.7, 0.45].map((o) => (
+        <div key={o} aria-hidden="true" className="h-[92px] rounded-xl border border-dashed border-border bg-background" style={{ opacity: o }} />
+      ))}
+      <p className="text-center text-xs text-muted-foreground">Aquí aparecerán las oportunidades de esta etapa</p>
     </section>
   );
 }
@@ -275,7 +426,15 @@ export function Board({
   onMove,
   onReorder,
   onShowLost,
+  canConfig = false,
+  onCreateStage,
+  onRenameStage,
+  onReorderStages,
 }: {
+  canConfig?: boolean;
+  onCreateStage?: (name: string, probability: number, afterId: string | null) => Promise<boolean>;
+  onRenameStage?: (stage: PipelineStage, name: string) => void;
+  onReorderStages?: (ids: string[]) => void;
   slug: string;
   stages: PipelineStage[];
   cards: PipelineCard[];
@@ -291,6 +450,7 @@ export function Board({
   onShowLost: () => void;
 }) {
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [addingStage, setAddingStage] = useState(false);
   const reduced = useReducedMotion();
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
@@ -304,7 +464,8 @@ export function Board({
     const stageId = id.startsWith("stage:") ? id.slice(6) : cards.find((c) => `card:${c.id}` === id)?.stageId;
     return stages.find((s) => s.id === stageId)?.name ?? "fuera de las columnas";
   };
-  const nameOf = (id: unknown) => cards.find((c) => c.id === id)?.name ?? "Oportunidad";
+  const nameOf = (id: unknown) => (String(id).startsWith("col:") ? `la etapa ${stages.find((s) => `col:${s.id}` === id)?.name ?? ""}` : (cards.find((c) => c.id === id)?.name ?? "Oportunidad"));
+  const draggingStage = activeId?.startsWith("col:") ? (stages.find((s) => `col:${s.id}` === activeId) ?? null) : null;
   const announcements: Announcements = {
     onDragStart: ({ active }) => `Tomaste ${nameOf(active.id)}. Usa las flechas izquierda y derecha para cambiar de etapa, Espacio para soltar y Escape para cancelar.`,
     onDragOver: ({ active, over }) => (over ? `${nameOf(active.id)} sobre ${stageName(over.id)}.` : `${nameOf(active.id)} fuera de las columnas.`),
@@ -323,6 +484,20 @@ export function Board({
 
   function onDragEnd(event: DragEndEvent) {
     setActiveId(null);
+    // Encabezado de una etapa soltado sobre otra columna: queda en su lugar (Ganado sigue al final).
+    if (String(event.active.id).startsWith("col:")) {
+      const from = String(event.active.id).slice(4);
+      const over = String(event.over?.id ?? "");
+      const to = over.startsWith("stage:") ? over.slice(6) : cards.find((c) => `card:${c.id}` === over)?.stageId;
+      if (!to || to === from) return;
+      const ids = stages.filter((s) => !s.isWon).map((s) => s.id);
+      const target = ids.indexOf(to);
+      if (target < 0) return;
+      const without = ids.filter((id) => id !== from);
+      without.splice(target, 0, from);
+      onReorderStages?.(without);
+      return;
+    }
     const card = cards.find((c) => c.id === event.active.id);
     const over = String(event.over?.id ?? "");
     if (!card || !over) return;
@@ -352,6 +527,9 @@ export function Board({
       }}
     >
       <div className="relative">
+        <span id="crm-rename-hint" hidden>
+          Doble clic o Enter para renombrar la etapa
+        </span>
         <div className="flex items-start gap-4 overflow-x-auto px-5 pb-12 pt-1">
           {stages.map((s, i) => (
             <Column
@@ -369,6 +547,8 @@ export function Board({
               onCloseQuick={() => onQuick(null)}
               onMove={onMove}
               onShift={shift}
+              canConfig={canConfig}
+              onRename={(stage, name) => onRenameStage?.(stage, name)}
             />
           ))}
           <section aria-label="Perdidos y nueva etapa" className="flex w-[150px] shrink-0 flex-col gap-3">
@@ -380,10 +560,13 @@ export function Board({
               <span className="text-ui text-muted-foreground">Ver oportunidades perdidas</span>
               <span className="text-xs text-muted-foreground tabular-nums">{shortMoney(lost.total)}</span>
             </button>
-            <Link href={`/${slug}/crm/configuracion#etapas`} className="grid h-9 place-items-center rounded-[10px] border border-dashed border-border-strong text-ui text-muted-foreground outline-none hover:border-accent hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
-              + Etapa
-            </Link>
+            {canConfig ? (
+              <button type="button" aria-expanded={addingStage} onClick={() => setAddingStage(true)} className="grid h-9 place-items-center rounded-[10px] border border-dashed border-border-strong text-ui text-muted-foreground outline-none hover:border-accent hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
+                + Etapa
+              </button>
+            ) : null}
           </section>
+          {addingStage && onCreateStage ? <NewStageColumn stages={stages} onCancel={() => setAddingStage(false)} onCreate={async (n, p, after) => (await onCreateStage(n, p, after)) && setAddingStage(false)} /> : null}
         </div>
         {empty ? (
           <div className="pointer-events-none absolute inset-x-0 top-24 flex justify-center px-5">
@@ -425,7 +608,11 @@ export function Board({
         ) : null}
       </div>
       <DragOverlay dropAnimation={{ duration: reduced ? 0 : 200, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }}>
-        {dragging ? (
+        {draggingStage ? (
+          <div className="flex w-[300px] items-center gap-2 rounded-xl border border-accent bg-card px-3 py-2 shadow-[var(--nx-shadow-overlay)]">
+            <span className="text-base font-semibold text-foreground">{draggingStage.name}</span>
+          </div>
+        ) : dragging ? (
           <div className="flex w-[300px] rotate-[1.5deg] flex-col gap-2.5 rounded-xl border border-accent bg-card p-3.5 shadow-[var(--nx-shadow-overlay)]">
             <CardBody card={dragging} now={now} />
           </div>

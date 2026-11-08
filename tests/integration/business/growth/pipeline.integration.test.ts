@@ -2,6 +2,7 @@ import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
 import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
+import { createStage, deleteStage, setStageOrder } from "@/lib/business/growth/pipeline-config-db";
 import { completeActivity, createQuickOpportunity, ensureStages, loadPipeline, loseWithReason, moveToStage, reopenOpportunity, scheduleActivity, updateOpportunity, winWithOrder } from "@/lib/business/growth/pipeline-db";
 
 /** Pipeline del CRM de punta a punta contra la base de pruebas, y aislado por negocio. */
@@ -121,5 +122,28 @@ describe.skipIf(!TEST_URL)("pipeline del CRM (integración)", () => {
     expect((await loadPipeline(b)).cards).toHaveLength(0);
     expect(await moveToStage(b, r.id, (await ensureStages(b))[1]!.id, null)).toMatchObject({ ok: false });
     expect(await winWithOrder(b, r.id, null)).toMatchObject({ ok: false });
+  });
+
+  test("crear una etapa la deja en su lugar, Ganado al final, sin tocar probabilidades existentes", async () => {
+    const before = await ensureStages(a);
+    const calificado = before.find((x) => x.name === "Calificado")!;
+    const opp = await createQuickOpportunity(a, null, { name: "Probabilidad intacta" });
+    if (!opp.ok) throw new Error(opp.message);
+    expect(await createStage(a, "Negociación", 50, calificado.id)).toMatchObject({ ok: true });
+    expect((await ensureStages(a)).map((x) => x.name)).toEqual(["Nuevo", "Calificado", "Negociación", "Propuesta", "Ganado"]);
+    expect(await createStage(a, "negociación", 30)).toMatchObject({ ok: false, message: "Ya hay una etapa con ese nombre." });
+    expect(await createStage(a, "", 30)).toMatchObject({ ok: false });
+    expect((await db.orm.public.Opportunity.where({ tenantId: a, id: opp.id }).first())?.probability).toBe(20);
+    // Reordenar con Ganado en medio: Ganado vuelve al final.
+    const now = await ensureStages(a);
+    const won = now.find((x) => x.isWon)!;
+    const ids = now.filter((x) => !x.isWon).map((x) => x.id).reverse();
+    await setStageOrder(a, [ids[0]!, won.id, ...ids.slice(1)]);
+    expect((await ensureStages(a)).at(-1)?.name).toBe("Ganado");
+    // Una etapa con oportunidades abiertas no se elimina; vacía, sí.
+    const nuevo = (await ensureStages(a)).find((x) => x.name === "Nuevo")!;
+    expect(await deleteStage(a, nuevo.id)).toMatchObject({ ok: false });
+    const neg = (await ensureStages(a)).find((x) => x.name === "Negociación")!;
+    expect(await deleteStage(a, neg.id)).toMatchObject({ ok: true });
   });
 });
