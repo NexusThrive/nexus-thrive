@@ -5,7 +5,7 @@ import { toNumber } from "@/lib/foundation/format";
 import { emitEvent } from "@/lib/core/events/outbox";
 import { StockError, applyStockMovement } from "@/lib/business/inventory/stock-service";
 import { db } from "@/prisma/db";
-import { cartTotals, settlePayments, tipFor, type PaymentInput } from "./cart";
+import { cartTotals, lineDescription, settlePayments, tipFor, type PaymentInput } from "./cart";
 
 /**
  * Punto de venta (servidor). Una terminal tiene su caja y su bodega; cada cajero abre
@@ -69,7 +69,8 @@ export async function closeTurn(tenantId: string, sessionId: string, counted: nu
   return r.ok ? { ok: true as const, expected: r.expected, difference: Math.round((counted - r.expected) * 100) / 100 } : r;
 }
 
-export type CartLineInput = { productId: string; quantity: number; discountPct?: number };
+/** `note` y `unitPrice` solo valen en productos marcados como personalizables (renglón a medida); en los demás el servidor los ignora. */
+export type CartLineInput = { productId: string; quantity: number; discountPct?: number; note?: string; unitPrice?: number };
 export type SaleInput = { lines: CartLineInput[]; tip?: { pct?: number; fixed?: number }; payments: PaymentInput[]; customerId?: string | null };
 export type SaleResult = { ok: true; documentId: string; number: number; total: number; tip: number; change: number; receipts: string[] } | { ok: false; message: string };
 
@@ -98,7 +99,10 @@ export async function sellCart(tenantId: string, input: SaleInput, userId: strin
         const discountPct = l.discountPct ?? 0;
         if (!(discountPct >= 0 && discountPct <= 100)) throw new MoneyError(`Descuento inválido en «${p.name}».`);
         if (discountPct > MAX_CASHIER_DISCOUNT && !opts.canDiscountOver) throw new MoneyError(`Un descuento mayor a ${MAX_CASHIER_DISCOUNT} % lo autoriza el dueño o administración.`);
-        return { description: p.name, quantity: l.quantity, unitPrice: toNumber(p.price), productId: p.id, discountPct, taxRatePct: p.taxCategory === "GRAVADO" ? toNumber(p.taxRatePct) : 0 };
+        // Renglón a medida: nota y precio acordado, solo si el producto es personalizable (si no, el precio es el de la base).
+        const custom = p.customizable;
+        if (custom && l.unitPrice != null && !(Number.isFinite(l.unitPrice) && l.unitPrice >= 0)) throw new MoneyError(`Precio inválido en «${p.name}».`);
+        return { description: lineDescription(p.name, custom ? l.note : null), quantity: l.quantity, unitPrice: custom && l.unitPrice != null ? l.unitPrice : toNumber(p.price), productId: p.id, discountPct, taxRatePct: p.taxCategory === "GRAVADO" ? toNumber(p.taxRatePct) : 0 };
       });
       const totals = cartTotals(docLines);
       const tip = tipFor(input.tip ?? {}, totals);

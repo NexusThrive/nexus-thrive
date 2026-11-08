@@ -35,3 +35,13 @@ describe("pago mixto", () => {
     expect(settlePayments(1000, [])).toEqual({ error: "Agrega al menos un pago." });
   });
 });
+
+describe("renglón a medida", () => {
+  it("anexa la nota a la descripción, la limpia y la recorta", async () => {
+    const { lineDescription, MAX_CUSTOM_NOTE } = await import("@/lib/business/pos/cart");
+    expect(lineDescription("Camiseta")).toBe("Camiseta");
+    expect(lineDescription("Camiseta", "   ")).toBe("Camiseta");
+    expect(lineDescription("Camiseta", "Texto:   Hola \n mundo")).toBe("Camiseta — Texto: Hola mundo");
+    expect(lineDescription("Taza", "x".repeat(500)).length).toBe("Taza — ".length + MAX_CUSTOM_NOTE);
+  });
+});
