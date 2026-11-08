@@ -14,7 +14,7 @@ test.describe("Nuevo cliente", () => {
   test("la vista previa se actualiza y avisa de un duplicado sin bloquear", async ({ page }) => {
     await openStory(page, "páginas-clientes-y-agenda-nuevo-cliente--vacio");
     await page.getByLabel(/Nombre completo/).fill("María Pérez");
-    await expect(page.getByText("MP", { exact: true })).toBeVisible();
+    await expect(page.getByRole("region", { name: "Vista previa" }).getByText("María Pérez")).toBeVisible();
     await page.getByLabel("Teléfono").fill("300 123 4567");
     await page.getByLabel(/Correo electrónico/).click();
     await expect(page.getByText("+57 300 123 4567")).toBeVisible();
