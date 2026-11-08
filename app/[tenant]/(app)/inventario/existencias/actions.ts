@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { canManage } from "@/lib/core/auth/roles";
 import { createWarehouse } from "@/lib/business/inventory/kardex";
-import { cancelCount, createCount, createTransfer, finalizeCount, getCount, saveCountLines, setReorderLevels, type CountDetail, type TransferInput } from "@/lib/business/inventory/stock-docs-db";
+import { cancelCount, createCount, createTransfer, finalizeCount, getCount, registerMovement, saveCountLines, setReorderLevels, type CountDetail, type ManualMovementInput, type TransferInput } from "@/lib/business/inventory/stock-docs-db";
 import { logTenantAction } from "@/lib/core/tenancy/audit";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
 
@@ -90,4 +90,15 @@ export async function createWarehouseAction(slug: string, input: { name: string;
   await logTenantAction(ctx, "BIZ_WAREHOUSE_CREATE", { warehouseId: r.id, name: input.name.slice(0, 80) });
   refresh(slug);
   return { ok: true, id: r.id, message: "Bodega creada" };
+}
+
+/** Entrada, salida o ajuste de un producto en una bodega (con motivo en salidas y ajustes). */
+export async function registerMovementAction(slug: string, input: ManualMovementInput): Promise<StockResult> {
+  const ctx = await manager(slug);
+  if (!ctx) return DENIED;
+  const r = await registerMovement(ctx.tenantId, input, ctx.memberId);
+  if (!r.ok) return { ok: false, message: r.message };
+  await logTenantAction(ctx, "BIZ_STOCK_MOVEMENT", { productId: input.productId, kind: input.kind, quantity: input.quantity, warehouseId: input.warehouseId ?? null });
+  refresh(slug);
+  return { ok: true, message: `Movimiento registrado · quedan ${r.balance}` };
 }

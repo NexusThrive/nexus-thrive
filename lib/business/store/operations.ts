@@ -7,8 +7,34 @@ import { defineOperation, OperationError, type OperationDefinition } from "@/lib
 import { advanceOrder } from "./fulfillment-db";
 import { FULFILLMENT_STATES } from "./fulfillment";
 import { cancelOrder } from "./store-db";
+import { ORDER_CHANNELS } from "./cart";
+import { createChannelOrder } from "./channel-orders-db";
 
 export const storeOperations: OperationDefinition[] = [
+  defineOperation({
+    id: "orders.create",
+    rest: { method: "POST", path: "/orders" },
+    title: "Crear un pedido desde un canal",
+    description:
+      "Crea un pedido que entró por un canal (API, WhatsApp, Shopify, WooCommerce…). El precio y los impuestos salen del catálogo del negocio, no de quien llama. Con `external_id` es idempotente: repetir el mismo pedido del canal devuelve el que ya existe (`duplicate: true`). El pedido queda por cobrar en cartera; el negocio cobra por el medio que acordó con el cliente.",
+    module: "website",
+    permission: "money.handle",
+    risk: "write",
+    idempotent: true,
+    emits: ["order.created.v1"],
+    input: z.object({
+      channel: z.enum(ORDER_CHANNELS.filter((c) => c !== "WEB") as [string, ...string[]]),
+      external_id: z.string().trim().max(80).optional(),
+      customer: z.object({ name: z.string().trim().min(3).max(120), phone: z.string().trim().min(10).max(30), email: z.string().trim().max(120).optional(), address: z.string().trim().max(200).optional(), city: z.string().trim().max(80).optional(), notes: z.string().trim().max(300).optional() }),
+      lines: z.array(z.object({ product_id: z.string().uuid(), quantity: z.number().int().min(1).max(99) })).min(1).max(40),
+    }),
+    output: z.object({ id: z.string(), code: z.string(), total: z.number(), duplicate: z.boolean() }),
+    handler: async (ctx, input) => {
+      const result = await createChannelOrder(ctx.tenantId, { channel: input.channel as never, externalId: input.external_id, customer: input.customer, lines: input.lines.map((l) => ({ productId: l.product_id, quantity: l.quantity })) });
+      if (!result.ok) throw new OperationError(result.code === "invalid" ? "invalid_input" : "rule_violation", result.message, 422);
+      return { id: result.id, code: result.code, total: result.total, duplicate: result.duplicate };
+    },
+  }),
   defineOperation({
     id: "orders.update_status",
     rest: { method: "POST", path: "/orders/{orderId}/status" },

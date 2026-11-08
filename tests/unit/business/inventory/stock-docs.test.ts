@@ -43,3 +43,17 @@ describe("traslados, conteos y reposición (puro)", () => {
     expect(validateLevels({ minStock: -1, maxStock: null, reorderPoint: null })).toMatch(/enteros/);
   });
 });
+
+describe("movimiento manual", () => {
+  test("valida tipo, cantidad, motivo y costo", async () => {
+    const { validateManualMovement } = await import("@/lib/business/inventory/stock-docs-db");
+    const base = { productId: "p", kind: "IN" as const, quantity: 3 };
+    expect(validateManualMovement(base)).toBeNull();
+    expect(validateManualMovement({ ...base, productId: "" })).toMatch(/producto/);
+    expect(validateManualMovement({ ...base, quantity: 0 })).toMatch(/entero mayor/);
+    expect(validateManualMovement({ ...base, kind: "ADJUST", quantity: 0, note: "conté de nuevo" })).toBeNull();
+    expect(validateManualMovement({ ...base, kind: "OUT" })).toMatch(/motivo/);
+    expect(validateManualMovement({ ...base, kind: "OUT", note: "daño" })).toBeNull();
+    expect(validateManualMovement({ ...base, unitCost: -1 })).toMatch(/costo/);
+  });
+});

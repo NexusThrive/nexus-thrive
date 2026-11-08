@@ -78,10 +78,19 @@ export default function FiscalView({ slug, settings, docs }: { slug: string; set
         )}
       </FormDialog>
 
+      <dl className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
+        {(["PENDING_PROVIDER", "SUBMITTED", "ACCEPTED", "REJECTED"] as const).map((k) => (
+          <div key={k} className="grid gap-1 rounded-xl border border-border bg-surface p-3.5">
+            <dt className="text-xs text-muted-foreground">{STATUS[k].label}</dt>
+            <dd className="font-mono text-lg font-semibold tabular-nums">{docs.filter((d) => d.status === k).length}</dd>
+          </div>
+        ))}
+      </dl>
+
       <div className="flex flex-wrap gap-2" role="group" aria-label="Filtrar por estado">
         {(["all", "PENDING_PROVIDER", "ACCEPTED", "REJECTED"] as const).map((f) => (
           <button key={f} type="button" aria-pressed={filter === f} onClick={() => setFilter(f)} className={buttonVariants({ variant: filter === f ? "default" : "outline", size: "sm" })}>
-            {f === "all" ? "Todos" : STATUS[f].label}
+            {f === "all" ? "Todos" : STATUS[f].label}{f === "REJECTED" && docs.some((d) => d.status === "REJECTED") ? ` (${docs.filter((d) => d.status === "REJECTED").length})` : ""}
           </button>
         ))}
       </div>

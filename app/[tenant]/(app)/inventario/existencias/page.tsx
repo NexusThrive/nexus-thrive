@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/molecules/page-header";
 import { canManage } from "@/lib/core/auth/roles";
 import { listProducts } from "@/lib/business/catalog/products-db";
 import { listWarehouses } from "@/lib/business/inventory/kardex";
-import { listCounts, listTransfers, reorderOverview, stockOverview } from "@/lib/business/inventory/stock-docs-db";
+import { listCounts, listTransfers, movementFeed, reorderOverview, stockOverview } from "@/lib/business/inventory/stock-docs-db";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
 import { tenantWithModules } from "@/lib/core/tenancy/membership";
 import StockView from "./_components/stock-view";
@@ -26,7 +26,7 @@ export default async function StockPage({ params, searchParams }: { params: Prom
       </div>
     );
   }
-  const [record, warehouses, overview, transfers, counts, reorder, products] = await Promise.all([
+  const [record, warehouses, overview, transfers, counts, reorder, products, movements] = await Promise.all([
     tenantWithModules(ctx.tenantId),
     listWarehouses(ctx.tenantId),
     stockOverview(ctx.tenantId),
@@ -34,6 +34,7 @@ export default async function StockPage({ params, searchParams }: { params: Prom
     listCounts(ctx.tenantId),
     reorderOverview(ctx.tenantId),
     listProducts(ctx.tenantId, { kind: ["PRODUCT"], activeOnly: true }),
+    movementFeed(ctx.tenantId, 100),
   ]);
   const purchasesActive = !!record?.modules.some((m) => m.active && String(m.moduleName) === "purchases");
   return (
@@ -49,6 +50,7 @@ export default async function StockPage({ params, searchParams }: { params: Prom
         reorder={reorder}
         products={products.filter((p) => p.trackStock).map((p) => ({ id: p.id, name: p.name }))}
         purchasesActive={purchasesActive}
+        movements={movements}
       />
     </div>
   );

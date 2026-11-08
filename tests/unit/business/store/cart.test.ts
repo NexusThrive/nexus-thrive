@@ -33,3 +33,13 @@ describe("tienda en línea", () => {
     expect(m).toContain("https://x.co/pay/abc");
   });
 });
+
+describe("pedidos por canal", () => {
+  it("limpia el identificador externo", async () => {
+    const { cleanExternalId } = await import("@/lib/business/store/cart");
+    expect(cleanExternalId("  SH-1001\n")).toBe("SH-1001");
+    expect(cleanExternalId("   ")).toBeNull();
+    expect(cleanExternalId(undefined)).toBeNull();
+    expect(cleanExternalId("x".repeat(200))?.length).toBe(80);
+  });
+});

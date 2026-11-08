@@ -19,3 +19,6 @@ export const Default: Story = {};
 export const SinPedidos: Story = { args: { orders: [] } };
 /** Quien produce (sin manejar dinero): mueve pedidos pero no ve totales, cobros ni puede cancelar. */
 export const SinDinero: Story = { args: { canCharge: false } };
+
+/** Pedidos que llegaron por otros canales llevan su canal y el identificador que tenían allá. */
+export const PorVariosCanales: Story = { args: { orders: [order(7, "PENDING_PAYMENT", "RECEIVED", { channel: "SHOPIFY", externalId: "SH-1001" }), order(6, "PENDING_PAYMENT", "RECEIVED", { channel: "WHATSAPP" }), order(5, "PAID", "CONFIRMED")] } };

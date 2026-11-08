@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Boxes, Coins, PackageX, Plus, TriangleAlert } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { Select } from "@/components/atoms/select";
@@ -11,27 +12,34 @@ import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { AdaptiveTable } from "@/components/organisms/adaptive-table";
 import { formatCurrency } from "@/lib/foundation/format";
 import { COUNT_LABELS } from "@/lib/business/inventory/stock-docs";
-import type { CountRow, OverviewRow, ReorderRow, TransferRow } from "@/lib/business/inventory/stock-docs-db";
+import type { CountRow, MovementRow, OverviewRow, ReorderRow, TransferRow } from "@/lib/business/inventory/stock-docs-db";
 import CountSheet from "./count-sheet";
+import MovementDialog from "./movement-dialog";
 import NewCountDialog from "./new-count-dialog";
 import ReorderTable from "./reorder-table";
 import TransferSheet from "./transfer-sheet";
 import WarehousesView from "./warehouses-view";
 
 export type WarehouseOption = { id: string; name: string; code: string | null; isDefault: boolean };
-type Tab = "stock" | "transfers" | "counts" | "reorder" | "warehouses";
+type Tab = "stock" | "movements" | "transfers" | "counts" | "reorder" | "warehouses";
+const MOVEMENT_LABELS: Record<string, string> = { IN: "Entrada", OUT: "Salida", SALE: "Venta", ADJUST: "Ajuste" };
 const COUNT_TONES = { DRAFT: "warning", COMPLETED: "success", CANCELED: "muted" } as const;
 
 /** Existencias: por bodega, traslados, conteos físicos, reposición y bodegas. */
-export default function StockView({ initialTab, slug, warehouses, overview, transfers, counts, reorder, products, purchasesActive }: { initialTab?: string; slug: string; warehouses: WarehouseOption[]; overview: OverviewRow[]; transfers: TransferRow[]; counts: CountRow[]; reorder: ReorderRow[]; products: { id: string; name: string }[]; purchasesActive: boolean }) {
-  const [tab, setTab] = useState<Tab>((["stock", "transfers", "counts", "reorder", "warehouses"] as const).find((t) => t === initialTab) ?? "stock");
+export default function StockView({ initialTab, slug, warehouses, overview, transfers, counts, reorder, products, purchasesActive, movements = [] }: { movements?: MovementRow[]; initialTab?: string; slug: string; warehouses: WarehouseOption[]; overview: OverviewRow[]; transfers: TransferRow[]; counts: CountRow[]; reorder: ReorderRow[]; products: { id: string; name: string }[]; purchasesActive: boolean }) {
+  const [tab, setTab] = useState<Tab>((["stock", "movements", "transfers", "counts", "reorder", "warehouses"] as const).find((t) => t === initialTab) ?? "stock");
   const [warehouse, setWarehouse] = useState("all");
   const [transferring, setTransferring] = useState(false);
+  const router = useRouter();
   const [counting, setCounting] = useState(false);
+  const [moving, setMoving] = useState(false);
   const [openCount, setOpenCount] = useState<string | null>(null);
   const needed = reorder.filter((r) => r.needsOrder).length;
   const rows = overview.filter((r) => warehouse === "all" || r.warehouseId === warehouse);
   const total = rows.reduce((s, r) => s + r.value, 0);
+  const totalAll = overview.reduce((s, r) => s + r.value, 0);
+  const units = overview.reduce((s, r) => s + r.quantity, 0);
+  const soldOut = reorder.filter((r) => r.stock <= 0).length;
   const canMove = warehouses.length > 1;
 
   return (
@@ -43,6 +51,7 @@ export default function StockView({ initialTab, slug, warehouses, overview, tran
           onChange={setTab}
           options={[
             { value: "stock", label: "Existencias" },
+            { value: "movements", label: "Movimientos" },
             { value: "transfers", label: "Traslados", count: transfers.length },
             { value: "counts", label: "Conteos", count: counts.filter((c) => c.status === "DRAFT").length },
             { value: "reorder", label: "Reposición", count: needed },
@@ -50,6 +59,47 @@ export default function StockView({ initialTab, slug, warehouses, overview, tran
           ]}
         />
       </div>
+
+      <dl className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
+        {[
+          { icon: <Boxes />, label: "Unidades en inventario", value: String(units) },
+          { icon: <Coins />, label: "Valor del inventario", value: formatCurrency(totalAll) },
+          { icon: <TriangleAlert />, label: "Por reponer", value: String(needed) },
+          { icon: <PackageX />, label: "Agotados", value: String(soldOut) },
+        ].map((k) => (
+          <div key={k.label} className="grid gap-1 rounded-xl border border-border bg-surface p-3.5">
+            <dt className="flex items-center gap-1.5 text-xs text-muted-foreground [&>svg]:size-3.5">{k.icon}{k.label}</dt>
+            <dd className="font-mono text-lg font-semibold tabular-nums">{k.value}</dd>
+          </div>
+        ))}
+      </dl>
+      {tab === "stock" || tab === "movements" ? (
+        <div className="flex">
+          <button type="button" onClick={() => setMoving(true)} className={buttonVariants({ className: "ml-auto" })}>
+            <Plus aria-hidden="true" className="size-4" /> Nuevo movimiento
+          </button>
+        </div>
+      ) : null}
+      {tab === "movements" ? (
+        movements.length ? (
+          <AdaptiveTable<MovementRow>
+            caption="Últimos movimientos de inventario"
+            rows={movements}
+            getRowId={(r) => r.id}
+            columns={[
+              { key: "date", header: "Fecha", role: "detail", cell: (r) => <span className="text-ui tabular-nums text-muted-foreground">{r.date.slice(0, 16).replace("T", " ")}</span> },
+              { key: "product", header: "Producto", role: "primary", cell: (r) => <span className="font-medium">{r.productName}</span> },
+              { key: "kind", header: "Tipo", role: "status", cell: (r) => <Badge tone={r.kind === "IN" ? "success" : r.kind === "ADJUST" ? "warning" : "muted"}>{MOVEMENT_LABELS[r.kind] ?? r.kind}</Badge> },
+              { key: "qty", header: "Cantidad", role: "detail", align: "right", cell: (r) => <span className="font-mono tabular-nums">{r.quantity}</span> },
+              { key: "wh", header: "Bodega", role: "secondary", cell: (r) => r.warehouseName },
+              { key: "bal", header: "Quedan", role: "detail", align: "right", cell: (r) => (r.balance == null ? "" : <span className="font-mono tabular-nums">{r.balance}</span>) },
+              { key: "note", header: "Motivo", role: "detail", cell: (r) => <span className="text-muted-foreground">{r.note ?? ""}</span> },
+            ]}
+          />
+        ) : (
+          <EmptyState mark="page" remember={false} title="Aún no hay movimientos" description="Cada entrada, salida, venta, traslado y ajuste queda aquí con quién lo hizo y por qué." action={<button type="button" onClick={() => setMoving(true)} className={buttonVariants()}><Plus aria-hidden="true" className="size-4" /> Nuevo movimiento</button>} />
+        )
+      ) : null}
 
       {tab === "stock" ? (
         <>
@@ -153,6 +203,7 @@ export default function StockView({ initialTab, slug, warehouses, overview, tran
       {tab === "warehouses" ? <WarehousesView slug={slug} warehouses={warehouses} /> : null}
 
       {transferring ? <TransferSheet slug={slug} warehouses={warehouses} products={products} overview={overview} onClose={() => setTransferring(false)} /> : null}
+      {moving ? <MovementDialog slug={slug} warehouses={warehouses} products={products} onClose={() => setMoving(false)} onDone={() => { setMoving(false); router.refresh(); }} /> : null}
       {counting ? <NewCountDialog slug={slug} warehouses={warehouses} onClose={() => setCounting(false)} onCreated={(id) => { setCounting(false); setOpenCount(id); setTab("counts"); }} /> : null}
       {openCount ? <CountSheet slug={slug} id={openCount} onClose={() => setOpenCount(null)} /> : null}
       {purchasesActive ? null : tab === "reorder" ? (

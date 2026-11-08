@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { expect, userEvent, within } from "storybook/test";
 import { withShell } from "../../../../../../.storybook/decorators";
 import CountSheet from "./count-sheet";
 import StockView from "./stock-view";
@@ -46,3 +47,25 @@ export const SinComprasActivas: Story = { args: { purchasesActive: false } };
 export const NuevoTraslado: Story = { render: () => <Fondo><TransferSheet slug="demo" warehouses={warehouses} products={products} overview={overview} onClose={() => undefined} /></Fondo> };
 export const ConteoAbierto: Story = { render: () => <Fondo><CountSheet slug="demo" id="open" onClose={() => undefined} /></Fondo> };
 export const ConteoCerrado: Story = { render: () => <Fondo><CountSheet slug="demo" id="closed" onClose={() => undefined} /></Fondo> };
+
+const movements = [
+  { id: "m1", date: "2026-10-24T14:10:00.000Z", kind: "IN", productName: "Barra de proteína", warehouseName: "Principal", quantity: 60, unitCost: 2_800, balance: 120, note: "Compra OC-0004", documentType: "PURCHASE" },
+  { id: "m2", date: "2026-10-24T11:02:00.000Z", kind: "SALE", productName: "Proteína whey 2 lb", warehouseName: "Principal", quantity: 2, unitCost: 55_000, balance: 8, note: "Venta POS N.º 31", documentType: "SALE" },
+  { id: "m3", date: "2026-10-23T17:40:00.000Z", kind: "ADJUST", productName: "Shaker", warehouseName: "Norte", quantity: 15, unitCost: null, balance: 15, note: "Conteo CT-0003", documentType: "COUNT" },
+];
+export const ConMovimientos: Story = { args: { movements }, play: async ({ canvasElement }) => { await userEvent.click(within(canvasElement).getByRole("radio", { name: /Movimientos/ })); await expect(await within(canvasElement).findByText("Compra OC-0004")).toBeVisible(); } };
+export const SinMovimientosRegistrados: Story = { args: { movements: [], initialTab: "movements" } };
+
+/** Una salida pide el motivo; si falta, se explica y se conserva lo escrito. */
+export const NuevoMovimiento: Story = {
+  args: { movements },
+  play: async ({ canvasElement }) => {
+    await userEvent.click(within(canvasElement).getAllByRole("button", { name: /Nuevo movimiento/ })[0]!);
+    const d = within(await within(document.body).findByRole("dialog"));
+    await userEvent.click(d.getByRole("radio", { name: "Salida" }));
+    await userEvent.type(d.getByRole("textbox", { name: /Cantidad/ }), "2");
+    await userEvent.click(d.getByRole("button", { name: "Registrar movimiento" }));
+    await expect(await d.findByText("Elige el producto.")).toBeVisible();
+    await expect(d.getByText("Explica el motivo de la salida.")).toBeVisible();
+  },
+};

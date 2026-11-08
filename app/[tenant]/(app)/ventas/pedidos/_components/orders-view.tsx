@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Alert } from "@/components/molecules/alert";
 import { Badge } from "@/components/atoms/badge";
+import { CHANNEL_LABELS, type OrderChannel } from "@/lib/business/store/cart";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { Select } from "@/components/atoms/select";
 import { inputClasses } from "@/components/atoms/input";
@@ -68,6 +69,7 @@ export default function OrdersView({ slug, orders, canCharge = true }: { slug: s
                 <b className="font-mono">{o.code}</b>
                 <Badge variant={o.fulfillment === "DELIVERED" ? "success" : o.fulfillment === "CANCELED" ? "secondary" : "default"}>{FULFILLMENT_TEXT[o.fulfillment as Fulfillment] ?? o.fulfillment}</Badge>
                 {canCharge ? <Badge variant={PAY[o.status as keyof typeof PAY]?.tone ?? "secondary"}>{PAY[o.status as keyof typeof PAY]?.label ?? o.status}</Badge> : null}
+                {o.channel && o.channel !== "WEB" ? <Badge variant="outline">{CHANNEL_LABELS[o.channel as OrderChannel] ?? o.channel}{o.externalId ? ` · ${o.externalId}` : ""}</Badge> : null}
                 {o.fromQuote ? <Badge variant="outline">De cotización</Badge> : null}
                 {o.opportunityId ? (
                   <Link href={`/${slug}/crm/oportunidades/${o.opportunityId}`} className="text-xs font-medium text-accent-text underline-offset-2 hover:underline">
