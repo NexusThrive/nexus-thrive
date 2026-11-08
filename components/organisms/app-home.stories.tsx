@@ -15,6 +15,7 @@ const summary: HomeSummary = {
   month: { sales: 48_600_000, salesChange: 12, weekTrend: [5.1, 4.2, 6.3, 5.9, 7.4, 6.8, 8.9], overdue: { total: 7_200_000, count: 3 }, balance: 21_400_000 },
   balance30: { balance: 27_000, income: 27_000, expenses: 0 },
   today: { next: { title: "Consulta inicial", customer: "María Pérez", time: "10:00 a. m.", status: "Pendiente" }, more: 2 },
+  fiscal: { queued: 4, rejected: 1, today: 6 },
   attention: { overdueCount: 3, overdueTotal: 7_200_000, expiringCount: 2, expiringDays: 3 },
   badges: { "Ventas y cobros": 3, Canales: 2 },
   customers: {

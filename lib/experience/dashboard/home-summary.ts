@@ -1,3 +1,4 @@
+import { msOf } from "@/lib/core/events/instant";
 import { can } from "@/lib/core/auth/permissions";
 import type { ModuleValue } from "@/lib/core/capabilities/modules";
 import { createTenantDb } from "@/lib/core/tenancy/db";
@@ -32,6 +33,8 @@ export type HomeSummary = {
   /** La tarjeta de balance de Finanzas: últimos 30 días (misma serie que Finanzas, `finance.getSeries(30)`). */
   balance30: { balance: number; income: number; expenses: number } | null;
   today: { next: { title: string; customer: string; time: string; status: string } | null; more: number } | null;
+  /** Factura electrónica (con el módulo y el permiso de dinero): documentos en espera del proveedor, rechazados y los de hoy. */
+  fiscal?: { queued: number; rejected: number; today: number } | null;
   attention: { overdueCount: number; overdueTotal: number | null; expiringCount: number | null; expiringDays: number };
   /** CRM (de sus actividades): llamadas y reuniones de hoy, actividades vencidas y oportunidades abiertas sin actividad. */
   crm?: { today: { id: string; label: string; time: string; opportunityId: string }[]; overdue: number; withoutActivity: number } | null;
@@ -59,7 +62,7 @@ export async function loadHomeSummary(tenantId: string, modules: readonly Module
   const prev = m === 1 ? { month: 12, year: y - 1 } : { month: m - 1, year: y };
 
   const startOfToday = Temporal.Instant.from(`${day}T05:00:00Z`);
-  const [metrics, prevMetrics, week, month30, cartera, membership, bookings, unread, toVerify, crm, latestCustomers, customersToday, customersTotal, team, activity] = await Promise.all([
+  const [metrics, prevMetrics, week, month30, cartera, membership, bookings, unread, toVerify, crm, latestCustomers, customersToday, customersTotal, team, activity, fiscalDocs] = await Promise.all([
     seesMoney && has("finance") ? tenantDb.finance.getMetrics() : null,
     seesMoney && has("finance") ? tenantDb.finance.getMetrics(prev) : null,
     seesMoney && has("finance") ? tenantDb.finance.getSeries(7, false) : null,
@@ -75,6 +78,7 @@ export async function loadHomeSummary(tenantId: string, modules: readonly Module
     has("crm") ? db.orm.public.Customer.where({ tenantId, active: true }).aggregate((a) => ({ n: a.count() })) : { n: 0 },
     db.orm.public.User.where({ tenantId, active: true }).orderBy((u) => u.createdAt.asc()).limit(50).select("id", "name", "email").all(),
     seesMoney && has("finance") ? tenantDb.finance.getRecentActivity(6) : [],
+    seesMoney && has("einvoicing") ? db.orm.public.FiscalDocument.where({ tenantId }).select("status", "createdAt").orderBy((d) => d.createdAt.desc()).limit(2000).all() : null,
   ]);
   const ago = new Intl.RelativeTimeFormat("es-CO", { numeric: "auto" });
   const relative = (iso: string) => {
@@ -122,6 +126,13 @@ export async function loadHomeSummary(tenantId: string, modules: readonly Module
       : null,
     balance30: month30 ? { balance: month30.current.balance, income: month30.current.income, expenses: month30.current.expenses } : null,
     today,
+    fiscal: fiscalDocs
+      ? {
+          queued: fiscalDocs.filter((d) => d.status === "PENDING_PROVIDER" || d.status === "SUBMITTED").length,
+          rejected: fiscalDocs.filter((d) => d.status === "REJECTED").length,
+          today: fiscalDocs.filter((d) => (msOf(d.createdAt) ?? 0) >= startOfToday.epochMilliseconds).length,
+        }
+      : null,
     attention: {
       overdueCount: overdue?.count ?? 0,
       overdueTotal: seesMoney && overdue ? overdue.total : null,

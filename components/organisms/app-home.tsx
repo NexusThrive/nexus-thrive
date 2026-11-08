@@ -124,6 +124,7 @@ export function AppHome({ trial = null, summary: input, userName = null, busines
   const month = summary?.month ?? null;
   const today = summary?.today ?? null;
   const attention = summary?.attention ?? null;
+  const fiscal = summary?.fiscal ?? null;
   const crm = summary?.crm ?? null;
   const crmToday = crm?.today ?? [];
   const customers = summary?.customers ?? null;
@@ -331,9 +332,11 @@ export function AppHome({ trial = null, summary: input, userName = null, busines
                         note={`En los próximos ${attention.expiringDays} días`}
                       />
                     ) : null}
+                    {fiscal?.rejected ? <Row dot="bg-danger" href={hrefFor("/finanzas/facturacion-electronica")} title={`${fiscal.rejected} ${fiscal.rejected === 1 ? "factura rechazada" : "facturas rechazadas"}`} note="Revisa la causa y reintenta" /> : null}
+                    {fiscal?.queued ? <Row dot="bg-gold-300" href={hrefFor("/finanzas/facturacion-electronica")} title={`${fiscal.queued} ${fiscal.queued === 1 ? "factura en espera" : "facturas en espera"}`} note={fiscal.today ? `${fiscal.today} ${fiscal.today === 1 ? "documento" : "documentos"} de hoy` : "Esperan al proveedor"} /> : null}
                     {crm?.overdue ? <Row dot="bg-danger" href={hrefFor("/crm?vista=actividades")} title={`${crm.overdue} ${crm.overdue === 1 ? "actividad vencida" : "actividades vencidas"}`} note="En el CRM" /> : null}
                     {crm?.withoutActivity ? <Row dot="bg-muted-foreground/50" href={hrefFor("/crm")} title={`${crm.withoutActivity} ${crm.withoutActivity === 1 ? "oportunidad sin actividad" : "oportunidades sin actividad"}`} note="Programa el siguiente paso" /> : null}
-                    {attention.overdueCount === 0 && !attention.expiringCount && !crm?.overdue && !crm?.withoutActivity ? <Row dot="bg-success" title="Todo al día" note="Nada vencido ni por vencer" /> : null}
+                    {attention.overdueCount === 0 && !attention.expiringCount && !crm?.overdue && !crm?.withoutActivity && !fiscal?.rejected && !fiscal?.queued ? <Row dot="bg-success" title="Todo al día" note="Nada vencido ni por vencer" /> : null}
                   </ul>
                 </section>
               ) : null}
