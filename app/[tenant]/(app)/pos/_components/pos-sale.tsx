@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Clock, Maximize2, Minimize2, Minus, Package, Pencil, Plus, Search, Store, Trash2, UserRound } from "lucide-react";
+import { ArrowLeft, Clock, Maximize2, Minimize2, Minus, Package, Pencil, Plus, Search, Store, Trash2, UserRound } from "lucide-react";
 import { Alert } from "@/components/molecules/alert";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { inputClasses } from "@/components/atoms/input";
@@ -155,8 +155,10 @@ export default function Sale({ slug, turn, products, categories, customers }: { 
   const customProduct = customizing ? byId.get(customizing) : null;
 
   return (
-    <div className="grid gap-3">
+    <div data-kiosk="" className="grid gap-2 lg:h-[calc(100dvh-16px)] lg:grid-rows-[auto_minmax(0,1fr)]">
+      <div className="grid gap-2">
       <div className="flex flex-wrap items-center gap-2 text-ui">
+        <a href={`/${slug}`} className={buttonVariants({ variant: "ghost", size: "sm" })}><ArrowLeft aria-hidden="true" className="size-4" />Inicio</a>
         <span className="inline-flex items-center gap-1.5 rounded-md bg-surface-muted px-2.5 py-1 font-medium"><Store aria-hidden="true" className="size-4 text-accent-text" />{turn.terminalName}</span>
         {cashier ? <span className="inline-flex items-center gap-1.5 text-muted-foreground"><UserRound aria-hidden="true" className="size-4" /><span className="sr-only">Cajero: </span>{cashier}</span> : null}
         {clock ? <span className="inline-flex items-center gap-1.5 tabular-nums text-muted-foreground"><Clock aria-hidden="true" className="size-4" /><span className="sr-only">Hora: </span>{clock}</span> : null}
@@ -181,7 +183,8 @@ export default function Sale({ slug, turn, products, categories, customers }: { 
           <a href={`/${slug}/pos/receipt/${done.id}`} target="_blank" rel="noopener noreferrer" className="font-semibold underline underline-offset-2">Imprimir tiquete</a>
         </Alert>
       ) : null}
-      <div className="grid gap-4 lg:h-[calc(100dvh-9.5rem)] lg:min-h-[520px] lg:grid-cols-[minmax(0,1fr)_400px]">
+      </div>
+      <div className="grid min-h-0 gap-3 lg:grid-cols-[minmax(0,1fr)_400px]">
         <section aria-label="Productos" className="flex min-h-0 min-w-0 flex-col gap-3">
           <div className="relative">
             <Search aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
