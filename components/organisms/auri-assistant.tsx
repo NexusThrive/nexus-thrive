@@ -5,6 +5,7 @@ import { ArrowUp, LifeBuoy } from "lucide-react";
 import { EyeTracker } from "@/components/atoms/eye-tracker";
 import { Alert } from "@/components/molecules/alert";
 import { Chip, ChipRow } from "@/components/atoms/chip";
+import { useAuriGreeting } from "@/components/molecules/use-auri-greeting";
 import { HelpCenter } from "@/components/organisms/help-center";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { AURI_ASK_EVENT } from "@/lib/experience/assistant/ask-auri";
@@ -37,6 +38,7 @@ export function AuriAssistant({
   activeModules: readonly string[];
   showFunctions?: boolean;
 }) {
+  const hello = useAuriGreeting();
   const [open, setOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -145,9 +147,10 @@ export function AuriAssistant({
             data-tour="help"
             aria-label="Abrir el chat con AURI AI"
             data-press=""
-            className="fixed bottom-[calc(76px+env(safe-area-inset-bottom,0px))] right-4 z-(--z-sticky) grid size-14 place-items-center rounded-full shadow-(--shadow-popover) outline-none transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring pointer-coarse:size-16 md:bottom-6 md:right-6"
+            {...hello.bind}
+            className="fixed bottom-[calc(76px+env(safe-area-inset-bottom,0px))] right-4 z-(--z-sticky) grid size-14 select-none place-items-center rounded-full shadow-(--shadow-popover) outline-none transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring pointer-coarse:size-16 md:bottom-6 md:right-6"
           >
-            <EyeTracker fit decorative poke={false} size={56} shape="Ball" eyeScale={1.2} />
+            <EyeTracker fit decorative poke={false} size={56} shape="Ball" eyeScale={1.2} joy={hello.joy} say={hello.say} sayAt="tl" />
             {/* punto de «en línea»: la asistente está disponible */}
             <span aria-hidden="true" className="absolute right-0.5 top-0.5 size-3 rounded-full border-2 border-background bg-success" />
           </button>

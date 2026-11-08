@@ -28,3 +28,7 @@ export const Cubo: Story = { args: { shape: "Cube" } };
 export const Reposo: Story = { args: { idle: true } };
 /** Como cara de un botón: sin burbuja, el marco se ajusta a la bola. */
 export const ComoBoton: Story = { args: { size: 56, fit: true, poke: false, decorative: true, eyeScale: 1.2 } };
+/** Con alegría los ojos se entrecierran y suben, la cara mira hacia arriba y la bola da un saltito. */
+export const Alegre: Story = { args: { joy: true, front: true } };
+/** Dice un texto en su burbuja, escrito letra a letra; se queda hasta que `say` vuelve a ser null. */
+export const Saluda: Story = { args: { joy: true, front: true, poke: false, say: "Hola Santiago!", sayAt: "br" }, decorators: [(Story) => <div className="p-16"><Story /></div>] };

@@ -12,6 +12,7 @@ import { loadFirstSteps } from "@/lib/experience/onboarding/first-steps";
 import { FirstStepsIndicator } from "@/components/organisms/first-steps-indicator";
 import ThemeSync from "./_components/theme-sync";
 import { AuriAssistant } from "@/components/organisms/auri-assistant";
+import { CurrentUserProvider } from "@/components/providers/current-user";
 import { cookies } from "next/headers";
 import { auth } from "@clerk/nextjs/server";
 import { createTenantDb } from "@/lib/core/tenancy/db";
@@ -75,6 +76,7 @@ export default async function AppLayout({
 
   return (
     <VerticalTermsProvider terms={terms}>
+      <CurrentUserProvider firstName={me?.name?.trim().split(/\s+/)[0] || null}>
       {showSplash ? <AppEntrySplash /> : null}
       <TenantShell
         tenantSlug={tenantRecord.slug}
@@ -111,6 +113,7 @@ export default async function AppLayout({
         {children}
         <AuriAssistant tenantSlug={tenantRecord.slug} businessName={tenantRecord.name} activeModules={activeModules} showFunctions={!hasMemberAccess(tenantRecord.vertical)} />
       </TenantShell>
+      </CurrentUserProvider>
     </VerticalTermsProvider>
   );
 }

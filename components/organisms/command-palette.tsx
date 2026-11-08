@@ -7,6 +7,7 @@ import { Command, useCommandState } from "cmdk";
 import { Blocks, Download, HandCoins, Moon, Package, Receipt, Search, Target, User } from "lucide-react";
 import { searchEntitiesAction, type SearchHit } from "@/app/[tenant]/(app)/_actions/search";
 import { EyeTracker } from "@/components/atoms/eye-tracker";
+import { useAuriGreeting } from "@/components/molecules/use-auri-greeting";
 import { Kbd } from "@/components/atoms/kbd";
 import { setTheme } from "@/components/atoms/theme-toggle";
 import { usePwa } from "@/components/providers/pwa";
@@ -87,6 +88,7 @@ const groupClass =
 export function AuriAskButton({ query, status, run, className }: { query: string; status: "idle" | "loading" | "error"; run: (action: () => void) => void; className?: string }) {
   const matches = useCommandState((state) => state.filtered.count);
   const nothing = matches === 0 && status !== "loading" && query.trim() !== "";
+  const hello = useAuriGreeting();
   useEffect(() => {
     if (!nothing) return;
     const onKey = (event: KeyboardEvent) => {
@@ -104,14 +106,18 @@ export function AuriAskButton({ query, status, run, className }: { query: string
         type="button"
         aria-label={query.trim() ? `Preguntarle a AURI: ${query.trim()}` : "Abrir el chat con AURI"}
         onMouseDown={(event) => event.preventDefault()}
-        onClick={() => run(() => askAuri(query))}
+        {...hello.bind}
+        onClick={(event) => {
+          hello.bind.onClick(event);
+          if (!event.defaultPrevented) run(() => askAuri(query));
+        }}
         data-press=""
         className={cn(
-          "grid size-8 shrink-0 place-items-center rounded-full outline-none transition-shadow focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring pointer-coarse:size-11",
+          "grid size-8 shrink-0 select-none place-items-center rounded-full outline-none transition-shadow focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring pointer-coarse:size-11",
           nothing && "ring-2 ring-accent",
         )}
       >
-        <EyeTracker fit decorative poke={false} front size={28} shape="Ball" eyeScale={1.2} />
+        <EyeTracker fit decorative poke={false} front size={28} shape="Ball" eyeScale={1.2} joy={hello.joy} say={hello.say} sayAt="l" />
       </button>
     </span>
   );

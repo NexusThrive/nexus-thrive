@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { expect, userEvent, within } from "storybook/test";
 import { ToastProvider } from "@/components/molecules/toast";
+import { CurrentUserProvider } from "@/components/providers/current-user";
 import { AuriAssistant } from "./auri-assistant";
 
 /**
@@ -16,7 +17,9 @@ const meta = {
   decorators: [
     (Story) => (
       <ToastProvider>
-        <div className="min-h-[520px] p-6 text-sm text-muted-foreground">Contenido de la página.<Story /></div>
+        <CurrentUserProvider firstName="Santiago">
+          <div className="min-h-[520px] p-6 text-sm text-muted-foreground">Contenido de la página.<Story /></div>
+        </CurrentUserProvider>
       </ToastProvider>
     ),
   ],
@@ -44,5 +47,16 @@ export const Conversando: Story = {
     const chat = within(await within(document.body).findByRole("dialog"));
     await userEvent.click(chat.getByRole("button", { name: "Citas de mañana" }));
     await expect(await chat.findByText(/Todavía no estoy conectada/, {}, { timeout: 3000 })).toBeVisible();
+  },
+};
+
+/** Mantenerla presionada: pone cara de alegría y saluda por el nombre, escrito letra a letra en una burbuja. Soltar no abre el chat. */
+export const SaludoAlMantener: Story = {
+  play: async ({ canvasElement }) => {
+    const button = within(canvasElement).getByRole("button", { name: "Abrir el chat con AURI AI" });
+    await userEvent.pointer({ keys: "[MouseLeft>]", target: button });
+    await expect(await within(canvasElement).findByText("Hola Santiago!", {}, { timeout: 3000 })).toBeVisible();
+    await userEvent.pointer({ keys: "[/MouseLeft]", target: button });
+    await expect(within(document.body).queryByRole("dialog")).toBeNull();
   },
 };
