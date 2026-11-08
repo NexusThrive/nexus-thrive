@@ -266,16 +266,15 @@ export function NotificationCenter({
           setPanel(true);
           setOpen(true);
         }}
-        className="relative grid size-10 pointer-coarse:size-11 place-items-center rounded-md transition-colors hover:bg-surface-muted"
+        className="relative grid size-8 pointer-coarse:size-10 place-items-center rounded-md transition-colors hover:bg-surface-muted"
       >
-        <Bell ref={bellRef} aria-hidden="true" className="size-[18px] origin-top" strokeWidth={1.6} />
+        <Bell ref={bellRef} aria-hidden="true" className="size-4 origin-top" strokeWidth={1.6} />
         {unread ? (
           <i
             ref={countRef}
-            className="absolute right-1 top-1 grid h-[18px] min-w-[18px] place-items-center rounded-[2px] bg-accent px-1 text-2xs font-semibold not-italic text-ink"
-          >
-            {unread > 9 ? "9+" : unread}
-          </i>
+            aria-hidden="true"
+            className="pointer-events-none absolute right-1 top-1 size-2 rounded-full bg-accent"
+          />
         ) : null}
       </button>
 

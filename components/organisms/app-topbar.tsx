@@ -262,7 +262,7 @@ function TopbarEnd({ brandName, notifications }: { brandName: string; notificati
   return (
     <div className="flex shrink-0 items-center gap-2">
       {notifications ? (
-        <Shared name="notifications" className="[&_button]:size-8 [&_svg]:size-4">
+        <Shared name="notifications">
           {notifications}
         </Shared>
       ) : null}
