@@ -10,12 +10,13 @@ import { cn } from "@/lib/utils";
 import FichaActivity, { type ActivityItem } from "./ficha-activity";
 import FichaControl from "./ficha-control";
 
-export type FichaTab = "citas" | "ventas" | "facturas" | "membresias" | "relacionados" | "notas";
+export type FichaTab = "citas" | "ventas" | "productos" | "facturas" | "membresias" | "relacionados" | "notas";
 export type FichaRow = { id: string; date: string; title: string; amount?: string; status?: { label: string; tone: "pending" | "ok" | "muted" } };
 
 const TABS: { key: FichaTab; label: string }[] = [
   { key: "citas", label: "Citas" },
   { key: "ventas", label: "Ventas y pagos" },
+  { key: "productos", label: "Productos comprados" },
   { key: "facturas", label: "Facturas" },
   { key: "membresias", label: "Membresías" },
   { key: "relacionados", label: "Contactos relacionados" },

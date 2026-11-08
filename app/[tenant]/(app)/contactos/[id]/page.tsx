@@ -19,10 +19,12 @@ import NewCustomerForm from "../nuevo/_components/new-customer-form";
 import FichaView, { type FichaRow, type FichaTab } from "./_components/ficha/ficha-view";
 import type { ActivityItem } from "./_components/ficha/ficha-activity";
 import NotesPanel from "./_components/notes-panel";
+import PurchasesPanel from "./_components/purchases-panel";
+import { customerPurchases } from "@/lib/business/customers/purchases-db";
 
 export const metadata: Metadata = { title: "Ficha del cliente" };
 
-const TAB_KEYS: FichaTab[] = ["citas", "ventas", "facturas", "membresias", "relacionados", "notas"];
+const TAB_KEYS: FichaTab[] = ["citas", "ventas", "productos", "facturas", "membresias", "relacionados", "notas"];
 const BOOKING_STATUS: Record<string, { label: string; tone: "pending" | "ok" | "muted" }> = {
   PENDING: { label: "Pendiente", tone: "pending" },
   CONFIRMED: { label: "Confirmada", tone: "ok" },
@@ -215,7 +217,7 @@ export default async function CustomerPage({
       ]}
       tab={tab}
       rows={rows}
-      tabContent={tab === "notas" ? <NotesPanel tenantSlug={tenantSlug} customerId={customer.id} initialNotes={notes} /> : undefined}
+      tabContent={tab === "notas" ? <NotesPanel tenantSlug={tenantSlug} customerId={customer.id} initialNotes={notes} /> : tab === "productos" ? <PurchasesPanel purchases={await customerPurchases(tenantRecord.id, customer.id)} saleHref={saleHref} /> : undefined}
       emptyTab={emptyTab}
       activity={activity}
       now={now.toISOString()}
