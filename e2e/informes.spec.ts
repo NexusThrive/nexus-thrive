@@ -31,7 +31,7 @@ test.describe("Informes del comercio", () => {
 });
 
 test("Inicio: la factura electrónica en espera y rechazada aparece en Atención", async ({ page }) => {
-  await openStory(page, "organismos-apphome--default");
+  await openStory(page, "páginas-aplicaciones-app-home--default");
   await expect(page.getByText("1 factura rechazada")).toBeVisible();
   await expect(page.getByText("4 facturas en espera")).toBeVisible();
 });
