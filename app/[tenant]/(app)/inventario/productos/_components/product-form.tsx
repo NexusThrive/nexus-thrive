@@ -126,15 +126,15 @@ export default function ProductForm({
         event.preventDefault();
         save();
       }}
-      className="grid gap-5"
+      className="grid grid-cols-[minmax(0,1fr)] gap-5"
     >
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex min-w-0 flex-wrap items-center gap-3">
         <Link href={base} aria-label="Volver al catálogo" className={buttonVariants({ variant: "ghost", size: "icon" })}>
           <ArrowLeft aria-hidden="true" className="size-4" />
         </Link>
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 basis-48 overflow-hidden">
           <h1 className="truncate font-display text-xl font-bold">{productId ? draft.name || "Producto" : `Nuevo ${KIND_LABELS[draft.kind].one.toLowerCase()}`}</h1>
-          <p className="text-sm text-muted-foreground">{productId ? "Edita la información; la previsualización muestra cómo se verá." : "Completa la información; a la derecha ves cómo se verá."}</p>
+          <p className="truncate text-sm text-muted-foreground">{productId ? "Edita la información; la previsualización muestra cómo se verá." : "Completa la información; a la derecha ves cómo se verá."}</p>
         </div>
         <button type="button" aria-pressed={draft.favorite} aria-label={draft.favorite ? "Quitar de favoritos" : "Marcar como favorito"} onClick={() => set("favorite", !draft.favorite)} className="grid size-10 place-items-center rounded-md hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-ring">
           <Star aria-hidden="true" className={cn("size-5", draft.favorite ? "fill-accent text-accent" : "text-muted-foreground")} />

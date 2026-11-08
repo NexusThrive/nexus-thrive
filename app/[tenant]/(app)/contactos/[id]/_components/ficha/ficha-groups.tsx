@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Plus, X } from "lucide-react";
 import { GroupIcon } from "@/components/atoms/group-icon";
 import { useToast } from "@/components/molecules/toast";
-import { assignGroupAction } from "../../../search-actions";
+import { assignGroupAction } from "@/app/[tenant]/(app)/contactos/search-actions";
 import { AssignGroupDialog, type GroupOption } from "../../../_components/customer-group-dialogs";
 
 /** Los grupos propios del cliente en su ficha: se ven con su icono, se quitan con «×» y se agrega a otro con «+ Grupo». */

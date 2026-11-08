@@ -14,7 +14,7 @@ import { useConfirm } from "@/components/organisms/confirm-dialog";
 import { FormDialog } from "@/components/organisms/form-sheet";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { cn } from "@/lib/utils";
-import { assignGroupAction, createGroupAction, deleteGroupAction, updateGroupAction } from "../search-actions";
+import { assignGroupAction, createGroupAction, deleteGroupAction, updateGroupAction } from "@/app/[tenant]/(app)/contactos/search-actions";
 
 export type GroupOption = { id: string; name: string; icon: string; members: number };
 const NEW = "__new";

@@ -3,8 +3,8 @@
 import { useCallback } from "react";
 import AdvancedSearch, { type FavoriteItem } from "@/components/organisms/advanced-search/advanced-search";
 import type { SearchAlias, SearchSchema, SearchState } from "@/lib/foundation/list-search";
-import { deleteSearchAction, renameSearchAction, saveSearchAction, setDefaultSearchAction } from "../../_actions/saved-searches";
-import { customerFilterCountsAction } from "../search-actions";
+import { deleteSearchAction, renameSearchAction, saveSearchAction, setDefaultSearchAction } from "@/app/[tenant]/(app)/_actions/saved-searches";
+import { customerFilterCountsAction } from "@/app/[tenant]/(app)/contactos/search-actions";
 import { useVerticalTerms } from "../../vertical-terms-context";
 
 const SECTION = "customers";

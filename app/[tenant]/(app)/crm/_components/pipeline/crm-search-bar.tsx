@@ -3,8 +3,8 @@
 import { useCallback } from "react";
 import AdvancedSearch, { type FavoriteItem } from "@/components/organisms/advanced-search/advanced-search";
 import type { SearchAlias, SearchSchema, SearchState } from "@/lib/foundation/list-search";
-import { deleteSearchAction, renameSearchAction, saveSearchAction, setDefaultSearchAction } from "../../../_actions/saved-searches";
-import { crmFilterCountsAction } from "../../search-actions";
+import { deleteSearchAction, renameSearchAction, saveSearchAction, setDefaultSearchAction } from "@/app/[tenant]/(app)/_actions/saved-searches";
+import { crmFilterCountsAction } from "@/app/[tenant]/(app)/crm/search-actions";
 
 const SECTION = "crm";
 /** Los enlaces de antes (`?mios=0`, «Todas») siguen funcionando. */
