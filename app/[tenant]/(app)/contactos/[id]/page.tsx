@@ -1,3 +1,4 @@
+import { groupIdsOfCustomers, listCustomerGroups } from "@/lib/business/customers/customer-search-db";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { commercialTimeline, mergeTimeline } from "@/lib/business/growth/commercial-timeline";
@@ -168,9 +169,13 @@ export default async function CustomerPage({
   const country = COUNTRIES.find((c) => c.value === ficha.country)?.label ?? ficha.country;
   const location = [ficha.city, ficha.region].filter(Boolean).join(", ") || null;
 
+  const [allGroups, memberOf] = await Promise.all([listCustomerGroups(tenantRecord.id), groupIdsOfCustomers(tenantRecord.id, [id])]);
+  const groupById = new Map(allGroups.map((g) => [g.id, { id: g.id, name: g.name, icon: g.icon }]));
+
   return (
     <FichaView
       slug={tenantSlug}
+      groupOptions={allGroups}
       customer={{
         id: customer.id,
         name: customer.name,
@@ -180,6 +185,7 @@ export default async function CustomerPage({
         email: customer.email,
         address: ficha.address,
         tags: ficha.tags,
+        groups: (memberOf.get(id) ?? []).flatMap((gid) => (groupById.has(gid) ? [groupById.get(gid)!] : [])),
         photoUrl: ficha.photoId ? `/api/files/${ficha.photoId}` : null,
       }}
       customersLabel={terms.customers}

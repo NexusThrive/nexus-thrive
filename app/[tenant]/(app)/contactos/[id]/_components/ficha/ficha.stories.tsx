@@ -17,7 +17,8 @@ function Ficha({ completa, tab }: { completa: boolean; tab: FichaTab }) {
       <div className="min-h-dvh bg-background pt-14">
         <FichaView
           slug="demo"
-          customer={{ id: "c1", name: "María Pérez", active: true, kind: "PERSON", phone: "3001234567", email: completa ? "maria@correo.com" : null, address: completa ? "Cra 5 # 10-20, Bocagrande" : null, tags: completa ? ["VIP", "Referido"] : [], photoUrl: null }}
+          groupOptions={[{ id: "g1", name: "Clientes VIP", icon: "crown", members: 3 }, { id: "g2", name: "Ruta norte", icon: "map-pin", members: 5 }]}
+          customer={{ id: "c1", name: "María Pérez", active: true, kind: "PERSON", phone: "3001234567", email: completa ? "maria@correo.com" : null, address: completa ? "Cra 5 # 10-20, Bocagrande" : null, tags: completa ? ["VIP", "Referido"] : [], photoUrl: null, groups: completa ? [{ id: "g1", name: "Clientes VIP", icon: "crown" }] : [] }}
           customersLabel="Clientes"
           listHref="/demo/contactos"
           hrefFor={hrefFor}

@@ -8,6 +8,20 @@ import { VerticalTermsProvider } from "../../vertical-terms-context";
 import CustomerTable, { type CustomerRow } from "./customer-table";
 import CustomerToolbar from "./customer-toolbar";
 import { CustomerSelectionProvider } from "./customer-selection";
+import { customerSearchDefs } from "@/lib/business/customers/customer-search";
+import { toSchema } from "@/lib/foundation/list-search";
+
+const SCHEMA = toSchema(
+  customerSearchDefs({
+    groups: [{ id: "g1", name: "Clientes VIP", icon: "crown" }],
+    owners: [{ id: "o1", name: "Ana Ruiz" }],
+    rows: [],
+  }),
+);
+const FAVORITES = [
+  { id: "f1", name: "Clientes VIP", isDefault: false, params: { filtros: "activos" } },
+  { id: "f2", name: "Por cobrar este mes", isDefault: true, params: { filtros: "saldo,este-mes" } },
+];
 
 const groups = buildTenantNav("retail", ["dashboard", "crm", "bookings", "memberships", "quotes", "orders", "finance"]);
 
@@ -26,11 +40,12 @@ const row = (id: string, name: string, extra: Partial<CustomerRow> = {}): Custom
   owed: 0,
   overdue: 0,
   city: "Bogotá",
+  groups: [],
   ...extra,
 });
 
 const ROWS: CustomerRow[] = [
-  row("1", "María Pérez", { nextAppointment: "2026-11-09T15:30:00.000Z", owed: 120_000, overdue: 60_000, documentId: "1.020.345.678", tags: ["VIP"], createdAt: "7 nov 2026" }),
+  row("1", "María Pérez", { nextAppointment: "2026-11-09T15:30:00.000Z", owed: 120_000, overdue: 60_000, documentId: "1.020.345.678", tags: ["VIP"], createdAt: "7 nov 2026", groups: [{ id: "g1", name: "Clientes VIP", icon: "crown" }] }),
   row("2", "Andrés Gómez", { email: "andres.gomez@empresa-de-logistica.com", createdAt: "6 nov 2026" }),
   row("3", "Restaurante Sol", { phone: "601 555 0101", owed: 850_000, overdue: 850_000, documentId: "900.123.456-7", city: "Medellín", tags: ["Empresa", "Mayorista"], createdAt: "5 nov 2026" }),
   row("4", "Camila Torres", { nextAppointment: "2026-11-08T13:00:00.000Z", createdAt: "3 nov 2026" }),
@@ -48,8 +63,8 @@ function ContactosPage({ rows }: { rows: CustomerRow[] }) {
         <AppTopbar />
         <CustomerSelectionProvider status="active">
           <div data-bleed="" className="flex min-h-dvh flex-col bg-background pt-14">
-            <CustomerToolbar tenantSlug="demo" status="active" page={1} pageSize={20} totalPages={1} total={rows.length} />
-            <CustomerTable tenantSlug="demo" rows={rows} status="active" sort="recent" query="" canRemove showMembership={false} />
+            <CustomerToolbar tenantSlug="demo" status="active" page={1} pageSize={20} totalPages={1} total={rows.length} schema={SCHEMA} favorites={FAVORITES} groups={[{ id: "g1", name: "Clientes VIP", icon: "crown", members: 3 }]} canDeleteGroups />
+            <CustomerTable tenantSlug="demo" rows={rows} status="active" sort="recent" query="" canRemove showMembership={false} groupOptions={[{ id: "g1", name: "Clientes VIP", icon: "crown", members: 3 }]} />
           </div>
         </CustomerSelectionProvider>
       </VerticalTermsProvider>

@@ -1,3 +1,5 @@
+import FichaGroups from "./ficha-groups";
+import type { GroupOption } from "../../../_components/customer-group-dialogs";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { Banknote, CalendarDays, CreditCard, FileText, Mail, MapPin, MessageCircle, Phone, Receipt, ShoppingBag, Target } from "lucide-react";
@@ -30,7 +32,9 @@ const quick = "inline-flex h-[34px] items-center gap-2 rounded-lg border border-
  */
 export default function FichaView(props: {
   slug: string;
-  customer: { id: string; name: string; active: boolean; kind: "PERSON" | "COMPANY"; phone: string | null; email: string | null; address: string | null; tags: string[]; photoUrl: string | null };
+  /** Todos los grupos propios del negocio (para agregar al cliente a otro). */
+  groupOptions: GroupOption[];
+  customer: { id: string; name: string; active: boolean; kind: "PERSON" | "COMPANY"; phone: string | null; email: string | null; address: string | null; tags: string[]; photoUrl: string | null; groups: { id: string; name: string; icon: string }[] };
   customersLabel: string;
   listHref: string;
   /** Href de la ficha con la lista de origen (para pestañas y enlaces «Añadir»). */
@@ -121,6 +125,7 @@ export default function FichaView(props: {
                   </li>
                 ))}
               </ul>
+              <FichaGroups tenantSlug={props.slug} customerId={customer.id} customerName={customer.name} current={customer.groups} options={props.groupOptions} />
               <div className="flex flex-wrap items-center gap-2">
                 {customer.tags.map((tag) => (
                   <span key={tag} className="rounded-full border border-border-strong px-2.5 py-0.5 text-xs text-foreground">

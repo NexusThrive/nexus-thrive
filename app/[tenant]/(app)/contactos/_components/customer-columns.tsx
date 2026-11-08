@@ -16,7 +16,7 @@ import {
  * Columnas de la lista de contactos: cuáles se ven y de qué ancho, a gusto de cada persona (en su navegador: es una
  * preferencia de vista, no un dato del negocio). Sin almacenamiento, la lista usa las columnas y anchos por defecto.
  */
-export type ColumnKey = "email" | "phone" | "next" | "owed" | "overdue" | "created" | "document" | "city" | "tags";
+export type ColumnKey = "email" | "phone" | "next" | "owed" | "overdue" | "created" | "document" | "city" | "tags" | "groups";
 export type ColumnDef = { key: ColumnKey; label: string; width: number; hidden?: boolean };
 
 /** Orden de las columnas después del nombre. Las ocultas por defecto se activan desde «Elegir columnas». */
@@ -29,6 +29,7 @@ export const COLUMNS: readonly ColumnDef[] = [
   { key: "document", label: "NIT / documento", width: 150, hidden: true },
   { key: "city", label: "Ciudad", width: 150, hidden: true },
   { key: "tags", label: "Etiquetas", width: 200, hidden: true },
+  { key: "groups", label: "Grupos", width: 220 },
   { key: "created", label: "Registrado", width: 140 },
 ];
 export const NAME_WIDTH = 260;

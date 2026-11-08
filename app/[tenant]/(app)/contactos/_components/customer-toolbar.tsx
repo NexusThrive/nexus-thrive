@@ -1,10 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Archive, ArchiveRestore, CalendarClock, ChevronLeft, ChevronRight, Download, LayoutGrid, List, Map, MoreVertical, Plus, Settings, SlidersHorizontal, Trash2, X } from "lucide-react";
-import CustomerSearch from "./customer-search";
+import { Archive, ArchiveRestore, FolderMinus, FolderPlus, Users, CalendarClock, ChevronLeft, ChevronRight, Download, LayoutGrid, List, Map, MoreVertical, Plus, Settings, Trash2, X } from "lucide-react";
+import CustomerSearchBar from "./customer-search-bar";
+import { AssignGroupDialog, ManageGroupsSheet, type GroupOption } from "./customer-group-dialogs";
+import type { FavoriteItem } from "@/components/organisms/advanced-search/advanced-search";
+import type { SearchSchema } from "@/lib/foundation/list-search";
 import { useCustomerSelection } from "./customer-selection";
 import type { CustomerStatus } from "./customer-filters";
 import { useVerticalTerms } from "../../vertical-terms-context";
@@ -13,9 +16,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/molecules/dropdown-menu";
 import { cn } from "@/lib/utils";
@@ -32,6 +32,10 @@ export default function CustomerToolbar({
   pageSize,
   totalPages,
   total,
+  schema,
+  favorites,
+  groups,
+  canDeleteGroups,
 }: {
   tenantSlug: string;
   status: CustomerStatus;
@@ -39,6 +43,11 @@ export default function CustomerToolbar({
   pageSize: number;
   totalPages: number;
   total: number;
+  schema: SearchSchema;
+  favorites: FavoriteItem[];
+  /** Grupos propios del negocio (para agregar o quitar a la selección y administrarlos). */
+  groups: GroupOption[];
+  canDeleteGroups: boolean;
 }) {
   const terms = useVerticalTerms();
   const router = useRouter();
@@ -47,19 +56,14 @@ export default function CustomerToolbar({
   const [isPending, startTransition] = useTransition();
   const { selection, setSelection, run } = useCustomerSelection();
   const selectedCount = selection.status === status ? selection.ids.size : 0;
+  const [groupDialog, setGroupDialog] = useState<null | "add" | "remove">(null);
+  const [manageOpen, setManageOpen] = useState(false);
 
   const go = (mutate: (params: URLSearchParams) => void) => {
     const params = new URLSearchParams(searchParams.toString());
     mutate(params);
     startTransition(() => {
       router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-    });
-  };
-  const setStatus = (next: CustomerStatus) => {
-    if (next === status) return;
-    go((params) => {
-      params.set("status", next);
-      params.delete("page");
     });
   };
   const goToPage = (next: number) => go((params) => params.set("page", String(next)));
@@ -90,6 +94,9 @@ export default function CustomerToolbar({
             <DropdownMenuContent align="start" sideOffset={8}>
               <DropdownMenuItem asChild>
                 <Link href={`/${tenantSlug}/data`}>Importar y exportar</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => setManageOpen(true)}>
+                <Users aria-hidden="true" className="size-4" /> Mis grupos…
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -124,6 +131,14 @@ export default function CustomerToolbar({
                     <Download aria-hidden="true" className="size-4" /> Exportar
                   </Link>
                 </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => setGroupDialog("add")}>
+                  <FolderPlus aria-hidden="true" className="size-4" /> Agregar a un grupo…
+                </DropdownMenuItem>
+                {groups.length > 0 ? (
+                  <DropdownMenuItem onSelect={() => setGroupDialog("remove")}>
+                    <FolderMinus aria-hidden="true" className="size-4" /> Quitar de un grupo…
+                  </DropdownMenuItem>
+                ) : null}
                 {archived ? (
                   <DropdownMenuItem onSelect={() => run("restore")}>
                     <ArchiveRestore aria-hidden="true" className="size-4" /> Desarchivar
@@ -133,41 +148,14 @@ export default function CustomerToolbar({
                     <Archive aria-hidden="true" className="size-4" /> Archivar
                   </DropdownMenuItem>
                 )}
+                <DropdownMenuItem onSelect={() => run("remove")} className="text-danger">
+                  <Trash2 aria-hidden="true" className="size-4" /> Eliminar
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
         ) : (
-        <div suppressHydrationWarning className="relative h-[34px] w-full justify-self-center max-w-[543px] [&>div]:h-full [&>div]:max-w-none [&_input]:h-full [&_input]:w-full [&_input]:rounded-lg [&_input]:border-border [&_input]:bg-card [&_input]:pr-10">
-          <CustomerSearch />
-          <DropdownMenu modal={false}>
-            <DropdownMenuTrigger asChild>
-              <button type="button" aria-label="Filtros" className="absolute right-[3px] top-[3px] grid size-7 place-items-center rounded-md text-muted-foreground outline-none hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-ring">
-                <SlidersHorizontal aria-hidden="true" className="size-4" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" sideOffset={8} className="w-48">
-              <DropdownMenuLabel>Mostrar</DropdownMenuLabel>
-              <DropdownMenuRadioGroup value={status} onValueChange={(value) => setStatus(value as CustomerStatus)}>
-                <DropdownMenuItem onSelect={() => run("remove")} className="text-danger">
-                  <Trash2 aria-hidden="true" className="size-4" /> Eliminar
-                </DropdownMenuItem>
-                <DropdownMenuRadioItem value="active">Activos</DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="archived">Archivados</DropdownMenuRadioItem>
-              </DropdownMenuRadioGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          {archived ? (
-            <button
-              type="button"
-              onClick={() => setStatus("active")}
-              className="absolute right-10 top-[7px] inline-flex items-center gap-1 rounded-md border border-border bg-surface-muted px-2 py-0.5 text-xs text-foreground"
-            >
-              Archivados
-              <X aria-hidden="true" className="size-3" />
-              <span className="sr-only">Quitar filtro</span>
-            </button>
-          ) : null}
-        </div>
+        <CustomerSearchBar tenantSlug={tenantSlug} schema={schema} favorites={favorites} className="h-[34px] w-full max-w-[543px] justify-self-center" />
         )}
 
         {/* Derecha: paginación y vistas */}
@@ -214,6 +202,16 @@ export default function CustomerToolbar({
         </div>
       </div>
 
+      <AssignGroupDialog
+        open={groupDialog !== null}
+        onOpenChange={(next) => !next && setGroupDialog(null)}
+        tenantSlug={tenantSlug}
+        groups={groups}
+        customerIds={selection.status === status ? [...selection.ids] : []}
+        mode={groupDialog ?? "add"}
+        onDone={() => setSelection({ status, ids: new Set() })}
+      />
+      <ManageGroupsSheet open={manageOpen} onOpenChange={setManageOpen} tenantSlug={tenantSlug} groups={groups} canDelete={canDeleteGroups} />
     </>
   );
 }
