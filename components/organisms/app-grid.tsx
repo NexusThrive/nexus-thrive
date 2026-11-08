@@ -111,7 +111,7 @@ function TileBody({ area, badge, shared = false }: { area: AppArea; badge: numbe
   );
 }
 
-function Tile({ area, badge, fav, onToggleFav, consumeDrag, settling, onSettled }: { area: AppArea; badge: number; fav: boolean; onToggleFav: () => void; consumeDrag: () => boolean; settling: boolean; onSettled: () => void }) {
+function Tile({ area, badge, fav, onToggleFav, consumeDrag }: { area: AppArea; badge: number; fav: boolean; onToggleFav: () => void; consumeDrag: () => boolean }) {
   const drag = useDraggable({ id: area.label });
   const drop = useDroppable({ id: area.label });
   const { onKeyDown: handleKeyDown, ...pointer } = (drag.listeners ?? {}) as Record<string, React.EventHandler<never>>;
@@ -122,10 +122,7 @@ function Tile({ area, badge, fav, onToggleFav, consumeDrag, settling, onSettled 
         drop.setNodeRef(node);
       }}
       {...pointer}
-      onAnimationEnd={(e) => {
-        if (e.animationName === "nx-settle") onSettled();
-      }}
-      className={cn("group/app relative flex touch-manipulation justify-center", settling && "nx-settle", drag.isDragging && "opacity-30", drop.isOver && !drag.isDragging && "[&_.app-tile]:outline-dashed [&_.app-tile]:outline-2 [&_.app-tile]:outline-offset-4 [&_.app-tile]:outline-accent")}
+      className={cn("group/app relative flex touch-manipulation justify-center", drag.isDragging && "opacity-30", drop.isOver && !drag.isDragging && "[&_.app-tile]:outline-dashed [&_.app-tile]:outline-2 [&_.app-tile]:outline-offset-4 [&_.app-tile]:outline-accent")}
     >
       <Link
         href={area.href}
@@ -179,8 +176,6 @@ export function AppGrid({ areas, badges }: { areas: AppArea[]; badges: Record<st
     return [...areas].sort((a, b) => (rank.get(a.label) ?? 1000 + areas.indexOf(a)) - (rank.get(b.label) ?? 1000 + areas.indexOf(b)));
   }, [areas, order]);
   const [activeId, setActiveId] = useState<string | null>(null);
-  // La app recién soltada: cae en su lugar con un rebote (`nx-settle`) en vez de la animación de regreso de la copia.
-  const [settled, setSettled] = useState<string | null>(null);
   const justDragged = useRef(false);
   const sensors = useSensors(
     // Mantener presionado para alzarla: un clic corto abre la app.
@@ -198,7 +193,6 @@ export function AppGrid({ areas, badges }: { areas: AppArea[]; badges: Record<st
 
   const onDragEnd = (e: DragEndEvent) => {
     setActiveId(null);
-    if (e.over) setSettled(String(e.active.id));
     justDragged.current = true;
     window.setTimeout(() => (justDragged.current = false), 0);
     const from = String(e.active.id);
@@ -227,8 +221,6 @@ export function AppGrid({ areas, badges }: { areas: AppArea[]; badges: Record<st
             badge={badges[area.label] ?? 0}
             fav={favorites.includes(area.label)}
             onToggleFav={() => write(FAVORITES_KEY, favorites.includes(area.label) ? favorites.filter((f) => f !== area.label) : [...favorites, area.label])}
-            settling={settled === area.label}
-            onSettled={() => setSettled(null)}
             consumeDrag={() => {
               const was = justDragged.current;
               justDragged.current = false;

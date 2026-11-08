@@ -3,7 +3,7 @@ import { EmptyPageFrame } from "@/components/molecules/empty-page-frame";
 import { GridBackdrop } from "@/components/molecules/grid-backdrop";
 import { SkeletonEmptySwitch } from "./skeleton-empty-switch";
 
-export type PageSkeletonVariant = "dashboard" | "table" | "detail" | "form" | "profile" | "apps" | "list" | "record";
+export type PageSkeletonVariant = "dashboard" | "table" | "detail" | "form" | "profile" | "apps" | "list" | "record" | "board";
 
 function HeaderSkeleton({ actions = true }: { actions?: boolean }) {
   return (
@@ -209,6 +209,43 @@ function ListSkeleton({ label }: { label: string }) {
   );
 }
 
+/** Tablero por etapas (CRM): panel de control de la lista y columnas de 300 px con su encabezado y tarjetas; desborda a lo ancho. */
+function BoardSkeleton({ label }: { label: string }) {
+  const cards = [3, 2, 2, 1];
+  return (
+    <div data-bleed="" role="status" aria-busy="true" aria-label={label} className="flex flex-col">
+      <ListToolbarSkeleton />
+      <div className="flex items-start gap-4 overflow-hidden px-5 pb-12 pt-1">
+        {cards.map((n, col) => (
+          <div key={col} className="flex w-[300px] shrink-0 flex-col gap-3">
+            <div className="grid gap-2 px-1">
+              <div className="flex items-center justify-between gap-3">
+                <Skeleton className="h-4" style={{ width: `${70 + ((col * 23) % 40)}px` }} />
+                <Skeleton className="size-[26px]" />
+              </div>
+              <Skeleton className="h-1.5 w-full rounded-full" />
+              <Skeleton className="h-3 w-24" />
+            </div>
+            {Array.from({ length: n }).map((_, i) => (
+              <div key={i} className="grid gap-2.5 rounded-xl border border-border bg-card p-3.5">
+                <Skeleton className="h-3.5" style={{ width: `${55 + (((col + i) * 17) % 35)}%` }} />
+                <div className="flex items-center gap-2">
+                  <Skeleton className="size-5 shrink-0 rounded-full" />
+                  <Skeleton className="h-3 w-28" />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Skeleton className="h-3.5 w-20" />
+                  <Skeleton className="h-3 w-12" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /** Registro (ficha o formulario): panel de control y, a todo el ancho, tarjetas a la izquierda y la columna lateral a la derecha. */
 function RecordSkeleton({ label }: { label: string }) {
   const card = "rounded-xl border border-border bg-card p-[22px]";
@@ -286,6 +323,7 @@ export function PageSkeleton({
 }) {
   if (variant === "apps") return <AppsSkeleton label={label} />;
   if (variant === "record") return <RecordSkeleton label={label} />;
+  if (variant === "board") return <BoardSkeleton label={label} />;
   // Si la vista estaba vacía la última vez, la precarga pinta su estado vacío (sin filas) con la misma cabecera.
   if (variant === "list")
     return (

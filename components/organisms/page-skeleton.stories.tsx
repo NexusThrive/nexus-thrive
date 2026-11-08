@@ -23,3 +23,5 @@ export const Apps: Story = { args: { variant: "apps", label: "Cargando aplicacio
 export const List: Story = { args: { variant: "list", label: "Cargando clientes" }, parameters: { layout: "fullscreen" } };
 /** Registro (ficha y alta de cliente): panel de control, tarjetas y columna lateral. */
 export const Record: Story = { args: { variant: "record", label: "Cargando cliente" }, parameters: { layout: "fullscreen" } };
+/** Tablero por etapas (CRM): columnas de 300 px con encabezado, barra de avance y tarjetas. */
+export const Board: Story = { args: { variant: "board", label: "Cargando oportunidades" }, parameters: { layout: "fullscreen" } };

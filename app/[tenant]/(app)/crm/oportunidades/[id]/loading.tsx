@@ -1,6 +1,2 @@
-import { PageSkeleton } from "@/components/organisms/page-skeleton";
-
-/** Precarga del detalle de la oportunidad: la forma de la vista de registro. */
-export default function Loading() {
-  return <PageSkeleton variant="record" label="Cargando la oportunidad" />;
-}
+/* Precarga según la ruta de destino: ver `routeSkeleton` (lib/experience/navigation/route-skeleton.ts). */
+export { RouteLoading as default } from "@/components/organisms/route-loading";

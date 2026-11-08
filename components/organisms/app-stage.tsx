@@ -20,3 +20,4 @@ export function AppStage({ children }: { children: ReactNode }) {
     </ViewTransition>
   );
 }
+

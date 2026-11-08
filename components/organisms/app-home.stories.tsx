@@ -79,3 +79,14 @@ export const SinDatos: Story = {
     </Shell>
   ),
 };
+
+/** Primera visita: el saludo y el cajón ya están; las cifras llegan después y solo sus bloques se ven en esqueleto. */
+export const CifrasEnCamino: Story = {
+  render: () => (
+    <Shell>
+      <div className="min-h-dvh bg-background pt-14">
+        <AppHome summary={new Promise<null>(() => {})} userName="Santiago" />
+      </div>
+    </Shell>
+  ),
+};

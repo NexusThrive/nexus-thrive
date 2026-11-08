@@ -21,7 +21,8 @@ export default async function AppHomePage({ params }: { params: Promise<{ tenant
   const modules = sortModules((tenantRecord?.modules ?? []).filter((m) => m.active).map((m) => m.moduleName).filter(isModule));
   // El rol decide si se ven montos (misma regla de Resumen); el saludo usa el nombre vivo de Clerk o, si falta, el del equipo.
   const me = user ? await createTenantDb(ctx.tenantId).users.findByClerkUserId(user.id) : null;
-  const summary = await loadHomeSummary(ctx.tenantId, modules, me?.role ?? null);
+  // Sin esperar: Inicio se pinta ya (con lo último que se vio) y las cifras llegan después, bloque por bloque.
+  const summary = loadHomeSummary(ctx.tenantId, modules, me?.role ?? null);
   const userName = user?.firstName?.trim() || me?.name?.split(" ")[0] || null;
   // Aviso de prueba gratuita: solo aquí (en Inicio), como una pastilla junto al saludo.
   return (

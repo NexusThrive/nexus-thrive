@@ -110,33 +110,6 @@ html[data-motion="off"]::view-transition-new(*) {
   animation-delay: 0s !important;
 }
 
-/* Al soltar una app en su nuevo lugar: cae y rebota un poco, como si se asentara (física). Una sola vez; sin movimiento reducido. */
-@keyframes nx-settle {
-  0% {
-    transform: translateY(-10px) scale(1.04);
-  }
-  45% {
-    transform: translateY(4px) scale(0.97, 0.94);
-  }
-  70% {
-    transform: translateY(-2px) scale(1.01);
-  }
-  100% {
-    transform: none;
-  }
-}
-.nx-settle {
-  animation: nx-settle var(--d4) var(--nx-ease-spring) both;
-}
-@media (prefers-reduced-motion: reduce) {
-  .nx-settle {
-    animation: none;
-  }
-}
-html[data-motion="off"] .nx-settle {
-  animation: none;
-}
-
 /* --- Foco de luz que sigue al puntero (tarjetas .nx-spot) --- */
 @media (hover: hover) and (pointer: fine) {
   .nx-spot::after {
@@ -291,6 +264,10 @@ html[data-motion="off"] .nx-flash {
 }
 .nx-view-in > :not([aria-busy="true"]) {
   animation: nx-content-in 420ms var(--nx-ease-out) backwards;
+}
+/* Una vista que ya se veía en la precarga con su contenido real (Inicio con su último estado) no vuelve a entrar al reemplazarla. */
+.nx-view-in > [data-still] {
+  animation: none;
 }
 .nx-view-in > :not([aria-busy="true"]):nth-child(2) {
   animation-delay: 50ms;

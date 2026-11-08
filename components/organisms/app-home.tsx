@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { Skeleton } from "@/components/atoms/skeleton";
 import { AvatarStack } from "@/components/molecules/avatar-stack";
 import { GridBackdrop } from "@/components/molecules/grid-backdrop";
 import { AppGrid, type AppArea } from "@/components/organisms/app-grid";
@@ -30,12 +31,72 @@ const eyebrow = "text-2xs font-semibold uppercase tracking-[0.09em] text-muted-f
 
 export type AppHomeTrial = { daysLeft: number; level: "ok" | "soon" | "ended"; planHref: string };
 
+type HomeSnapshot = { summary: HomeSummary | null; trial: AppHomeTrial | null; userName: string | null };
+/**
+ * Lo último que mostró Inicio en cada negocio, en la memoria de esta pestaña (no en el navegador ni en el service worker: son datos
+ * privados). Al volver a Inicio se pinta al instante con esto y solo cambian las cifras cuando llega el resumen nuevo.
+ */
+const lastHome = new Map<string, HomeSnapshot>();
+
+/** Inicio con lo último que se vio (la precarga de «/»); sin nada guardado, `fallback` (el esqueleto del cajón). */
+export function CachedAppHome({ fallback }: { fallback: ReactNode }) {
+  const tenant = useParams<{ tenant?: string }>()?.tenant ?? "";
+  const snap = lastHome.get(tenant);
+  return snap ? <AppHome summary={snap.summary} trial={snap.trial} userName={snap.userName} /> : <>{fallback}</>;
+}
+
+function isThenable<T>(value: unknown): value is Promise<T> {
+  return typeof (value as { then?: unknown } | null)?.then === "function";
+}
+
+/** Bloque de Inicio esperando sus cifras (la primera vez, sin nada guardado): solo ese bloque, no la página. */
+function BlockSkeleton({ rows, label }: { rows: number; label: string }) {
+  return (
+    <div role="status" aria-busy="true" aria-label={label} className="grid gap-4 pt-2">
+      <Skeleton className="h-2.5 w-20" />
+      {Array.from({ length: rows }).map((_, i) => (
+        <div key={i} className="grid gap-2">
+          <Skeleton className="h-3 w-24" />
+          <Skeleton className="h-6 w-36" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /**
  * Inicio unificado: el saludo y, debajo, tres columnas. Al centro el cajón de aplicaciones (cada área habilitada para la organización
  * y el rol; abre su espacio de trabajo); a los lados, «Este mes» (ventas, vencido y balance) y «Hoy» y «Atención». Las cifras salen de
  * las mismas fuentes que Resumen (`loadHomeSummary`). Resumen ya no es una app del cajón (su ruta sigue existiendo).
  */
-export function AppHome({ trial, summary, userName }: { trial?: AppHomeTrial | null; summary?: HomeSummary | null; userName?: string | null }) {
+export function AppHome({ trial = null, summary: input, userName = null }: { trial?: AppHomeTrial | null; summary?: HomeSummary | Promise<HomeSummary | null> | null; userName?: string | null }) {
+  const tenant = useParams<{ tenant?: string }>()?.tenant ?? "";
+  // El resumen llega como promesa (la página no lo espera): mientras tanto, lo último que se vio; al llegar, solo cambian las cifras.
+  // La promesa que llega del servidor es un «thenable» de React, no siempre `instanceof Promise`.
+  const isPromise = isThenable(input);
+  const [fresh, setFresh] = useState<{ from: unknown; data: HomeSummary | null } | null>(null);
+  useEffect(() => {
+    if (!isThenable(input)) return;
+    let alive = true;
+    input.then(
+      (data) => {
+        if (!alive) return;
+        lastHome.set(tenant, { summary: data, trial, userName });
+        setFresh({ from: input, data });
+      },
+      () => {
+        if (alive) setFresh({ from: input, data: lastHome.get(tenant)?.summary ?? null });
+      },
+    );
+    return () => {
+      alive = false;
+    };
+  }, [input, tenant, trial, userName]);
+  const ready = !isPromise || fresh?.from === input;
+  const summary: HomeSummary | null = !isThenable<HomeSummary | null>(input) ? (input ?? null) : ready ? fresh!.data : (lastHome.get(tenant)?.summary ?? null);
+  // Solo la primera vez (nada guardado) se ven bloques en esqueleto; nunca la página entera.
+  const pending = !ready && !summary;
+
   const { groups, hrefFor, createActions = [] } = useShell();
   const router = useRouter();
   const quick = useQuickCreate();
@@ -65,7 +126,8 @@ export function AppHome({ trial, summary, userName }: { trial?: AppHomeTrial | n
   const side = "w-full max-w-xl pt-2 min-[1100px]:w-auto min-[1100px]:min-w-[220px] min-[1100px]:max-w-[290px] min-[1100px]:flex-[1_1_240px]";
 
   return (
-    <div data-bleed="" className="relative isolate min-h-[calc(100dvh-var(--topbar-height)-7rem-env(safe-area-inset-bottom,0px))] overflow-hidden md:min-h-[calc(100dvh-var(--topbar-height)-4rem)]">
+    // `data-still`: si Inicio ya se había visto (se precargó con su último estado), no repite la entrada al llegar la página real.
+    <div data-bleed="" data-still={lastHome.has(tenant) ? "" : undefined} className="relative isolate min-h-[calc(100dvh-var(--topbar-height)-7rem-env(safe-area-inset-bottom,0px))] overflow-hidden md:min-h-[calc(100dvh-var(--topbar-height)-4rem)]">
       <GridBackdrop variant="home" />
       <div className="mx-auto flex max-w-[1240px] flex-col gap-7 px-6 pb-20 pt-5">
         {/* Cabecera: saludo y, a la derecha, la pastilla de la prueba */}
@@ -96,6 +158,11 @@ export function AppHome({ trial, summary, userName }: { trial?: AppHomeTrial | n
 
         {/* Tres columnas: Este mes · apps · Hoy y Atención (bajo 1100 px se apilan en ese orden) */}
         <div className="flex flex-wrap items-start justify-center gap-8">
+          {pending ? (
+            <div className={side}>
+              <BlockSkeleton rows={3} label="Cargando las cifras del mes" />
+            </div>
+          ) : null}
           {month || customers || team.members.length ? (
             <div className={cn(side, "grid gap-6")}>
             {month ? (
@@ -160,6 +227,7 @@ export function AppHome({ trial, summary, userName }: { trial?: AppHomeTrial | n
 
           <nav aria-label="Aplicaciones" className="w-full pt-2 min-[1100px]:w-auto min-[1100px]:flex-[0_1_560px]">
             {/* La tarjeta de balance de Finanzas (la misma, con su línea de ingresos y gastos), del ancho del cajón. */}
+            {pending ? <Skeleton className="mx-auto mb-8 h-[156px] w-full max-w-[532px] rounded-xl" /> : null}
             {summary?.balance30 ? (
               <div className="mx-auto mb-8 w-full max-w-[532px]">
                 <BalanceCard label="Balance · últimos 30 días" balance={summary.balance30.balance} income={summary.balance30.income} expenses={summary.balance30.expenses} />
@@ -191,6 +259,11 @@ export function AppHome({ trial, summary, userName }: { trial?: AppHomeTrial | n
             <AppGrid areas={areas} badges={summary?.badges ?? {}} />
           </nav>
 
+          {pending ? (
+            <div className={side}>
+              <BlockSkeleton rows={2} label="Cargando lo de hoy" />
+            </div>
+          ) : null}
           {today || crm || attention || recent.length ? (
             <div className={cn(side, "grid gap-[22px]")}>
               {today || crm ? (
