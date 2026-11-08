@@ -21,7 +21,7 @@ const SETTINGS = link("ajustes", "Ajustes del negocio", "/settings");
 /** Menús por app (la categoría del registro de capacidades es la app). */
 export const APP_MENUS: Partial<Record<CapabilityCategory, Def>> = {
   "Ventas y cobros": {
-    informes: [{ items: [link("cot-anteriores", "Cotizaciones anteriores", "/ventas/cotizaciones/anteriores", "quotes"), soon("ventas", "Ventas"), soon("vendedores", "Vendedores"), soon("productos", "Productos"), soon("clientes", "Clientes")] }],
+    informes: [{ items: [link("cot-anteriores", "Cotizaciones anteriores", "/ventas/cotizaciones/anteriores", "quotes"), link("ventas", "Ventas del mostrador", "/pos/informes?periodo=30d", "pos"), soon("vendedores", "Vendedores"), link("productos", "Productos más vendidos", "/pos/informes?periodo=30d", "pos"), soon("clientes", "Clientes")] }],
     configuracion: [
       { items: [SETTINGS, soon("canales", "Canales de venta"), soon("entregas", "Entregas"), link("pagos", "Medios de pago", "/pos/medios-de-pago", "pos")] },
       { title: "Productos", items: [link("categorias", "Categorías", "/inventario/categorias", "inventory"), link("atributos", "Atributos", "/inventario/atributos", "inventory"), link("listas", "Listas de precios", "/ventas/listas-precios", "inventory")] },
@@ -29,7 +29,7 @@ export const APP_MENUS: Partial<Record<CapabilityCategory, Def>> = {
     ],
   },
   "Punto de venta": {
-    informes: [{ items: [soon("turnos", "Reporte de turnos"), soon("ventas-dia", "Ventas del día"), soon("por-cajero", "Ventas por cajero y producto")] }],
+    informes: [{ items: [link("ventas-dia", "Ventas del día", "/pos/informes?periodo=hoy", "pos"), link("por-cajero", "Ventas por cajero y producto", "/pos/informes?periodo=7d", "pos"), soon("turnos", "Reporte de turnos")] }],
     configuracion: [{ items: [SETTINGS, link("pagos", "Medios de pago", "/pos/medios-de-pago", "pos"), soon("cajas", "Cajas y terminales"), soon("comprobante", "Impresión del comprobante")] }],
   },
   Inventario: {

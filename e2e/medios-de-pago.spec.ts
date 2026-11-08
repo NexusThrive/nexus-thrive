@@ -17,3 +17,18 @@ test.describe("Medios de pago", () => {
     await expect(page.getByRole("alert").getByText(/Ya tienes un medio llamado/)).toBeVisible();
   });
 });
+
+test.describe("Informe de ventas", () => {
+  test("muestra cifras, lo más vendido y cómo pagaron, sin errores de accesibilidad", async ({ page }) => {
+    await openStory(page, "páginas-dinero-informe-de-ventas--con-ventas");
+    await expect(page.getByRole("heading", { name: "Lo que más se vende" })).toBeVisible();
+    await expect(page.getByText("Ana Gómez")).toBeVisible();
+    await expect(page.getByRole("link", { name: "7 días" })).toHaveAttribute("aria-current", "page");
+    await expectNoAxeViolations(page);
+  });
+  test("sin ventas invita a vender", async ({ page }) => {
+    await openStory(page, "páginas-dinero-informe-de-ventas--sin-ventas");
+    await expect(page.getByText("Sin ventas en este periodo")).toBeVisible();
+    await expect(page.getByRole("link", { name: /Ir al punto de venta/ })).toBeVisible();
+  });
+});
