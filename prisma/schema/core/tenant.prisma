@@ -204,6 +204,7 @@ model Tenant {
   productAttributeValues ProductAttributeValue[]
   productAttributeLines  ProductAttributeLine[]
   priceListItems     PriceListItem[]
+  priceTiers         PriceTier[]
   warehouses         Warehouse[]
   stockLevels        StockLevel[]
   purchaseOrders     PurchaseOrder[]

@@ -104,6 +104,7 @@ export const TENANT_DELETION_TABLES: readonly string[] = [
   "Payment",
   "PaymentMethodSetting",
   "PriceList",
+  "PriceTier",
   "PriceListItem",
   "PresenceRequest",
   "ProductBarcode",
@@ -321,6 +322,7 @@ export async function deleteTenantCompletely(
   count("ApuImage", await tx.orm.public.ApuImage.where({ tenantId }).deleteAll());
   count("ApuImportRun", await tx.orm.public.ApuImportRun.where({ tenantId }).deleteAll());
   count("PaymentMethodSetting", await tx.orm.public.PaymentMethodSetting.where({ tenantId }).deleteAll());
+  count("PriceTier", await tx.orm.public.PriceTier.where({ tenantId }).deleteAll());
   count("PriceListItem", await tx.orm.public.PriceListItem.where({ tenantId }).deleteAll());
   count("PriceList", await tx.orm.public.PriceList.where({ tenantId }).deleteAll());
   count("ProductBarcode", await tx.orm.public.ProductBarcode.where({ tenantId }).deleteAll());

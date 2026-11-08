@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'9ccd58adc7f56a676810c7e9f65af930aa7f6ba7c70dc54877c6968fdd3abcb1'>;
+  StorageHashBase<'d4a32467582e5fd89e4b4995660b52ce94c7db188c63688668a231d31acd5d12'>;
 export type ExecutionHash =
-  ExecutionHashBase<'4321edea3e57b8015e2f1e97755e26305d419df2587b1b5f1d0b1d11fec5b38a'>;
+  ExecutionHashBase<'239610e0d094105e1efe107ff85a1f0dd408a141aefd98be4dcc7f53d5b1b10b'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -770,6 +770,7 @@ export type FieldOutputTypes = {
       readonly phone: CodecTypes['pg/text@1']['output'] | null;
       readonly phoneNorm: CodecTypes['pg/text@1']['output'] | null;
       readonly photoId: CodecTypes['pg/text@1']['output'] | null;
+      readonly priceListId: CodecTypes['pg/text@1']['output'] | null;
       readonly profile: CodecTypes['pg/json@1']['output'] | null;
       readonly source: CodecTypes['pg/text@1']['output'] | null;
       readonly stage: CodecTypes['pg/text@1']['output'];
@@ -782,6 +783,7 @@ export type FieldOutputTypes = {
       readonly icon: CodecTypes['pg/text@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly name: CodecTypes['pg/text@1']['output'];
+      readonly priceListId: CodecTypes['pg/text@1']['output'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['output'];
     };
     readonly CustomerGroupMember: {
@@ -1456,6 +1458,15 @@ export type FieldOutputTypes = {
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly variantId: CodecTypes['pg/text@1']['output'] | null;
+    };
+    readonly PriceTier: {
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly minQty: CodecTypes['pg/int4@1']['output'];
+      readonly price: CodecTypes['pg/numeric@1']['output'];
+      readonly priceListId: CodecTypes['pg/text@1']['output'];
+      readonly productId: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly Product: {
       readonly active: CodecTypes['pg/bool@1']['output'];
@@ -2853,6 +2864,7 @@ export type FieldInputTypes = {
       readonly phone: CodecTypes['pg/text@1']['input'] | null;
       readonly phoneNorm: CodecTypes['pg/text@1']['input'] | null;
       readonly photoId: CodecTypes['pg/text@1']['input'] | null;
+      readonly priceListId: CodecTypes['pg/text@1']['input'] | null;
       readonly profile: CodecTypes['pg/json@1']['input'] | null;
       readonly source: CodecTypes['pg/text@1']['input'] | null;
       readonly stage: CodecTypes['pg/text@1']['input'];
@@ -2865,6 +2877,7 @@ export type FieldInputTypes = {
       readonly icon: CodecTypes['pg/text@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly name: CodecTypes['pg/text@1']['input'];
+      readonly priceListId: CodecTypes['pg/text@1']['input'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['input'];
     };
     readonly CustomerGroupMember: {
@@ -3539,6 +3552,15 @@ export type FieldInputTypes = {
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly variantId: CodecTypes['pg/text@1']['input'] | null;
+    };
+    readonly PriceTier: {
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly minQty: CodecTypes['pg/int4@1']['input'];
+      readonly price: CodecTypes['pg/numeric@1']['input'];
+      readonly priceListId: CodecTypes['pg/text@1']['input'];
+      readonly productId: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
     readonly Product: {
       readonly active: CodecTypes['pg/bool@1']['input'];
@@ -4936,6 +4958,7 @@ export type StorageColumnTypes = {
       readonly phone: CodecTypes['pg/text@1']['output'] | null;
       readonly phoneNorm: CodecTypes['pg/text@1']['output'] | null;
       readonly photoId: CodecTypes['pg/text@1']['output'] | null;
+      readonly priceListId: CodecTypes['pg/text@1']['output'] | null;
       readonly profile: CodecTypes['pg/json@1']['output'] | null;
       readonly source: CodecTypes['pg/text@1']['output'] | null;
       readonly stage: CodecTypes['pg/text@1']['output'];
@@ -4948,6 +4971,7 @@ export type StorageColumnTypes = {
       readonly icon: CodecTypes['pg/text@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly name: CodecTypes['pg/text@1']['output'];
+      readonly priceListId: CodecTypes['pg/text@1']['output'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['output'];
     };
     readonly CustomerGroupMember: {
@@ -5622,6 +5646,15 @@ export type StorageColumnTypes = {
       readonly tenantId: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly variantId: CodecTypes['pg/text@1']['output'] | null;
+    };
+    readonly PriceTier: {
+      readonly id: CodecTypes['pg/text@1']['output'];
+      readonly minQty: CodecTypes['pg/int4@1']['output'];
+      readonly price: CodecTypes['pg/numeric@1']['output'];
+      readonly priceListId: CodecTypes['pg/text@1']['output'];
+      readonly productId: CodecTypes['pg/text@1']['output'];
+      readonly tenantId: CodecTypes['pg/text@1']['output'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly Product: {
       readonly active: CodecTypes['pg/bool@1']['output'];
@@ -7019,6 +7052,7 @@ export type StorageColumnInputTypes = {
       readonly phone: CodecTypes['pg/text@1']['input'] | null;
       readonly phoneNorm: CodecTypes['pg/text@1']['input'] | null;
       readonly photoId: CodecTypes['pg/text@1']['input'] | null;
+      readonly priceListId: CodecTypes['pg/text@1']['input'] | null;
       readonly profile: CodecTypes['pg/json@1']['input'] | null;
       readonly source: CodecTypes['pg/text@1']['input'] | null;
       readonly stage: CodecTypes['pg/text@1']['input'];
@@ -7031,6 +7065,7 @@ export type StorageColumnInputTypes = {
       readonly icon: CodecTypes['pg/text@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly name: CodecTypes['pg/text@1']['input'];
+      readonly priceListId: CodecTypes['pg/text@1']['input'] | null;
       readonly tenantId: CodecTypes['pg/text@1']['input'];
     };
     readonly CustomerGroupMember: {
@@ -7705,6 +7740,15 @@ export type StorageColumnInputTypes = {
       readonly tenantId: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly variantId: CodecTypes['pg/text@1']['input'] | null;
+    };
+    readonly PriceTier: {
+      readonly id: CodecTypes['pg/text@1']['input'];
+      readonly minQty: CodecTypes['pg/int4@1']['input'];
+      readonly price: CodecTypes['pg/numeric@1']['input'];
+      readonly priceListId: CodecTypes['pg/text@1']['input'];
+      readonly productId: CodecTypes['pg/text@1']['input'];
+      readonly tenantId: CodecTypes['pg/text@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
     readonly Product: {
       readonly active: CodecTypes['pg/bool@1']['input'];
@@ -9225,6 +9269,7 @@ export namespace Models {
     phone: CodecTypes['pg/text@1']['output'] | null;
     phoneNorm: CodecTypes['pg/text@1']['output'] | null;
     photoId: CodecTypes['pg/text@1']['output'] | null;
+    priceListId: CodecTypes['pg/text@1']['output'] | null;
     profile: CodecTypes['pg/json@1']['output'] | null;
     source: CodecTypes['pg/text@1']['output'] | null;
     stage: CodecTypes['pg/text@1']['output'];
@@ -9254,6 +9299,7 @@ export namespace Models {
     icon: CodecTypes['pg/text@1']['output'];
     id: CodecTypes['pg/text@1']['output'];
     name: CodecTypes['pg/text@1']['output'];
+    priceListId: CodecTypes['pg/text@1']['output'] | null;
     tenantId: CodecTypes['pg/text@1']['output'];
     members: public_CustomerGroupMember[];
     tenant: public_Tenant;
@@ -10045,7 +10091,8 @@ export namespace Models {
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     items: public_PriceListItem[];
     tenant: public_Tenant;
-    readonly [RelationKeys]?: 'items' | 'tenant';
+    tiers: public_PriceTier[];
+    readonly [RelationKeys]?: 'items' | 'tenant' | 'tiers';
   };
   export type public_PriceListItem = {
     id: CodecTypes['pg/text@1']['output'];
@@ -10060,6 +10107,19 @@ export namespace Models {
     tenant: public_Tenant;
     variant: public_ProductVariant | null;
     readonly [RelationKeys]?: 'priceList' | 'product' | 'tenant' | 'variant';
+  };
+  export type public_PriceTier = {
+    id: CodecTypes['pg/text@1']['output'];
+    minQty: CodecTypes['pg/int4@1']['output'];
+    price: CodecTypes['pg/numeric@1']['output'];
+    priceListId: CodecTypes['pg/text@1']['output'];
+    productId: CodecTypes['pg/text@1']['output'];
+    tenantId: CodecTypes['pg/text@1']['output'];
+    updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    priceList: public_PriceList;
+    product: public_Product;
+    tenant: public_Tenant;
+    readonly [RelationKeys]?: 'priceList' | 'product' | 'tenant';
   };
   export type public_Product = {
     active: CodecTypes['pg/bool@1']['output'];
@@ -10101,6 +10161,7 @@ export namespace Models {
     countLines: public_StockCountLine[];
     movements: public_StockMovement[];
     priceItems: public_PriceListItem[];
+    priceTiers: public_PriceTier[];
     productCategory: public_ProductCategory | null;
     purchaseLines: public_PurchaseOrderLine[];
     stockLevels: public_StockLevel[];
@@ -10113,6 +10174,7 @@ export namespace Models {
       | 'countLines'
       | 'movements'
       | 'priceItems'
+      | 'priceTiers'
       | 'productCategory'
       | 'purchaseLines'
       | 'stockLevels'
@@ -10984,6 +11046,7 @@ export namespace Models {
     presenceSnapshots: public_PresenceSnapshot[];
     priceListItems: public_PriceListItem[];
     priceLists: public_PriceList[];
+    priceTiers: public_PriceTier[];
     productAttributeLines: public_ProductAttributeLine[];
     productAttributeValues: public_ProductAttributeValue[];
     productAttributes: public_ProductAttribute[];
@@ -11112,6 +11175,7 @@ export namespace Models {
       | 'presenceSnapshots'
       | 'priceListItems'
       | 'priceLists'
+      | 'priceTiers'
       | 'productAttributeLines'
       | 'productAttributeValues'
       | 'productAttributes'
@@ -11509,6 +11573,7 @@ export declare const models: {
     PresenceSnapshot: Models.public_PresenceSnapshot;
     PriceList: Models.public_PriceList;
     PriceListItem: Models.public_PriceListItem;
+    PriceTier: Models.public_PriceTier;
     Product: Models.public_Product;
     ProductAttribute: Models.public_ProductAttribute;
     ProductAttributeLine: Models.public_ProductAttributeLine;
@@ -15512,6 +15577,11 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
                 };
+                readonly priceListId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
                 readonly profile: {
                   readonly nativeType: 'json';
                   readonly codecId: 'pg/json@1';
@@ -15636,6 +15706,11 @@ type ContractBase = Omit<
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
+                };
+                readonly priceListId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
                 };
                 readonly tenantId: {
                   readonly nativeType: 'text';
@@ -20776,6 +20851,107 @@ type ContractBase = Omit<
                   readonly target: {
                     readonly namespaceId: 'public' & NamespaceId;
                     readonly tableName: 'ProductVariant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly PriceTier: {
+              columns: {
+                readonly id: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly minQty: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                };
+                readonly price: {
+                  readonly nativeType: 'numeric';
+                  readonly codecId: 'pg/numeric@1';
+                  readonly nullable: false;
+                };
+                readonly priceListId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly productId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly tenantId: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly updatedAt: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [
+                { readonly columns: readonly ['priceListId', 'productId', 'minQty'] },
+              ];
+              indexes: readonly [
+                {
+                  readonly name: 'PriceTier_priceListId_idx_43057e0f';
+                  readonly prefix: 'PriceTier_priceListId_idx';
+                  readonly columns: readonly ['priceListId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'PriceTier_productId_idx_5858600a';
+                  readonly prefix: 'PriceTier_productId_idx';
+                  readonly columns: readonly ['productId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'PriceTier_tenantId_idx_c93ed4f1';
+                  readonly prefix: 'PriceTier_tenantId_idx';
+                  readonly columns: readonly ['tenantId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'PriceTier';
+                    readonly columns: readonly ['tenantId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Tenant';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'PriceTier';
+                    readonly columns: readonly ['priceListId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'PriceList';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'PriceTier';
+                    readonly columns: readonly ['productId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Product';
                     readonly columns: readonly ['id'];
                   };
                 },
@@ -28070,6 +28246,7 @@ type ContractBase = Omit<
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'PriceListItem';
     };
+    readonly PriceTier: { readonly namespace: 'public' & NamespaceId; readonly model: 'PriceTier' };
     readonly Product: { readonly namespace: 'public' & NamespaceId; readonly model: 'Product' };
     readonly ProductAttribute: {
       readonly namespace: 'public' & NamespaceId;
@@ -32051,6 +32228,10 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly priceListId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly profile: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/json@1' };
@@ -32193,6 +32374,7 @@ type ContractBase = Omit<
                 readonly phone: { readonly column: 'phone' };
                 readonly phoneNorm: { readonly column: 'phoneNorm' };
                 readonly photoId: { readonly column: 'photoId' };
+                readonly priceListId: { readonly column: 'priceListId' };
                 readonly profile: { readonly column: 'profile' };
                 readonly source: { readonly column: 'source' };
                 readonly stage: { readonly column: 'stage' };
@@ -32221,6 +32403,10 @@ type ContractBase = Omit<
               };
               readonly name: {
                 readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly priceListId: {
+                readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly tenantId: {
@@ -32261,6 +32447,7 @@ type ContractBase = Omit<
                 readonly icon: { readonly column: 'icon' };
                 readonly id: { readonly column: 'id' };
                 readonly name: { readonly column: 'name' };
+                readonly priceListId: { readonly column: 'priceListId' };
                 readonly tenantId: { readonly column: 'tenantId' };
               };
             };
@@ -36868,6 +37055,17 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['id'];
                 };
               };
+              readonly tiers: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'PriceTier';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['priceListId'];
+                };
+              };
             };
             readonly storage: {
               readonly table: 'PriceList';
@@ -36979,6 +37177,92 @@ type ContractBase = Omit<
                 readonly tenantId: { readonly column: 'tenantId' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
                 readonly variantId: { readonly column: 'variantId' };
+              };
+            };
+          };
+          readonly PriceTier: {
+            readonly fields: {
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly minQty: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly price: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/numeric@1' };
+              };
+              readonly priceListId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly productId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly tenantId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+            };
+            readonly relations: {
+              readonly priceList: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'PriceList';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['priceListId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly product: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Product';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['productId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly tenant: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Tenant';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['tenantId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'PriceTier';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly id: { readonly column: 'id' };
+                readonly minQty: { readonly column: 'minQty' };
+                readonly price: { readonly column: 'price' };
+                readonly priceListId: { readonly column: 'priceListId' };
+                readonly productId: { readonly column: 'productId' };
+                readonly tenantId: { readonly column: 'tenantId' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
               };
             };
           };
@@ -37176,6 +37460,17 @@ type ContractBase = Omit<
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
                   readonly model: 'PriceListItem';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['productId'];
+                };
+              };
+              readonly priceTiers: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'PriceTier';
                 };
                 readonly cardinality: '1:N';
                 readonly on: {
@@ -42824,6 +43119,17 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['tenantId'];
                 };
               };
+              readonly priceTiers: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'PriceTier';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['tenantId'];
+                };
+              };
               readonly productAttributeLines: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -46191,6 +46497,23 @@ type ContractBase = Omit<
           readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
           readonly ref: {
             readonly entry: 'PriceListItem';
+            readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'PriceTier';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'PriceTier';
             readonly field: 'updatedAt';
             readonly namespace: 'public';
           };

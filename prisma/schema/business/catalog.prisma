@@ -57,6 +57,7 @@ model Product {
   variants        ProductVariant[]
   barcodes        ProductBarcode[]
   priceItems      PriceListItem[]
+  priceTiers      PriceTier[]
   stockLevels     StockLevel[]
   purchaseLines   PurchaseOrderLine[]
   transferLines   StockTransferLine[]
@@ -221,6 +222,7 @@ model PriceList {
   createdAt DateTime @default(now())
   updatedAt temporal.updatedAt()
   items     PriceListItem[]
+  tiers     PriceTier[]
 
   @@unique([tenantId, name])
   @@index([tenantId])
@@ -250,3 +252,23 @@ model PriceListItem {
   @@index([productId])
   @@rls
 }
+
+/// Precio por cantidad de un producto en una lista: desde `minQty` unidades el precio unitario es `price`. Se aplica el escalón
+/// más alto que la cantidad alcance; el precio de un solo producto sigue en `PriceListItem`.
+model PriceTier {
+  id          String    @id @default(uuid())
+  tenantId    String
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  priceListId String
+  priceList   PriceList @relation(fields: [priceListId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  minQty      Int
+  price       Decimal
+  updatedAt   temporal.updatedAt()
+
+  @@unique([priceListId, productId, minQty])
+  @@index([productId])
+  @@rls
+}
+

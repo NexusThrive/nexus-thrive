@@ -368,6 +368,10 @@
       "model": "PriceListItem",
       "namespace": "public"
     },
+    "PriceTier": {
+      "model": "PriceTier",
+      "namespace": "public"
+    },
     "Product": {
       "model": "Product",
       "namespace": "public"
@@ -7417,6 +7421,13 @@
                   "kind": "scalar"
                 }
               },
+              "priceListId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "profile": {
                 "nullable": true,
                 "type": {
@@ -7638,6 +7649,9 @@
                 "photoId": {
                   "column": "photoId"
                 },
+                "priceListId": {
+                  "column": "priceListId"
+                },
                 "profile": {
                   "column": "profile"
                 },
@@ -7686,6 +7700,13 @@
               },
               "name": {
                 "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "priceListId": {
+                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -7745,6 +7766,9 @@
                 },
                 "name": {
                   "column": "name"
+                },
+                "priceListId": {
+                  "column": "priceListId"
                 },
                 "tenantId": {
                   "column": "tenantId"
@@ -15230,6 +15254,21 @@
                   "model": "Tenant",
                   "namespace": "public"
                 }
+              },
+              "tiers": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "priceListId"
+                  ]
+                },
+                "to": {
+                  "model": "PriceTier",
+                  "namespace": "public"
+                }
               }
             },
             "storage": {
@@ -15407,6 +15446,136 @@
               },
               "namespaceId": "public",
               "table": "PriceListItem"
+            }
+          },
+          "PriceTier": {
+            "fields": {
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "minQty": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "price": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/numeric@1",
+                  "kind": "scalar"
+                }
+              },
+              "priceListId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "productId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tenantId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "priceList": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "priceListId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "PriceList",
+                  "namespace": "public"
+                }
+              },
+              "product": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "productId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Product",
+                  "namespace": "public"
+                }
+              },
+              "tenant": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "tenantId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Tenant",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "id": {
+                  "column": "id"
+                },
+                "minQty": {
+                  "column": "minQty"
+                },
+                "price": {
+                  "column": "price"
+                },
+                "priceListId": {
+                  "column": "priceListId"
+                },
+                "productId": {
+                  "column": "productId"
+                },
+                "tenantId": {
+                  "column": "tenantId"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "PriceTier"
             }
           },
           "Product": {
@@ -15729,6 +15898,21 @@
                 },
                 "to": {
                   "model": "PriceListItem",
+                  "namespace": "public"
+                }
+              },
+              "priceTiers": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "productId"
+                  ]
+                },
+                "to": {
+                  "model": "PriceTier",
                   "namespace": "public"
                 }
               },
@@ -24583,6 +24767,21 @@
                   "namespace": "public"
                 }
               },
+              "priceTiers": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "tenantId"
+                  ]
+                },
+                "to": {
+                  "model": "PriceTier",
+                  "namespace": "public"
+                }
+              },
               "productAttributeLines": {
                 "cardinality": "1:N",
                 "on": {
@@ -28188,6 +28387,11 @@
               "kind": "rls",
               "namespaceId": "public",
               "tableName": "PriceListItem"
+            },
+            "PriceTier": {
+              "kind": "rls",
+              "namespaceId": "public",
+              "tableName": "PriceTier"
             },
             "Product": {
               "kind": "rls",
@@ -33427,6 +33631,11 @@
                   "nativeType": "text",
                   "nullable": true
                 },
+                "priceListId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "profile": {
                   "codecId": "pg/json@1",
                   "nativeType": "json",
@@ -33582,6 +33791,11 @@
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": false
+                },
+                "priceListId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
                 },
                 "tenantId": {
                   "codecId": "pg/text@1",
@@ -39996,6 +40210,138 @@
                 ]
               },
               "uniques": []
+            },
+            "PriceTier": {
+              "columns": {
+                "id": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "minQty": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "price": {
+                  "codecId": "pg/numeric@1",
+                  "nativeType": "numeric",
+                  "nullable": false
+                },
+                "priceListId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "productId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "tenantId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "tenantId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "PriceTier"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Tenant"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "priceListId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "PriceTier"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "PriceList"
+                  }
+                },
+                {
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "productId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "PriceTier"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Product"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "priceListId"
+                  ],
+                  "name": "PriceTier_priceListId_idx_43057e0f",
+                  "prefix": "PriceTier_priceListId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "productId"
+                  ],
+                  "name": "PriceTier_productId_idx_5858600a",
+                  "prefix": "PriceTier_productId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId"
+                  ],
+                  "name": "PriceTier_tenantId_idx_c93ed4f1",
+                  "prefix": "PriceTier_tenantId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "priceListId",
+                    "productId",
+                    "minQty"
+                  ]
+                }
+              ]
             },
             "Product": {
               "checks": [
@@ -48823,10 +49169,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "9ccd58adc7f56a676810c7e9f65af930aa7f6ba7c70dc54877c6968fdd3abcb1"
+    "storageHash": "d4a32467582e5fd89e4b4995660b52ce94c7db188c63688668a231d31acd5d12"
   },
   "execution": {
-    "executionHash": "4321edea3e57b8015e2f1e97755e26305d419df2587b1b5f1d0b1d11fec5b38a",
+    "executionHash": "239610e0d094105e1efe107ff85a1f0dd408a141aefd98be4dcc7f53d5b1b10b",
     "mutations": {
       "defaults": [
         {
@@ -50356,6 +50702,32 @@
           },
           "ref": {
             "entry": "PriceListItem",
+            "field": "updatedAt",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "PriceTier",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "PriceTier",
             "field": "updatedAt",
             "namespace": "public"
           }

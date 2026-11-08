@@ -24,6 +24,8 @@ model Customer {
   email     String?
   phone     String?
   active    Boolean  @default(true)
+  /// Lista de precios de este cliente (sin ella: la de su grupo y, si no, la predeterminada).
+  priceListId String?
   documentId String?
   birthDate  DateTime?
   tags       String[]?
@@ -301,6 +303,8 @@ model CustomerGroup {
   tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   name      String
   icon      String   @default("users")
+  /// Lista de precios de todos los clientes del grupo.
+  priceListId String?
   createdAt DateTime @default(now())
 
   members CustomerGroupMember[]
