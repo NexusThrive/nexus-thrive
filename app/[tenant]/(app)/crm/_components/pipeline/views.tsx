@@ -44,7 +44,7 @@ export function ListView({ slug, cards, stages, now }: { slug: string; cards: Pi
                 <td className="px-5 text-muted-foreground">
                   <span className="flex items-center gap-2">
                     {c.customer ? <CustomerAvatar identity={c.customer} className="size-5 rounded-md" /> : null}
-                    <span className="truncate">{c.customer?.name ?? "—"}</span>
+                    <span className="truncate">{c.customer?.name ?? ""}</span>
                   </span>
                 </td>
                 <td className="px-5 text-muted-foreground">{stageName.get(c.stageId)}</td>
@@ -53,7 +53,7 @@ export function ListView({ slug, cards, stages, now }: { slug: string; cards: Pi
                 <td className="px-5">
                   <ActivityChip chip={cardChip(c, now)} />
                 </td>
-                <td className="px-5 text-muted-foreground">{c.owner?.name ?? "—"}</td>
+                <td className="px-5 text-muted-foreground">{c.owner?.name ?? ""}</td>
               </tr>
             ))}
           </tbody>

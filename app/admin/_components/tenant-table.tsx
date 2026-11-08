@@ -287,7 +287,7 @@ function OnboardingProgress({ row }: { row: TenantListRow }) {
 
 function ModuleChips({ modules }: { modules: ModuleValue[] }) {
   if (modules.length === 0) {
-    return <span className="text-xs text-muted-foreground">—</span>;
+    return null;
   }
   const visible = modules.slice(0, 2);
   const rest = modules.slice(2);

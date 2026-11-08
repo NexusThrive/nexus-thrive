@@ -36,8 +36,8 @@ export default function PaymentsTable({
           { key: "amount", header: "Monto", role: "figure", align: "right", cell: (p) => <span className="font-semibold text-foreground">{formatCurrency(p.amount)}</span> },
           { key: "method", header: "Método", role: "primary", cell: (p) => paymentMethodLabel(p.provider) },
           { key: "status", header: "Estado", role: "status", cell: (p) => <PaymentStatusPill status={p.status} /> },
-          { key: "ref", header: "Referencia", role: "detail", cell: (p) => p.providerRefId || <span className="text-muted-foreground/50">—</span> },
-          { key: "desc", header: "Descripción", role: "detail", cell: (p) => p.description || <span className="text-muted-foreground/50">—</span> },
+          { key: "ref", header: "Referencia", role: "detail", cell: (p) => p.providerRefId || "" },
+          { key: "desc", header: "Descripción", role: "detail", cell: (p) => p.description || "" },
         ]}
       />
       {truncated ? (

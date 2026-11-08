@@ -331,7 +331,7 @@ export default function ApuEditorModal({
                               ) : null}
                             </div>
                             <p className="text-xs text-muted-foreground">
-                              {formatApuUnit(resource.unit) || "—"}
+                              {formatApuUnit(resource.unit) || ""}
                             </p>
                           </td>
                           <td className="px-3 py-2">
@@ -368,7 +368,7 @@ export default function ApuEditorModal({
                             {formatMoneyMicro(resource.unitPrice)}
                           </td>
                           <td className="px-3 py-2 text-right font-mono tabular-nums text-foreground">
-                            {cost === null ? "—" : formatMoneyMicro(cost)}
+                            {cost === null ? "" : formatMoneyMicro(cost)}
                           </td>
                         </tr>
                       );

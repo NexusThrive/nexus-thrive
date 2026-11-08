@@ -88,12 +88,12 @@ export default function GrowthView({ slug, baseUrl, siteSlug, siteEnabled, links
               getRowId={(r) => r.label}
               columns={[
                 { key: "label", header: "Origen", role: "primary", cell: (r) => r.label },
-                { key: "spend", header: "Inversión", role: "detail", align: "right", cell: (r) => <span className="font-mono tabular-nums">{r.spend ? formatCurrency(r.spend) : "—"}</span> },
-                { key: "clicks", header: "Clics", role: "detail", align: "right", cell: (r) => <span className="font-mono tabular-nums">{r.clicks || "—"}</span> },
+                { key: "spend", header: "Inversión", role: "detail", align: "right", cell: (r) => <span className="font-mono tabular-nums">{r.spend ? formatCurrency(r.spend) : ""}</span> },
+                { key: "clicks", header: "Clics", role: "detail", align: "right", cell: (r) => <span className="font-mono tabular-nums">{r.clicks || ""}</span> },
                 { key: "leads", header: "Contactos", role: "detail", align: "right", cell: (r) => <span className="font-mono tabular-nums">{r.leads}</span> },
-                { key: "cpl", header: "Costo por contacto", role: "detail", align: "right", cell: (r) => <span className="font-mono tabular-nums">{r.costPerLead === null ? "—" : formatCurrency(r.costPerLead)}</span> },
+                { key: "cpl", header: "Costo por contacto", role: "detail", align: "right", cell: (r) => <span className="font-mono tabular-nums">{r.costPerLead === null ? "" : formatCurrency(r.costPerLead)}</span> },
                 { key: "orders", header: "Ventas", role: "detail", align: "right", cell: (r) => <span className="font-mono tabular-nums">{r.orders} · {formatCurrency(r.revenue)}</span> },
-                { key: "roas", header: "Retorno", role: "figure", cell: (r) => <span className="font-mono">{r.roas === null ? "—" : `${r.roas.toLocaleString("es-CO")}×`}</span> },
+                { key: "roas", header: "Retorno", role: "figure", cell: (r) => <span className="font-mono">{r.roas === null ? "" : `${r.roas.toLocaleString("es-CO")}×`}</span> },
               ]}
             />
           </div>

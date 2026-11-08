@@ -177,9 +177,7 @@ export default function OrderDetailSheet({ slug, id, today, onClose }: { slug: s
                                 onChange={(e) => setQty({ ...qty, [l.id]: e.target.value.replace(/\D/g, "") })}
                                 className={`${inputClasses} h-8 w-20 text-right`}
                               />
-                            ) : (
-                              <span className="text-muted-foreground">—</span>
-                            )}
+                            ) : null}
                           </td>
                         ) : null}
                       </tr>

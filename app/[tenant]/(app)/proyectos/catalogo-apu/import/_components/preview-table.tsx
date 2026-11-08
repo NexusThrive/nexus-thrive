@@ -41,15 +41,15 @@ function ItemRow({ row }: { row: ParsedRow }) {
           <p className="mt-0.5 max-w-[220px] text-2xs leading-tight text-muted-foreground">{row.reason}</p>
         )}
       </td>
-      <td className="max-w-[220px] truncate px-3 py-2 text-sm text-foreground/80">{v.name || "—"}</td>
-      <td className="whitespace-nowrap px-3 py-2 text-xs text-muted-foreground">{v.code || "—"}</td>
-      <td className="whitespace-nowrap px-3 py-2 text-xs text-muted-foreground">{v.unit || "—"}</td>
-      <td className="whitespace-nowrap px-3 py-2 text-xs">{v.category || "—"}</td>
+      <td className="max-w-[220px] truncate px-3 py-2 text-sm text-foreground/80">{v.name || ""}</td>
+      <td className="whitespace-nowrap px-3 py-2 text-xs text-muted-foreground">{v.code || ""}</td>
+      <td className="whitespace-nowrap px-3 py-2 text-xs text-muted-foreground">{v.unit || ""}</td>
+      <td className="whitespace-nowrap px-3 py-2 text-xs">{v.category || ""}</td>
       <td className="whitespace-nowrap px-3 py-2 text-right text-xs tabular-nums text-muted-foreground">
         {v.quantity || "1"}
       </td>
       <td className="whitespace-nowrap px-3 py-2 text-right text-sm font-medium tabular-nums text-foreground/80">
-        {v.unitPrice ? `$${Number(v.unitPrice).toLocaleString("es-CO", { maximumFractionDigits: 2 })}` : "—"}
+        {v.unitPrice ? `$${Number(v.unitPrice).toLocaleString("es-CO", { maximumFractionDigits: 2 })}` : ""}
       </td>
     </tr>
   );
@@ -75,12 +75,12 @@ function ActivityRow({ row }: { row: ParsedRow }) {
         )}
       </td>
       <td className="max-w-[260px] truncate px-3 py-2 text-sm text-foreground/80">{v.activityName || "(sin nombre)"}</td>
-      <td className="whitespace-nowrap px-3 py-2 text-xs text-muted-foreground">{v.activityCode || "—"}</td>
-      <td className="whitespace-nowrap px-3 py-2 text-xs text-muted-foreground">{v.activityUnit || "—"}</td>
+      <td className="whitespace-nowrap px-3 py-2 text-xs text-muted-foreground">{v.activityCode || ""}</td>
+      <td className="whitespace-nowrap px-3 py-2 text-xs text-muted-foreground">{v.activityUnit || ""}</td>
       <td className="whitespace-nowrap px-3 py-2 text-xs">{lineCount} líneas</td>
-      <td className="whitespace-nowrap px-3 py-2 text-right text-xs tabular-nums text-muted-foreground">—</td>
+      <td className="whitespace-nowrap px-3 py-2 text-right text-xs tabular-nums text-muted-foreground"></td>
       <td className="whitespace-nowrap px-3 py-2 text-right text-sm font-semibold tabular-nums text-foreground/80">
-        {cost > 0 ? `$${Math.round(cost).toLocaleString("es-CO")}` : "—"}
+        {cost > 0 ? `$${Math.round(cost).toLocaleString("es-CO")}` : ""}
       </td>
     </tr>
   );

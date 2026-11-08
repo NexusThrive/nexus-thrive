@@ -109,8 +109,8 @@ function Paper({ doc, onOpenDocument }: { doc: DocumentView; onOpenDocument?: (i
                 <th scope="row" className="py-2.5 pr-2 text-left font-normal">{l.description}</th>
                 <td className="px-2 py-2.5 text-right font-mono tabular-nums">{l.quantity}</td>
                 <td className="px-2 py-2.5 text-right font-mono tabular-nums">{formatCurrency(l.unitPrice)}</td>
-                <td className="px-2 py-2.5 text-right font-mono tabular-nums">{l.discountPct ? `${l.discountPct} %` : "—"}</td>
-                <td className="px-2 py-2.5 text-right font-mono tabular-nums">{l.taxRatePct ? `${l.taxRatePct} %` : "—"}</td>
+                <td className="px-2 py-2.5 text-right font-mono tabular-nums">{l.discountPct ? `${l.discountPct} %` : ""}</td>
+                <td className="px-2 py-2.5 text-right font-mono tabular-nums">{l.taxRatePct ? `${l.taxRatePct} %` : ""}</td>
                 <td className="py-2.5 pl-2 text-right font-mono tabular-nums">{formatCurrency(l.total)}</td>
               </tr>
             ))}

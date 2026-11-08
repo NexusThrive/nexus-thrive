@@ -125,10 +125,10 @@ export default function CountSheet({ slug, id, onClose }: { slug: string; id: st
                           {open ? (
                             <input aria-label={`Contado de ${l.productName}`} inputMode="numeric" value={values[l.id] ?? ""} onChange={(e) => setValues({ ...values, [l.id]: e.target.value.replace(/\D/g, "") })} className={`${inputClasses} h-8 w-20 text-right`} />
                           ) : (
-                            <span className="font-mono tabular-nums">{l.counted ?? "—"}</span>
+                            <span className="font-mono tabular-nums">{l.counted ?? ""}</span>
                           )}
                         </td>
-                        <td className={`px-3 py-2 text-right font-mono tabular-nums ${diff ? (diff < 0 ? "text-danger" : "text-success") : "text-muted-foreground"}`}>{diff === null ? "—" : diff > 0 ? `+${diff}` : diff}</td>
+                        <td className={`px-3 py-2 text-right font-mono tabular-nums ${diff ? (diff < 0 ? "text-danger" : "text-success") : "text-muted-foreground"}`}>{diff === null ? "" : diff > 0 ? `+${diff}` : diff}</td>
                       </tr>
                     );
                   })}

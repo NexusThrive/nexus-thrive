@@ -406,7 +406,7 @@ export default function LeanWorkspace({
                     <td className="px-3 py-2">
                       {task.isRestricted ? <Badge className="border-red-400/30 bg-red-400/10 text-red-700 dark:text-red-300">Sí</Badge> : <Badge variant="outline">No</Badge>}
                     </td>
-                    <td className="px-3 py-2 text-muted-foreground">{task.notes ?? "—"}</td>
+                    <td className="px-3 py-2 text-muted-foreground">{task.notes ?? ""}</td>
                   </tr>
                 ))
               )}
@@ -472,7 +472,7 @@ export default function LeanWorkspace({
                     <td className="px-3 py-2 text-muted-foreground">
                       {commitment.status === "FAILED"
                         ? `${commitment.failureCause ? nonComplianceCauseLabel(commitment.failureCause as NonComplianceCauseValue) : "Sin causa registrada"}${commitment.failureNotes ? ` · ${commitment.failureNotes}` : ""}`
-                        : "—"}
+                        : ""}
                     </td>
                     <td className="px-3 py-2">
                       <CommitmentEvaluation

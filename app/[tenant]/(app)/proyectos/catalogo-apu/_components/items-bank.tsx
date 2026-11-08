@@ -577,7 +577,7 @@ export default function ItemsBank({
               rows.map((row) => (
                 <tr key={row.id} className="transition hover:bg-muted/60">
                   <td className="px-4 py-3 font-mono text-xs font-medium text-accent-text">
-                    {row.code ?? "—"}
+                    {row.code ?? ""}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">

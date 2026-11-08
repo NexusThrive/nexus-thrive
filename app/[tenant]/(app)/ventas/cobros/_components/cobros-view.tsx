@@ -417,8 +417,8 @@ function Differences({ list }: { list: Reconciliation["differences"] }) {
       columns={[
         { key: "ref", header: "Cobro", role: "primary", cell: (d) => <span className="font-mono font-normal">{d.externalId}</span> },
         { key: "kind", header: "Qué pasa", role: "secondary", cell: (d) => KIND_TEXT[d.kind] },
-        { key: "expected", header: "NEXUS", role: "detail", align: "right", cell: (d) => <span className="font-mono tabular-nums">{d.expected === null ? "—" : formatCurrency(d.expected)}</span> },
-        { key: "reported", header: "Proveedor", role: "detail", align: "right", cell: (d) => <span className="font-mono tabular-nums">{d.reported === null ? "—" : formatCurrency(d.reported)}</span> },
+        { key: "expected", header: "NEXUS", role: "detail", align: "right", cell: (d) => <span className="font-mono tabular-nums">{d.expected === null ? "" : formatCurrency(d.expected)}</span> },
+        { key: "reported", header: "Proveedor", role: "detail", align: "right", cell: (d) => <span className="font-mono tabular-nums">{d.reported === null ? "" : formatCurrency(d.reported)}</span> },
       ]}
     />
   );
