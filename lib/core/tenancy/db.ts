@@ -578,14 +578,38 @@ export function createTenantDb(tenantId: string) {
           .update({ active: true }),
 
       /**
-       * Borrado definitivo — SOLO de clientes ya archivados (la condición
-       * `active: false` se aplica aquí, no se confía en el cliente).
+       * Borrado definitivo de clientes, activos o archivados (siempre acotado
+       * al `tenantId`). Las notas y las membresías del cliente se borran en
+       * cascada; un cliente con proyectos de construcción lo impide la base
+       * (`Restrict`).
        * `Payment.customerId` usa `onDelete: SetNull`, así que los pagos
        * se conservan y quedan sin cliente vinculado.
        *
        * El `.delete()` del ORM borra UNA fila por llamada; para borrar en
        * lote se usa la SQL lane, cuyo `execute` resuelve `affectedRows`.
        */
+      deleteMany: async (ids: string[]) => {
+        const uniqueIds = [...new Set(ids)];
+
+        if (uniqueIds.length === 0) {
+          return 0;
+        }
+
+        const plan = db.sql.public.Customer
+          .delete()
+          .where((field, fns) =>
+            fns.and(
+              fns.eq(field.tenantId, tenantId),
+              fns.in(field.id, uniqueIds),
+            ),
+          )
+          .build();
+
+        const { affectedRows } = await db.runtime().execute(plan);
+        return affectedRows;
+      },
+
+      /** Borrado definitivo SOLO de clientes ya archivados (`active: false` se aplica aquí). */
       deleteManyArchived: async (ids: string[]) => {
         const uniqueIds = [...new Set(ids)];
 

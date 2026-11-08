@@ -594,9 +594,9 @@ export default function CustomerTable({
       >
         {`${selected.size} ${
           selected.size === 1
-            ? `${customerLabel} archivado seleccionado`
-            : `${customersLabel} archivados seleccionados`
-        } · sus pagos se conservan sin ${customerLabel} vinculado.`}
+            ? `${customerLabel} seleccionado`
+            : `${customersLabel} seleccionados`
+        } · sus pagos se conservan sin ${customerLabel} vinculado; sus notas y membresías se borran. Si solo quieres ocultarlo, archívalo.`}
       </ConfirmDialog>
     </div>
   );

@@ -117,8 +117,8 @@ export async function restoreCustomerAction(
 }
 
 /**
- * Borrado definitivo — solo clientes ya archivados (la condición se aplica
- * en la base de datos). Los pagos se conservan (FK `SetNull`).
+ * Borrado definitivo de clientes activos o archivados. Los pagos se conservan
+ * (FK `SetNull`); las notas y membresías se borran con el cliente.
  */
 export async function deleteCustomersAction(
   tenantSlug: string,
@@ -131,20 +131,19 @@ export async function deleteCustomersAction(
   const denied = cannotRemoveCustomers(context);
   if (denied) return denied;
   const { tenantDb, terms } = context;
-  const customersLabel = terms.customers.toLowerCase();
 
   if (!Array.isArray(customerIds) || customerIds.length === 0) {
     return {
       ok: false,
-      message: `Selecciona al menos un ${terms.customer.toLowerCase()} archivado.`,
+      message: `Selecciona al menos un ${terms.customer.toLowerCase()}.`,
     };
   }
 
-  const deleted = await tenantDb.customers.deleteManyArchived(customerIds);
+  const deleted = await tenantDb.customers.deleteMany(customerIds);
   if (deleted === 0) {
     return {
       ok: false,
-      message: `No había ${customersLabel} archivados para eliminar (recarga la página).`,
+      message: `No se pudo eliminar (recarga la página). Si tiene proyectos de obra, archívalo en su lugar.`,
     };
   }
 

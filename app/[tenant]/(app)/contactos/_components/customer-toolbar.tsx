@@ -125,14 +125,9 @@ export default function CustomerToolbar({
                   </Link>
                 </DropdownMenuItem>
                 {archived ? (
-                  <>
-                    <DropdownMenuItem onSelect={() => run("restore")}>
-                      <ArchiveRestore aria-hidden="true" className="size-4" /> Desarchivar
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onSelect={() => run("remove")} className="text-danger">
-                      <Trash2 aria-hidden="true" className="size-4" /> Eliminar
-                    </DropdownMenuItem>
-                  </>
+                  <DropdownMenuItem onSelect={() => run("restore")}>
+                    <ArchiveRestore aria-hidden="true" className="size-4" /> Desarchivar
+                  </DropdownMenuItem>
                 ) : (
                   <DropdownMenuItem onSelect={() => run("archive")}>
                     <Archive aria-hidden="true" className="size-4" /> Archivar
@@ -153,6 +148,9 @@ export default function CustomerToolbar({
             <DropdownMenuContent align="end" sideOffset={8} className="w-48">
               <DropdownMenuLabel>Mostrar</DropdownMenuLabel>
               <DropdownMenuRadioGroup value={status} onValueChange={(value) => setStatus(value as CustomerStatus)}>
+                <DropdownMenuItem onSelect={() => run("remove")} className="text-danger">
+                  <Trash2 aria-hidden="true" className="size-4" /> Eliminar
+                </DropdownMenuItem>
                 <DropdownMenuRadioItem value="active">Activos</DropdownMenuRadioItem>
                 <DropdownMenuRadioItem value="archived">Archivados</DropdownMenuRadioItem>
               </DropdownMenuRadioGroup>
