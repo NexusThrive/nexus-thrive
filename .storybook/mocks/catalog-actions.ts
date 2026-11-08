@@ -40,3 +40,7 @@ export async function saveMethodAction(_s: string, draft: { name: string }) { aw
 export async function setMethodActiveAction() { await wait(); return { ok: true as const }; }
 export async function moveMethodAction() { await wait(); return { ok: true as const }; }
 export async function deleteMethodAction() { await wait(); return { ok: true as const }; }
+
+// Listas de precios: por cantidad y a quién se aplican.
+export async function savePriceTiersAction(_s: string, _l: string, _p: string, tiers: { minQty: number }[]) { await wait(); return tiers.some((t) => t.minQty < 2) ? { ok: false as const, message: "La cantidad mínima de un escalón es 2 o más." } : { ok: true as const }; }
+export async function assignPriceListAction() { await wait(); return { ok: true as const }; }

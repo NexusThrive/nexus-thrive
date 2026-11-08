@@ -63,6 +63,9 @@ export async function deleteList(tenantId: string, id: string): Promise<PriceLis
   if (!list) return { ok: false, message: "Esa lista ya no existe." };
   if (list.isDefault) return { ok: false, message: "No se puede borrar la lista predeterminada." };
   await db.orm.public.PriceList.where({ tenantId, id }).delete();
+  // Quien la tenía asignada vuelve a la predeterminada.
+  for (const c of await db.orm.public.Customer.where({ tenantId, priceListId: id }).select("id").limit(5000).all()) await db.orm.public.Customer.where({ tenantId, id: c.id }).update({ priceListId: null });
+  for (const g of await db.orm.public.CustomerGroup.where({ tenantId, priceListId: id }).select("id").limit(500).all()) await db.orm.public.CustomerGroup.where({ tenantId, id: g.id }).update({ priceListId: null });
   return { ok: true };
 }
 

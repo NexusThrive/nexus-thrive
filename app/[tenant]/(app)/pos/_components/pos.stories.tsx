@@ -69,3 +69,14 @@ export const ConMediosDelNegocio: Story = {
     await expect(c.getByText("Cel. 300 123 4567")).toBeVisible();
   },
 };
+
+/** Al elegir un cliente con lista de precios, el catálogo y el carrito usan sus precios (y los escalones por cantidad). */
+export const ClienteConListaDePrecios: Story = {
+  args: { turn: { sessionId: "s1", terminalName: "Mostrador 1", openingAmount: 50_000 } },
+  play: async ({ canvasElement }) => {
+    const c = within(canvasElement);
+    await userEvent.click(c.getByRole("combobox", { name: "Cliente (opcional)" }));
+    await userEvent.click(await within(document.body).findByRole("option", { name: "Gym Center" }));
+    await expect(await c.findByText(/\$\s?4\.000/)).toBeVisible();
+  },
+};

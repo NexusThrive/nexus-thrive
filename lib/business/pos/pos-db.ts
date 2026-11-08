@@ -5,6 +5,8 @@ import { toNumber } from "@/lib/foundation/format";
 import { emitEvent } from "@/lib/core/events/outbox";
 import { StockError, applyStockMovement } from "@/lib/business/inventory/stock-service";
 import { db } from "@/prisma/db";
+import { priceListFor, pricingFor } from "@/lib/business/catalog/pricing-db";
+import { tierPrice } from "@/lib/business/catalog/pricing";
 import { cartTotals, lineDescription, settlePayments, tipFor, type PaymentInput } from "./cart";
 
 /**
@@ -92,6 +94,9 @@ export async function sellCart(tenantId: string, input: SaleInput, userId: strin
       const ids = [...new Set(input.lines.map((l) => l.productId))];
       const products = await tx.orm.public.Product.where({ tenantId }).where((p) => p.id.in(ids)).all();
       const byId = new Map(products.map((p) => [p.id, p]));
+      // Lista de precios de quien compra (la suya, la de su grupo o la predeterminada): el precio y los escalones por cantidad salen de la base.
+      const listId = await priceListFor(tenantId, input.customerId);
+      const pricing = await pricingFor(tenantId, listId, ids);
       const docLines = input.lines.map((l) => {
         const p = byId.get(l.productId);
         if (!p || !p.active) throw new MoneyError("Un producto del carrito ya no está disponible.");
@@ -102,7 +107,7 @@ export async function sellCart(tenantId: string, input: SaleInput, userId: strin
         // Renglón a medida: nota y precio acordado, solo si el producto es personalizable (si no, el precio es el de la base).
         const custom = p.customizable;
         if (custom && l.unitPrice != null && !(Number.isFinite(l.unitPrice) && l.unitPrice >= 0)) throw new MoneyError(`Precio inválido en «${p.name}».`);
-        return { description: lineDescription(p.name, custom ? l.note : null), quantity: l.quantity, unitPrice: custom && l.unitPrice != null ? l.unitPrice : toNumber(p.price), productId: p.id, discountPct, taxRatePct: p.taxCategory === "GRAVADO" ? toNumber(p.taxRatePct) : 0 };
+        return { description: lineDescription(p.name, custom ? l.note : null), quantity: l.quantity, unitPrice: custom && l.unitPrice != null ? l.unitPrice : tierPrice(toNumber(p.price), pricing[p.id]?.list, pricing[p.id]?.tiers, l.quantity), productId: p.id, discountPct, taxRatePct: p.taxCategory === "GRAVADO" ? toNumber(p.taxRatePct) : 0 };
       });
       const totals = cartTotals(docLines);
       const tip = tipFor(input.tip ?? {}, totals);

@@ -14,8 +14,10 @@ import { useToast } from "@/components/molecules/toast";
 import { FormDialog } from "@/components/organisms/form-sheet";
 import { useCurrentUserName } from "@/components/providers/current-user";
 import ReturnDialog from "./return-dialog";
-import { closeTurnAction, scanBarcodeAction, sellAction } from "@/app/[tenant]/(app)/pos/actions";
+import { closeTurnAction, posPricingAction, scanBarcodeAction, sellAction } from "@/app/[tenant]/(app)/pos/actions";
 import { cartTotals, MAX_CUSTOM_NOTE, settlePayments, tipFor } from "@/lib/business/pos/cart";
+import { tierPrice } from "@/lib/business/catalog/pricing";
+import type { ListPricing } from "@/lib/business/catalog/pricing-db";
 import { formatMoneyInput, parseMoney } from "@/lib/business/sales/money";
 import { formatCurrency } from "@/lib/foundation/format";
 import type { PaymentMethodOption } from "@/lib/business/sales/payment-methods";
@@ -100,6 +102,8 @@ export default function Sale({ slug, turn, products, categories, customers, meth
   const [categoryId, setCategoryId] = useState("");
   const [customerId, setCustomerId] = useState("");
   const [lines, setLines] = useState<Line[]>([]);
+  // Precios de la lista del cliente (la predeterminada si no hay cliente): se vuelven a pedir al cambiar de cliente; el servidor los recalcula al cobrar.
+  const [pricing, setPricing] = useState<Record<string, ListPricing>>({});
   const [tipPct, setTipPct] = useState(0);
   const firstMethod = (methods.find((m) => m.kind === "CASH") ?? methods[0])?.id ?? "";
   const [pays, setPays] = useState<Pay[]>([{ methodId: firstMethod, amount: "" }]);
@@ -121,7 +125,7 @@ export default function Sale({ slug, turn, products, categories, customers, meth
       .slice(0, 120);
   }, [products, q, inCategory]);
 
-  const priceOf = (l: Line) => l.unitPrice ?? byId.get(l.productId)!.price;
+  const priceOf = (l: Line) => l.unitPrice ?? tierPrice(byId.get(l.productId)!.price, pricing[l.productId]?.list, pricing[l.productId]?.tiers, l.quantity);
   const docLines = lines.map((l) => ({ description: byId.get(l.productId)!.name, quantity: l.quantity, unitPrice: priceOf(l), discountPct: l.discountPct, taxRatePct: byId.get(l.productId)!.taxRatePct }));
   const totals = cartTotals(docLines);
   const tip = tipFor({ pct: tipPct }, totals);
@@ -130,6 +134,16 @@ export default function Sale({ slug, turn, products, categories, customers, meth
   const payNums = pays.map((p) => ({ method: methodOf(p.methodId)?.kind ?? "CASH", methodId: p.methodId, amount: Number(p.amount.replace(",", ".")) || 0 }));
   const settled = settlePayments(due, payNums);
   const canCharge = !pending && lines.length > 0 && !("error" in settled);
+
+  useEffect(() => {
+    let alive = true;
+    void posPricingAction(slug, customerId || null).then((r) => {
+      if (alive) setPricing(r.ok ? r.pricing : {});
+    });
+    return () => {
+      alive = false;
+    };
+  }, [slug, customerId]);
 
   const add = (id: string) => setLines((ls) => (ls.some((l) => l.productId === id) ? ls.map((l) => (l.productId === id ? { ...l, quantity: l.quantity + 1 } : l)) : [...ls, { productId: id, quantity: 1, discountPct: 0 }]));
   const patch = (id: string, change: Partial<Line>) => setLines((ls) => ls.map((l) => (l.productId === id ? { ...l, ...change } : l)).filter((l) => l.quantity > 0));
@@ -242,7 +256,7 @@ export default function Sale({ slug, turn, products, categories, customers, meth
                     <span className="relative block aspect-[4/3] w-full overflow-hidden bg-surface-muted"><Photo src={p.imageUrl} /></span>
                     <span className="grid gap-0.5 p-2.5">
                       <span className="line-clamp-2 text-ui font-medium leading-snug">{p.name}</span>
-                      <span className="font-mono text-xs text-muted-foreground">{formatCurrency(p.price)}{p.stock !== null ? ` · ${p.stock} u.` : ""}</span>
+                      <span className="font-mono text-xs text-muted-foreground">{formatCurrency(tierPrice(p.price, pricing[p.id]?.list, undefined, 1))}{p.stock !== null ? ` · ${p.stock} u.` : ""}</span>
                     </span>
                   </button>
                 </li>

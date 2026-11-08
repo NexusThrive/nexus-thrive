@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { can } from "@/lib/core/auth/permissions";
+import { priceListFor, pricingFor, type ListPricing } from "@/lib/business/catalog/pricing-db";
 import { offeredPaymentMethods } from "@/lib/business/sales/payment-methods-db";
 import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
 import { findByBarcode } from "@/lib/business/catalog/catalog-db";
@@ -94,4 +95,12 @@ export async function returnSaleAction(slug: string, input: ReturnInput): Promis
   await logTenantAction(ctx, "BIZ_POS_TURN", { action: "return", documentId: input.documentId, noteNumber: r.noteNumber, refund: r.refund });
   revalidatePath(`/${slug}/inventario/productos`);
   return { ok: true, message: `Devolución registrada · nota crédito N.º ${r.noteNumber} · ${r.refund.toLocaleString("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 })}` };
+}
+
+/** Precios de la lista que le toca al cliente (o la predeterminada): precio de lista y escalones por cantidad por producto. */
+export async function posPricingAction(slug: string, customerId: string | null): Promise<{ ok: true; listId: string | null; pricing: Record<string, ListPricing> } | { ok: false; message: string }> {
+  const ctx = await cashier(slug);
+  if (!ctx) return { ok: false, message: "Tu rol no puede vender en el punto de venta." };
+  const listId = await priceListFor(ctx.tenantId, customerId);
+  return { ok: true, listId, pricing: await pricingFor(ctx.tenantId, listId) };
 }

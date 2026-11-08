@@ -23,3 +23,8 @@ export async function returnSaleAction(_s: string, input: { lines: { quantity: n
   await wait();
   return input.lines.some((l) => l.quantity > 0) ? { ok: true as const, message: "Devolución registrada · nota crédito N.º 5" } : { ok: false as const, message: "Elige qué se devuelve." };
 }
+export async function posPricingAction(_s: string, customerId: string | null) {
+  await wait(100);
+  // Muestra: el cliente u2 es mayorista (Barra de proteína a 4.000 y a 3.500 desde 10 unidades).
+  return { ok: true as const, listId: customerId === "u2" ? "mayorista" : null, pricing: customerId === "u2" ? { p2: { list: 4_000, tiers: [{ minQty: 10, price: 3_500 }] } } : {} };
+}
