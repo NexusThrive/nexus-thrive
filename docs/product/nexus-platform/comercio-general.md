@@ -348,3 +348,16 @@ Informes y Configuración) y **productos bien cargados**. Sin catálogo con cate
 - El estado real de la integración con el proveedor tecnológico de facturación electrónica.
 
 Cada punto se confirma leyendo el código al abrir su historia; nada de esto se da por hecho.
+
+## 12. Avance (2026-11-08)
+
+| # | Historia | Estado |
+|---|---|---|
+| 0 | Barra de módulo con *Informes ▾* y *Configuración ▾*; Punto de venta, Inventario y Facturación como apps | **Hecho.** Entradas sin pantalla se ven apagadas con «Pronto». |
+| 1 | Catálogo: tarjetas y tabla, categorías en árbol, atributos y variantes, producto en página con previsualización, listas de precios | **Hecho** (falta: precios por cantidad y asignar una lista a clientes, grupos o canales; importación masiva con categorías, código de barras y atributos). |
+| 2 | Medios de pago del negocio | **Pendiente.** Hoy el sistema solo distingue efectivo y transferencia (`PaymentProvider`); abrirlo toca el dinero y 20 pantallas. |
+| 3 | POS en `/pos`, pantalla completa, cliente opcional, categorías, F4, renglón a medida | **Hecho** (falta: lista de precios del cliente en el POS, factura POS numerada y el modo sin conexión). |
+| 4 | Inventario pulido (tablero, formulario de movimiento, proveedores con contacto) | **Pendiente.** Existen existencias, traslados, conteos y reposición. |
+| 5 | Facturación electrónica estructurada (tablero, series, pendientes) | **Pendiente.** Los menús ya apuntan a Impuestos y numeración. |
+| 6–10 | Ventas (listas con cifras), pedido multicanal, canales, reportes, ficha del comprador | **Pendiente.** |
+
