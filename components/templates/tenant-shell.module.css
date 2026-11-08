@@ -45,21 +45,22 @@
   }
 }
 
-/* Pantalla completa (punto de venta): si la página marca su contenido con data-kiosk, se oculta la barra superior, las migas, la barra
-   inferior del celular y el botón de AURI, y el contenido ocupa todo el ancho con una separación mínima. */
-.root:has([data-kiosk]) :global([data-app-topbar]),
-.root:has([data-kiosk]) :global([data-mobile-tabbar]),
-.root:has([data-kiosk]) :global([data-tour="help"]) {
+/* Pantalla completa (punto de venta): mientras el POS está montado marca <html data-kiosk>; entonces se oculta la barra superior, las
+   migas, la barra inferior del celular y el botón de AURI, y el contenido ocupa todo el ancho con una separación mínima. Se usa la marca
+   del documento (que el POS quita al desmontarse u ocultarse) y no :has() sobre el contenido, porque Next conserva oculta la página anterior. */
+:global(html[data-kiosk]) :global([data-app-topbar]),
+:global(html[data-kiosk]) :global([data-mobile-tabbar]),
+:global(html[data-kiosk]) :global([data-tour="help"]) {
   display: none;
 }
-.root:has([data-kiosk]) .main {
+:global(html[data-kiosk]) .main {
   padding-top: env(safe-area-inset-top, 0px);
 }
-.root:has([data-kiosk]) .view {
+:global(html[data-kiosk]) .view {
   max-width: none;
   min-height: 100dvh;
   padding: 8px max(8px, env(safe-area-inset-right, 0px)) max(8px, env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px));
 }
-.root:has([data-kiosk]) .view > nav:first-child {
+:global(html[data-kiosk]) .view > nav:first-child {
   display: none;
 }

@@ -88,6 +88,13 @@ export default function Sale({ slug, turn, products, categories, customers }: { 
   const cashier = useCurrentUserName();
   const clock = useClock();
   const fullscreen = useFullscreen();
+  // Modo pantalla completa del negocio (sin barra superior, a todo el ancho): solo mientras la venta está montada.
+  useEffect(() => {
+    document.documentElement.dataset.kiosk = "";
+    return () => {
+      delete document.documentElement.dataset.kiosk;
+    };
+  }, []);
   const [pending, start] = useTransition();
   const [q, setQ] = useState("");
   const [categoryId, setCategoryId] = useState("");
@@ -162,7 +169,7 @@ export default function Sale({ slug, turn, products, categories, customers }: { 
   const customProduct = customizing ? byId.get(customizing) : null;
 
   return (
-    <div data-kiosk="" className="grid gap-2 lg:h-[calc(100dvh-16px)] lg:grid-rows-[auto_minmax(0,1fr)]">
+    <div className="grid gap-2 lg:h-[calc(100dvh-16px)] lg:grid-rows-[auto_minmax(0,1fr)]">
       <div className="grid gap-2">
       <div className="flex flex-wrap items-center gap-2 text-ui">
         <a href={`/${slug}`} className={buttonVariants({ variant: "ghost", size: "sm" })}><ArrowLeft aria-hidden="true" className="size-4" />Inicio</a>
