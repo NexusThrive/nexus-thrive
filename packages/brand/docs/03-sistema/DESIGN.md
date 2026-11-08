@@ -161,6 +161,7 @@ Storybook con sus estados.
 |---|---|---|
 | Diálogo o panel lateral genérico | `ResponsiveSheet` (`drawer`, `size`, `busy`) | `components/organisms/responsive-sheet.tsx` |
 | Lista con controles (migas, búsqueda, filtros, vistas, paginador) | `ListControlPanel` (base de Odoo, modernizada) | `components/organisms/list-control-panel.tsx` |
+| Búsqueda avanzada de una lista (Buscar en · Filtros · Agrupar por · Favoritos) | `AdvancedSearch` (barra con chips + panel; recibe un `SearchSchema`, favoritos y sus acciones; estado en la URL) y el motor `lib/foundation/list-search.ts`. Una sección nueva solo define sus filtros, agrupaciones y campos (ver `lib/business/customers/customer-search.ts`) | `components/organisms/advanced-search/advanced-search.tsx` |
 | Migas de un registro («← Atrás» · «Clientes › Nombre») | `RecordBreadcrumbs` | `components/organisms/record-breadcrumbs.tsx` |
 | Crear algo: alta rápida y ficha completa aparte | Un modal por tipo de alta: alta rápida con lo esencial (`size="sm"`, 3 campos) que abre la ficha; la ficha completa se edita en su propia pantalla. Nunca un solo modal para todo | `app/[tenant]/(app)/crm/_components/customer-quick-create.tsx` |
 | Formulario en diálogo | `FormDialog` | `components/organisms/form-sheet.tsx` |
