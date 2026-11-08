@@ -17,6 +17,8 @@ export type ReceiptData = {
   tip: number;
   payments: { method: string; amount: number }[];
   change: number;
+  /** Lo que quedó a crédito (la persona lo debe). */
+  credit?: number;
 };
 
 const money = (n: number) => Math.round(n).toLocaleString("es-CO");
@@ -50,6 +52,7 @@ export function receiptLines(r: ReceiptData, width: 32 | 42 = 42): string[] {
   if (r.tip) out.push(pair("Propina", money(r.tip), width));
   out.push(rule);
   for (const p of r.payments) out.push(pair(METHOD[p.method] ?? p.method, money(p.amount), width));
+  if (r.credit) out.push(pair("A crédito", money(r.credit), width));
   if (r.change) out.push(pair("Cambio", money(r.change), width));
   out.push(rule, center("¡Gracias por tu compra!", width));
   return out;

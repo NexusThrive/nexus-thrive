@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowDown, ArrowUp, Banknote, Pencil, Plus, Smartphone, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Banknote, HandCoins, Pencil, Plus, Smartphone, Trash2 } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { Button } from "@/components/atoms/button";
 import { buttonVariants } from "@/components/atoms/button-variants";
@@ -53,10 +53,10 @@ export default function PaymentMethodsView({ slug, methods }: { slug: string; me
       <ul className="grid gap-2.5">
         {methods.map((m, i) => (
           <li key={m.id} className="grid gap-2 rounded-xl border border-border bg-surface p-4 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center">
-            <span aria-hidden="true" className="grid size-10 place-items-center rounded-lg bg-accent-subtle text-accent-text">{m.kind === "CASH" ? <Banknote className="size-5" /> : <Smartphone className="size-5" />}</span>
+            <span aria-hidden="true" className="grid size-10 place-items-center rounded-lg bg-accent-subtle text-accent-text">{m.kind === "CASH" ? <Banknote className="size-5" /> : m.kind === "CREDIT" ? <HandCoins className="size-5" /> : <Smartphone className="size-5" />}</span>
             <span className="min-w-0">
               <span className="flex flex-wrap items-center gap-2"><b className="truncate text-sm font-semibold">{m.name}</b>{m.active ? null : <Badge tone="muted">Apagado</Badge>}</span>
-              <span className="block text-ui text-muted-foreground">{m.kind === "CASH" ? "Efectivo: entra a la caja del turno" : "Transferencia o billetera"}{m.instructions ? ` · ${m.instructions}` : ""}</span>
+              <span className="block text-ui text-muted-foreground">{m.kind === "CASH" ? "Efectivo: entra a la caja del turno" : m.kind === "CREDIT" ? "Crédito: queda en la cartera del cliente" : "Transferencia o billetera"}{m.instructions ? ` · ${m.instructions}` : ""}</span>
             </span>
             <span className="flex items-center gap-1.5">
               <button type="button" aria-label={`Subir ${m.name}`} disabled={pending || i === 0} onClick={() => run(() => moveMethodAction(slug, m.id, -1))} className={buttonVariants({ variant: "ghost", size: "icon" })}><ArrowUp aria-hidden="true" className="size-4" /></button>

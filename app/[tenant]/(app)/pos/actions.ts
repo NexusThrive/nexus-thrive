@@ -51,12 +51,14 @@ export async function closeTurnAction(slug: string, sessionId: string, counted: 
 export async function sellAction(slug: string, input: SaleInput): Promise<SaleResult> {
   const ctx = await cashier(slug);
   if (!ctx) return { ok: false, message: "Tu rol no puede vender en el punto de venta." };
-  if (input.payments.some((p) => !PAYMENT_METHODS.some((m) => m.value === p.method))) return { ok: false, message: "Elige un medio de pago válido." };
+  if (input.payments.some((p) => p.method !== "CREDIT" && !PAYMENT_METHODS.some((m) => m.value === p.method))) return { ok: false, message: "Elige un medio de pago válido." };
   // El medio lo define el negocio: el nombre y el tipo salen de su configuración, no de lo que mande el navegador.
   const offered = await offeredPaymentMethods(ctx.tenantId);
   const payments: SaleInput["payments"] = [];
   for (const p of input.payments) {
     if (!p.methodId) {
+      // El crédito solo existe si el negocio lo ofrece como medio: no se acepta «a crédito» sin elegir ese medio.
+      if (p.method === "CREDIT") return { ok: false, message: "Elige el medio de pago a crédito." };
       payments.push({ method: p.method, amount: p.amount });
       continue;
     }

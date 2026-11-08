@@ -54,3 +54,12 @@ describe("número de la venta impreso", () => {
     expect(saleCode("POS-", 7)).toBe("POS-000007");
   });
 });
+
+describe("venta a crédito", () => {
+  it("el crédito cubre el valor sin cambio y no puede pasarse", () => {
+    const ok = settlePayments(100_000, [{ method: "CASH", amount: 40_000 }, { method: "CREDIT", amount: 60_000 }]);
+    expect("error" in ok).toBe(false);
+    if (!("error" in ok)) expect(ok.change).toBe(0);
+    expect("error" in settlePayments(100_000, [{ method: "CREDIT", amount: 120_000 }])).toBe(true);
+  });
+});

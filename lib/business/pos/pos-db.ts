@@ -119,16 +119,25 @@ export async function sellCart(tenantId: string, input: SaleInput, userId: strin
       const tip = tipFor(input.tip ?? {}, totals);
       const settled = settlePayments(totals.total + tip, input.payments);
       if ("error" in settled) throw new MoneyError(settled.error);
+      // Parte a crédito (fiado): la persona debe quedar identificada; lo que debe pasa a su cartera como cuenta de cobro.
+      const credit = Math.round(settled.applied.filter((p) => p.method === "CREDIT").reduce((s, p) => s + p.amount, 0) * 100) / 100;
+      const customer = credit > 0 ? await tx.orm.public.Customer.where({ tenantId, id: input.customerId ?? "" }).select("id", "name").first() : null;
+      if (credit > 0 && !customer) throw new MoneyError("Para vender a crédito elige el cliente.");
 
       const doc = await insertDocument(tx, tenantId, { kind: "SALE", status: "PAID", customerId: input.customerId ?? null, customerName: "Cliente de mostrador", originType: "POS", originId: terminal.id, tipTotal: tip, lines: docLines }, userId);
       const receipts: string[] = [];
       let firstPayment: string | null = null;
       for (const pay of settled.applied) {
+        if (pay.method === "CREDIT") continue;
         const income = await recordIncome(tx, tenantId, { amount: pay.amount, method: pay.method, notes: pay.label ?? null, customerId: input.customerId ?? null, description: `Venta POS ${terminal.name}`, cashDescription: `Venta POS ${terminal.name}`, sourceType: "POS", sourceId: doc.id, cashSessionId: turn.id, skipDocument: true }, userId);
         receipts.push(income.receipt);
         firstPayment ??= income.paymentId;
       }
       if (firstPayment) await tx.orm.public.Invoice.where({ tenantId, id: doc.id }).update({ paymentId: firstPayment });
+      if (credit > 0 && customer) {
+        const due = Temporal.Instant.fromEpochMilliseconds(Date.now() + 30 * 86_400_000);
+        await insertDocument(tx, tenantId, { kind: "BILL", status: "ISSUED", customerId: customer.id, customerName: customer.name, dueDate: due, sourceDocumentId: doc.id, originType: "POS", originId: doc.id, notes: `Venta a crédito en el punto de venta (venta ${saleCode(doc.prefix, doc.number)})`, lines: [{ description: `Venta a crédito ${saleCode(doc.prefix, doc.number)}`, quantity: 1, unitPrice: credit, taxRatePct: 0 }] }, userId);
+      }
 
       for (const l of docLines) {
         const p = byId.get(l.productId!)!;
@@ -176,5 +185,6 @@ export async function receiptOf(tenantId: string, documentId: string): Promise<i
     tip,
     payments: pays.map((p) => ({ method: String(p.provider), amount: toNumber(p.amount) })),
     change: Math.max(0, Math.round((paid - total - tip) * 100) / 100),
+    credit: Math.max(0, Math.round((total + tip - paid) * 100) / 100),
   };
 }

@@ -133,7 +133,9 @@ export default function Sale({ slug, turn, products, categories, customers, meth
   const methodOf = (id: string) => methods.find((m) => m.id === id);
   const payNums = pays.map((p) => ({ method: methodOf(p.methodId)?.kind ?? "CASH", methodId: p.methodId, amount: Number(p.amount.replace(",", ".")) || 0 }));
   const settled = settlePayments(due, payNums);
-  const canCharge = !pending && lines.length > 0 && !("error" in settled);
+  // A crédito la venta debe quedar a nombre de alguien: lo que se debe pasa a su cartera.
+  const needsCustomer = !customerId && payNums.some((p) => p.method === "CREDIT" && p.amount > 0);
+  const canCharge = !pending && lines.length > 0 && !("error" in settled) && !needsCustomer;
 
   useEffect(() => {
     let alive = true;
@@ -322,6 +324,7 @@ export default function Sale({ slug, turn, products, categories, customers, meth
               ))}
               {pays.map((p, i) => (methodOf(p.methodId)?.instructions ? <p key={`i${i}`} className="rounded-md bg-surface-muted px-3 py-2 text-xs text-muted-foreground">{methodOf(p.methodId)!.instructions}</p> : null))}
               <button type="button" onClick={() => setPays((ps) => [...ps, { methodId: (methods.find((m) => m.kind === "TRANSFER") ?? methods[0])?.id ?? "", amount: "" }])} className={buttonVariants({ variant: "ghost", size: "sm", className: "justify-self-start" })}>Agregar otro pago</button>
+              {needsCustomer ? <p className="text-xs text-danger">Para vender a crédito elige el cliente: lo que debe queda en su cartera.</p> : null}
               {"error" in settled && lines.length > 0 && payNums.some((x) => x.amount > 0) ? <p className="text-xs text-muted-foreground">{settled.error}</p> : null}
               {!("error" in settled) && settled.change > 0 ? <p className="text-ui font-medium">Cambio: {formatCurrency(settled.change)}</p> : null}
             </div>

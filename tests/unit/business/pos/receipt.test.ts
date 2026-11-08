@@ -35,3 +35,11 @@ describe("tiquete", () => {
     expect(new TextDecoder().decode(b.slice(2, -3))).toBe("Proteina hola!\n\n\n");
   });
 });
+
+describe("tiquete con crédito", () => {
+  it("muestra lo que quedó a crédito", async () => {
+    const { receiptLines } = await import("@/lib/business/pos/receipt");
+    const text = receiptLines({ business: "Tienda", taxId: null, code: "V-000001", date: "2026-11-08 10:00", lines: [], subtotal: 100, discountTotal: 0, taxTotal: 0, total: 100, tip: 0, payments: [{ method: "CASH", amount: 40 }], change: 0, credit: 60 }).join("\n");
+    expect(text).toMatch(/A crédito/);
+  });
+});

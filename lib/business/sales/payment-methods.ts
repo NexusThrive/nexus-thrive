@@ -3,11 +3,12 @@
  * CASH entra a la caja del turno; TRANSFER es transferencia o billetera (Nequi, Daviplata, QR del banco). El nombre y las
  * instrucciones son del negocio. Un negocio sin configurar ofrece Efectivo y Transferencia.
  */
-export type MethodKind = "CASH" | "TRANSFER";
+export type MethodKind = "CASH" | "TRANSFER" | "CREDIT";
 
 export const METHOD_KINDS: { value: MethodKind; label: string; hint: string }[] = [
   { value: "CASH", label: "Efectivo", hint: "Entra a la caja del turno y se cuadra al cerrarlo." },
   { value: "TRANSFER", label: "Transferencia o billetera", hint: "Nequi, Daviplata, QR o cuenta del banco: el dinero no pasa por la caja." },
+  { value: "CREDIT", label: "Crédito (fiado)", hint: "El cliente paga después: la venta exige elegir el cliente y lo que debe queda en su cartera como cuenta de cobro a 30 días." },
 ];
 
 export type PaymentMethodOption = { id: string; kind: MethodKind; name: string; instructions: string | null; active: boolean; position: number };
@@ -20,7 +21,7 @@ export const DEFAULT_METHODS: readonly PaymentMethodOption[] = [
 export const MAX_METHODS = 12;
 
 export function isMethodKind(value: string): value is MethodKind {
-  return value === "CASH" || value === "TRANSFER";
+  return value === "CASH" || value === "TRANSFER" || value === "CREDIT";
 }
 
 export type MethodDraft = { kind: string; name: string; instructions?: string | null };

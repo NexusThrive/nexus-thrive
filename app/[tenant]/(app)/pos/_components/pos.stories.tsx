@@ -80,3 +80,23 @@ export const ClienteConListaDePrecios: Story = {
     await expect(await c.findByText(/\$\s?4\.000/)).toBeVisible();
   },
 };
+
+/** Un medio a crédito exige elegir el cliente: lo que debe queda en su cartera. */
+export const VentaACredito: Story = {
+  args: {
+    turn: { sessionId: "s1", terminalName: "Mostrador 1", openingAmount: 50_000 },
+    methods: [
+      { id: "m1", kind: "CASH", name: "Efectivo", instructions: null, active: true, position: 0 },
+      { id: "m3", kind: "CREDIT", name: "Fiado", instructions: null, active: true, position: 1 },
+    ],
+  },
+  play: async ({ canvasElement }) => {
+    const c = within(canvasElement);
+    await userEvent.click(c.getByRole("button", { name: /^Agua/ }));
+    await userEvent.click(c.getByRole("combobox", { name: "Medio de pago 1" }));
+    await userEvent.click(await within(document.body).findByRole("option", { name: "Fiado" }));
+    await userEvent.type(c.getByRole("textbox", { name: "Valor del pago 1" }), "3000");
+    await expect(await c.findByText(/elige el cliente/)).toBeVisible();
+    await expect(c.getByRole("button", { name: /Cobrar/ })).toBeDisabled();
+  },
+};
