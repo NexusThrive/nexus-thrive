@@ -29,11 +29,11 @@ export const APP_MENUS: Partial<Record<CapabilityCategory, Def>> = {
     ],
   },
   "Punto de venta": {
-    informes: [{ items: [link("ventas-dia", "Ventas del día", "/pos/informes?periodo=hoy", "pos"), link("por-cajero", "Ventas por cajero y producto", "/pos/informes?periodo=7d", "pos"), soon("turnos", "Reporte de turnos")] }],
+    informes: [{ items: [link("ventas-dia", "Ventas del día", "/pos/informes?periodo=hoy", "pos"), link("por-cajero", "Ventas por cajero y producto", "/pos/informes?periodo=7d", "pos"), link("turnos", "Reporte de turnos", "/pos/informes/turnos", "pos")] }],
     configuracion: [{ items: [SETTINGS, link("pagos", "Medios de pago", "/pos/medios-de-pago", "pos"), soon("cajas", "Cajas y terminales"), soon("comprobante", "Impresión del comprobante")] }],
   },
   Inventario: {
-    informes: [{ items: [link("existencias", "Existencias", "/inventario/existencias"), link("reposicion", "Reposición", "/inventario/existencias?tab=reorder"), soon("kardex", "Movimientos (kardex)"), soon("valorizacion", "Valorización")] }],
+    informes: [{ items: [link("existencias", "Existencias", "/inventario/existencias"), link("reposicion", "Reposición", "/inventario/existencias?tab=reorder"), link("kardex", "Movimientos (kardex)", "/inventario/existencias/kardex", "inventory"), link("valorizacion", "Valorización", "/inventario/existencias/valorizacion", "inventory")] }],
     configuracion: [
       { items: [SETTINGS, link("bodegas", "Ubicaciones y bodegas", "/inventario/existencias?tab=warehouses"), soon("operaciones", "Tipos de operación")] },
       { title: "Productos", items: [link("categorias", "Categorías", "/inventario/categorias"), link("atributos", "Atributos", "/inventario/atributos"), soon("unidades", "Unidades de medida"), soon("barras", "Códigos de barras")] },

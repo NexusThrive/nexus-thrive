@@ -4,6 +4,7 @@ import { resolveLimits, validateAmount } from "@/lib/foundation/kernel/integrity
 import { findOrCreateContact } from "@/lib/business/customers/contacts-db";
 import { openObligation } from "@/lib/business/sales/obligations";
 import { db } from "@/prisma/db";
+import { availableStock, reservedByProduct } from "./reservations";
 import { cleanExternalId, normalizeCart, orderCode, orderTotals, validateCustomer, type CartLine, type CustomerData, type OrderChannel } from "./cart";
 
 /**
@@ -39,11 +40,13 @@ export async function createChannelOrder(tenantId: string, input: ChannelOrderIn
   if (!tenant) return { ok: false, code: "unavailable", message: "El negocio no está disponible." };
   const products = await db.orm.public.Product.where({ tenantId, active: true, sellable: true }).where((p) => p.id.in(cart.lines.map((l) => l.productId))).all();
   const byId = new Map(products.map((p) => [p.id, p]));
+  const reserved = await reservedByProduct(tenantId, cart.lines.map((l) => l.productId));
   const lines: { productId: string; name: string; quantity: number; unitPrice: number; taxRatePct: number }[] = [];
   for (const l of cart.lines) {
     const p = byId.get(l.productId);
     if (!p || !(p.kind === "PRODUCT" || p.kind === "SERVICE")) return { ok: false, code: "unavailable", message: "Un producto del pedido no existe o no se vende." };
-    if (p.trackStock && l.quantity > p.stock) return { ok: false, code: "unavailable", message: `De «${p.name}» solo quedan ${p.stock}.` };
+    const free = availableStock(p.stock, reserved.get(p.id) ?? 0);
+    if (p.trackStock && l.quantity > free) return { ok: false, code: "unavailable", message: `De «${p.name}» solo quedan ${free} disponibles (el resto está apartado en pedidos sin pagar).` };
     lines.push({ productId: p.id, name: p.name, quantity: l.quantity, unitPrice: toNumber(p.price), taxRatePct: p.taxCategory === "GRAVADO" ? toNumber(p.taxRatePct) : 0 });
   }
   const total = orderTotals(lines.map((l) => ({ description: l.name, quantity: l.quantity, unitPrice: l.unitPrice, taxRatePct: l.taxRatePct }))).total;

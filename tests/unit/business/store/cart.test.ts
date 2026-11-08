@@ -43,3 +43,11 @@ describe("pedidos por canal", () => {
     expect(cleanExternalId("x".repeat(200))?.length).toBe(80);
   });
 });
+
+describe("existencias apartadas", () => {
+  it("lo disponible es lo que hay menos lo apartado, sin bajar de cero", async () => {
+    const { availableStock } = await import("@/lib/business/store/reservations");
+    expect(availableStock(10, 3)).toBe(7);
+    expect(availableStock(2, 5)).toBe(0);
+  });
+});

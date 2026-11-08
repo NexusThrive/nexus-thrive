@@ -1,6 +1,7 @@
 import { emitEvent } from "@/lib/core/events/outbox";
 import { toNumber } from "@/lib/foundation/format";
 import { canTransitionOrder, resolveLimits, validateAmount } from "@/lib/foundation/kernel/integrity";
+import { availableStock, reservedByProduct } from "./reservations";
 import { paymentGatewayPort } from "./payment-gateway-port";
 import { findOrCreateContact } from "@/lib/business/customers/contacts-db";
 import { cancelFulfillment } from "./fulfillment-db";
@@ -30,11 +31,13 @@ export async function placeOrder(siteSlug: string, input: { customer: CustomerDa
 
   const products = await db.orm.public.Product.where({ tenantId, active: true, publishedOnline: true }).where((p) => p.id.in(cart.lines.map((l) => l.productId))).all();
   const byId = new Map(products.map((p) => [p.id, p]));
+  const reserved = await reservedByProduct(tenantId, cart.lines.map((l) => l.productId));
   const lines: { productId: string; name: string; quantity: number; unitPrice: number; taxRatePct: number }[] = [];
   for (const l of cart.lines) {
     const p = byId.get(l.productId);
     if (!p || !(p.kind === "PRODUCT" || p.kind === "SERVICE")) return { ok: false, message: "Un producto de tu carrito ya no está disponible. Actualiza la página." };
-    if (p.trackStock && l.quantity > p.stock) return { ok: false, message: `De «${p.name}» solo quedan ${p.stock}.` };
+    const free = availableStock(p.stock, reserved.get(p.id) ?? 0);
+    if (p.trackStock && l.quantity > free) return { ok: false, message: `De «${p.name}» solo quedan ${free}.` };
     lines.push({ productId: p.id, name: p.name, quantity: l.quantity, unitPrice: toNumber(p.price), taxRatePct: p.taxCategory === "GRAVADO" ? toNumber(p.taxRatePct) : 0 });
   }
   const total = orderTotals(lines.map((l) => ({ description: l.name, quantity: l.quantity, unitPrice: l.unitPrice, taxRatePct: l.taxRatePct }))).total;
