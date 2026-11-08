@@ -12,6 +12,8 @@
 /// - `documentId`: Documento de venta que deja al pagarse.
 /// - `review`: Aviso para revisar a mano (p. ej. se pagó sin existencias suficientes).
 /// - `origin`: De dónde llegó el cliente: { source, medium, campaign } (UTM).
+/// - `channel`: Por dónde entró el pedido: WEB (tienda en línea) | API | WHATSAPP | SHOPIFY | WOOCOMMERCE | OTHER.
+/// - `externalId`: Identificador del pedido en el canal de origen (p. ej. el de Shopify); con `channel` evita crear el mismo pedido dos veces.
 model StoreOrder {
   id                 String    @id @default(uuid())
   tenantId           String
@@ -32,6 +34,8 @@ model StoreOrder {
   documentId         String?
   review             String?
   origin             Json?
+  channel            String    @default("WEB")
+  externalId         String?
   paidAt             DateTime?
   abandonedNotifiedAt DateTime?
   createdAt          DateTime  @default(now())
@@ -41,6 +45,7 @@ model StoreOrder {
   delivery           Delivery?
 
   @@unique([tenantId, number])
+  @@unique([tenantId, channel, externalId])
   @@index([tenantId, status])
   @@rls
 }

@@ -21544,6 +21544,13 @@
                   "kind": "scalar"
                 }
               },
+              "channel": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "city": {
                 "nullable": true,
                 "type": {
@@ -21580,6 +21587,13 @@
                 }
               },
               "email": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "externalId": {
                 "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
@@ -21765,6 +21779,9 @@
                 "address": {
                   "column": "address"
                 },
+                "channel": {
+                  "column": "channel"
+                },
                 "city": {
                   "column": "city"
                 },
@@ -21782,6 +21799,9 @@
                 },
                 "email": {
                   "column": "email"
+                },
+                "externalId": {
+                  "column": "externalId"
                 },
                 "fulfillment": {
                   "column": "fulfillment"
@@ -45057,6 +45077,15 @@
                   "nativeType": "text",
                   "nullable": true
                 },
+                "channel": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "WEB"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
                 "city": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -45087,6 +45116,11 @@
                   "nullable": true
                 },
                 "email": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "externalId": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
                   "nullable": true
@@ -45213,6 +45247,13 @@
                   "columns": [
                     "tenantId",
                     "number"
+                  ]
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "channel",
+                    "externalId"
                   ]
                 }
               ]
@@ -48782,7 +48823,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "ebbd95b7f553eb9a9e5fa1b80967ad2084691849a3c21418d11e4dd7b557b432"
+    "storageHash": "9ccd58adc7f56a676810c7e9f65af930aa7f6ba7c70dc54877c6968fdd3abcb1"
   },
   "execution": {
     "executionHash": "4321edea3e57b8015e2f1e97755e26305d419df2587b1b5f1d0b1d11fec5b38a",

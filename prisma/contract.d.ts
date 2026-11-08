@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'ebbd95b7f553eb9a9e5fa1b80967ad2084691849a3c21418d11e4dd7b557b432'>;
+  StorageHashBase<'9ccd58adc7f56a676810c7e9f65af930aa7f6ba7c70dc54877c6968fdd3abcb1'>;
 export type ExecutionHash =
   ExecutionHashBase<'4321edea3e57b8015e2f1e97755e26305d419df2587b1b5f1d0b1d11fec5b38a'>;
 export type ProfileHash =
@@ -1935,12 +1935,14 @@ export type FieldOutputTypes = {
     readonly StoreOrder: {
       readonly abandonedNotifiedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly address: CodecTypes['pg/text@1']['output'] | null;
+      readonly channel: CodecTypes['pg/text@1']['output'];
       readonly city: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly customerId: CodecTypes['pg/text@1']['output'] | null;
       readonly customerName: CodecTypes['pg/text@1']['output'];
       readonly documentId: CodecTypes['pg/text@1']['output'] | null;
       readonly email: CodecTypes['pg/text@1']['output'] | null;
+      readonly externalId: CodecTypes['pg/text@1']['output'] | null;
       readonly fulfillment: CodecTypes['pg/text@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly intentId: CodecTypes['pg/text@1']['output'] | null;
@@ -4016,12 +4018,14 @@ export type FieldInputTypes = {
     readonly StoreOrder: {
       readonly abandonedNotifiedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly address: CodecTypes['pg/text@1']['input'] | null;
+      readonly channel: CodecTypes['pg/text@1']['input'];
       readonly city: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly customerId: CodecTypes['pg/text@1']['input'] | null;
       readonly customerName: CodecTypes['pg/text@1']['input'];
       readonly documentId: CodecTypes['pg/text@1']['input'] | null;
       readonly email: CodecTypes['pg/text@1']['input'] | null;
+      readonly externalId: CodecTypes['pg/text@1']['input'] | null;
       readonly fulfillment: CodecTypes['pg/text@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly intentId: CodecTypes['pg/text@1']['input'] | null;
@@ -6097,12 +6101,14 @@ export type StorageColumnTypes = {
     readonly StoreOrder: {
       readonly abandonedNotifiedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly address: CodecTypes['pg/text@1']['output'] | null;
+      readonly channel: CodecTypes['pg/text@1']['output'];
       readonly city: CodecTypes['pg/text@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly customerId: CodecTypes['pg/text@1']['output'] | null;
       readonly customerName: CodecTypes['pg/text@1']['output'];
       readonly documentId: CodecTypes['pg/text@1']['output'] | null;
       readonly email: CodecTypes['pg/text@1']['output'] | null;
+      readonly externalId: CodecTypes['pg/text@1']['output'] | null;
       readonly fulfillment: CodecTypes['pg/text@1']['output'];
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly intentId: CodecTypes['pg/text@1']['output'] | null;
@@ -8178,12 +8184,14 @@ export type StorageColumnInputTypes = {
     readonly StoreOrder: {
       readonly abandonedNotifiedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly address: CodecTypes['pg/text@1']['input'] | null;
+      readonly channel: CodecTypes['pg/text@1']['input'];
       readonly city: CodecTypes['pg/text@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly customerId: CodecTypes['pg/text@1']['input'] | null;
       readonly customerName: CodecTypes['pg/text@1']['input'];
       readonly documentId: CodecTypes['pg/text@1']['input'] | null;
       readonly email: CodecTypes['pg/text@1']['input'] | null;
+      readonly externalId: CodecTypes['pg/text@1']['input'] | null;
       readonly fulfillment: CodecTypes['pg/text@1']['input'];
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly intentId: CodecTypes['pg/text@1']['input'] | null;
@@ -10681,12 +10689,14 @@ export namespace Models {
   export type public_StoreOrder = {
     abandonedNotifiedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
     address: CodecTypes['pg/text@1']['output'] | null;
+    channel: CodecTypes['pg/text@1']['output'];
     city: CodecTypes['pg/text@1']['output'] | null;
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     customerId: CodecTypes['pg/text@1']['output'] | null;
     customerName: CodecTypes['pg/text@1']['output'];
     documentId: CodecTypes['pg/text@1']['output'] | null;
     email: CodecTypes['pg/text@1']['output'] | null;
+    externalId: CodecTypes['pg/text@1']['output'] | null;
     fulfillment: CodecTypes['pg/text@1']['output'];
     id: CodecTypes['pg/text@1']['output'];
     intentId: CodecTypes['pg/text@1']['output'] | null;
@@ -24846,6 +24856,15 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
                 };
+                readonly channel: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'WEB'>;
+                  };
+                };
                 readonly city: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
@@ -24873,6 +24892,11 @@ type ContractBase = Omit<
                   readonly nullable: true;
                 };
                 readonly email: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly externalId: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
@@ -24952,7 +24976,10 @@ type ContractBase = Omit<
                 };
               };
               primaryKey: { readonly columns: readonly ['id'] };
-              uniques: readonly [{ readonly columns: readonly ['tenantId', 'number'] }];
+              uniques: readonly [
+                { readonly columns: readonly ['tenantId', 'number'] },
+                { readonly columns: readonly ['tenantId', 'channel', 'externalId'] },
+              ];
               indexes: readonly [
                 {
                   readonly name: 'StoreOrder_tenantId_idx_c93ed4f1';
@@ -40812,6 +40839,10 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly channel: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly city: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -40836,6 +40867,10 @@ type ContractBase = Omit<
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly email: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly externalId: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
@@ -40960,12 +40995,14 @@ type ContractBase = Omit<
               readonly fields: {
                 readonly abandonedNotifiedAt: { readonly column: 'abandonedNotifiedAt' };
                 readonly address: { readonly column: 'address' };
+                readonly channel: { readonly column: 'channel' };
                 readonly city: { readonly column: 'city' };
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly customerId: { readonly column: 'customerId' };
                 readonly customerName: { readonly column: 'customerName' };
                 readonly documentId: { readonly column: 'documentId' };
                 readonly email: { readonly column: 'email' };
+                readonly externalId: { readonly column: 'externalId' };
                 readonly fulfillment: { readonly column: 'fulfillment' };
                 readonly id: { readonly column: 'id' };
                 readonly intentId: { readonly column: 'intentId' };
