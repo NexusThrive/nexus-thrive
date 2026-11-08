@@ -73,7 +73,16 @@ export async function closeTurn(tenantId: string, sessionId: string, counted: nu
 
 /** `note` y `unitPrice` solo valen en productos marcados como personalizables (renglón a medida); en los demás el servidor los ignora. */
 export type CartLineInput = { productId: string; quantity: number; discountPct?: number; note?: string; unitPrice?: number };
-export type SaleInput = { lines: CartLineInput[]; tip?: { pct?: number; fixed?: number }; payments: PaymentInput[]; customerId?: string | null };
+export type SaleInput = { lines: CartLineInput[]; tip?: { pct?: number; fixed?: number }; payments: PaymentInput[]; customerId?: string | null; /** Identificador de la venta que pone el dispositivo: enviarla dos veces (p. ej. al volver la conexión) no la registra dos veces. */ clientSaleId?: string };
+
+export const isClientSaleId = (v: unknown): v is string => typeof v === "string" && /^[A-Za-z0-9-]{8,64}$/.test(v);
+
+/** La venta ya registrada con ese identificador del dispositivo (la guarda el primer pago), o `null`. */
+export async function existingSale(tenantId: string, clientSaleId: string): Promise<Extract<SaleResult, { ok: true }> | null> {
+  const pay = await db.orm.public.Payment.where({ tenantId, providerRefId: `pos:${clientSaleId}:0` }).select("sourceId").first();
+  const doc = pay?.sourceId ? await db.orm.public.Invoice.where({ tenantId, id: pay.sourceId, kind: "SALE" }).select("id", "number", "prefix", "total", "tipTotal").first() : null;
+  return doc ? { ok: true, documentId: doc.id, number: doc.number, code: saleCode(doc.prefix, doc.number), total: toNumber(doc.total), tip: toNumber(doc.tipTotal), change: 0, receipts: [] } : null;
+}
 export type SaleResult = { ok: true; documentId: string; number: number; /** Número tal como sale en el tiquete: con el prefijo de la resolución de numeración si el negocio la tiene. */ code?: string; total: number; tip: number; change: number; receipts: string[] } | { ok: false; message: string };
 
 /** Descuento máximo que un cajero puede dar por su cuenta en una línea. */
@@ -90,6 +99,11 @@ export function saleCode(prefix: string | null | undefined, number: number): str
  */
 export async function sellCart(tenantId: string, input: SaleInput, userId: string, opts: { canDiscountOver?: boolean } = {}): Promise<SaleResult> {
   if (!input.lines.length) return { ok: false, message: "Agrega al menos un producto." };
+  if (input.clientSaleId !== undefined && !isClientSaleId(input.clientSaleId)) return { ok: false, message: "Identificador de venta inválido." };
+  if (input.clientSaleId) {
+    const again = await existingSale(tenantId, input.clientSaleId);
+    if (again) return again;
+  }
   try {
     return await moneyTransaction(async (tx) => {
       const turn = await tx.orm.public.CashSession.where({ tenantId, openedById: userId }).where((s) => s.closedAt.isNull()).where((s) => s.terminalId.isNotNull()).first();
@@ -127,9 +141,10 @@ export async function sellCart(tenantId: string, input: SaleInput, userId: strin
       const doc = await insertDocument(tx, tenantId, { kind: "SALE", status: "PAID", customerId: input.customerId ?? null, customerName: "Cliente de mostrador", originType: "POS", originId: terminal.id, tipTotal: tip, lines: docLines }, userId);
       const receipts: string[] = [];
       let firstPayment: string | null = null;
+      let paymentIndex = 0;
       for (const pay of settled.applied) {
         if (pay.method === "CREDIT") continue;
-        const income = await recordIncome(tx, tenantId, { amount: pay.amount, method: pay.method, notes: pay.label ?? null, customerId: input.customerId ?? null, description: `Venta POS ${terminal.name}`, cashDescription: `Venta POS ${terminal.name}`, sourceType: "POS", sourceId: doc.id, cashSessionId: turn.id, skipDocument: true }, userId);
+        const income = await recordIncome(tx, tenantId, { amount: pay.amount, method: pay.method, notes: pay.label ?? null, providerRefId: input.clientSaleId ? `pos:${input.clientSaleId}:${paymentIndex++}` : null, customerId: input.customerId ?? null, description: `Venta POS ${terminal.name}`, cashDescription: `Venta POS ${terminal.name}`, sourceType: "POS", sourceId: doc.id, cashSessionId: turn.id, skipDocument: true }, userId);
         receipts.push(income.receipt);
         firstPayment ??= income.paymentId;
       }
@@ -154,6 +169,11 @@ export async function sellCart(tenantId: string, input: SaleInput, userId: strin
     });
   } catch (e) {
     if (e instanceof MoneyError) return { ok: false, message: e.message };
+    // Dos envíos a la vez de la misma venta: gana el primero y el otro devuelve esa venta.
+    if (input.clientSaleId && /providerRefId|Payment_.*key|unique|duplicate/i.test(String((e as Error)?.message ?? e))) {
+      const again = await existingSale(tenantId, input.clientSaleId);
+      if (again) return again;
+    }
     throw e;
   }
 }

@@ -100,3 +100,23 @@ export const VentaACredito: Story = {
     await expect(c.getByRole("button", { name: /Cobrar/ })).toBeDisabled();
   },
 };
+
+/** Sin internet la venta se guarda en el dispositivo; al volver la conexión se envía sola. */
+export const SinConexion: Story = {
+  args: { turn: { sessionId: "s1", terminalName: "Mostrador 1", openingAmount: 50_000 } },
+  play: async ({ canvasElement }) => {
+    const c = within(canvasElement);
+    window.localStorage.clear();
+    const online = Object.getOwnPropertyDescriptor(Navigator.prototype, "onLine");
+    Object.defineProperty(navigator, "onLine", { configurable: true, get: () => false });
+    await userEvent.click(c.getByRole("button", { name: /^Agua/ }));
+    await userEvent.type(c.getByRole("textbox", { name: "Valor del pago 1" }), "3000");
+    await userEvent.click(c.getByRole("button", { name: /Cobrar/ }));
+    await expect(await c.findByText("1 venta sin enviar")).toBeVisible();
+    // Vuelve la conexión: se envía sola.
+    delete (navigator as { onLine?: boolean }).onLine;
+    if (online) Object.defineProperty(Navigator.prototype, "onLine", online);
+    window.dispatchEvent(new Event("online"));
+    await expect(await within(document.body).findByText(/Venta sin conexión enviada/)).toBeVisible();
+  },
+};

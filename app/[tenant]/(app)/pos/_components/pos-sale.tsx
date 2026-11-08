@@ -15,6 +15,8 @@ import { FormDialog } from "@/components/organisms/form-sheet";
 import { useCurrentUserName } from "@/components/providers/current-user";
 import ReturnDialog from "./return-dialog";
 import { closeTurnAction, posPricingAction, scanBarcodeAction, sellAction } from "@/app/[tenant]/(app)/pos/actions";
+import { isNetworkFailure } from "@/lib/business/pos/offline-queue";
+import { newSaleId, useOfflineSales } from "./use-offline-sales";
 import { cartTotals, MAX_CUSTOM_NOTE, settlePayments, tipFor } from "@/lib/business/pos/cart";
 import { tierPrice } from "@/lib/business/catalog/pricing";
 import type { ListPricing } from "@/lib/business/catalog/pricing-db";
@@ -98,6 +100,10 @@ export default function Sale({ slug, turn, products, categories, customers, meth
     };
   }, []);
   const [pending, start] = useTransition();
+  const offline = useOfflineSales(slug, (r) => {
+    toast(`Venta sin conexión enviada: ${r.code ?? `N.º ${r.number}`} · ${formatCurrency(r.total)}`, "success");
+    router.refresh();
+  });
   const [q, setQ] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [customerId, setCustomerId] = useState("");
@@ -153,13 +159,32 @@ export default function Sale({ slug, turn, products, categories, customers, meth
   const charge = () =>
     start(async () => {
       setError(null);
-      const r = await sellAction(slug, { lines: lines.map((l) => ({ productId: l.productId, quantity: l.quantity, discountPct: l.discountPct, note: l.note, unitPrice: l.unitPrice })), tip: { pct: tipPct }, payments: payNums, customerId: customerId || null });
+      const input = { lines: lines.map((l) => ({ productId: l.productId, quantity: l.quantity, discountPct: l.discountPct, note: l.note, unitPrice: l.unitPrice })), tip: { pct: tipPct }, payments: payNums, customerId: customerId || null, clientSaleId: newSaleId() };
+      const clearSale = () => {
+        setLines([]);
+        setPays([{ methodId: firstMethod, amount: "" }]);
+        setTipPct(0);
+        setCustomerId("");
+      };
+      // Sin internet: la venta se guarda en este dispositivo y se envía sola al volver la conexión (el servidor no la repite).
+      const saveOffline = () => {
+        if (payNums.some((p) => p.method === "CREDIT" && p.amount > 0)) return setError("Sin conexión no se puede vender a crédito: la venta necesita validar al cliente. Cobra con otro medio o espera la conexión.");
+        const label = `${lines.reduce((n, l) => n + l.quantity, 0)} u. · ${formatCurrency(due)}`;
+        if (!offline.save({ id: input.clientSaleId, at: new Date().toISOString(), label, input })) return setError("Hay demasiadas ventas sin enviar. Espera la conexión antes de seguir vendiendo.");
+        clearSale();
+        toast("Sin conexión: la venta quedó guardada y se enviará sola", "info");
+      };
+      if (typeof navigator !== "undefined" && navigator.onLine === false) return saveOffline();
+      let r;
+      try {
+        r = await sellAction(slug, input);
+      } catch (e) {
+        if (isNetworkFailure(e)) return saveOffline();
+        throw e;
+      }
       if (!r.ok) return setError(r.message);
       setDone({ id: r.documentId, number: r.number, code: r.code, total: r.total, tip: r.tip, change: r.change });
-      setLines([]);
-      setPays([{ methodId: firstMethod, amount: "" }]);
-      setTipPct(0);
-      setCustomerId("");
+      clearSale();
       toast(`Venta ${r.code ?? `N.º ${r.number}`} registrada`, "success");
       router.refresh();
     });
@@ -213,6 +238,18 @@ export default function Sale({ slug, turn, products, categories, customers, meth
           {done.change ? ` · Cambio ${formatCurrency(done.change)}` : ""}
           {" · "}
           <a href={`/${slug}/pos/receipt/${done.id}`} target="_blank" rel="noopener noreferrer" className="font-semibold underline underline-offset-2">Imprimir tiquete</a>
+        </Alert>
+      ) : null}
+      {offline.queue.length > 0 ? (
+        <Alert tone="warning">
+          <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <b>{offline.queue.length} {offline.queue.length === 1 ? "venta sin enviar" : "ventas sin enviar"}</b>
+            <span>{offline.queue.some((q) => q.error) ? "Algunas no pasaron: revísalas." : "Se enviarán solas al volver la conexión."}</span>
+            <button type="button" disabled={offline.sending} onClick={() => void offline.flush()} className="font-semibold underline underline-offset-2 disabled:opacity-60">{offline.sending ? "Enviando…" : "Enviar ahora"}</button>
+          </span>
+          {offline.queue.filter((q) => q.error).map((q) => (
+            <span key={q.id} className="mt-1 flex flex-wrap items-center gap-2 text-ui"><span>{q.label}: {q.error}</span><button type="button" onClick={() => offline.discard(q.id)} className="font-semibold underline underline-offset-2">Descartar</button></span>
+          ))}
         </Alert>
       ) : null}
       </div>
