@@ -240,8 +240,9 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
         </div>
       </div>
 
-      <div className="mx-auto flex w-full max-w-[1240px] flex-wrap items-start gap-5 px-5 pb-24 pt-2">
-        <div className="flex min-w-0 shrink grow-[2] basis-[560px] flex-col gap-4">
+      {/* A todo el ancho, con el margen del panel de control: el detalle a la izquierda y la actividad a la derecha. */}
+      <div className="flex w-full flex-col items-start gap-6 px-5 pb-2 pt-2 lg:flex-row">
+        <div className="flex w-full min-w-0 flex-1 flex-col gap-4">
           {/* Etapas */}
           <section aria-label="Etapa de la oportunidad" className={cn(card, "px-[22px] pb-[18px] pt-5")}>
             <div className="mb-4 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
@@ -528,10 +529,23 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
               )}
             </div>
           </section>
+          {open ? (
+            <section aria-labelledby="opp-ganada" className={cn(card, "flex flex-col gap-3")}>
+              <h2 id="opp-ganada" className="text-base font-semibold text-foreground">
+                Al marcarla como ganada
+              </h2>
+              {["Se crea el pedido con las cantidades y el valor", "Queda listo el cobro o la factura", `Se registra en la ficha de ${o.customer?.name ?? "su cliente"}`].map((t) => (
+                <span key={t} className="flex items-center gap-2.5 text-ui text-foreground">
+                  <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-success" />
+                  {t}
+                </span>
+              ))}
+            </section>
+          ) : null}
         </div>
 
-        {/* Columna lateral */}
-        <aside className="flex min-w-0 max-w-[420px] shrink grow basis-[320px] flex-col gap-4 max-[900px]:max-w-none max-[900px]:basis-full">
+        {/* Columna de actividad: la próxima actividad y la línea de tiempo, sin fondo de tarjeta */}
+        <aside className="flex w-full min-w-0 shrink-0 flex-col gap-5 lg:w-[400px] lg:border-l lg:border-border lg:ps-6 xl:w-[440px]">
           {open ? (
             <section aria-labelledby="opp-proxima" className={cn(card, "flex flex-col gap-3.5", next && "border-accent-subtle")}>
               <div className="flex items-center justify-between gap-2.5">
@@ -593,7 +607,7 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
             </section>
           ) : null}
 
-          <section aria-labelledby="opp-actividad" className={cn(card, "flex flex-col gap-[18px]")}>
+          <section aria-labelledby="opp-actividad" className="flex flex-col gap-[18px]">
             <div className="flex flex-wrap items-center justify-between gap-2.5">
               <h2 id="opp-actividad" className="text-base font-semibold text-foreground">
                 Actividad
@@ -708,19 +722,6 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
             {groups.length === 0 ? <p className="text-center text-sm text-muted-foreground">{q ? "Nada coincide con la búsqueda." : "Aún no hay actividad."}</p> : null}
           </section>
 
-          {open ? (
-            <section aria-labelledby="opp-ganada" className={cn(card, "flex flex-col gap-3")}>
-              <h2 id="opp-ganada" className="text-base font-semibold text-foreground">
-                Al marcarla como ganada
-              </h2>
-              {["Se crea el pedido con las cantidades y el valor", "Queda listo el cobro o la factura", `Se registra en la ficha de ${o.customer?.name ?? "su cliente"}`].map((t) => (
-                <span key={t} className="flex items-center gap-2.5 text-ui text-foreground">
-                  <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-success" />
-                  {t}
-                </span>
-              ))}
-            </section>
-          ) : null}
         </aside>
       </div>
 

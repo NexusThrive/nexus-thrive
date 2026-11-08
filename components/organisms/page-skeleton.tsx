@@ -209,7 +209,7 @@ function ListSkeleton({ label }: { label: string }) {
   );
 }
 
-/** Registro (ficha o formulario de cliente): panel de control y contenedor de 1240 px con tarjetas y columna lateral. */
+/** Registro (ficha o formulario): panel de control y, a todo el ancho, tarjetas a la izquierda y la columna lateral a la derecha. */
 function RecordSkeleton({ label }: { label: string }) {
   const card = "rounded-xl border border-border bg-card p-[22px]";
   return (
@@ -224,8 +224,8 @@ function RecordSkeleton({ label }: { label: string }) {
           <Skeleton className="h-[34px] w-24" />
         </div>
       </div>
-      <div className="mx-auto flex w-full max-w-[1240px] flex-wrap items-start gap-5 px-5 pb-24 pt-2">
-        <div className="flex min-w-0 shrink grow-[2] basis-[560px] flex-col gap-4">
+      <div className="flex w-full flex-col items-start gap-6 px-5 pb-2 pt-2 lg:flex-row">
+        <div className="flex w-full min-w-0 flex-1 flex-col gap-4">
           <div className={`${card} flex flex-wrap items-start gap-5`}>
             <Skeleton className="size-[88px] shrink-0 rounded-[22px]" />
             <div className="grid min-w-0 flex-1 basis-64 gap-3">
@@ -251,7 +251,7 @@ function RecordSkeleton({ label }: { label: string }) {
             <Skeleton className="h-10 w-full" />
           </div>
         </div>
-        <div className="flex min-w-0 max-w-[420px] shrink grow basis-[300px] flex-col gap-4">
+        <div className="flex w-full min-w-0 shrink-0 flex-col gap-4 lg:w-[400px] lg:border-l lg:border-border lg:ps-6 xl:w-[440px]">
           <div className={`${card} grid gap-3`}>
             <Skeleton className="h-4 w-24" />
             {Array.from({ length: 4 }).map((_, i) => (

@@ -39,7 +39,10 @@ export default function FichaActivity({
   whatsappHref,
   activityHref,
   now,
+  bare = false,
 }: {
+  /** Sin fondo de tarjeta: la línea de tiempo en la columna derecha de la ficha. */
+  bare?: boolean;
   slug: string;
   customerId: string;
   items: ActivityItem[];
@@ -91,7 +94,7 @@ export default function FichaActivity({
     });
 
   return (
-    <section aria-labelledby="ficha-actividad" className="rounded-xl border border-border bg-card p-[22px]">
+    <section aria-labelledby="ficha-actividad" className={bare ? "" : "rounded-xl border border-border bg-card p-[22px]"}>
       <div className="mb-4 flex items-center justify-between gap-2">
         <h2 id="ficha-actividad" className="text-base font-semibold text-foreground">
           Actividad

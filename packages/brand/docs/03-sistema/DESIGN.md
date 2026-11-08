@@ -291,9 +291,10 @@ Reglas:
 - **Móvil:** diálogos y paneles son hojas inferiores; tablas pasan a lista (`AdaptiveTable`); todo control táctil mide 44 px (DR-15);
   nada de scroll horizontal accidental (`overflow-x: clip` en `html`).
 - **Impresión:** recibos y cuentas de cobro imprimen solo el documento.
-- **Vista de registro (alta y ficha)** (`contactos/nuevo`, `contactos/[id]`): página a todo el ancho (`data-bleed`) con panel de
-  control sin caja (volver 34 px, ruta 18 px, acciones a la derecha) y un contenedor de 1240 px con dos columnas que bajan a una:
-  principal (`basis 560`, `grow 2`) y lateral (`basis 300–320`, máx. 380–420). Tarjetas `bg-card`, borde, radio 12, padding 22. El
+- **Vista de registro (alta y ficha)** (`contactos/nuevo`, `contactos/[id]`, `crm/oportunidades/[id]`): página a todo el ancho
+  (`data-bleed`) con panel de control sin caja (volver 34 px, ruta 18 px, acciones a la derecha) y debajo, con el mismo margen de
+  20 px, el contenido a la izquierda (`flex-1`) y una columna de 400–440 px a la derecha separada por una línea (la actividad sin
+  fondo, o la vista previa en el alta); bajo `lg` se apilan. Sin relleno de más abajo: si no hay contenido, no hay scroll. Tarjetas `bg-card`, borde, radio 12, padding 22. El
   alta y la edición son el mismo formulario (`?editar=1`; `?campo=` enfoca un dato); la ficha es su modo lectura: los datos que
   faltan muestran «Sin registrar» y un enlace «Añadir» a ese campo. Los botones de resumen abren su pestaña del historial; el
   paginador recorre la lista de origen (`q`, `status`, `sort` viajan en la URL). Estados con `Badge` + `StatusDot`.

@@ -205,7 +205,8 @@ export default function NewCustomerForm({
         </div>
       </div>
 
-      <div className="mx-auto flex w-full max-w-[1240px] flex-wrap items-start gap-5 px-5 pb-24 pt-2">
+      {/* Como la ficha: a todo el ancho, con el margen del panel de control; el formulario a la izquierda y la vista previa a la derecha. */}
+      <div className="flex w-full flex-col items-start gap-6 px-5 pb-2 pt-2 lg:flex-row">
         <form
           ref={formRef}
           noValidate
@@ -213,7 +214,7 @@ export default function NewCustomerForm({
             event.preventDefault();
             save("open");
           }}
-          className="flex min-w-0 max-w-[820px] shrink grow-[2] basis-[560px] flex-col gap-4"
+          className="flex w-full min-w-0 flex-1 flex-col gap-4"
         >
           {/* Identidad */}
           <section aria-label="Identidad" className={cn(card, "flex flex-wrap items-start gap-5")}>
@@ -433,7 +434,7 @@ export default function NewCustomerForm({
         </form>
 
         {/* Columna lateral */}
-        <aside className="flex min-w-0 max-w-[380px] shrink grow basis-[300px] flex-col gap-4">
+        <aside className="flex w-full min-w-0 shrink-0 flex-col gap-4 lg:w-[400px] lg:border-l lg:border-border lg:ps-6 xl:w-[440px]">
           <section aria-labelledby="nc-preview" className={card}>
             <h2 id="nc-preview" className={cardTitle}>
               Vista previa

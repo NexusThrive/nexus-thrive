@@ -88,8 +88,9 @@ export default function FichaView(props: {
         pager={props.pager}
       />
 
-      <div className="mx-auto flex w-full max-w-[1240px] flex-wrap items-start gap-5 px-5 pb-24 pt-2">
-        <div className="flex min-w-0 shrink grow-[2] basis-[560px] flex-col gap-4">
+      {/* A todo el ancho, con el margen del panel de control: la ficha a la izquierda y la actividad a la derecha. */}
+      <div className="flex w-full flex-col items-start gap-6 px-5 pb-2 pt-2 lg:flex-row">
+        <div className="flex w-full min-w-0 flex-1 flex-col gap-4">
           {/* Identidad */}
           <section aria-labelledby="ficha-nombre" className={cn(card, "flex flex-wrap items-start gap-5")}>
             <span className="grid size-[88px] shrink-0 place-items-center overflow-hidden rounded-[22px] bg-accent-subtle">
@@ -251,8 +252,8 @@ export default function FichaView(props: {
           </section>
         </div>
 
-        <aside className="flex min-w-0 max-w-[420px] shrink grow basis-[320px] flex-col gap-4">
-          <FichaActivity slug={slug} customerId={customer.id} items={props.activity} whatsappHref={wa} activityHref={props.activityHref} now={props.now} />
+        <aside className="flex w-full min-w-0 shrink-0 flex-col gap-4 lg:w-[400px] lg:border-l lg:border-border lg:ps-6 xl:w-[440px]">
+          <FichaActivity bare slug={slug} customerId={customer.id} items={props.activity} whatsappHref={wa} activityHref={props.activityHref} now={props.now} />
         </aside>
       </div>
     </div>

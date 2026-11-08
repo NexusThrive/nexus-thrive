@@ -82,7 +82,7 @@ export default function CrmConfigView({ slug, data, canEdit }: { slug: string; d
         <h1 className="text-lg font-medium text-foreground">Configuración</h1>
         <p className="text-xs text-muted-foreground">{canEdit ? "Las etapas de tu pipeline, por qué se pierden las ventas, las etiquetas y los equipos." : "Solo el dueño o un administrador puede cambiarla."}</p>
       </header>
-      <div className="mx-auto grid w-full max-w-[1240px] gap-4 px-5 pb-24 pt-2 lg:grid-cols-2">
+      <div className="mx-auto grid w-full max-w-[1240px] gap-4 px-5 pb-2 pt-2 lg:grid-cols-2">
         <section id="etapas" aria-labelledby="cfg-etapas" className={cn(card, "scroll-mt-20 lg:col-span-2")}>
           <h2 id="cfg-etapas" className="mb-1 text-base font-semibold text-foreground">
             Etapas

@@ -34,7 +34,7 @@ export default async function CrmReportsPage({ params }: { params: Promise<{ ten
         <h1 className="text-lg font-medium text-foreground">Informes</h1>
         <p className="text-xs text-muted-foreground">Cómo avanza tu pipeline: qué hay en cada etapa, qué se gana y qué se pierde, y cuánto puede entrar.</p>
       </header>
-      <div className="mx-auto grid w-full max-w-[1240px] gap-4 px-5 pb-24 pt-2 lg:grid-cols-2">
+      <div className="mx-auto grid w-full max-w-[1240px] gap-4 px-5 pb-2 pt-2 lg:grid-cols-2">
         <section aria-labelledby="inf-embudo" className={card}>
           <h2 id="inf-embudo" className="mb-4 text-base font-semibold text-foreground">Embudo por etapa</h2>
           <ul className="grid gap-3">
