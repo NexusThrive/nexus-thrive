@@ -1,5 +1,6 @@
 import type { ReactElement } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { expect, userEvent, within } from "storybook/test";
 import { withShell } from "../../.storybook/decorators";
 import { AppShellProvider } from "@/components/providers/shell-context";
 import { buildTenantNav } from "@/lib/experience/navigation/tenant-nav";
@@ -89,4 +90,14 @@ export const CifrasEnCamino: Story = {
       </div>
     </Shell>
   ),
+};
+
+/** Teclear en Inicio abre un buscador flotante con esa tecla escrita; si nada coincide, la consulta se ofrece a AURI AI. */
+export const BuscadorPorTeclado: Story = {
+  play: async () => {
+    await userEvent.keyboard("zqxw");
+    const search = await within(document.body).findByRole("dialog");
+    await expect(within(search).getByRole("combobox")).toHaveValue("zqxw");
+    await expect(await within(search).findByText(/Preguntarle a AURI/, {}, { timeout: 3000 })).toBeVisible();
+  },
 };

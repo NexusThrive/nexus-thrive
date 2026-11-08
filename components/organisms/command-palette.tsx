@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { Command } from "cmdk";
-import { Blocks, Download, HandCoins, Moon, Package, Receipt, Search, Target, User } from "lucide-react";
+import { Command, useCommandState } from "cmdk";
+import { Blocks, Download, HandCoins, Moon, Package, Receipt, Search, Sparkles, Target, User } from "lucide-react";
 import { searchEntitiesAction, type SearchHit } from "@/app/[tenant]/(app)/_actions/search";
 import { Kbd } from "@/components/atoms/kbd";
 import { setTheme } from "@/components/atoms/theme-toggle";
@@ -12,6 +12,7 @@ import { usePwa } from "@/components/providers/pwa";
 import { useQuickCreate } from "@/components/organisms/quick-create-host";
 import { usePalette, useShell } from "@/components/providers/shell-context";
 import { CAPABILITIES } from "@/lib/core/capabilities/registry";
+import { askAuri } from "@/lib/experience/assistant/ask-auri";
 import { cn } from "@/lib/utils";
 
 const DESKTOP_QUERY = "(min-width: 768px)";
@@ -76,6 +77,24 @@ const itemClass =
   "relative flex min-h-[42px] cursor-pointer items-center gap-3 rounded-md px-2.5 text-sm outline-none data-[selected=true]:bg-surface-muted data-[selected=true]:before:-ml-2 data-[selected=true]:before:mr-[-5px] data-[selected=true]:before:h-[18px] data-[selected=true]:before:w-[3px] data-[selected=true]:before:-skew-x-[24deg] data-[selected=true]:before:bg-accent data-[selected=true]:before:content-[''] [&_svg]:size-4 [&_svg]:shrink-0";
 const groupClass =
   "[&_[cmdk-group-heading]]:px-2.5 [&_[cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:pt-2 [&_[cmdk-group-heading]]:text-2xs [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-[0.08em] [&_[cmdk-group-heading]]:text-muted-foreground";
+
+/**
+ * Cuando nada coincide con lo escrito, la consulta se le ofrece a AURI AI (Enter la envía). Va dentro de un `<Command>`: lee de
+ * cmdk cuántos elementos pasaron el filtro. Mientras llegan los resultados del servidor no se ofrece, para que no parpadee.
+ */
+function AskAuri({ query, status, run }: { query: string; status: "idle" | "loading" | "error"; run: (action: () => void) => void }) {
+  const matches = useCommandState((state) => state.filtered.count);
+  if (matches > 0 || status === "loading" || !query.trim()) return null;
+  return (
+    <Command.Group heading="¿No lo encuentras?" forceMount className={groupClass}>
+      <Command.Item forceMount value={`__auri__ ${query}`} onSelect={() => run(() => askAuri(query))} className={itemClass}>
+        <Sparkles aria-hidden="true" className="text-accent-text" />
+        <span className="truncate">Preguntarle a AURI: «{query.trim()}»</span>
+        <small className="ml-auto shrink-0 text-xs text-muted-foreground">Enter</small>
+      </Command.Item>
+    </Command.Group>
+  );
+}
 
 /**
  * Lista de la paleta (va dentro de un `<Command>`): resultados, secciones y
@@ -166,6 +185,7 @@ export function PaletteList({
         <Command.Empty className="nx-search-note px-4 py-6 text-center text-sm text-muted-foreground">
           {status === "loading" ? "Buscando…" : "Sin resultados."}
         </Command.Empty>
+        <AskAuri query={query} status={status} run={run} />
         {shownHits.length > 0 ? (
           <Command.Group forceMount heading="Resultados" className={groupClass}>
             {shownHits.map(({ hit, leaving }, index) => (

@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/atoms/skeleton";
 import { AvatarStack } from "@/components/molecules/avatar-stack";
 import { GridBackdrop } from "@/components/molecules/grid-backdrop";
 import { AppGrid, type AppArea } from "@/components/organisms/app-grid";
+import { HomeQuickSearch } from "@/components/organisms/home-quick-search";
 import { useQuickCreate } from "@/components/organisms/quick-create-host";
 import { appTransitionName } from "@/lib/experience/navigation/tenant-nav";
 import { BalanceCard } from "@/components/organisms/balance-card";
@@ -135,6 +136,7 @@ export function AppHome({ trial = null, summary: input, userName = null, busines
     // `data-still`: si Inicio ya se había visto (se precargó con su último estado), no repite la entrada al llegar la página real.
     <div data-bleed="" data-still={lastHome.has(tenant) ? "" : undefined} className="relative isolate min-h-[calc(100dvh-var(--topbar-height)-7rem-env(safe-area-inset-bottom,0px))] overflow-hidden md:min-h-[calc(100dvh-var(--topbar-height)-4rem)]">
       <GridBackdrop variant="home" />
+      <HomeQuickSearch />
       <div className="mx-auto flex max-w-[1240px] flex-col gap-7 px-6 pb-20 pt-5">
         {/* Cabecera: saludo y, a la derecha, la pastilla de la prueba */}
         <div className="flex flex-wrap items-center justify-between gap-4">

@@ -7,6 +7,7 @@ import { Alert } from "@/components/molecules/alert";
 import { Chip, ChipRow } from "@/components/atoms/chip";
 import { HelpCenter } from "@/components/organisms/help-center";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
+import { AURI_ASK_EVENT } from "@/lib/experience/assistant/ask-auri";
 import { cn } from "@/lib/utils";
 
 /**
@@ -44,6 +45,7 @@ export function AuriAssistant({
   const nextId = useRef(1);
   const endRef = useRef<HTMLDivElement>(null);
   const alive = useRef(true);
+  const sendRef = useRef<(text: string) => Promise<void>>(async () => {});
   useEffect(() => {
     alive.current = true;
     return () => {
@@ -66,6 +68,21 @@ export function AuriAssistant({
     setMessages((list) => [...list, { id: nextId.current++, from: "auri", text: answer }]);
     setThinking(false);
   }
+
+  useEffect(() => {
+    sendRef.current = send;
+  });
+  // Otras partes de la app le pasan preguntas (p. ej. la búsqueda cuando no encuentra nada): se abre el chat y se envía.
+  useEffect(() => {
+    const onAsk = (event: Event) => {
+      const text = (event as CustomEvent<{ text: string }>).detail?.text;
+      if (!text) return;
+      setOpen(true);
+      void sendRef.current(text);
+    };
+    window.addEventListener(AURI_ASK_EVENT, onAsk);
+    return () => window.removeEventListener(AURI_ASK_EVENT, onAsk);
+  }, []);
 
   const footer = (
     <form
