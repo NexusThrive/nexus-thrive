@@ -55,6 +55,12 @@ const RULES: [pattern: string, skeleton: RouteSkeleton][] = [
   ["/ventas/cotizaciones/anteriores", { variant: "table", label: "Cargando cotizaciones", kpis: false }],
   ["/ventas/cotizaciones/anteriores/*", { variant: "detail", label: "Cargando cotización" }],
   ["/ventas/pedidos", { variant: "table", label: "Cargando pedidos", kpis: false }],
+  ["/inventario/productos/nuevo", { variant: "form", label: "Cargando el formulario" }],
+  ["/inventario/productos/*", { variant: "form", label: "Cargando el producto" }],
+  ["/ventas/listas-precios", { variant: "list", label: "Cargando las listas de precios", kpis: false }],
+  ["/ventas/listas-precios/*", { variant: "table", label: "Cargando la lista", kpis: false }],
+  ["/inventario/categorias", { variant: "list", label: "Cargando las categorías", kpis: false }],
+  ["/inventario/atributos", { variant: "list", label: "Cargando los atributos", kpis: false }],
   ["/pos", { variant: "table", label: "Cargando el punto de venta", kpis: false }],
 ];
 

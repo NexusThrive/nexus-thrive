@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   BadgeCheck,
+  BadgePercent,
   Banknote,
   BookOpen,
   Building2,
@@ -36,7 +37,9 @@ import {
   Wallet,
   BarChart3,
   Settings2,
+  SlidersHorizontal,
   Store,
+  Tags,
 } from "lucide-react";
 import type { VerticalValue } from "@/lib/core/sectors/verticals";
 import type { VerticalTerms } from "@/lib/core/sectors/lexicon";
@@ -202,6 +205,10 @@ export const CAPABILITIES = [
     nav: [
       { href: "/inventario/productos", icon: Package, label: () => "Catálogo" },
       { href: "/inventario/existencias", icon: Warehouse, label: () => "Existencias" },
+      // Pantallas de apoyo: se llega desde el menú Configuración de la app, no desde la barra.
+      { href: "/inventario/categorias", icon: Tags, label: () => "Categorías", menu: false },
+      { href: "/inventario/atributos", icon: SlidersHorizontal, label: () => "Atributos", menu: false },
+      { href: "/ventas/listas-precios", icon: BadgePercent, label: () => "Listas de precios", menu: false },
     ],
   },
   {

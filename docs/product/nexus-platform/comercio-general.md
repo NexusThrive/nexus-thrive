@@ -330,17 +330,14 @@ Informes y Configuración) y **productos bien cargados**. Sin catálogo con cate
 
 ## 10. Decisiones
 
-**Ya tomadas** (2026-11-08): POS en `/pos`; «personalizar» es un modo del renglón; modo sin conexión, después; las capturas se quedan en la raíz.
+**Ya tomadas** (2026-11-08): POS en `/pos`; «personalizar» es un modo del renglón; modo sin conexión, después; las capturas se quedan en la raíz; **formulario de producto con pestañas a la izquierda y previsualización pegajosa a la derecha**; **Punto de venta, Inventario y Facturación como apps propias**; **un atributo «personalizado» solo en los productos marcados como personalizables** (el servidor lo exige).
 
 **Abiertas:**
 
 1. **Pagos de la landing hecha por Nexus:** ¿enlace de cobro con una pasarela (la que el negocio tenga) más transferencia, o también pago contra entrega? Recomendado: pasarela por puerto + transferencia verificada.
 2. **Stock con Shopify o WooCommerce:** ¿manda Nexus (recomendado) o la plataforma externa? Empezar solo con pedidos hacia Nexus.
 3. **Compradores:** ¿solo invitados (recomendado) o cuentas desde el inicio?
-4. **Formulario de producto:** ¿pestañas (como Odoo) o tarjetas seguidas con índice lateral (como la captura de Nexus)? Recomendado: **pestañas** en la columna izquierda y la previsualización pegajosa a la derecha; así el formulario no se vuelve interminable con atributos, precios, compra e inventario.
-5. **Impuestos del POS:** qué tarifas y categorías de IVA ofrece el producto (excluido, exento, gravado) y cómo se muestran en el recibo.
-6. **Mapa de apps en Inicio:** hoy las apps salen de categorías del registro («Ventas y cobros», «Producto», «Finanzas y contabilidad»…). ¿Se separan **Punto de venta**, **Inventario** y **Facturación** como apps propias con su barra? Recomendado: sí.
-7. **Atributos:** ¿un atributo «personalizado» (texto libre) puede ir en cualquier producto o solo en los marcados como personalizables?
+4. **Impuestos del POS:** qué tarifas y categorías de IVA ofrece el producto (excluido, exento, gravado) y cómo se muestran en el recibo.
 
 ## 11. Qué no se verificó
 

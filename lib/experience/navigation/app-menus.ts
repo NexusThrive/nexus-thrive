@@ -24,7 +24,7 @@ export const APP_MENUS: Partial<Record<CapabilityCategory, Def>> = {
     informes: [{ items: [link("cot-anteriores", "Cotizaciones anteriores", "/ventas/cotizaciones/anteriores", "quotes"), soon("ventas", "Ventas"), soon("vendedores", "Vendedores"), soon("productos", "Productos"), soon("clientes", "Clientes")] }],
     configuracion: [
       { items: [SETTINGS, soon("canales", "Canales de venta"), soon("entregas", "Entregas"), soon("pagos", "Medios de pago")] },
-      { title: "Productos", items: [soon("categorias", "Categorías"), soon("atributos", "Atributos"), soon("listas", "Listas de precios")] },
+      { title: "Productos", items: [link("categorias", "Categorías", "/inventario/categorias", "inventory"), link("atributos", "Atributos", "/inventario/atributos", "inventory"), link("listas", "Listas de precios", "/ventas/listas-precios", "inventory")] },
       { title: "Documentos de venta", items: [soon("plantillas", "Plantillas"), soon("pies", "Encabezados y pies de página")] },
     ],
   },
@@ -36,7 +36,7 @@ export const APP_MENUS: Partial<Record<CapabilityCategory, Def>> = {
     informes: [{ items: [link("existencias", "Existencias", "/inventario/existencias"), link("reposicion", "Reposición", "/inventario/existencias?tab=reorder"), soon("kardex", "Movimientos (kardex)"), soon("valorizacion", "Valorización")] }],
     configuracion: [
       { items: [SETTINGS, link("bodegas", "Ubicaciones y bodegas", "/inventario/existencias?tab=warehouses"), soon("operaciones", "Tipos de operación")] },
-      { title: "Productos", items: [soon("categorias", "Categorías"), soon("atributos", "Atributos"), soon("unidades", "Unidades de medida"), soon("barras", "Códigos de barras")] },
+      { title: "Productos", items: [link("categorias", "Categorías", "/inventario/categorias"), link("atributos", "Atributos", "/inventario/atributos"), soon("unidades", "Unidades de medida"), soon("barras", "Códigos de barras")] },
     ],
   },
   "Facturación": {

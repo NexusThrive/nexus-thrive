@@ -14,7 +14,7 @@ import { STOCK_KIND_LABELS, stockLevel, type StockKind } from "@/lib/business/in
 import type { ProductRow } from "@/lib/business/catalog/products-db";
 import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
 import { formatCurrency, formatDateTime } from "@/lib/foundation/format";
-import { moveStockAction, sellProductAction, stockHistoryAction } from "../actions";
+import { moveStockAction, sellProductAction, stockHistoryAction } from "@/app/[tenant]/(app)/inventario/productos/actions";
 import { Select } from "@/components/atoms/select";
 
 type Customer = { id: string; name: string };
