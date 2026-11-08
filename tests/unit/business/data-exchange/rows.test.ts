@@ -10,6 +10,18 @@ describe("parseProducts", () => {
     expect(r.rows[0]?.data).toMatchObject({ name: "Café", sku: "C-1", price: 12500.5, unitCode: "KGM", taxRatePct: 19, kind: "PRODUCT", trackStock: true });
     expect(r.rows[1]?.data).toMatchObject({ unitCode: "EA", taxCategory: "GRAVADO", active: true });
   });
+  it("lee código de barras y dónde se usa (punto de venta, tienda, a medida); vacío = sin cambio", () => {
+    const r = parseProducts(t(["Nombre", "Precio", "EAN", "POS", "Tienda en línea", "A medida"], ["Taza", "28000", "7701234567890", "Sí", "No", "Sí"], ["Vaso", "9000", "", "", "", ""]));
+    expect(r.errors).toEqual([]);
+    expect(r.rows[0]?.data).toMatchObject({ barcode: "7701234567890", posEnabled: true, publishedOnline: false, customizable: true });
+    expect(r.rows[1]?.data).toMatchObject({ barcode: null, posEnabled: null, publishedOnline: null, customizable: null });
+  });
+  it("rechaza un código de barras con caracteres raros o un Sí/No que no lo es", () => {
+    const r = parseProducts(t(["Nombre", "Precio", "Código de barras", "POS"], ["Taza", "28000", "ñ%&", "quizá"]));
+    expect(r.rows).toHaveLength(0);
+    expect(r.errors[0]?.message).toMatch(/Código de barras inválido/);
+    expect(r.errors[0]?.message).toMatch(/Punto de venta/);
+  });
   it("los servicios no controlan existencias", () => {
     const r = parseProducts(t(["Nombre", "Precio", "Tipo", "Controla existencias"], ["Corte", "20000", "Servicio", "Sí"]));
     expect(r.rows[0]?.data.trackStock).toBe(false);

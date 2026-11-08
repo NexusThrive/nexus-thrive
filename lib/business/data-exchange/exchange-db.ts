@@ -1,3 +1,5 @@
+import { addBarcode } from "@/lib/business/catalog/catalog-db";
+import { syncCategoriesFromText } from "@/lib/business/catalog/categories-db";
 import { withinLimit } from "@/lib/foundation/limits";
 import { customerLimit } from "@/lib/core/tenancy/customer-limit";
 import { syncCustomerParty } from "@/lib/core/parties/parties-db";
@@ -44,6 +46,8 @@ export async function importProducts(tenantId: string, table: Table, opts: { dry
   const out = report("products", opts.dryRun, parsed, table.rows.length);
   if (parsed.missingColumns.length) return out;
   const existing = await db.orm.public.Product.where({ tenantId }).all();
+  const codes = new Map<string, string[]>();
+  for (const b of await db.orm.public.ProductBarcode.where({ tenantId }).select("productId", "code").limit(100_000).all()) codes.set(b.productId, [...(codes.get(b.productId) ?? []), b.code]);
   const bySku = new Map<string, (typeof existing)[number]>();
   const byName = new Map<string, (typeof existing)[number]>();
   for (const p of existing) {
@@ -67,11 +71,23 @@ export async function importProducts(tenantId: string, table: Table, opts: { dry
       taxCategory: data.taxCategory,
       taxRatePct: dec(data.taxRatePct),
       active: data.active,
+      // Dónde se usa: solo si el archivo trae la columna (si no, un producto nuevo queda encendido en todo y uno existente no cambia).
+      ...(data.posEnabled !== null ? { posEnabled: data.posEnabled } : {}),
+      ...(data.publishedOnline !== null ? { publishedOnline: data.publishedOnline } : {}),
+      ...(data.customizable !== null ? { customizable: data.customizable } : {}),
+    };
+    /** El código de barras del archivo se asocia al producto si todavía no lo tiene (uno repetido en otro producto se reporta). */
+    const attachBarcode = async (productId: string) => {
+      if (!data.barcode || codes.get(productId)?.includes(data.barcode)) return;
+      const r = await addBarcode(tenantId, { productId, code: data.barcode });
+      if (r.ok) codes.set(productId, [...(codes.get(productId) ?? []), r.code]);
+      else out.errors.push({ line, message: r.message });
     };
     try {
       if (!found) {
         if (!opts.dryRun) {
           const created = await db.orm.public.Product.create({ tenantId, ...values, stock: 0 });
+          await attachBarcode(created.id);
           if (data.sku) bySku.set(data.sku.toLowerCase(), created);
           else byName.set(norm(data.name), created);
         }
@@ -82,17 +98,24 @@ export async function importProducts(tenantId: string, table: Table, opts: { dry
         found.kind === data.kind && found.name === data.name && found.sku === data.sku && found.category === data.category && found.brand === data.brand &&
         found.description === data.description && sameNum(found.price, data.price) && sameNum(found.cost, data.cost) && found.trackStock === data.trackStock &&
         found.minStock === data.minStock && found.unitCode === data.unitCode && found.taxCategory === data.taxCategory && sameNum(found.taxRatePct, data.taxRatePct) &&
-        found.active === data.active;
+        found.active === data.active &&
+        (data.posEnabled === null || found.posEnabled === data.posEnabled) && (data.publishedOnline === null || found.publishedOnline === data.publishedOnline) && (data.customizable === null || found.customizable === data.customizable) &&
+        (!data.barcode || codes.get(found.id)?.includes(data.barcode));
       if (unchanged) {
         out.unchanged++;
         continue;
       }
-      if (!opts.dryRun) await db.orm.public.Product.where({ tenantId, id: found.id }).update(values);
+      if (!opts.dryRun) {
+        await db.orm.public.Product.where({ tenantId, id: found.id }).update(values);
+        await attachBarcode(found.id);
+      }
       out.updated++;
     } catch (error) {
       out.errors.push(failure(line, error));
     }
   }
+  // La categoría escrita en el archivo se vuelve categoría de verdad (con su árbol) y los productos quedan enlazados.
+  if (!opts.dryRun && out.created + out.updated > 0) await syncCategoriesFromText(tenantId);
   sortErrors(out);
   return out;
 }
@@ -100,13 +123,16 @@ export async function importProducts(tenantId: string, table: Table, opts: { dry
 /** Productos del negocio, por nombre, como texto CSV con los encabezados en español. */
 export async function exportProducts(tenantId: string): Promise<string> {
   const rows = await db.orm.public.Product.where({ tenantId }).orderBy((p) => p.name.asc()).all();
+  const firstCode = new Map<string, string>();
+  for (const b of await db.orm.public.ProductBarcode.where({ tenantId }).where((x) => x.variantId.isNull()).select("productId", "code").limit(100_000).all()) if (!firstCode.has(b.productId)) firstCode.set(b.productId, b.code);
+  const yes = (v: boolean) => (v ? "Sí" : "No");
   const kinds: Record<string, string> = { PRODUCT: "Producto", SERVICE: "Servicio" };
   const taxes: Record<string, string> = { GRAVADO: "Gravado", EXCLUIDO: "Excluido", EXENTO: "Exento" };
   return toCsv(
     PRODUCT_HEADERS,
     rows
       .filter((p) => p.kind === "PRODUCT" || p.kind === "SERVICE")
-      .map((p) => [p.name, p.sku ?? "", kinds[p.kind] ?? p.kind, p.category ?? "", p.brand ?? "", p.description ?? "", String(Number(p.price)), p.cost == null ? "" : String(Number(p.cost)), p.trackStock ? "Sí" : "No", String(p.minStock), p.unitCode, taxes[p.taxCategory] ?? p.taxCategory, String(Number(p.taxRatePct)), p.active ? "Sí" : "No"]),
+      .map((p) => [p.name, p.sku ?? "", kinds[p.kind] ?? p.kind, p.category ?? "", p.brand ?? "", p.description ?? "", String(Number(p.price)), p.cost == null ? "" : String(Number(p.cost)), p.trackStock ? "Sí" : "No", String(p.minStock), p.unitCode, taxes[p.taxCategory] ?? p.taxCategory, String(Number(p.taxRatePct)), p.active ? "Sí" : "No", firstCode.get(p.id) ?? "", yes(p.posEnabled), yes(p.publishedOnline), yes(p.customizable)]),
   );
 }
 
