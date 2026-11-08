@@ -24,12 +24,16 @@ export default async function AppHomePage({ params }: { params: Promise<{ tenant
   // Sin esperar: Inicio se pinta ya (con lo último que se vio) y las cifras llegan después, bloque por bloque.
   const summary = loadHomeSummary(ctx.tenantId, modules, me?.role ?? null);
   const userName = user?.firstName?.trim() || me?.name?.split(" ")[0] || null;
+  // La agencia y dónde queda: dirección física (si tiene local) y ciudad; "REMOTE" es un negocio sin local.
+  const place = [tenantRecord?.address && tenantRecord.address !== "REMOTE" ? tenantRecord.address : null, tenantRecord?.city].filter(Boolean).join(", ");
+  const business = tenantRecord ? { name: tenantRecord.name, location: place || (tenantRecord.address === "REMOTE" ? "Negocio sin local" : null) } : null;
   // Aviso de prueba gratuita: solo aquí (en Inicio), como una pastilla junto al saludo.
   return (
     <AppHome
       trial={trial ? { daysLeft: trial.daysLeft, level: trial.level, planHref: `/${tenant}/settings` } : null}
       summary={summary}
       userName={userName}
+      business={business}
     />
   );
 }

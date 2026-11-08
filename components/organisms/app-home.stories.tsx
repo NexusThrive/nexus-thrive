@@ -59,7 +59,7 @@ const meta = {
   render: () => (
     <Shell>
       <div className="min-h-dvh bg-background pt-14">
-        <AppHome summary={summary} userName="Santiago" trial={{ daysLeft: 15, level: "ok", planHref: "/settings" }} />
+        <AppHome summary={summary} userName="Santiago" business={{ name: "Simpleapp", location: "Cra 7 # 45-10, Bogotá" }} trial={{ daysLeft: 15, level: "ok", planHref: "/settings" }} />
       </div>
     </Shell>
   ),
@@ -74,7 +74,7 @@ export const SinDatos: Story = {
   render: () => (
     <Shell>
       <div className="min-h-dvh bg-background pt-14">
-        <AppHome summary={{ month: null, balance30: null, today: null, attention: { overdueCount: 0, overdueTotal: null, expiringCount: null, expiringDays: 3 }, badges: {}, customers: null, team: { members: [], total: 0 }, recent: [], updatedAt: "2026-11-07T22:40:00.000Z" }} userName="Santiago" />
+        <AppHome summary={{ month: null, balance30: null, today: null, attention: { overdueCount: 0, overdueTotal: null, expiringCount: null, expiringDays: 3 }, badges: {}, customers: null, team: { members: [], total: 0 }, recent: [], updatedAt: "2026-11-07T22:40:00.000Z" }} userName="Santiago" business={{ name: "Simpleapp", location: null }} />
       </div>
     </Shell>
   ),

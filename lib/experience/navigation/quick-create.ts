@@ -3,7 +3,7 @@
  * módulos activos y los permisos de quien navega, y qué panel abre cada una.
  */
 import type { LucideIcon } from "lucide-react";
-import { Building2, CalendarPlus, FileText, HandCoins, Receipt, UserPlus, Target } from "lucide-react";
+import { Building2, CalendarPlus, FileText, HandCoins, Receipt, UserPlus } from "lucide-react";
 import type { VerticalValue } from "@/lib/core/sectors/verticals";
 import type { ModuleValue } from "@/lib/core/capabilities/modules";
 import { can, type BusinessPermission } from "@/lib/core/auth/permissions";
@@ -64,9 +64,6 @@ export function quickCreateActions(
   }
   if (has("bookings")) {
     actions.push({ key: "booking", label: "Nueva reserva", hint: "Reservar un horario", href: "/bookings", icon: CalendarPlus });
-  }
-  if (has("crm")) {
-    actions.push({ key: "new-opportunity", label: "Nueva oportunidad", hint: "Al pipeline del CRM", href: "/crm?nueva=1", icon: Target });
   }
   if (has("billing")) {
     actions.push({ key: "invoice", label: "Crear factura", hint: "Generar un documento", href: "/finanzas/facturacion", icon: FileText });

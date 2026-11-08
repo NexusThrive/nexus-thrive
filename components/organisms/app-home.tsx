@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import { Building2, MapPin } from "lucide-react";
 import { Skeleton } from "@/components/atoms/skeleton";
 import { AvatarStack } from "@/components/molecules/avatar-stack";
 import { GridBackdrop } from "@/components/molecules/grid-backdrop";
@@ -31,7 +32,10 @@ const eyebrow = "text-2xs font-semibold uppercase tracking-[0.09em] text-muted-f
 
 export type AppHomeTrial = { daysLeft: number; level: "ok" | "soon" | "ended"; planHref: string };
 
-type HomeSnapshot = { summary: HomeSummary | null; trial: AppHomeTrial | null; userName: string | null };
+/** La agencia (negocio) en la que se está y dónde queda; sin ubicación registrada solo se muestra el nombre. */
+export type AppHomeBusiness = { name: string; location: string | null };
+
+type HomeSnapshot = { summary: HomeSummary | null; trial: AppHomeTrial | null; userName: string | null; business: AppHomeBusiness | null };
 /**
  * Lo último que mostró Inicio en cada negocio, en la memoria de esta pestaña (no en el navegador ni en el service worker: son datos
  * privados). Al volver a Inicio se pinta al instante con esto y solo cambian las cifras cuando llega el resumen nuevo.
@@ -42,7 +46,7 @@ const lastHome = new Map<string, HomeSnapshot>();
 export function CachedAppHome({ fallback }: { fallback: ReactNode }) {
   const tenant = useParams<{ tenant?: string }>()?.tenant ?? "";
   const snap = lastHome.get(tenant);
-  return snap ? <AppHome summary={snap.summary} trial={snap.trial} userName={snap.userName} /> : <>{fallback}</>;
+  return snap ? <AppHome summary={snap.summary} trial={snap.trial} userName={snap.userName} business={snap.business} /> : <>{fallback}</>;
 }
 
 function isThenable<T>(value: unknown): value is Promise<T> {
@@ -69,7 +73,7 @@ function BlockSkeleton({ rows, label }: { rows: number; label: string }) {
  * y el rol; abre su espacio de trabajo); a los lados, «Este mes» (ventas, vencido y balance) y «Hoy» y «Atención». Las cifras salen de
  * las mismas fuentes que Resumen (`loadHomeSummary`). Resumen ya no es una app del cajón (su ruta sigue existiendo).
  */
-export function AppHome({ trial = null, summary: input, userName = null }: { trial?: AppHomeTrial | null; summary?: HomeSummary | Promise<HomeSummary | null> | null; userName?: string | null }) {
+export function AppHome({ trial = null, summary: input, userName = null, business = null }: { trial?: AppHomeTrial | null; summary?: HomeSummary | Promise<HomeSummary | null> | null; userName?: string | null; business?: AppHomeBusiness | null }) {
   const tenant = useParams<{ tenant?: string }>()?.tenant ?? "";
   // El resumen llega como promesa (la página no lo espera): mientras tanto, lo último que se vio; al llegar, solo cambian las cifras.
   // La promesa que llega del servidor es un «thenable» de React, no siempre `instanceof Promise`.
@@ -81,7 +85,7 @@ export function AppHome({ trial = null, summary: input, userName = null }: { tri
     input.then(
       (data) => {
         if (!alive) return;
-        lastHome.set(tenant, { summary: data, trial, userName });
+        lastHome.set(tenant, { summary: data, trial, userName, business });
         setFresh({ from: input, data });
       },
       () => {
@@ -91,7 +95,7 @@ export function AppHome({ trial = null, summary: input, userName = null }: { tri
     return () => {
       alive = false;
     };
-  }, [input, tenant, trial, userName]);
+  }, [input, tenant, trial, userName, business]);
   const ready = !isPromise || fresh?.from === input;
   const summary: HomeSummary | null = !isThenable<HomeSummary | null>(input) ? (input ?? null) : ready ? fresh!.data : (lastHome.get(tenant)?.summary ?? null);
   // El balance que ya se había visto: al volver, cuenta desde ahí hasta la cifra nueva (no desde 0). Se lee una vez, al montar.
@@ -146,6 +150,22 @@ export function AppHome({ trial = null, summary: input, userName = null }: { tri
                 </>
               ) : null}
             </h1>
+            {business ? (
+              <p className="mt-1 flex flex-wrap items-center gap-2">
+                <span className="inline-flex max-w-full items-center gap-1.5 rounded-[10px] border border-border bg-card px-3 py-1.5 text-ui font-medium text-foreground">
+                  <Building2 aria-hidden="true" className="size-3.5 shrink-0 text-accent-text" strokeWidth={1.8} />
+                  <span className="sr-only">Agencia: </span>
+                  <span className="truncate">{business.name}</span>
+                </span>
+                {business.location ? (
+                  <span className="inline-flex max-w-full items-center gap-1.5 rounded-[10px] border border-border bg-card px-3 py-1.5 text-ui text-muted-foreground">
+                    <MapPin aria-hidden="true" className="size-3.5 shrink-0 text-accent-text" strokeWidth={1.8} />
+                    <span className="sr-only">Ubicación: </span>
+                    <span className="truncate">{business.location}</span>
+                  </span>
+                ) : null}
+              </p>
+            ) : null}
           </div>
           {trial ? (
             <p className="inline-flex flex-wrap items-center gap-2 rounded-[10px] border border-border bg-card px-3.5 py-2.5 text-ui text-foreground">
