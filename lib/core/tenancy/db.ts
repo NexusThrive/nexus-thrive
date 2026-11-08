@@ -490,6 +490,10 @@ export function createTenantDb(tenantId: string) {
       get: (id: string) =>
         db.orm.public.Customer.where({ id, tenantId }).first(),
 
+      /** Varios clientes por id (siempre del negocio): la lista con búsqueda avanzada trae los de la página. */
+      listByIds: (ids: string[]) =>
+        db.orm.public.Customer.where({ tenantId }).where((customer) => customer.id.in([...new Set(ids)].slice(0, 500))).all(),
+
       create: (data: Omit<Parameters<typeof db.orm.public.Customer.create>[0], "tenantId">) =>
         db.orm.public.Customer.create({
           ...data,

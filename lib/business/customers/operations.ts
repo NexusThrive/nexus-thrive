@@ -6,6 +6,7 @@ import { z } from "zod";
 import { defineOperation, OperationError, type OperationDefinition } from "@/lib/core/operations/types";
 import { db } from "@/prisma/db";
 import { getCustomer, saveCustomer } from "./customers-db";
+import { listCustomerGroups, setGroupMembers } from "./customer-search-db";
 
 const text = (max: number) => z.string().trim().max(max);
 
@@ -56,6 +57,43 @@ export const customerWriteOperations: OperationDefinition[] = [
       });
       if (!saved.ok) throw new OperationError("rule_violation", saved.message, 422);
       return { id: saved.id, created: !current };
+    },
+  }),
+
+  defineOperation({
+    id: "customer_groups.list",
+    rest: { method: "GET", path: "/customers/groups" },
+    title: "Listar los grupos de clientes",
+    description: "Devuelve los grupos propios del negocio (los que se arman a mano, como «Clientes VIP») con su icono y cuántos clientes tienen.",
+    module: "crm",
+    permission: null,
+    risk: "read",
+    idempotent: false,
+    emits: [],
+    input: z.object({}),
+    output: z.object({ groups: z.array(z.object({ id: z.string(), name: z.string(), icon: z.string(), members: z.number() })) }),
+    handler: async (ctx) => ({ groups: await listCustomerGroups(ctx.tenantId) }),
+  }),
+  defineOperation({
+    id: "customer_groups.assign",
+    rest: { method: "POST", path: "/customers/groups/assign" },
+    title: "Agregar o quitar clientes de un grupo",
+    description: "Agrega clientes a un grupo propio o los saca de él. Repetir la operación no duplica; los clientes de otro negocio se ignoran.",
+    module: "crm",
+    permission: null,
+    risk: "write",
+    idempotent: true,
+    emits: ["customer.group_members_changed.v1"],
+    input: z.object({
+      groupId: z.string().uuid(),
+      customerIds: z.array(z.string().uuid()).min(1).max(500),
+      mode: z.enum(["add", "remove"]).default("add"),
+    }),
+    output: z.object({ ok: z.literal(true) }),
+    handler: async (ctx, input) => {
+      const result = await setGroupMembers(ctx.tenantId, input.groupId, input.customerIds, input.mode);
+      if (!result.ok) throw new OperationError("not_found", result.message, 404);
+      return { ok: true as const };
     },
   }),
 ];
