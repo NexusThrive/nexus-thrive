@@ -2,7 +2,6 @@
 
 import { useEffect, useLayoutEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import { N_PATH } from "@/components/atoms/n-path";
 import { cn } from "@/lib/utils";
 
 /** Marca por ruta: «esta vista estaba vacía la última vez». La precarga la usa para pintar el esqueleto del estado vacío y no filas. */
@@ -42,12 +41,16 @@ export function ForgetEmptyOnNavigate() {
   return null;
 }
 
-/** Ocupa el alto que queda hasta el borde de la vista (sin el relleno inferior de `main`): el estado vacío nunca deja scroll. */
+/**
+ * Ocupa el alto que queda hasta el borde inferior de la ventana —incluido el relleno de `main`, que se compensa con un margen
+ * negativo para no dejar scroll—: la N y su difuminado llegan de verdad hasta abajo.
+ */
 function fit(el: HTMLElement) {
   const main = el.closest("main");
   const pad = main ? Number.parseFloat(getComputedStyle(main).paddingBottom) || 0 : 0;
   const top = el.getBoundingClientRect().top + window.scrollY;
-  let height = Math.max(320, Math.floor(window.innerHeight - top - pad));
+  el.style.marginBottom = pad > 0 ? `-${pad}px` : "";
+  let height = Math.max(320, Math.floor(window.innerHeight - top));
   el.style.minHeight = `${height}px`;
   // Si algo más (un borde, una tarjeta que lo envuelve, una nota debajo) aún deja scroll, se encoge lo que sobra.
   const overflow = document.documentElement.scrollHeight - window.innerHeight;
@@ -58,10 +61,11 @@ function fit(el: HTMLElement) {
 }
 
 /**
- * Marco del estado vacío de una vista entera: llena el alto disponible, centra el contenido y pone la N de contorno grande, centrada
- * abajo, recortada por el borde y difuminándose. `remember` anota la ruta como vacía para la próxima precarga.
+ * Marco del estado vacío de una vista entera: llena el alto disponible (sin dejar scroll) y centra el contenido. Con
+ * `preview="table"`, detrás va una tabla fantasma (cómo se verá la lista con datos) que llena hasta abajo y se difumina por
+ * debajo del contenido. `remember` anota la ruta como vacía para la próxima precarga.
  */
-export function EmptyPageFrame({ remember = true, className, children }: { remember?: boolean; className?: string; children: ReactNode }) {
+export function EmptyPageFrame({ remember = true, preview, className, children }: { remember?: boolean; preview?: "table"; className?: string; children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
   const path = usePathname() ?? "";
 
@@ -84,16 +88,55 @@ export function EmptyPageFrame({ remember = true, className, children }: { remem
   }, [remember, path]);
 
   return (
-    <div ref={ref} className={cn("relative isolate flex min-h-80 flex-col items-center justify-center overflow-hidden px-6 pb-40 pt-12 text-center sm:px-10", className)}>
-      <svg
-        viewBox="394.83 239.93 734.96 634.25"
-        aria-hidden="true"
-        className="pointer-events-none absolute bottom-0 left-1/2 -z-10 w-[min(640px,92vw)] -translate-x-1/2 translate-y-[55%] text-foreground opacity-[0.07]"
-        style={{ maskImage: "linear-gradient(to bottom, #000 20%, transparent 85%)", WebkitMaskImage: "linear-gradient(to bottom, #000 20%, transparent 85%)" }}
-      >
-        <path d={N_PATH} fill="none" stroke="currentColor" strokeWidth={10} strokeLinejoin="round" />
-      </svg>
+    <div ref={ref} className={cn("relative isolate flex min-h-80 flex-col items-center justify-center overflow-hidden px-6 py-12 text-center sm:px-10", className)}>
+      {preview === "table" ? <GhostTable /> : null}
       {children}
+    </div>
+  );
+}
+
+/** Filas de muestra (anchos fijos, sin aleatoriedad: el servidor y el navegador pintan lo mismo). */
+const GHOST_ROWS = [62, 48, 70, 55, 66, 44, 58, 72, 50, 64, 46, 68, 53, 60, 49, 67, 57, 63, 45, 69, 52, 61];
+
+/**
+ * Vista previa fantasma de una lista: encabezado y filas de 38 px con casilla, avatar y columnas, en tonos de borde. Decorativa
+ * (`aria-hidden`), detrás del contenido; se desvanece hacia el centro (donde va el texto) y hacia abajo.
+ */
+function GhostTable() {
+  const bar = "h-2.5 rounded-sm bg-border";
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 -z-10 select-none overflow-hidden text-left"
+      style={{
+        maskImage: "radial-gradient(ellipse 46% 42% at 50% 52%, transparent 0%, rgba(0,0,0,.35) 55%, #000 100%), linear-gradient(to bottom, #000 30%, transparent 100%)",
+        WebkitMaskImage: "radial-gradient(ellipse 46% 42% at 50% 52%, transparent 0%, rgba(0,0,0,.35) 55%, #000 100%), linear-gradient(to bottom, #000 30%, transparent 100%)",
+        maskComposite: "intersect",
+        WebkitMaskComposite: "source-in",
+        opacity: 0.75,
+      }}
+    >
+      <div className="flex h-[38px] items-center gap-6 border-b border-border px-5">
+        <span className="size-3.5 shrink-0 rounded-sm border border-border" />
+        <span className={cn(bar, "w-[14%]")} />
+        <span className={cn(bar, "w-[12%]")} />
+        <span className={cn(bar, "w-[10%]")} />
+        <span className={cn(bar, "hidden w-[9%] sm:block")} />
+        <span className={cn(bar, "hidden w-[8%] md:block")} />
+      </div>
+      {GHOST_ROWS.map((w, i) => (
+        <div key={i} className="flex h-[38px] items-center gap-6 border-b border-border/60 px-5">
+          <span className="size-3.5 shrink-0 rounded-sm border border-border" />
+          <span className="flex w-[22%] items-center gap-2.5">
+            <span className="size-6 shrink-0 rounded-md bg-border" />
+            <span className={bar} style={{ width: `${w}%` }} />
+          </span>
+          <span className={bar} style={{ width: `${8 + (w % 7)}%` }} />
+          <span className={bar} style={{ width: `${7 + (w % 5)}%` }} />
+          <span className={cn(bar, "hidden sm:block")} style={{ width: `${6 + (w % 4)}%` }} />
+          <span className={cn(bar, "hidden md:block")} style={{ width: `${5 + (w % 3)}%` }} />
+        </div>
+      ))}
     </div>
   );
 }

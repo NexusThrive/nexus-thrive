@@ -6,7 +6,7 @@ import type { VerticalValue } from "@/lib/core/sectors/verticals";
 import type { ModuleValue } from "@/lib/core/capabilities/modules";
 import {
   buildTenantNav,
-  isNavActive,
+  activeNavItem,
   tenantRelativePath,
   type NavGroup,
   type NavItem,
@@ -110,7 +110,7 @@ export function ShellProvider({
     [vertical, modulesKey, role],
   );
   const relativePath = tenantRelativePath(pathname, tenantSlug);
-  const active = groups.flatMap((g) => g.items).find((item) => isNavActive(item.href, relativePath));
+  const active = activeNavItem(groups, relativePath);
 
   const value = useMemo<ShellContextValue>(
     () => ({

@@ -38,8 +38,18 @@ export const WithAction: Story = {
 export const TitleOnly: Story = { args: { description: undefined, title: "Sin resultados" } };
 
 export const WithIcon: Story = { args: { title: "No encontramos eso", description: "Prueba con otra palabra.", icon: <span aria-hidden="true">?</span> } };
-/** Vista entera vacía (p. ej. Clientes sin clientes): texto centrado y la N grande, centrada abajo, recortada y difuminada. */
+/** Vista entera vacía (p. ej. Clientes sin clientes): texto centrado, la N grande abajo y el CTA de crear con su destello. */
 export const Page: Story = {
-  args: { mark: "page", title: "Aún no tienes clientes", description: "Registra el primero para llevar su historial, sus citas y sus cobros.", className: "min-h-dvh" },
+  args: {
+    mark: "page",
+    title: "Aún no tienes clientes",
+    description: "Registra el primero para llevar su historial, sus citas y sus cobros.",
+    action: (
+      <Button variant="accent">
+        <Plus aria-hidden="true" /> Nuevo
+      </Button>
+    ),
+    className: "min-h-dvh",
+  },
   parameters: { layout: "fullscreen" },
 };

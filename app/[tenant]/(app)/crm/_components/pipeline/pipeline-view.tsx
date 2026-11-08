@@ -155,14 +155,14 @@ export default function PipelineView({
     });
   };
 
-  const totalValue = shown.reduce((t, c) => t + (c.won ? 0 : c.value), 0);
   const filtersOn = ["responsable", "etiqueta", "prioridad", "desde", "hasta", "min", "max"].some((k) => params.get(k));
 
   return (
     <div data-bleed="" className="flex flex-col">
       {/* Panel de control: 3 zonas */}
-      <div className="grid items-center gap-x-4 gap-y-3 px-5 py-4 min-[1100px]:grid-cols-[1fr_minmax(0,543px)_1fr]">
-        <div className="flex min-w-0 items-center gap-3">
+      {/* Por ancho: celular = acciones, buscador y vistas (a todo el ancho); 640–1100 = acciones y vistas arriba, buscador abajo; ≥ 1100 = 3 zonas. */}
+      <div className="grid items-center gap-x-4 gap-y-3 px-5 py-4 [grid-template-areas:'left'_'search'_'views'] sm:grid-cols-[1fr_auto] sm:[grid-template-areas:'left_views'_'search_search'] min-[1100px]:grid-cols-[1fr_minmax(0,543px)_1fr] min-[1100px]:[grid-template-areas:'left_search_views']">
+        <div className="flex min-w-0 items-center gap-3 [grid-area:left]">
           <button type="button" onClick={() => (view === "tablero" ? setQuickStage("first") : (setParams({ vista: null }), setQuickStage("first")))} className={buttonVariants({ variant: "accent", size: "sm", className: "h-[34px] font-semibold" })}>
             Nueva oportunidad
           </button>
@@ -183,7 +183,7 @@ export default function PipelineView({
           </DropdownMenu>
         </div>
 
-        <div suppressHydrationWarning className="flex h-9 w-full min-w-0 items-center gap-2 justify-self-center rounded-[10px] border border-border bg-card ps-3 focus-within:border-accent min-[1100px]:max-w-[543px]">
+        <div suppressHydrationWarning className="flex h-9 w-full min-w-0 items-center gap-2 justify-self-center rounded-[10px] border border-border bg-card ps-3 [grid-area:search] focus-within:border-accent min-[1100px]:max-w-[543px]">
           <Search aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
           {mine ? (
             <span className="flex shrink-0 items-center gap-1.5 rounded-md bg-surface-muted px-2 py-[3px] text-xs text-foreground">
@@ -205,9 +205,8 @@ export default function PipelineView({
           <FilterMenu owners={owners} tags={tags} params={params} active={filtersOn} onApply={setParams} mine={mine} />
         </div>
 
-        <div className="flex items-center justify-end gap-3">
-          <span className="hidden text-xs text-muted-foreground tabular-nums xl:inline">{shortMoney(totalValue)} abierto</span>
-          <div role="group" aria-label="Vistas" className="flex gap-0.5 rounded-[10px] border border-border bg-card p-[3px]">
+        <div className="flex items-center justify-end [grid-area:views]">
+          <div role="group" aria-label="Vistas" className="flex w-full gap-0.5 rounded-[10px] border border-border bg-card p-[3px] sm:w-auto">
             {VIEWS.map(({ key, label, icon: Icon }) => (
               <button
                 key={key}
@@ -215,7 +214,7 @@ export default function PipelineView({
                 aria-label={label}
                 aria-pressed={view === key}
                 onClick={() => setParams({ vista: key === "tablero" ? null : key })}
-                className={cn("grid h-[30px] w-[34px] place-items-center rounded-[7px] outline-none focus-visible:outline-2 focus-visible:outline-ring", view === key ? "bg-surface-muted text-accent-text" : "text-muted-foreground hover:bg-surface-muted hover:text-foreground")}
+                className={cn("grid h-[30px] flex-1 place-items-center rounded-[7px] outline-none focus-visible:outline-2 focus-visible:outline-ring sm:w-[34px] sm:flex-none", view === key ? "bg-surface-muted text-accent-text" : "text-muted-foreground hover:bg-surface-muted hover:text-foreground")}
               >
                 <Icon aria-hidden="true" className="size-4" />
               </button>

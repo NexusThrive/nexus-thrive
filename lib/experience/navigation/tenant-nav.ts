@@ -136,9 +136,15 @@ export function isNavActive(href: string, relativePath: string): boolean {
   return href === "" ? relativePath === "/" : relativePath === href || relativePath.startsWith(`${href}/`);
 }
 
-/** El ítem activo (para el título de la barra superior). */
+/**
+ * El ítem activo (para el título y la pestaña de la barra superior): el de la ruta más específica. `/crm/informes` activa
+ * «Informes», no «Pipeline» (`/crm`), aunque las dos coincidan.
+ */
 export function activeNavItem(groups: NavGroup[], relativePath: string): NavItem | undefined {
-  return groups.flatMap((g) => g.items).find((item) => isNavActive(item.href, relativePath));
+  return groups
+    .flatMap((g) => g.items)
+    .filter((item) => isNavActive(item.href, relativePath))
+    .sort((a, b) => b.href.length - a.href.length)[0];
 }
 
 /**

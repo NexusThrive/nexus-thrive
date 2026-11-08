@@ -151,6 +151,33 @@ html[data-motion="off"]::view-transition-new(*) {
     opacity: 0.25;
   }
 }
+
+/* --- Destello del CTA en el estado vacío de una vista (`EmptyState` mark="page"): el botón de crear se enciende un
+   instante cada ~5 s. Solo sube el brillo del propio botón; no pinta nada por encima. --- */
+@keyframes nx-flash {
+  0%,
+  76%,
+  100% {
+    filter: none;
+  }
+  82% {
+    filter: brightness(1.45) saturate(1.12);
+  }
+  88% {
+    filter: none;
+  }
+}
+.nx-flash {
+  animation: nx-flash 5s var(--nx-ease-out) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nx-flash {
+    animation: none;
+  }
+}
+html[data-motion="off"] .nx-flash {
+  animation: none;
+}
 @keyframes nx-float {
   50% {
     transform: translateY(-6px);

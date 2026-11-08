@@ -18,7 +18,7 @@ import {
   type DragEndEvent,
   type KeyboardCoordinateGetter,
 } from "@dnd-kit/core";
-import { ArrowDown, ArrowRight, ArrowUp, ExternalLink, GripVertical, MoreHorizontal, Plus } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUp, CalendarClock, Columns3, ExternalLink, GripVertical, MoreHorizontal, Plus, ShoppingBag, Target } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/molecules/dropdown-menu";
 import { useReducedMotion } from "@/lib/experience/hooks/use-reduced-motion";
@@ -386,18 +386,40 @@ export function Board({
           </section>
         </div>
         {empty ? (
-          <div className="pointer-events-none absolute inset-x-0 top-28 flex justify-center px-5">
-            <div className="pointer-events-auto grid max-w-sm justify-items-center gap-3 rounded-xl border border-border bg-card px-6 py-7 text-center">
-              <h2 className="font-display text-lg font-semibold text-foreground">Crea tu primera oportunidad</h2>
-              <p className="text-ui text-muted-foreground">Anota a quién le estás vendiendo, cuánto vale y cuál es el siguiente paso.</p>
+          <div className="pointer-events-none absolute inset-x-0 top-24 flex justify-center px-5">
+            <div className="pointer-events-auto grid w-full max-w-xl justify-items-center gap-5 rounded-xl border border-border bg-card px-6 py-7 text-center shadow-[var(--nx-shadow-overlay)]">
+              <span aria-hidden="true" className="grid size-12 place-items-center rounded-xl border border-border bg-background text-accent-text">
+                <Target className="size-6" />
+              </span>
+              <div className="grid gap-2">
+                <h2 className="font-display text-xl font-semibold text-foreground">Crea tu primera oportunidad</h2>
+                <p className="mx-auto max-w-md text-sm text-muted-foreground">Anota a quién le estás vendiendo, cuánto vale y cuál es el siguiente paso. El pipeline te dice qué atender hoy.</p>
+              </div>
               <div className="flex flex-wrap items-center justify-center gap-3">
-                <button type="button" onClick={() => onQuick("first")} className={buttonVariants({ variant: "accent", size: "sm", className: "h-[34px] font-semibold" })}>
+                <button type="button" onClick={() => onQuick("first")} className={buttonVariants({ variant: "accent", size: "sm", className: "nx-flash h-[34px] font-semibold" })}>
                   Nueva oportunidad
                 </button>
-                <Link href={`/${slug}/data`} className="text-ui font-medium text-accent-text underline-offset-2 hover:underline">
+                <Link href={`/${slug}/data`} className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-[34px] border border-border")}>
                   Importar contactos
                 </Link>
               </div>
+              <ul className="grid w-full gap-2.5 text-left sm:grid-cols-3">
+                {[
+                  { icon: Columns3, title: "Etapas a tu medida", text: "Arrastra cada trato al avanzar." },
+                  { icon: CalendarClock, title: "Siguiente paso", text: "Llamadas y reuniones con fecha." },
+                  { icon: ShoppingBag, title: "Ganas y se vende", text: "Se crea el pedido y su cobro." },
+                ].map(({ icon: Icon, title, text }) => (
+                  <li key={title} className="flex gap-2.5 rounded-lg border border-border bg-background p-3 sm:flex-col sm:gap-2">
+                    <span aria-hidden="true" className="grid size-7 shrink-0 place-items-center rounded-md bg-surface-muted text-accent-text">
+                      <Icon className="size-4" />
+                    </span>
+                    <span className="grid gap-0.5">
+                      <span className="text-ui font-medium text-foreground">{title}</span>
+                      <span className="text-xs text-muted-foreground">{text}</span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         ) : null}

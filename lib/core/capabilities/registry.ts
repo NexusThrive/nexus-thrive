@@ -127,9 +127,9 @@ export const CAPABILITIES = [
     included: true,
     nav: [
       { href: "/contactos", icon: Users, label: (terms) => terms.customers },
-      // La app CRM: Ventas (el pipeline), Informes y Configuración. Tareas, Entregables y Formularios web siguen con su ruta y su
+      // La app CRM: Pipeline, Informes y Configuración («Ventas» se confundía con la app Ventas y cobros). Tareas, Entregables y Formularios web siguen con su ruta y su
       // acceso, y se abren desde Configuración del CRM (y las actividades del pipeline también son tareas).
-      { href: "/crm", icon: Target, label: () => "Ventas", category: "CRM" },
+      { href: "/crm", icon: Target, label: () => "Pipeline", category: "CRM" },
       { href: "/crm/informes", icon: BarChart3, label: () => "Informes", category: "CRM" },
       { href: "/crm/configuracion", icon: Settings2, label: () => "Configuración", category: "CRM" },
       { href: "/crm/tareas", icon: CheckSquare, label: () => "Tareas", category: "CRM", menu: false },

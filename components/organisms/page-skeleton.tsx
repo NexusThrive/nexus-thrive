@@ -139,9 +139,26 @@ function ListToolbarSkeleton() {
 function EmptySkeleton() {
   return (
     <EmptyPageFrame remember={false}>
-      <Skeleton className="h-5 w-56 max-w-full" />
-      <Skeleton className="mt-3 h-3.5 w-80 max-w-full" />
-      <Skeleton className="mt-6 h-[34px] w-24" />
+      <div className="grid w-full max-w-2xl justify-items-center gap-6">
+        <Skeleton className="size-12 rounded-xl" />
+        <div className="grid justify-items-center gap-2.5">
+          <Skeleton className="h-5 w-56 max-w-full" />
+          <Skeleton className="h-3.5 w-80 max-w-full" />
+        </div>
+        <div className="flex gap-3">
+          <Skeleton className="h-[34px] w-32" />
+          <Skeleton className="h-[34px] w-36" />
+        </div>
+        <div className="grid w-full gap-3 sm:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="grid gap-2.5 rounded-xl border border-border bg-card p-4">
+              <Skeleton className="size-8 rounded-lg" />
+              <Skeleton className="h-3.5 w-3/4" />
+              <Skeleton className="h-3 w-full" />
+            </div>
+          ))}
+        </div>
+      </div>
     </EmptyPageFrame>
   );
 }

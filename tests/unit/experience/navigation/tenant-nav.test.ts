@@ -90,6 +90,12 @@ describe("ruta activa", () => {
   it("encuentra el ítem activo", () => {
     const groups = buildTenantNav("construction", ["dashboard", "construction"]);
     expect(activeNavItem(groups, "/ventas/cotizaciones/anteriores/4")?.label).toBe("Cotizaciones");
+    // La ruta más específica gana: Informes y Configuración del CRM no se quedan en Pipeline.
+    const crm = buildTenantNav("retail", ["dashboard", "crm"]);
+    expect(activeNavItem(crm, "/crm")?.label).toBe("Pipeline");
+    expect(activeNavItem(crm, "/crm/informes")?.label).toBe("Informes");
+    expect(activeNavItem(crm, "/crm/configuracion")?.label).toBe("Configuración");
+    expect(activeNavItem(crm, "/crm/oportunidades/abc")?.label).toBe("Pipeline");
   });
 });
 

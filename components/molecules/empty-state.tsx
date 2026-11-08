@@ -8,9 +8,10 @@ import { EmptyPageFrame } from "./empty-page-frame";
  * contorno grande, recortada en la esquina inferior derecha como en el panel del acceso (opacidad baja, detrás del
  * texto, sin moverse). Título Montserrat 600 16 px, descripción muted 13 px y una acción.
  * Con `icon` (p. ej. «sin resultados» de una búsqueda) el icono va sobre el título y la N queda de fondo igual.
- * Con `mark="page"` (una vista entera vacía: una lista o un tablero sin nada) el texto va centrado, ocupa el alto que queda sin dejar
- * scroll y la misma N de contorno crece, centrada abajo y recortada por el borde, difuminándose hacia abajo. Los vacíos pequeños
- * (una tarjeta, un panel, Actividad reciente) siguen con `corner`.
+ * Con `mark="page"` (una vista entera vacía: una lista o un tablero sin nada) se arma con propósito: el icono del área en un
+ * recuadro, el título, para qué sirve, la acción principal (con su destello periódico `nx-flash`, ver app/styles/motion.css) y una
+ * secundaria (p. ej. importar), y debajo `highlights`: tres primeros pasos cortos con su icono. Ocupa el alto que queda sin dejar
+ * scroll. Los vacíos pequeños (una tarjeta, un panel, Actividad reciente) siguen con `corner`.
  */
 export function EmptyState({
   title,
@@ -20,6 +21,9 @@ export function EmptyState({
   headingLevel = 3,
   mark = "corner",
   remember = true,
+  secondaryAction,
+  highlights,
+  preview,
   className,
 }: {
   title: string;
@@ -34,6 +38,12 @@ export function EmptyState({
   mark?: "corner" | "page";
   /** Con `page`: anota la ruta como vacía para que la próxima precarga pinte este estado y no filas (apágalo con filtros o búsqueda). */
   remember?: boolean;
+  /** Con `page`: acción secundaria junto a la principal (p. ej. «Importar»), con estilo de contorno. */
+  secondaryAction?: ReactNode;
+  /** Con `page`: primeros pasos (idealmente tres) que explican para qué sirve la vista. */
+  highlights?: { icon: ReactNode; title: string; text: string }[];
+  /** Con `page`: vista previa fantasma detrás (cómo se verá la lista con datos), difuminada por debajo del contenido. */
+  preview?: "table";
   className?: string;
 }) {
   const Heading = `h${headingLevel}` as const;
@@ -46,13 +56,44 @@ export function EmptyState({
       ) : null}
       <Heading className="font-display text-lg font-semibold text-foreground">{title}</Heading>
       {description && <p className="mt-1.5 max-w-md text-ui text-muted-foreground">{description}</p>}
-      {action && <div className={cn("mt-5 flex flex-wrap items-center gap-2", mark === "page" && "justify-center")}>{action}</div>}
+      {action && <div className={cn("mt-5 flex flex-wrap items-center gap-2", mark === "page" && "nx-flash justify-center")}>{action}</div>}
     </>
   );
   if (mark === "page") {
     return (
-      <EmptyPageFrame remember={remember} className={className}>
-        {content}
+      <EmptyPageFrame remember={remember} preview={preview} className={className}>
+        <div className="grid w-full max-w-2xl justify-items-center gap-6">
+          {icon ? (
+            <span aria-hidden="true" className="grid size-12 place-items-center rounded-xl border border-border bg-card text-accent-text [&_svg]:size-6">
+              {icon}
+            </span>
+          ) : null}
+          <div className="grid gap-2">
+            <Heading className="font-display text-xl font-semibold text-foreground">{title}</Heading>
+            {description ? <p className="mx-auto max-w-md text-sm text-muted-foreground">{description}</p> : null}
+          </div>
+          {action || secondaryAction ? (
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              {action ? <span className="nx-flash inline-flex">{action}</span> : null}
+              {secondaryAction}
+            </div>
+          ) : null}
+          {highlights?.length ? (
+            <ul className="grid w-full gap-3 text-left sm:grid-cols-3">
+              {highlights.map((h) => (
+                <li key={h.title} className="flex gap-3 rounded-xl border border-border bg-card/85 p-4 backdrop-blur-sm sm:flex-col sm:gap-2.5">
+                  <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-lg bg-surface-muted text-accent-text [&_svg]:size-4">
+                    {h.icon}
+                  </span>
+                  <span className="grid gap-0.5">
+                    <span className="text-sm font-medium text-foreground">{h.title}</span>
+                    <span className="text-xs text-muted-foreground">{h.text}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
       </EmptyPageFrame>
     );
   }

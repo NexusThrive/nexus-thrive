@@ -7,7 +7,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { CustomerAvatar } from "@/components/atoms/customer-avatar";
 import { SwipeCard } from "@/components/molecules/swipe-card";
-import { ArrowDown, ArrowUp, Archive, Banknote, MessageCircle, Pencil, Plus, RotateCcw, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Archive, Banknote, MessageCircle, Pencil, Plus, RotateCcw, X, CalendarClock, History, Search, Users, Wallet } from "lucide-react";
 import {
   archiveCustomerAction,
   deleteCustomersAction,
@@ -330,7 +330,19 @@ export default function CustomerTable({
           headingLevel={2}
           title={query ? `Sin coincidencias para «${query}»` : isArchivedView ? `No hay ${customersLabel} archivados` : `Aún no tienes ${customersLabel}`}
           description={query ? "Prueba con otro término o limpia la búsqueda." : isArchivedView ? `Los ${customersLabel} que archives aparecen aquí.` : "Registra el primero para llevar su historial, sus citas y sus cobros."}
-          action={!query && !isArchivedView ? <Link href={`/${tenantSlug}/contactos/nuevo`} className={buttonVariants({ variant: "accent", size: "sm", className: "h-[34px]" })}><Plus aria-hidden="true" className="size-4" /> Nuevo</Link> : undefined}
+          icon={query ? <Search /> : isArchivedView ? <Archive /> : <Users />}
+          preview={!query && !isArchivedView ? "table" : undefined}
+          action={!query && !isArchivedView ? <Link href={`/${tenantSlug}/contactos/nuevo`} className={buttonVariants({ variant: "accent", size: "sm", className: "h-[34px]" })}><Plus aria-hidden="true" className="size-4" /> Nuevo cliente</Link> : undefined}
+          secondaryAction={!query && !isArchivedView ? <Link href={`/${tenantSlug}/data`} className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-[34px] border border-border")}>Importar desde Excel</Link> : undefined}
+          highlights={
+            !query && !isArchivedView
+              ? [
+                  { icon: <CalendarClock />, title: "Citas con recordatorio", text: "Agenda y le avisamos por WhatsApp." },
+                  { icon: <Wallet />, title: "Cobros y cartera", text: "Lo que te paga y lo que te debe." },
+                  { icon: <History />, title: "Todo en su ficha", text: "Notas, compras y actividad en un lugar." },
+                ]
+              : undefined
+          }
         />
       ) : (
         <>
