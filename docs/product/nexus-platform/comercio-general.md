@@ -354,12 +354,14 @@ Cada punto se confirma leyendo el código al abrir su historia; nada de esto se 
 | # | Historia | Estado |
 |---|---|---|
 | 0 | Barra de módulo con *Informes ▾* y *Configuración ▾*; Punto de venta, Inventario y Facturación como apps | **Hecho.** Las entradas sin pantalla se ven apagadas con «Pronto». |
-| 1 | Catálogo: tarjetas y tabla, categorías en árbol, atributos y variantes, producto en página con previsualización, listas de precios, importación masiva | **Hecho** (faltan: precios por cantidad y asignar una lista a clientes, grupos o canales). |
-| 2 | Medios de pago del negocio | **Hecho para el POS** (`/pos/medios-de-pago`: efectivo o transferencia/billetera con nombre, instrucciones y orden). Faltan pasarela, crédito/fiado y que membresías, cartera y facturación usen esta lista. |
-| 3 | POS en `/pos`, pantalla completa, cliente opcional, categorías, F4, renglón a medida | **Hecho** (faltan: lista de precios del cliente en el POS, factura POS numerada y modo sin conexión). |
-| 4 | Inventario pulido | **Hecho:** cifras, pestaña Movimientos (kardex general) y «Nuevo movimiento» (entrada, salida, ajuste). Falta: proveedores con persona de contacto. |
-| 5 | Facturación electrónica estructurada | **Parcial:** contadores por estado, cola y reintentos (ya existían). Faltan series propias del POS y los bloques de Inicio. |
-| 6 | Pedido multicanal | **Hecho:** operación `orders.create` (API/MCP) con canal e identificador externo idempotente; la lista de pedidos muestra el canal. Falta: reservar existencias al crear. |
-| 7 | Canales | **Parcial:** la API sirve a la landing, Shopify, WooCommerce y n8n (las líneas se identifican por `sku`). Faltan los conectores con su propio secreto y el flujo de WhatsApp con AURI (espera el modelo). |
-| 8 | Informes | **Parcial:** informe de ventas del mostrador (`/pos/informes`). Faltan turnos, valorización y kardex por producto. |
-| 9 | Ficha del cliente comprador | **Hecho:** pestaña «Productos comprados» (gasto, veces, recompra, devoluciones). |
+| 1 | Catálogo, categorías, atributos y variantes, producto en página, importación masiva | **Hecho.** |
+| 1b | Listas de precios | **Hecho:** precio por producto, **escalones por cantidad**, asignación a **grupos y clientes**; el POS aplica la lista del cliente (la suya, la de su grupo o la predeterminada) y el servidor la recalcula al cobrar. |
+| 2 | Medios de pago del negocio | **Hecho:** efectivo, transferencia/billetera y **crédito (fiado)** con nombre, instrucciones y orden (`/pos/medios-de-pago`). El POS y los abonos de cartera los usan. **Falta:** pasarela (Wompi) como medio del POS y que membresías, tickets y facturación usen la lista (siguen con efectivo y transferencia). |
+| 3 | POS en `/pos`, pantalla completa, cliente opcional, categorías, F4, renglón a medida | **Hecho**, con lista de precios, **venta a crédito** (deja una cuenta de cobro en la cartera del cliente), tiquete con la **serie de la resolución de numeración** y **modo sin conexión** (la venta se guarda en el dispositivo y se envía sola, sin duplicarse; la página sigue necesitando conexión para abrirse). |
+| 4 | Inventario | **Hecho:** cifras, Movimientos, «Nuevo movimiento», **kardex por producto**, **valorización** y **proveedores con persona de contacto**. |
+| 5 | Facturación electrónica | **Hecho:** contadores por estado, cola y reintentos; la serie del POS sale de la resolución de numeración «Venta»; Inicio avisa de las facturas en espera y rechazadas. |
+| 6 | Pedido multicanal | **Hecho:** `orders.create` (API/MCP) con canal e identificador externo idempotente, líneas por `product_id` o `sku`, y **existencias apartadas** por los pedidos sin pagar. |
+| 7 | Canales | **Parcial:** la API sirve a la landing, Shopify, WooCommerce y n8n. **Falta:** conectores con su propio secreto por negocio (decisión de dónde se guarda) y WhatsApp con AURI (espera el modelo). |
+| 8 | Informes | **Hecho:** ventas, **turnos de caja**, kardex y valorización. |
+| 9 | Ficha del cliente comprador | **Hecho.** |
+| R | Roles por negocio | **Auditado:** todas las acciones de servidor de un negocio comprueban sesión y rol (las únicas sin sesión son las públicas por token). **Falta** decidir permisos más finos (hoy: `business.manage`, `money.handle`, etc.). |
