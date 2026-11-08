@@ -21,6 +21,11 @@ enum ProductKind {
 /// - `publishedOnline`: Decide qué sale en el sitio y la tienda en línea.
 /// - `maxStock`: Techo de existencias (para sugerir cuánto reponer).
 /// - `reorderPoint`: Cuando las existencias bajan a este número conviene pedir más.
+/// - `categoryId`: Categoría del árbol del negocio (`ProductCategory`). `category` conserva el nombre en texto (las cargas viejas y las importaciones lo traen así).
+/// - `favorite`: Producto marcado como favorito (sale primero en las listas).
+/// - `sellable`, `purchasable`, `posEnabled`: Dónde se usa: se vende, se compra y aparece en el punto de venta.
+/// - `customizable`: Se puede vender como pedido a medida (merchandising): en el punto de venta el renglón se personaliza con los atributos que lo permiten.
+/// - `internalNotes`: Notas internas del equipo; no salen en la tienda ni en los documentos.
 model Product {
   id              String      @id @default(uuid())
   tenantId        String
@@ -58,8 +63,101 @@ model Product {
   countLines      StockCountLine[]
   maxStock        Int?
   reorderPoint    Int?
+  categoryId      String?
+  productCategory ProductCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  favorite        Boolean     @default(false)
+  sellable        Boolean     @default(true)
+  purchasable     Boolean     @default(true)
+  posEnabled      Boolean     @default(true)
+  customizable    Boolean     @default(false)
+  internalNotes   String?
+  attributeLines  ProductAttributeLine[]
 
   @@index([tenantId, kind])
+  @@index([tenantId, categoryId])
+  @@rls
+}
+
+/// Categoría de productos, en árbol (categoría y subcategoría). Las ven el POS, la tienda y los informes.
+///
+/// Campos:
+/// - `parentId`: Categoría madre; vacío = de primer nivel.
+/// - `position`: Orden manual entre hermanas (menor = primero).
+model ProductCategory {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name      String
+  parentId  String?
+  parent    ProductCategory?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children  ProductCategory[] @relation("CategoryTree")
+  position  Int      @default(0)
+  createdAt DateTime @default(now())
+  products  Product[]
+
+  @@unique([tenantId, parentId, name])
+  @@index([tenantId])
+  @@rls
+}
+
+/// Atributo de producto (Talla, Color, Material…) con sus valores. Los atributos que «crean variantes» generan una variante por cada
+/// combinación de valores; los «personalizados» dejan que se escriba un valor libre al vender (solo en productos marcados `customizable`).
+///
+/// Campos:
+/// - `display`: SELECT (lista) | BUTTONS (botones) | COLOR (muestras de color).
+/// - `variantMode`: ALWAYS (una variante por valor) | NEVER (solo informativo) | CUSTOM (valor libre al vender).
+model ProductAttribute {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name        String
+  display     String   @default("SELECT")
+  variantMode String   @default("ALWAYS")
+  position    Int      @default(0)
+  createdAt   DateTime @default(now())
+  values      ProductAttributeValue[]
+  lines       ProductAttributeLine[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@rls
+}
+
+/// Valor de un atributo (S, M, L · Rojo, Azul…).
+///
+/// Campos:
+/// - `colorHex`: Color «#RRGGBB» para la muestra, si el atributo se muestra como color.
+model ProductAttributeValue {
+  id          String           @id @default(uuid())
+  tenantId    String
+  tenant      Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  attributeId String
+  attribute   ProductAttribute @relation(fields: [attributeId], references: [id], onDelete: Cascade)
+  name        String
+  colorHex    String?
+  position    Int              @default(0)
+
+  @@unique([attributeId, name])
+  @@index([tenantId])
+  @@rls
+}
+
+/// Un atributo en un producto y qué valores usa ahí. De las combinaciones salen las variantes.
+///
+/// Campos:
+/// - `valueIds`: Ids de `ProductAttributeValue` que ofrece este producto (vacío en los atributos personalizados).
+model ProductAttributeLine {
+  id          String           @id @default(uuid())
+  tenantId    String
+  tenant      Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
+  attributeId String
+  attribute   ProductAttribute @relation(fields: [attributeId], references: [id], onDelete: Cascade)
+  valueIds    String[]
+
+  @@unique([productId, attributeId])
+  @@index([tenantId])
   @@rls
 }
 

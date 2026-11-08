@@ -107,6 +107,10 @@ export const TENANT_DELETION_TABLES: readonly string[] = [
   "PresenceRequest",
   "ProductBarcode",
   "ProductVariant",
+  "ProductAttributeLine",
+  "ProductAttributeValue",
+  "ProductAttribute",
+  "ProductCategory",
   "ProviderEvent",
   "PurchaseOrder",
   "PurchaseOrderLine",
@@ -319,6 +323,9 @@ export async function deleteTenantCompletely(
   count("PriceList", await tx.orm.public.PriceList.where({ tenantId }).deleteAll());
   count("ProductBarcode", await tx.orm.public.ProductBarcode.where({ tenantId }).deleteAll());
   count("ProductVariant", await tx.orm.public.ProductVariant.where({ tenantId }).deleteAll());
+  count("ProductAttributeLine", await tx.orm.public.ProductAttributeLine.where({ tenantId }).deleteAll());
+  count("ProductAttributeValue", await tx.orm.public.ProductAttributeValue.where({ tenantId }).deleteAll());
+  count("ProductAttribute", await tx.orm.public.ProductAttribute.where({ tenantId }).deleteAll());
   count("PartyRole", await tx.orm.public.PartyRole.where({ tenantId }).deleteAll());
   count("ProviderEvent", await tx.orm.public.ProviderEvent.where({ tenantId }).deleteAll());
   count("ExternalConnection", await tx.orm.public.ExternalConnection.where({ tenantId }).deleteAll());
@@ -403,6 +410,7 @@ export async function deleteTenantCompletely(
   count("StockLevel", await tx.orm.public.StockLevel.where({ tenantId }).deleteAll());
   count("Warehouse", await tx.orm.public.Warehouse.where({ tenantId }).deleteAll());
   count("Product", await tx.orm.public.Product.where({ tenantId }).deleteAll());
+  count("ProductCategory", await tx.orm.public.ProductCategory.where({ tenantId }).deleteAll());
   count("TaxRate", await tx.orm.public.TaxRate.where({ tenantId }).deleteAll());
   count("FiscalDocument", await tx.orm.public.FiscalDocument.where({ tenantId }).deleteAll());
   count("PresenceSnapshot", await tx.orm.public.PresenceSnapshot.where({ tenantId }).deleteAll());

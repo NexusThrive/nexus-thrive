@@ -1,0 +1,1544 @@
+[
+  {
+    "id": "table.ProductAttribute",
+    "label": "Create table \"ProductAttribute\"",
+    "summary": "Creates table \"ProductAttribute\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "ProductAttribute"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"ProductAttribute\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductAttribute\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"ProductAttribute\"",
+        "sql": "CREATE TABLE \"public\".\"ProductAttribute\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"display\" text DEFAULT 'SELECT' NOT NULL,\n  \"id\" text NOT NULL,\n  \"name\" text NOT NULL,\n  \"position\" int4 DEFAULT 0 NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"variantMode\" text DEFAULT 'ALWAYS' NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"ProductAttribute\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductAttribute\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.ProductAttributeLine",
+    "label": "Create table \"ProductAttributeLine\"",
+    "summary": "Creates table \"ProductAttributeLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "ProductAttributeLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"ProductAttributeLine\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductAttributeLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"ProductAttributeLine\"",
+        "sql": "CREATE TABLE \"public\".\"ProductAttributeLine\" (\n  \"attributeId\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"productId\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"valueIds\" text[] NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"ProductAttributeLine_valueIds_elem_not_null_7ec1b746\" CHECK (array_position(\"valueIds\", NULL) IS NULL)\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"ProductAttributeLine\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductAttributeLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.ProductAttributeValue",
+    "label": "Create table \"ProductAttributeValue\"",
+    "summary": "Creates table \"ProductAttributeValue\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "ProductAttributeValue"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"ProductAttributeValue\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductAttributeValue\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"ProductAttributeValue\"",
+        "sql": "CREATE TABLE \"public\".\"ProductAttributeValue\" (\n  \"attributeId\" text NOT NULL,\n  \"colorHex\" text,\n  \"id\" text NOT NULL,\n  \"name\" text NOT NULL,\n  \"position\" int4 DEFAULT 0 NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"ProductAttributeValue\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductAttributeValue\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.ProductCategory",
+    "label": "Create table \"ProductCategory\"",
+    "summary": "Creates table \"ProductCategory\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "ProductCategory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"ProductCategory\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductCategory\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"ProductCategory\"",
+        "sql": "CREATE TABLE \"public\".\"ProductCategory\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"name\" text NOT NULL,\n  \"parentId\" text,\n  \"position\" int4 DEFAULT 0 NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"ProductCategory\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductCategory\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Product.categoryId",
+    "label": "Add column \"categoryId\" to \"Product\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "categoryId",
+        "table": "Product"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"categoryId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Product",
+          "categoryId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"categoryId\"",
+        "sql": "ALTER TABLE \"public\".\"Product\" ADD COLUMN \"categoryId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"categoryId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Product",
+          "categoryId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Product.customizable",
+    "label": "Add column \"customizable\" to \"Product\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "customizable",
+        "table": "Product"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"customizable\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Product",
+          "customizable"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"customizable\"",
+        "sql": "ALTER TABLE \"public\".\"Product\" ADD COLUMN \"customizable\" bool DEFAULT false NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"customizable\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Product",
+          "customizable"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Product.favorite",
+    "label": "Add column \"favorite\" to \"Product\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "favorite",
+        "table": "Product"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"favorite\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Product",
+          "favorite"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"favorite\"",
+        "sql": "ALTER TABLE \"public\".\"Product\" ADD COLUMN \"favorite\" bool DEFAULT false NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"favorite\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Product",
+          "favorite"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Product.internalNotes",
+    "label": "Add column \"internalNotes\" to \"Product\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "internalNotes",
+        "table": "Product"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"internalNotes\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Product",
+          "internalNotes"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"internalNotes\"",
+        "sql": "ALTER TABLE \"public\".\"Product\" ADD COLUMN \"internalNotes\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"internalNotes\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Product",
+          "internalNotes"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Product.posEnabled",
+    "label": "Add column \"posEnabled\" to \"Product\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "posEnabled",
+        "table": "Product"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"posEnabled\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Product",
+          "posEnabled"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"posEnabled\"",
+        "sql": "ALTER TABLE \"public\".\"Product\" ADD COLUMN \"posEnabled\" bool DEFAULT true NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"posEnabled\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Product",
+          "posEnabled"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Product.purchasable",
+    "label": "Add column \"purchasable\" to \"Product\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "purchasable",
+        "table": "Product"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"purchasable\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Product",
+          "purchasable"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"purchasable\"",
+        "sql": "ALTER TABLE \"public\".\"Product\" ADD COLUMN \"purchasable\" bool DEFAULT true NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"purchasable\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Product",
+          "purchasable"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Product.sellable",
+    "label": "Add column \"sellable\" to \"Product\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "sellable",
+        "table": "Product"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"sellable\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Product",
+          "sellable"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"sellable\"",
+        "sql": "ALTER TABLE \"public\".\"Product\" ADD COLUMN \"sellable\" bool DEFAULT true NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"sellable\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Product",
+          "sellable"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.ProductAttribute.ProductAttribute_tenantId_name_key",
+    "label": "Add unique constraint on \"ProductAttribute\" (tenantId, name)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "ProductAttribute_tenantId_name_key",
+        "table": "ProductAttribute"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"ProductAttribute_tenantId_name_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProductAttribute_tenantId_name_key",
+          "public",
+          "\"public\".\"ProductAttribute\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"ProductAttribute_tenantId_name_key\"",
+        "sql": "ALTER TABLE \"public\".\"ProductAttribute\" ADD CONSTRAINT \"ProductAttribute_tenantId_name_key\" UNIQUE (\"tenantId\", \"name\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"ProductAttribute_tenantId_name_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProductAttribute_tenantId_name_key",
+          "public",
+          "\"public\".\"ProductAttribute\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.ProductAttributeLine.ProductAttributeLine_productId_attributeId_key",
+    "label": "Add unique constraint on \"ProductAttributeLine\" (productId, attributeId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "ProductAttributeLine_productId_attributeId_key",
+        "table": "ProductAttributeLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"ProductAttributeLine_productId_attributeId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProductAttributeLine_productId_attributeId_key",
+          "public",
+          "\"public\".\"ProductAttributeLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"ProductAttributeLine_productId_attributeId_key\"",
+        "sql": "ALTER TABLE \"public\".\"ProductAttributeLine\" ADD CONSTRAINT \"ProductAttributeLine_productId_attributeId_key\" UNIQUE (\"productId\", \"attributeId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"ProductAttributeLine_productId_attributeId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProductAttributeLine_productId_attributeId_key",
+          "public",
+          "\"public\".\"ProductAttributeLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.ProductAttributeValue.ProductAttributeValue_attributeId_name_key",
+    "label": "Add unique constraint on \"ProductAttributeValue\" (attributeId, name)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "ProductAttributeValue_attributeId_name_key",
+        "table": "ProductAttributeValue"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"ProductAttributeValue_attributeId_name_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProductAttributeValue_attributeId_name_key",
+          "public",
+          "\"public\".\"ProductAttributeValue\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"ProductAttributeValue_attributeId_name_key\"",
+        "sql": "ALTER TABLE \"public\".\"ProductAttributeValue\" ADD CONSTRAINT \"ProductAttributeValue_attributeId_name_key\" UNIQUE (\"attributeId\", \"name\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"ProductAttributeValue_attributeId_name_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProductAttributeValue_attributeId_name_key",
+          "public",
+          "\"public\".\"ProductAttributeValue\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.ProductCategory.ProductCategory_tenantId_parentId_name_key",
+    "label": "Add unique constraint on \"ProductCategory\" (tenantId, parentId, name)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "ProductCategory_tenantId_parentId_name_key",
+        "table": "ProductCategory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"ProductCategory_tenantId_parentId_name_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProductCategory_tenantId_parentId_name_key",
+          "public",
+          "\"public\".\"ProductCategory\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"ProductCategory_tenantId_parentId_name_key\"",
+        "sql": "ALTER TABLE \"public\".\"ProductCategory\" ADD CONSTRAINT \"ProductCategory_tenantId_parentId_name_key\" UNIQUE (\"tenantId\", \"parentId\", \"name\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"ProductCategory_tenantId_parentId_name_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProductCategory_tenantId_parentId_name_key",
+          "public",
+          "\"public\".\"ProductCategory\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Product.Product_categoryId_idx_15c304f2",
+    "label": "Create index \"Product_categoryId_idx_15c304f2\" on \"Product\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Product_categoryId_idx_15c304f2",
+        "table": "Product"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Product_categoryId_idx_15c304f2\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Product_categoryId_idx_15c304f2\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Product_categoryId_idx_15c304f2\"",
+        "sql": "CREATE INDEX \"Product_categoryId_idx_15c304f2\" ON \"public\".\"Product\" (\"categoryId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Product_categoryId_idx_15c304f2\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Product_categoryId_idx_15c304f2\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Product.Product_tenantId_categoryId_idx_bf2f0555",
+    "label": "Create index \"Product_tenantId_categoryId_idx_bf2f0555\" on \"Product\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Product_tenantId_categoryId_idx_bf2f0555",
+        "table": "Product"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Product_tenantId_categoryId_idx_bf2f0555\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Product_tenantId_categoryId_idx_bf2f0555\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Product_tenantId_categoryId_idx_bf2f0555\"",
+        "sql": "CREATE INDEX \"Product_tenantId_categoryId_idx_bf2f0555\" ON \"public\".\"Product\" (\"tenantId\", \"categoryId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Product_tenantId_categoryId_idx_bf2f0555\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Product_tenantId_categoryId_idx_bf2f0555\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ProductAttribute.ProductAttribute_tenantId_idx_c93ed4f1",
+    "label": "Create index \"ProductAttribute_tenantId_idx_c93ed4f1\" on \"ProductAttribute\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ProductAttribute_tenantId_idx_c93ed4f1",
+        "table": "ProductAttribute"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ProductAttribute_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductAttribute_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ProductAttribute_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"ProductAttribute_tenantId_idx_c93ed4f1\" ON \"public\".\"ProductAttribute\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ProductAttribute_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductAttribute_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ProductAttributeLine.ProductAttributeLine_attributeId_idx_58ec5fae",
+    "label": "Create index \"ProductAttributeLine_attributeId_idx_58ec5fae\" on \"ProductAttributeLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ProductAttributeLine_attributeId_idx_58ec5fae",
+        "table": "ProductAttributeLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ProductAttributeLine_attributeId_idx_58ec5fae\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductAttributeLine_attributeId_idx_58ec5fae\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ProductAttributeLine_attributeId_idx_58ec5fae\"",
+        "sql": "CREATE INDEX \"ProductAttributeLine_attributeId_idx_58ec5fae\" ON \"public\".\"ProductAttributeLine\" (\"attributeId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ProductAttributeLine_attributeId_idx_58ec5fae\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductAttributeLine_attributeId_idx_58ec5fae\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ProductAttributeLine.ProductAttributeLine_productId_idx_5858600a",
+    "label": "Create index \"ProductAttributeLine_productId_idx_5858600a\" on \"ProductAttributeLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ProductAttributeLine_productId_idx_5858600a",
+        "table": "ProductAttributeLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ProductAttributeLine_productId_idx_5858600a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductAttributeLine_productId_idx_5858600a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ProductAttributeLine_productId_idx_5858600a\"",
+        "sql": "CREATE INDEX \"ProductAttributeLine_productId_idx_5858600a\" ON \"public\".\"ProductAttributeLine\" (\"productId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ProductAttributeLine_productId_idx_5858600a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductAttributeLine_productId_idx_5858600a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ProductAttributeLine.ProductAttributeLine_tenantId_idx_c93ed4f1",
+    "label": "Create index \"ProductAttributeLine_tenantId_idx_c93ed4f1\" on \"ProductAttributeLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ProductAttributeLine_tenantId_idx_c93ed4f1",
+        "table": "ProductAttributeLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ProductAttributeLine_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductAttributeLine_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ProductAttributeLine_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"ProductAttributeLine_tenantId_idx_c93ed4f1\" ON \"public\".\"ProductAttributeLine\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ProductAttributeLine_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductAttributeLine_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ProductAttributeValue.ProductAttributeValue_attributeId_idx_58ec5fae",
+    "label": "Create index \"ProductAttributeValue_attributeId_idx_58ec5fae\" on \"ProductAttributeValue\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ProductAttributeValue_attributeId_idx_58ec5fae",
+        "table": "ProductAttributeValue"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ProductAttributeValue_attributeId_idx_58ec5fae\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductAttributeValue_attributeId_idx_58ec5fae\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ProductAttributeValue_attributeId_idx_58ec5fae\"",
+        "sql": "CREATE INDEX \"ProductAttributeValue_attributeId_idx_58ec5fae\" ON \"public\".\"ProductAttributeValue\" (\"attributeId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ProductAttributeValue_attributeId_idx_58ec5fae\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductAttributeValue_attributeId_idx_58ec5fae\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ProductAttributeValue.ProductAttributeValue_tenantId_idx_c93ed4f1",
+    "label": "Create index \"ProductAttributeValue_tenantId_idx_c93ed4f1\" on \"ProductAttributeValue\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ProductAttributeValue_tenantId_idx_c93ed4f1",
+        "table": "ProductAttributeValue"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ProductAttributeValue_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductAttributeValue_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ProductAttributeValue_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"ProductAttributeValue_tenantId_idx_c93ed4f1\" ON \"public\".\"ProductAttributeValue\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ProductAttributeValue_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductAttributeValue_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ProductCategory.ProductCategory_parentId_idx_6a68f597",
+    "label": "Create index \"ProductCategory_parentId_idx_6a68f597\" on \"ProductCategory\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ProductCategory_parentId_idx_6a68f597",
+        "table": "ProductCategory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ProductCategory_parentId_idx_6a68f597\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductCategory_parentId_idx_6a68f597\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ProductCategory_parentId_idx_6a68f597\"",
+        "sql": "CREATE INDEX \"ProductCategory_parentId_idx_6a68f597\" ON \"public\".\"ProductCategory\" (\"parentId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ProductCategory_parentId_idx_6a68f597\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductCategory_parentId_idx_6a68f597\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ProductCategory.ProductCategory_tenantId_idx_c93ed4f1",
+    "label": "Create index \"ProductCategory_tenantId_idx_c93ed4f1\" on \"ProductCategory\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ProductCategory_tenantId_idx_c93ed4f1",
+        "table": "ProductCategory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ProductCategory_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductCategory_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ProductCategory_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"ProductCategory_tenantId_idx_c93ed4f1\" ON \"public\".\"ProductCategory\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ProductCategory_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductCategory_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ProductAttribute.ProductAttribute_tenantId_fkey",
+    "label": "Add foreign key \"ProductAttribute_tenantId_fkey\" on \"ProductAttribute\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ProductAttribute_tenantId_fkey",
+        "table": "ProductAttribute"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ProductAttribute_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProductAttribute_tenantId_fkey",
+          "public",
+          "\"public\".\"ProductAttribute\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ProductAttribute_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ProductAttribute\"\nADD CONSTRAINT \"ProductAttribute_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ProductAttribute_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProductAttribute_tenantId_fkey",
+          "public",
+          "\"public\".\"ProductAttribute\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ProductAttributeLine.ProductAttributeLine_tenantId_fkey",
+    "label": "Add foreign key \"ProductAttributeLine_tenantId_fkey\" on \"ProductAttributeLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ProductAttributeLine_tenantId_fkey",
+        "table": "ProductAttributeLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ProductAttributeLine_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProductAttributeLine_tenantId_fkey",
+          "public",
+          "\"public\".\"ProductAttributeLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ProductAttributeLine_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ProductAttributeLine\"\nADD CONSTRAINT \"ProductAttributeLine_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ProductAttributeLine_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProductAttributeLine_tenantId_fkey",
+          "public",
+          "\"public\".\"ProductAttributeLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ProductAttributeLine.ProductAttributeLine_productId_fkey",
+    "label": "Add foreign key \"ProductAttributeLine_productId_fkey\" on \"ProductAttributeLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ProductAttributeLine_productId_fkey",
+        "table": "ProductAttributeLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ProductAttributeLine_productId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProductAttributeLine_productId_fkey",
+          "public",
+          "\"public\".\"ProductAttributeLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ProductAttributeLine_productId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ProductAttributeLine\"\nADD CONSTRAINT \"ProductAttributeLine_productId_fkey\"\nFOREIGN KEY (\"productId\")\nREFERENCES \"public\".\"Product\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ProductAttributeLine_productId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProductAttributeLine_productId_fkey",
+          "public",
+          "\"public\".\"ProductAttributeLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ProductAttributeLine.ProductAttributeLine_attributeId_fkey",
+    "label": "Add foreign key \"ProductAttributeLine_attributeId_fkey\" on \"ProductAttributeLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ProductAttributeLine_attributeId_fkey",
+        "table": "ProductAttributeLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ProductAttributeLine_attributeId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProductAttributeLine_attributeId_fkey",
+          "public",
+          "\"public\".\"ProductAttributeLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ProductAttributeLine_attributeId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ProductAttributeLine\"\nADD CONSTRAINT \"ProductAttributeLine_attributeId_fkey\"\nFOREIGN KEY (\"attributeId\")\nREFERENCES \"public\".\"ProductAttribute\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ProductAttributeLine_attributeId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProductAttributeLine_attributeId_fkey",
+          "public",
+          "\"public\".\"ProductAttributeLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ProductAttributeValue.ProductAttributeValue_tenantId_fkey",
+    "label": "Add foreign key \"ProductAttributeValue_tenantId_fkey\" on \"ProductAttributeValue\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ProductAttributeValue_tenantId_fkey",
+        "table": "ProductAttributeValue"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ProductAttributeValue_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProductAttributeValue_tenantId_fkey",
+          "public",
+          "\"public\".\"ProductAttributeValue\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ProductAttributeValue_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ProductAttributeValue\"\nADD CONSTRAINT \"ProductAttributeValue_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ProductAttributeValue_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProductAttributeValue_tenantId_fkey",
+          "public",
+          "\"public\".\"ProductAttributeValue\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ProductAttributeValue.ProductAttributeValue_attributeId_fkey",
+    "label": "Add foreign key \"ProductAttributeValue_attributeId_fkey\" on \"ProductAttributeValue\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ProductAttributeValue_attributeId_fkey",
+        "table": "ProductAttributeValue"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ProductAttributeValue_attributeId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProductAttributeValue_attributeId_fkey",
+          "public",
+          "\"public\".\"ProductAttributeValue\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ProductAttributeValue_attributeId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ProductAttributeValue\"\nADD CONSTRAINT \"ProductAttributeValue_attributeId_fkey\"\nFOREIGN KEY (\"attributeId\")\nREFERENCES \"public\".\"ProductAttribute\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ProductAttributeValue_attributeId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProductAttributeValue_attributeId_fkey",
+          "public",
+          "\"public\".\"ProductAttributeValue\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ProductCategory.ProductCategory_tenantId_fkey",
+    "label": "Add foreign key \"ProductCategory_tenantId_fkey\" on \"ProductCategory\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ProductCategory_tenantId_fkey",
+        "table": "ProductCategory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ProductCategory_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProductCategory_tenantId_fkey",
+          "public",
+          "\"public\".\"ProductCategory\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ProductCategory_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ProductCategory\"\nADD CONSTRAINT \"ProductCategory_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ProductCategory_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProductCategory_tenantId_fkey",
+          "public",
+          "\"public\".\"ProductCategory\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ProductCategory.ProductCategory_parentId_fkey",
+    "label": "Add foreign key \"ProductCategory_parentId_fkey\" on \"ProductCategory\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ProductCategory_parentId_fkey",
+        "table": "ProductCategory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ProductCategory_parentId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProductCategory_parentId_fkey",
+          "public",
+          "\"public\".\"ProductCategory\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ProductCategory_parentId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ProductCategory\"\nADD CONSTRAINT \"ProductCategory_parentId_fkey\"\nFOREIGN KEY (\"parentId\")\nREFERENCES \"public\".\"ProductCategory\" (\"id\")\nON DELETE SET NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ProductCategory_parentId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProductCategory_parentId_fkey",
+          "public",
+          "\"public\".\"ProductCategory\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Product.Product_categoryId_fkey",
+    "label": "Add foreign key \"Product_categoryId_fkey\" on \"Product\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Product_categoryId_fkey",
+        "table": "Product"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Product_categoryId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Product_categoryId_fkey",
+          "public",
+          "\"public\".\"Product\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Product_categoryId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Product\"\nADD CONSTRAINT \"Product_categoryId_fkey\"\nFOREIGN KEY (\"categoryId\")\nREFERENCES \"public\".\"ProductCategory\" (\"id\")\nON DELETE SET NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Product_categoryId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Product_categoryId_fkey",
+          "public",
+          "\"public\".\"Product\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.ProductAttribute",
+    "label": "Enable row-level security on \"ProductAttribute\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "ProductAttribute"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"ProductAttribute\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "ProductAttribute"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"ProductAttribute\"",
+        "sql": "ALTER TABLE \"public\".\"ProductAttribute\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"ProductAttribute\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "ProductAttribute"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.ProductAttributeLine",
+    "label": "Enable row-level security on \"ProductAttributeLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "ProductAttributeLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"ProductAttributeLine\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "ProductAttributeLine"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"ProductAttributeLine\"",
+        "sql": "ALTER TABLE \"public\".\"ProductAttributeLine\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"ProductAttributeLine\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "ProductAttributeLine"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.ProductAttributeValue",
+    "label": "Enable row-level security on \"ProductAttributeValue\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "ProductAttributeValue"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"ProductAttributeValue\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "ProductAttributeValue"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"ProductAttributeValue\"",
+        "sql": "ALTER TABLE \"public\".\"ProductAttributeValue\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"ProductAttributeValue\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "ProductAttributeValue"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.ProductCategory",
+    "label": "Enable row-level security on \"ProductCategory\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "ProductCategory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"ProductCategory\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "ProductCategory"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"ProductCategory\"",
+        "sql": "ALTER TABLE \"public\".\"ProductCategory\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"ProductCategory\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "ProductCategory"
+        ]
+      }
+    ]
+  }
+]
