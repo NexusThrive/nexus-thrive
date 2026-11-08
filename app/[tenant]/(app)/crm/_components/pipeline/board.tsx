@@ -532,7 +532,8 @@ export function Board({
         <span id="crm-rename-hint" hidden>
           Doble clic o Enter para renombrar la etapa
         </span>
-        <div className="flex items-start gap-4 overflow-x-auto px-5 pb-12 pt-1">
+        {/* Las columnas se estiran hasta abajo: al sostener una oportunidad, el recuadro de cada etapa cubre todo el alto y se puede soltar en cualquier punto. */}
+        <div className="flex min-h-[calc(100dvh-15rem)] items-stretch gap-4 overflow-x-auto px-5 pb-12 pt-1">
           {stages.map((s, i) => (
             <Column
               key={s.id}
