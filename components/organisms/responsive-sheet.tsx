@@ -119,6 +119,7 @@ export function ResponsiveSheet({
   extraWide = false,
   busy = false,
   unsavedGuard = true,
+  initialFocus = "field",
   alert = false,
   className,
   children,
@@ -154,6 +155,11 @@ export function ResponsiveSheet({
    * `false` para confirmaciones y paneles donde no aplica.
    */
   unsavedGuard?: boolean;
+  /**
+   * Dónde cae el foco al abrir en PC. `"field"` (por omisión): el primer campo. `"panel"`: el propio panel, sin
+   * campo enfocado; para pantallas que se manejan con el teclado sin tocar nada (el teclado numérico de «Registrar pago»).
+   */
+  initialFocus?: "field" | "panel";
   /**
    * Aviso que va **encima de otro panel** (p. ej. «¿Guardar los cambios?»):
    * fondo más oscuro y difuminado que deja el panel de abajo en segundo plano,
@@ -318,7 +324,7 @@ export function ResponsiveSheet({
             returnFocus.current = previous instanceof HTMLElement && !content.contains(previous) ? previous : null;
             event.preventDefault();
             const field =
-              window.innerWidth >= 768
+              initialFocus === "field" && window.innerWidth >= 768
                 ? content.querySelector<HTMLElement>("[data-autofocus], input:not([type=hidden]), select, textarea")
                 : null;
             (field ?? content).focus({ preventScroll: true });

@@ -203,6 +203,7 @@ export function PaymentSheet({
       description="Cobra y genera el comprobante."
       size="lg"
       footer={footer}
+      initialFocus="panel"
     >
       {/* PC: la cifra y el teclado a la izquierda, los datos del cobro a la derecha. Celular: una columna compacta. Sin scroll. */}
       <div className="grid grid-cols-[minmax(0,1fr)] gap-2.5 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-6">
