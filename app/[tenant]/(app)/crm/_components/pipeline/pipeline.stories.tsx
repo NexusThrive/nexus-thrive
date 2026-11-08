@@ -1,3 +1,5 @@
+import { crmSearchDefs } from "@/lib/business/growth/crm-search";
+import { toSchema } from "@/lib/foundation/list-search";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { withShell } from "../../../../../../.storybook/decorators";
 import { AppTopbar } from "@/components/organisms/app-topbar";
@@ -31,6 +33,8 @@ const cards: PipelineCard[] = [
   { ...base, id: "o9", name: "Plan semestral · 6 socios", value: 1_900_000, probability: 100, stageId: "s4", customer: { id: "c9", name: "Agencia Tropical" }, priority: 1, next: null, won: true, orderId: "p2", orderPaid: true },
 ];
 
+const SCHEMA = toSchema(crmSearchDefs({ me: owner.id, owners: [owner], stages, tags: ["Distribuidor", "Evento", "Mayorista"] }));
+
 /** El pipeline como se ve en la app: barra del módulo CRM y el tablero con datos de muestra. Acciones de muestra. */
 function Pipeline({ quick, empty, vista }: { quick: boolean; empty: boolean; vista: "tablero" | "lista" | "grafico" }) {
   return (
@@ -45,12 +49,11 @@ function Pipeline({ quick, empty, vista }: { quick: boolean; empty: boolean; vis
           cards={empty ? [] : cards}
           lost={empty ? { count: 0, total: 0 } : { count: 4, total: 6_300_000 }}
           lostRows={[]}
-          owners={[owner]}
-          tags={["Distribuidor", "Evento", "Mayorista"]}
           activities={[]}
           month="2026-11"
-          mine
           customerName={null}
+          schema={SCHEMA}
+          favorites={[]}
           preset={null}
           hasAny={!empty}
           canConfig

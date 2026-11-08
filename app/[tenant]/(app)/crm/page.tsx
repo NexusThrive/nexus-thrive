@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ensureStages, loadPipeline, type PipelineFilters } from "@/lib/business/growth/pipeline-db";
+import { CRM_SECTION, crmSearchDefs } from "@/lib/business/growth/crm-search";
+import { listSavedSearches } from "@/lib/core/saved-searches-db";
+import { applySearch, isAdvanced, paramsOfSnapshot, parseSearchState, toSchema, type SearchAlias } from "@/lib/foundation/list-search";
+import { redirect } from "next/navigation";
+
+/** Enlaces de antes: `?mios=0` equivale a «Todas». */
+const MINE_ALIAS: SearchAlias = { param: "mios", map: { "0": "todas" } };
 import { listOpportunities } from "@/lib/business/growth/opportunities-db";
 import { pendingCrmActivities, pickerCustomer } from "@/lib/business/growth/pipeline-read";
 import { bogotaMonth, parseMoney } from "@/lib/business/growth/pipeline";
@@ -42,8 +49,33 @@ export default async function PipelinePage({ params, searchParams }: { params: P
   };
   // Las etapas se aseguran una sola vez antes de las cargas en paralelo (si no, un negocio nuevo las crearía dos veces).
   await ensureStages(ctx.tenantId);
-  const [board, everything, lost] = await Promise.all([loadPipeline(ctx.tenantId, filters), loadPipeline(ctx.tenantId), listOpportunities(ctx.tenantId, "LOST", 100)]);
-  const activities = view === "actividades" ? await pendingCrmActivities(ctx.tenantId, board.cards.map((c) => c.id)) : [];
+  const [board, everything, lost, favorites] = await Promise.all([
+    loadPipeline(ctx.tenantId, filters),
+    loadPipeline(ctx.tenantId),
+    listOpportunities(ctx.tenantId, "LOST", 100),
+    listSavedSearches(ctx.tenantId, ctx.memberId, CRM_SECTION),
+  ]);
+
+  // Al entrar sin haber tocado la búsqueda se aplica el favorito por defecto (`v` marca que ya se tocó).
+  const defaultFavorite = favorites.find((f) => f.isDefault);
+  if (defaultFavorite && !sp.v && !["q", "en", "filtros", "regla", "mios"].some((key) => sp[key] !== undefined)) {
+    const next = new URLSearchParams(paramsOfSnapshot(defaultFavorite.params));
+    for (const [key, value] of Object.entries(sp)) if (typeof value === "string") next.set(key, value);
+    next.set("v", "1");
+    redirect(`/${tenant}/crm?${next.toString()}`);
+  }
+
+  // Búsqueda avanzada: se filtra en memoria sobre todas las oportunidades; sin ella rigen los filtros de siempre.
+  const defs = crmSearchDefs({ me: ctx.memberId, owners: everything.owners, stages: everything.stages, tags: everything.tags });
+  const urlParams = new URLSearchParams();
+  for (const key of ["q", "en", "filtros", "regla", "mios"]) {
+    const raw = sp[key];
+    for (const value of Array.isArray(raw) ? raw : raw === undefined ? [] : [raw]) urlParams.append(key, value);
+  }
+  const searchState = parseSearchState(urlParams, defs, MINE_ALIAS);
+  const advanced = isAdvanced(searchState);
+  const cards = advanced ? applySearch(everything.cards, defs, searchState).filter((c) => !customerId || c.customer?.id === customerId) : board.cards;
+  const activities = view === "actividades" ? await pendingCrmActivities(ctx.tenantId, cards.map((c) => c.id)) : [];
   const customer = customerId ? await pickerCustomer(ctx.tenantId, customerId) : null;
   const month = /^\d{4}-\d{2}$/.test(first(sp.mes)) ? first(sp.mes) : bogotaMonth();
   const lostRows = lost.map((o) => ({ id: o.id, name: o.interest, customer: o.customerId ? o.customerName : null, value: o.estimatedValue ?? 0, reason: o.lostReason }));
@@ -52,14 +84,13 @@ export default async function PipelinePage({ params, searchParams }: { params: P
       slug={tenant}
       view={view}
       stages={board.stages}
-      cards={board.cards}
+      cards={cards}
+      schema={toSchema(defs)}
+      favorites={favorites}
       lost={board.lost}
       lostRows={lostRows}
-      owners={board.owners}
-      tags={board.tags}
       activities={activities}
       month={month}
-      mine={mine}
       customerName={customer?.name ?? null}
       preset={first(sp.nueva) === "1" ? customer : null}
       hasAny={everything.cards.length > 0 || everything.lost.count > 0}

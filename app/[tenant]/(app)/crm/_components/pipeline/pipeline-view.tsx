@@ -1,16 +1,14 @@
 "use client";
 
-import { useEffect, useOptimistic, useRef, useState, useTransition } from "react";
+import { useEffect, useOptimistic, useState, useTransition } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { CalendarDays, ChartColumn, ChevronDown, Clock, Columns3, List, MoreVertical, Search, X } from "lucide-react";
+import CrmSearchBar from "./crm-search-bar";
+import type { FavoriteItem } from "@/components/organisms/advanced-search/advanced-search";
+import type { SearchSchema } from "@/lib/foundation/list-search";
+import { CalendarDays, ChartColumn, Clock, Columns3, List, MoreVertical, X } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { inputClasses } from "@/components/atoms/input";
-import { Select } from "@/components/atoms/select";
-import { DateInput } from "@/components/molecules/date-input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/molecules/dropdown-menu";
-import { Field } from "@/components/molecules/field";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/molecules/popover";
 import { useToast } from "@/components/molecules/toast";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { completeActivityAction, moveStageAction, reopenAction, reorderAction } from "@/app/[tenant]/(app)/crm/pipeline-actions";
@@ -47,12 +45,11 @@ export default function PipelineView({
   cards,
   lost,
   lostRows,
-  owners,
-  tags,
   activities,
   month,
-  mine,
   customerName,
+  schema,
+  favorites,
   preset,
   hasAny,
   canConfig = false,
@@ -65,12 +62,11 @@ export default function PipelineView({
   cards: PipelineCard[];
   lost: { count: number; total: number };
   lostRows: LostRow[];
-  owners: { id: string; name: string }[];
-  tags: string[];
   activities: ActivityItem[];
   month: string;
-  mine: boolean;
   customerName: string | null;
+  schema: SearchSchema;
+  favorites: FavoriteItem[];
   /** Cliente ya elegido en la creación rápida (al llegar desde su ficha con «Nueva oportunidad»). */
   preset?: PickerCustomer | null;
   /** ¿El negocio tiene alguna oportunidad (sin filtros)? Si no, el tablero invita a crear la primera. */
@@ -85,8 +81,6 @@ export default function PipelineView({
   const [showLost, setShowLost] = useState(false);
   const [saving, setSaving] = useState<ReadonlySet<string>>(new Set());
   const [doneIds, setDoneIds] = useState<ReadonlySet<string>>(new Set());
-  const [q, setQ] = useState(params.get("q") ?? "");
-  const searchRef = useRef<HTMLInputElement>(null);
   const [now] = useState(() => Date.now());
 
   const [shown, apply] = useOptimistic(cards, (state: PipelineCard[], action: Optimistic) => {
@@ -105,15 +99,6 @@ export default function PipelineView({
     const qs = next.toString();
     router.replace(`${pathname}${qs ? `?${qs}` : ""}`, { scroll: false });
   };
-
-  // El buscador filtra al dejar de escribir (nombre, cliente, etiqueta y responsable).
-  useEffect(() => {
-    const current = params.get("q") ?? "";
-    if (q === current) return;
-    const t = window.setTimeout(() => setParams({ q: q.trim() || null }), 300);
-    return () => window.clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- solo cuando cambia lo escrito
-  }, [q]);
 
   // N abre la creación rápida (fuera de los campos de texto).
   useEffect(() => {
@@ -159,8 +144,6 @@ export default function PipelineView({
     });
   };
 
-  const filtersOn = ["responsable", "etiqueta", "prioridad", "desde", "hasta", "min", "max"].some((k) => params.get(k));
-
   return (
     <div data-bleed="" className="flex flex-col">
       {/* Panel de control: 3 zonas */}
@@ -187,16 +170,7 @@ export default function PipelineView({
           </DropdownMenu>
         </div>
 
-        <div suppressHydrationWarning className="flex h-9 w-full min-w-0 items-center gap-2 justify-self-center rounded-[10px] border border-border bg-card ps-3 [grid-area:search] focus-within:border-accent min-[1100px]:max-w-[543px]">
-          <Search aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
-          {mine ? (
-            <span className="flex shrink-0 items-center gap-1.5 rounded-md bg-surface-muted px-2 py-[3px] text-xs text-foreground">
-              Mis oportunidades
-              <button type="button" aria-label="Quitar filtro: Mis oportunidades" onClick={() => setParams({ mios: "0" })} className="text-muted-foreground hover:text-foreground">
-                <X aria-hidden="true" className="size-3" />
-              </button>
-            </span>
-          ) : null}
+        <div className="flex w-full min-w-0 items-center gap-2 justify-self-center [grid-area:search] min-[1100px]:max-w-[543px]">
           {customerName ? (
             <span className="flex shrink-0 items-center gap-1.5 rounded-md bg-surface-muted px-2 py-[3px] text-xs text-foreground">
               {customerName}
@@ -205,8 +179,7 @@ export default function PipelineView({
               </button>
             </span>
           ) : null}
-          <input ref={searchRef} value={q} onChange={(e) => setQ(e.target.value)} aria-label="Buscar oportunidades" placeholder="Buscar…" className="h-full min-w-0 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground" />
-          <FilterMenu owners={owners} tags={tags} params={params} active={filtersOn} onApply={setParams} mine={mine} />
+          <CrmSearchBar slug={slug} schema={schema} favorites={favorites} className="h-9 min-w-0 flex-1" />
         </div>
 
         <div className="flex items-center justify-end [grid-area:views]">
@@ -327,86 +300,3 @@ export default function PipelineView({
   );
 }
 
-/** Desplegable de filtros: responsable, etiqueta, prioridad, rango de cierre y valor (viven en la URL). */
-function FilterMenu({ owners, tags, params, active, mine, onApply }: { owners: { id: string; name: string }[]; tags: string[]; params: URLSearchParams | ReturnType<typeof useSearchParams>; active: boolean; mine: boolean; onApply: (p: Record<string, string | null>) => void }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger aria-label="Filtros" className={cn("grid h-full w-9 shrink-0 place-items-center rounded-e-[10px] outline-none hover:text-foreground focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring", active ? "text-accent-text" : "text-muted-foreground")}>
-        <ChevronDown aria-hidden="true" className="size-3.5" />
-      </PopoverTrigger>
-      <PopoverContent align="end" className="w-80">
-        <form
-          className="grid gap-3"
-          onSubmit={(e) => {
-            e.preventDefault();
-            const f = new FormData(e.currentTarget);
-            const get = (k: string) => String(f.get(k) ?? "").trim() || null;
-            onApply({ responsable: get("responsable"), etiqueta: get("etiqueta"), prioridad: get("prioridad"), desde: get("desde"), hasta: get("hasta"), min: get("min"), max: get("max"), mios: f.get("mios") ? null : "0" });
-            setOpen(false);
-          }}
-        >
-          <label className="flex items-center gap-2 text-sm text-foreground">
-            <input type="checkbox" name="mios" defaultChecked={mine} className="size-4 accent-[var(--accent)]" />
-            Mis oportunidades
-          </label>
-          <Field label="Responsable">
-            {(c) => (
-              <Select {...c} name="responsable" defaultValue={params.get("responsable") ?? ""}>
-                <option value="">Todos</option>
-                {owners.map((o) => (
-                  <option key={o.id} value={o.id}>
-                    {o.name}
-                  </option>
-                ))}
-              </Select>
-            )}
-          </Field>
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Etiqueta">
-              {(c) => (
-                <Select {...c} name="etiqueta" defaultValue={params.get("etiqueta") ?? ""}>
-                  <option value="">Todas</option>
-                  {tags.map((t) => (
-                    <option key={t} value={t}>
-                      {t}
-                    </option>
-                  ))}
-                </Select>
-              )}
-            </Field>
-            <Field label="Prioridad">
-              {(c) => (
-                <Select {...c} name="prioridad" defaultValue={params.get("prioridad") ?? ""}>
-                  <option value="">Cualquiera</option>
-                  <option value="1">★ o más</option>
-                  <option value="2">★★ o más</option>
-                  <option value="3">★★★</option>
-                </Select>
-              )}
-            </Field>
-            <Field label="Cierre desde">{(c) => <DateInput {...c} name="desde" defaultValue={params.get("desde") ?? ""} />}</Field>
-            <Field label="Cierre hasta">{(c) => <DateInput {...c} name="hasta" defaultValue={params.get("hasta") ?? ""} />}</Field>
-            <Field label="Valor mínimo">{(c) => <input {...c} inputMode="numeric" name="min" defaultValue={params.get("min") ?? ""} placeholder="$ 0" className={inputClasses} />}</Field>
-            <Field label="Valor máximo">{(c) => <input {...c} inputMode="numeric" name="max" defaultValue={params.get("max") ?? ""} placeholder="Sin límite" className={inputClasses} />}</Field>
-          </div>
-          <div className="flex justify-end gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                onApply({ responsable: null, etiqueta: null, prioridad: null, desde: null, hasta: null, min: null, max: null });
-                setOpen(false);
-              }}
-              className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-[34px] border border-border")}
-            >
-              Limpiar
-            </button>
-            <button type="submit" className={buttonVariants({ variant: "accent", size: "sm", className: "h-[34px] font-semibold" })}>
-              Aplicar
-            </button>
-          </div>
-        </form>
-      </PopoverContent>
-    </Popover>
-  );
-}
