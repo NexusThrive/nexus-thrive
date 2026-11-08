@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Banknote, CalendarDays, CreditCard, FileText, Mail, MapPin, MessageCircle, Phone, Receipt, ShoppingBag, Target } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
+import { CustomerAvatar } from "@/components/atoms/customer-avatar";
 import { cn } from "@/lib/utils";
 import FichaActivity, { type ActivityItem } from "./ficha-activity";
 import FichaControl from "./ficha-control";
@@ -55,7 +56,6 @@ export default function FichaView(props: {
   const phone = customer.phone?.replace(/\D/g, "") ?? "";
   const shownPhone = phone.length === 10 ? `+57 ${phone.slice(0, 3)} ${phone.slice(3, 6)} ${phone.slice(6)}` : phone ? `+57 ${phone}` : null;
   const wa = phone ? `https://wa.me/${phone.length === 10 ? `57${phone}` : phone}` : null;
-  const initials = customer.name.trim().split(/\s+/).slice(0, 2).map((w) => w[0]?.toUpperCase() ?? "").join("");
   const edit = (field: string) => hrefFor({ editar: "1", campo: field });
 
   const contact: { icon: typeof Phone; value: string | null; empty: string; field: string }[] = [
@@ -92,13 +92,8 @@ export default function FichaView(props: {
         <div className="flex min-w-0 shrink grow-[2] basis-[560px] flex-col gap-4">
           {/* Identidad */}
           <section aria-labelledby="ficha-nombre" className={cn(card, "flex flex-wrap items-start gap-5")}>
-            <span className="grid size-[88px] shrink-0 place-items-center overflow-hidden rounded-[22px] bg-accent-subtle text-3xl font-semibold text-accent-text">
-              {customer.photoUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={customer.photoUrl} alt={`Foto de ${customer.name}`} className="size-full object-cover" />
-              ) : (
-                <span aria-hidden="true">{initials || "?"}</span>
-              )}
+            <span className="grid size-[88px] shrink-0 place-items-center overflow-hidden rounded-[22px] bg-accent-subtle">
+              <CustomerAvatar identity={{ name: customer.name, id: customer.id }} photoUrl={customer.photoUrl} className="size-full" />
             </span>
             <div className="grid min-w-0 flex-1 basis-64 gap-3">
               <div className="flex flex-wrap items-center gap-2">

@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { CustomerAvatar } from "@/components/atoms/customer-avatar";
 import { QrCode } from "@/components/atoms/qr-code";
 import { PrintButton } from "@/components/molecules/print-button";
 import { ensureAccessCode } from "@/lib/industry/gym/gym-db";
@@ -29,10 +30,11 @@ export default async function CarnetPage({ params }: { params: Promise<{ tenant:
       >
         <div className="grid content-between self-stretch">
           <p className="text-2xs font-semibold uppercase tracking-[0.14em] text-black/60">{tenant.name}</p>
-          {customer.photoId ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={`/api/files/${customer.photoId}`} alt="" className="size-[22mm] rounded-md object-cover" />
-          ) : null}
+          <CustomerAvatar
+            identity={{ name: customer.name, id: customer.id }}
+            photoUrl={customer.photoId ? `/api/files/${customer.photoId}` : null}
+            className="size-[22mm] rounded-md"
+          />
           <div>
             <p className="text-ui font-bold leading-tight">{customer.name}</p>
             {customer.documentId ? <p className="text-2xs text-black/60">Doc. {customer.documentId}</p> : null}

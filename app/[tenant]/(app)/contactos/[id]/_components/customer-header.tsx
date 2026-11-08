@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { ArrowLeft, Mail, Phone } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
+import { CustomerAvatar } from "@/components/atoms/customer-avatar";
 import type { Customer360Profile, CustomerAccountStatus } from "@/lib/core/tenancy/db";
 import { typeLabel, type Customer360Membership } from "@/lib/industry/gym/memberships";
 import { formatDateShort } from "@/lib/foundation/format";
 import type { VerticalTerms } from "@/lib/core/sectors/terms";
+import { cn } from "@/lib/utils";
 import { AccountStatusPill, MembershipStatusPill } from "./status-pills";
 import CustomerActions from "./customer-actions";
 
@@ -47,14 +49,11 @@ export default function CustomerHeader({
 
       <div className="mt-4 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex min-w-0 items-start gap-4">
-          {photoId ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={`/api/files/${photoId}`} alt={`Foto de ${customer.name}`} className="size-14 shrink-0 rounded-full object-cover sm:size-16" />
-          ) : (
-            <span aria-hidden="true" className="grid size-14 shrink-0 place-items-center rounded-sm bg-accent-subtle text-lg font-semibold text-accent-text">
-              {initialsOf(customer.name)}
-            </span>
-          )}
+          <CustomerAvatar
+            identity={{ name: customer.name, id: customer.id }}
+            photoUrl={photoId ? `/api/files/${photoId}` : null}
+            className={cn("size-14 sm:size-16", photoId ? "rounded-full" : "rounded-sm")}
+          />
           <div className="min-w-0">
             <h1 className="break-words font-display text-[clamp(22px,3.6vw,30px)] font-bold tracking-[-0.02em] text-foreground">
               {customer.name}
@@ -109,14 +108,4 @@ export default function CustomerHeader({
       </div>
     </header>
   );
-}
-
-function initialsOf(name: string): string {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0])
-    .join("")
-    .toUpperCase();
 }

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Banknote, CalendarPlus, Camera, ChevronDown, ChevronRight, History, Mail, Phone, ShoppingBag } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
+import { CustomerAvatar } from "@/components/atoms/customer-avatar";
 import { inputClasses, textareaClasses } from "@/components/atoms/input";
 import { Select } from "@/components/atoms/select";
 import { Field, focusFirstInvalid } from "@/components/molecules/field";
@@ -18,7 +19,6 @@ import {
   DOCUMENT_TYPES,
   EMPTY_NEW_CUSTOMER,
   TAX_RESPONSIBILITIES,
-  initials,
   phoneDigits,
   validateNewCustomer,
   type NewCustomerInput,
@@ -444,7 +444,7 @@ export default function NewCustomerForm({
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={photo.url} alt="" className="size-full object-cover" />
                 ) : (
-                  initials(previewName) || <span className="text-muted-foreground">?</span>
+                  <CustomerAvatar identity={{ name: previewName, email: v.email, phone: v.phone }} className="size-full" />
                 )}
               </span>
               <div className="min-w-0">

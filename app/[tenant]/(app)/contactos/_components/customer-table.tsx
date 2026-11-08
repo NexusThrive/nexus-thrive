@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, useTransition, type ReactNode } from "reac
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { CustomerAvatar } from "@/components/atoms/customer-avatar";
 import { SwipeCard } from "@/components/molecules/swipe-card";
 import { ArrowDown, ArrowUp, Archive, Banknote, MessageCircle, Pencil, Plus, RotateCcw, X } from "lucide-react";
 import {
@@ -43,15 +44,14 @@ export type CustomerRow = {
   hasMembership: boolean;
 };
 
-/** Foto del cliente o sus iniciales. */
+/** Foto del cliente o su blobatar determinista. */
 function Face({ row, className }: { row: CustomerRow; className: string }) {
-  return row.photoId ? (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img src={`/api/files/${row.photoId}`} alt="" className={`${className} object-cover`} />
-  ) : (
-    <span aria-hidden="true" className={className}>
-      {row.name.trim().charAt(0).toUpperCase() || "?"}
-    </span>
+  return (
+    <CustomerAvatar
+      identity={{ name: row.name, id: row.id }}
+      photoUrl={row.photoId ? `/api/files/${row.photoId}` : null}
+      className={className}
+    />
   );
 }
 
@@ -72,11 +72,6 @@ const ICON_BUTTON =
 
 /** Set de selección vacío compartido (solo lectura). */
 const EMPTY_SELECTION: ReadonlySet<string> = new Set();
-
-function initialsOf(name: string): string {
-  const parts = name.trim().split(/\s+/).slice(0, 2);
-  return parts.map((part) => part.charAt(0).toUpperCase()).join("") || "?";
-}
 
 /** Próxima cita en la lista: «7 nov, 10:30» (hora de Bogotá). */
 const formatAppointment = (iso: string) =>
@@ -468,8 +463,8 @@ export default function CustomerTable({
                         className="mt-2 h-4 w-4 cursor-pointer rounded accent-gold-600"
                       />
                     ) : null}
-                    <span aria-hidden="true" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-accent-subtle text-xs font-semibold text-accent-text">
-                      {initialsOf(row.name)}
+                    <span aria-hidden="true" className="flex h-10 w-10 shrink-0 overflow-hidden rounded-sm bg-accent-subtle">
+                      <CustomerAvatar identity={{ name: row.name, id: row.id }} photoUrl={row.photoId ? `/api/files/${row.photoId}` : null} className="size-full" />
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className="flex flex-wrap items-center gap-2 font-medium text-foreground">

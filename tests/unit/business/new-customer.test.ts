@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { EMPTY_NEW_CUSTOMER, cleanDocument, initials, phoneDigits, validateNewCustomer } from "@/lib/business/customers/new-customer";
+import { EMPTY_NEW_CUSTOMER, cleanDocument, phoneDigits, validateNewCustomer } from "@/lib/business/customers/new-customer";
 
 const input = (extra: Partial<typeof EMPTY_NEW_CUSTOMER> = {}) => ({ ...EMPTY_NEW_CUSTOMER, name: "María Pérez", ...extra });
 
@@ -14,11 +14,8 @@ describe("alta completa de cliente", () => {
     expect(validateNewCustomer(input({ email: "maria@" })).email).toBeTruthy();
     expect(validateNewCustomer(input({ invoiceEmail: "x" })).invoiceEmail).toBeTruthy();
   });
-  it("normaliza teléfono, documento e iniciales", () => {
+  it("normaliza teléfono y documento", () => {
     expect(phoneDigits("+57 300 123 4567")).toBe("3001234567");
     expect(cleanDocument("1.020.345-678")).toBe("1020345678");
-    expect(initials("María Pérez Gómez")).toBe("MG");
-    expect(initials("Gym")).toBe("G");
-    expect(initials("")).toBe("");
   });
 });
