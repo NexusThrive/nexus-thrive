@@ -1,0 +1,48 @@
+import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { expect, userEvent, within } from "storybook/test";
+import { ToastProvider } from "@/components/molecules/toast";
+import { AuriAssistant } from "./auri-assistant";
+
+/**
+ * AURI AI: la asistente del negocio. El botón de la esquina (que antes era el «?») es su cara: unos ojos que siguen el cursor y
+ * parpadean. Abre una ventana flotante de chat. Hoy es solo la interfaz: no hay modelo detrás y lo dice con claridad; el
+ * Centro de ayuda se abre desde el pie del chat.
+ */
+const meta = {
+  title: "Organismos/AuriAssistant",
+  component: AuriAssistant,
+  args: { tenantSlug: "gym-norte", businessName: "Gimnasio Norte", activeModules: ["crm", "finance", "bookings"] },
+  parameters: { layout: "fullscreen" },
+  decorators: [
+    (Story) => (
+      <ToastProvider>
+        <div className="min-h-[520px] p-6 text-sm text-muted-foreground">Contenido de la página.<Story /></div>
+      </ToastProvider>
+    ),
+  ],
+} satisfies Meta<typeof AuriAssistant>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+/** Cerrado: solo su cara en la esquina. */
+export const Cerrado: Story = {};
+
+/** Abierto: saludo, aviso de vista previa y sugerencias. */
+export const Abierto: Story = {
+  play: async ({ canvasElement }) => {
+    await userEvent.click(within(canvasElement).getByRole("button", { name: "Abrir el chat con AURI AI" }));
+    const chat = await within(document.body).findByRole("dialog");
+    await expect(within(chat).getByText(/Vista previa/)).toBeVisible();
+  },
+};
+
+/** Una pregunta: el mensaje queda en el hilo y AURI contesta con honestidad que aún no está conectada. */
+export const Conversando: Story = {
+  play: async (context) => {
+    await Abierto.play?.(context);
+    const chat = within(await within(document.body).findByRole("dialog"));
+    await userEvent.click(chat.getByRole("button", { name: "Citas de mañana" }));
+    await expect(await chat.findByText(/Todavía no estoy conectada/, {}, { timeout: 3000 })).toBeVisible();
+  },
+};

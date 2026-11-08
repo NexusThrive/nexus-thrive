@@ -11,7 +11,7 @@ import { loadTrialIndicator } from "@/lib/experience/onboarding/trial";
 import { loadFirstSteps } from "@/lib/experience/onboarding/first-steps";
 import { FirstStepsIndicator } from "@/components/organisms/first-steps-indicator";
 import ThemeSync from "./_components/theme-sync";
-import { HelpCenter } from "@/components/organisms/help-center";
+import { AuriAssistant } from "@/components/organisms/auri-assistant";
 import { cookies } from "next/headers";
 import { auth } from "@clerk/nextjs/server";
 import { createTenantDb } from "@/lib/core/tenancy/db";
@@ -109,7 +109,7 @@ export default async function AppLayout({
       >
         <ThemeSync tenantSlug={tenantRecord.slug} saved={savedTheme} />
         {children}
-        <HelpCenter tenantSlug={tenantRecord.slug} businessName={tenantRecord.name} activeModules={activeModules} showFunctions={!hasMemberAccess(tenantRecord.vertical)} />
+        <AuriAssistant tenantSlug={tenantRecord.slug} businessName={tenantRecord.name} activeModules={activeModules} showFunctions={!hasMemberAccess(tenantRecord.vertical)} />
       </TenantShell>
     </VerticalTermsProvider>
   );

@@ -168,6 +168,7 @@ Storybook con sus estados.
 | Formulario en panel lateral | `FormDrawer` | `components/organisms/form-sheet.tsx` |
 | Confirmar (anular, eliminar) | `ConfirmDialog` o `useConfirm()` | `components/organisms/confirm-dialog.tsx` |
 | Ventana flotante compacta | `Popover` | `components/molecules/popover.tsx` |
+| Asistente del negocio (chat), en la esquina | `AuriAssistant` (botón con la cara de AURI AI y ventana flotante de chat; abre el Centro de ayuda desde su pie). Hoy es solo interfaz: no inventa respuestas. La cara es `EyeTracker` (de Bencho, MIT; colores de la marca en `app/styles/eye-tracker.css`) | `components/organisms/auri-assistant.tsx` · `components/atoms/eye-tracker.tsx` |
 | Ayuda "?" | `ContextHelp` | `components/molecules/context-help.tsx` |
 | Nombre de un botón de icono | `Tooltip` (además del `aria-label`) | `components/molecules/tooltip.tsx` |
 | Campo con etiqueta, descripción y error | `Field` (+ `FieldError`, `FieldDescription`, `focusFirstInvalid`) | `components/molecules/field.tsx` |
