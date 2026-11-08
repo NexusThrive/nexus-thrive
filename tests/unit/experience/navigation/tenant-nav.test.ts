@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { VERTICALS } from "@/lib/core/sectors/verticals";
 import { MODULES } from "@/lib/core/capabilities/modules";
-import { activeNavItem, buildTenantNav, isNavActive, modulesForRoute, tenantRelativePath } from "@/lib/experience/navigation/tenant-nav";
+import { activeNavItem, appTransitionName, buildTenantNav, isNavActive, modulesForRoute, tenantRelativePath } from "@/lib/experience/navigation/tenant-nav";
 import { quickCreateActions, quickSheetFor } from "@/lib/experience/navigation/quick-create";
 
 describe("buildTenantNav", () => {
@@ -204,5 +204,26 @@ describe("reparto del menú por trabajo (etapa A6)", () => {
     const groups = buildTenantNav("retail", ["dashboard", "quotes", "orders"]);
     expect(groups.find((g) => g.label === "Ventas y cobros")!.items.map((i) => i.href)).toEqual(expect.arrayContaining(["/ventas/cotizaciones", "/ventas/pedidos"]));
     expect(groups.find((g) => g.label === "Obras y proyectos")).toBeUndefined();
+  });
+});
+
+describe("appTransitionName", () => {
+  const groups = buildTenantNav("retail", ["dashboard", "crm", "finance", "bookings"]);
+  const keysOf = (label: string) => groups.find((g) => g.label === label)!.items.map((i) => i.key);
+
+  it("todas las pantallas de una app comparten el nombre del icono (el del primer ítem del grupo)", () => {
+    const app = groups.find((g) => g.label !== "General" && g.label !== "Sistema" && g.items.length > 1)!;
+    const [first, ...rest] = app.items.map((i) => i.key);
+    const name = appTransitionName(groups, first);
+    expect(name).toMatch(/^nx-app-[a-zA-Z0-9_-]+$/);
+    for (const key of rest) expect(appTransitionName(groups, key)).toBe(name);
+  });
+
+  it("apps distintas tienen nombres distintos; Configuración tiene el suyo y Resumen o Inicio no tienen", () => {
+    const names = groups.filter((g) => g.label !== "General" && g.label !== "Sistema").map((g) => appTransitionName(groups, g.items[0]!.key));
+    expect(new Set(names).size).toBe(names.length);
+    expect(appTransitionName(groups, "settings")).toBe("nx-app-settings");
+    expect(appTransitionName(groups, undefined)).toBeUndefined();
+    expect(appTransitionName(groups, keysOf("General")[0])).toBeUndefined();
   });
 });

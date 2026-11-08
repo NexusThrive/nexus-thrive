@@ -44,6 +44,48 @@ html[data-motion="off"] *::after {
   animation-duration: var(--d3);
   animation-timing-function: var(--nx-ease-out);
 }
+/* Abrir una app desde Inicio: una ventana redondeada crece del icono hasta la vista y, al volver (en la app o con «atrás» del
+   navegador), se encoge de vuelta al icono. Las capturas no se estiran (`object-fit: none`): la vista se revela a su resolución
+   real y el icono queda nítido en el centro mientras se desvanece. Sin pareja (Inicio aún cargando), la vista se encoge y se apaga
+   en su sitio (`nx-app-exit`). Dueño: <ViewTransition> de React en app-grid.tsx (icono) y app-stage.tsx (vista). */
+::view-transition-group(.nx-app) {
+  animation-duration: var(--d4);
+  animation-timing-function: var(--nx-ease-out);
+  background-color: var(--background);
+  border-radius: 22px;
+}
+::view-transition-image-pair(.nx-app) {
+  overflow: hidden;
+  border-radius: 22px;
+}
+::view-transition-old(.nx-app),
+::view-transition-new(.nx-app) {
+  width: 100%;
+  height: 100%;
+  object-fit: none;
+  object-position: center;
+  animation-duration: var(--d3);
+  animation-timing-function: var(--nx-ease-out);
+}
+::view-transition-old(.nx-app-exit):only-child {
+  animation: nx-app-exit var(--d3) var(--nx-ease-in-out) both;
+}
+@keyframes nx-app-exit {
+  to {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
+/* En el celular el cambio de sección es el empuje de `NavTransitions` (un solo dueño): aquí la pareja se intercambia sin animar. */
+@media (max-width: 767.98px) {
+  ::view-transition-group(.nx-app),
+  ::view-transition-old(.nx-app),
+  ::view-transition-new(.nx-app),
+  ::view-transition-old(.nx-app-exit):only-child {
+    animation: none;
+  }
+}
+
 ::view-transition-new(.nx-appear):only-child {
   animation: nx-vt-appear var(--d2) var(--nx-ease-out) 80ms both;
 }
@@ -66,6 +108,33 @@ html[data-motion="off"]::view-transition-old(*),
 html[data-motion="off"]::view-transition-new(*) {
   animation-duration: 0s !important;
   animation-delay: 0s !important;
+}
+
+/* Al soltar una app en su nuevo lugar: cae y rebota un poco, como si se asentara (física). Una sola vez; sin movimiento reducido. */
+@keyframes nx-settle {
+  0% {
+    transform: translateY(-10px) scale(1.04);
+  }
+  45% {
+    transform: translateY(4px) scale(0.97, 0.94);
+  }
+  70% {
+    transform: translateY(-2px) scale(1.01);
+  }
+  100% {
+    transform: none;
+  }
+}
+.nx-settle {
+  animation: nx-settle var(--d4) var(--nx-ease-spring) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nx-settle {
+    animation: none;
+  }
+}
+html[data-motion="off"] .nx-settle {
+  animation: none;
 }
 
 /* --- Foco de luz que sigue al puntero (tarjetas .nx-spot) --- */

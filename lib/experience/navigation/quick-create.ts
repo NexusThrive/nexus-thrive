@@ -51,7 +51,8 @@ export function quickCreateActions(
       key: "new-customer",
       label: `Nuevo ${terms.customer.toLowerCase()}`,
       hint: "Agregar un contacto",
-      href: "/contactos",
+      // Sin mini-modal (o desde «Formulario completo»), la página de alta completa.
+      href: "/contactos/nuevo",
       icon: UserPlus,
     });
   }

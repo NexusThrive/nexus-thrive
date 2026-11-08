@@ -83,6 +83,18 @@ export const MorphFromButtons: Story = {
   },
 };
 
+/** Desde una píldora (como las acciones rápidas de Inicio): la tarjeta pasa de las esquinas redondas del botón a las del modal, sin viajar como un círculo. */
+export const MorphFromPill: Story = {
+  parameters: { layout: "fullscreen", docs: { story: { inline: false, iframeHeight: 520 } } },
+  render: () => (
+    <div className="grid h-[500px] place-items-center">
+      <ResponsiveSheet open={undefined} title="Nuevo cliente" description="Nació de la píldora." trigger={<Button variant="outline" className="rounded-full">Nuevo cliente</Button>} footer={footer}>
+        {form}
+      </ResponsiveSheet>
+    </div>
+  ),
+};
+
 function MountedWhileOpen({ drawer }: { drawer: boolean }) {
   const [open, setOpen] = useState(false);
   return (

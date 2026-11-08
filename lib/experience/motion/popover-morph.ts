@@ -28,7 +28,12 @@ const solid = (color: string | undefined, fallback: string) =>
 function boxOf(el: HTMLElement): Box {
   const r = el.getBoundingClientRect();
   const cs = getComputedStyle(el);
-  return { w: el.offsetWidth, h: el.offsetHeight, left: r.left, top: r.top, radius: cs.borderTopLeftRadius, bg: cs.backgroundColor };
+  const w = el.offsetWidth;
+  const h = el.offsetHeight;
+  // El radio que se ve: una píldora (`rounded-full`) reporta un valor enorme; interpolar desde él deja la superficie circular.
+  const px = Number.parseFloat(cs.borderTopLeftRadius);
+  const radius = Number.isFinite(px) && px > 0 ? `${Math.min(px, Math.min(w, h) / 2)}px` : "0px";
+  return { w, h, left: r.left, top: r.top, radius, bg: cs.backgroundColor };
 }
 
 export type PopoverMorph = {

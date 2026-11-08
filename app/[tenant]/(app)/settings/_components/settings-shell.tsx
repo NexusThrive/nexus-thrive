@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 
 import type { ModuleValue } from "@/lib/core/capabilities/modules";
 import ProfileTab from "./profile-tab";
@@ -76,7 +76,9 @@ export default function SettingsShell({
     ? params.tenant[0]
     : (params?.tenant ?? initialTenantSlug);
 
-  const [tab, setTab] = useState<Tab>("profile");
+  // `?seccion=team` (desde Inicio, el círculo del equipo) abre directo esa sección.
+  const seccion = useSearchParams()?.get("seccion");
+  const [tab, setTab] = useState<Tab>(TABS.some((t) => t.id === seccion) ? (seccion as Tab) : "profile");
 
   return (
     <div className="w-full">

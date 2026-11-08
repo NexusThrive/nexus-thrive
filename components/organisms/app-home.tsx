@@ -1,51 +1,18 @@
 "use client";
 
-import { useMemo, useSyncExternalStore, type ReactNode } from "react";
+import { useMemo, type ReactNode } from "react";
 import Link from "next/link";
-import { Star } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { AvatarStack } from "@/components/molecules/avatar-stack";
 import { GridBackdrop } from "@/components/molecules/grid-backdrop";
+import { AppGrid, type AppArea } from "@/components/organisms/app-grid";
+import { useQuickCreate } from "@/components/organisms/quick-create-host";
+import { appTransitionName } from "@/lib/experience/navigation/tenant-nav";
 import { BalanceCard } from "@/components/organisms/balance-card";
 import { useShell } from "@/components/providers/shell-context";
 import { formatCurrency } from "@/lib/foundation/format";
 import type { HomeSummary } from "@/lib/experience/dashboard/home-summary";
 import { cn } from "@/lib/utils";
-
-const FAVORITES_KEY = "nexus.apps.favoritos";
-
-const FAVORITES_EVENT = "nexus-favoritos";
-
-/** Favoritos del usuario en este navegador (preferencia por visor, no datos del negocio). Sin almacenamiento, no hay favoritos. */
-function readRaw(): string {
-  try {
-    return window.localStorage.getItem(FAVORITES_KEY) ?? "[]";
-  } catch {
-    return "[]";
-  }
-}
-function parseFavorites(raw: string): string[] {
-  try {
-    const list = JSON.parse(raw) as unknown;
-    return Array.isArray(list) ? list.filter((x): x is string => typeof x === "string") : [];
-  } catch {
-    return [];
-  }
-}
-function subscribeFavorites(onChange: () => void) {
-  window.addEventListener("storage", onChange);
-  window.addEventListener(FAVORITES_EVENT, onChange);
-  return () => {
-    window.removeEventListener("storage", onChange);
-    window.removeEventListener(FAVORITES_EVENT, onChange);
-  };
-}
-function writeFavorites(list: string[]) {
-  try {
-    window.localStorage.setItem(FAVORITES_KEY, JSON.stringify(list));
-    window.dispatchEvent(new Event(FAVORITES_EVENT));
-  } catch {
-    /* sin almacenamiento: el cambio dura lo que dure la página */
-  }
-}
 
 /** Saludo según la hora de Bogotá: «Buenos días», «Buenas tardes» o «Buenas noches». */
 function greetingOf(now: Date): string {
@@ -57,7 +24,6 @@ function dateLine(now: Date): string {
   return new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", weekday: "long", day: "numeric", month: "long" }).format(now);
 }
 const compactMoney = new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", notation: "compact", maximumFractionDigits: 1 });
-const timeFmt = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", hour: "numeric", minute: "2-digit" });
 
 /** Etiqueta pequeña de sección y de fecha: 11 px, mayúsculas, espaciado amplio. */
 const eyebrow = "text-2xs font-semibold uppercase tracking-[0.09em] text-muted-foreground";
@@ -70,59 +36,21 @@ export type AppHomeTrial = { daysLeft: number; level: "ok" | "soon" | "ended"; p
  * las mismas fuentes que Resumen (`loadHomeSummary`). Resumen ya no es una app del cajón (su ruta sigue existiendo).
  */
 export function AppHome({ trial, summary, userName }: { trial?: AppHomeTrial | null; summary?: HomeSummary | null; userName?: string | null }) {
-  const { groups, hrefFor } = useShell();
-  const raw = useSyncExternalStore(subscribeFavorites, readRaw, () => "[]");
-  const favorites = useMemo(() => parseFavorites(raw), [raw]);
+  const { groups, hrefFor, createActions = [] } = useShell();
+  const router = useRouter();
+  const quick = useQuickCreate();
 
   // Las áreas del negocio (sin «General», que era Resumen), y al final Configuración (el ítem de «Sistema»), que también es una app.
-  const areas = useMemo(() => {
+  const areas = useMemo<AppArea[]>(() => {
     const list = groups.filter((group) => group.label !== "Sistema" && group.label !== "General" && group.items.length > 0);
     const settings = groups.find((group) => group.label === "Sistema")?.items.find((item) => item.key === "settings");
-    return settings ? [...list, { label: "Configuración", items: [settings], icon: settings.icon }] : list;
-  }, [groups]);
+    const all = settings ? [...list, { label: "Configuración", items: [settings], icon: settings.icon }] : list;
+    return all.map((g) => ({ label: g.label, href: hrefFor(g.items[0]!.href), icon: g.icon ?? g.items[0]!.icon, sections: g.items.length, vt: appTransitionName(groups, g.items[0]!.key) }));
+  }, [groups, hrefFor]);
   const hrefOfGroup = (label: string, fallback: string) => hrefFor(groups.find((g) => g.label === label)?.items[0]?.href ?? fallback);
-
-  const toggle = (label: string) => {
-    writeFavorites(favorites.includes(label) ? favorites.filter((f) => f !== label) : [...favorites, label]);
-  };
-
-  /** Icono de aplicación: cuadro redondeado con el icono y el nombre debajo, centrado (como las apps del celular). */
-  const tile = (group: (typeof areas)[number]) => {
-    const first = group.items[0]!;
-    const Icon = group.icon ?? first.icon;
-    const fav = favorites.includes(group.label);
-    const badge = summary?.badges[group.label] ?? 0;
-    return (
-      <li key={group.label} className="group/app relative flex justify-center">
-        <Link
-          href={hrefFor(first.href)}
-          className="group grid w-28 justify-items-center gap-3 rounded-[22px] text-center outline-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
-        >
-          <span className="relative grid size-[84px] place-items-center rounded-[22px] border border-border bg-card text-accent-text transition-[transform,background-color,border-color] duration-(--d1) ease-(--nx-ease-out) group-hover:-translate-y-[3px] group-hover:border-accent group-hover:bg-surface-hover motion-reduce:transition-none motion-reduce:group-hover:translate-y-0">
-            <Icon aria-hidden="true" strokeWidth={1.5} className="size-[34px]" />
-            {badge > 0 ? (
-              <span aria-hidden="true" className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full border-2 border-background bg-danger px-1 text-2xs font-semibold text-paper">
-                {badge > 99 ? "99+" : badge}
-              </span>
-            ) : null}
-          </span>
-          <span className="line-clamp-2 text-ui font-medium leading-tight text-foreground">
-            {group.label}
-            {badge > 0 ? <span className="sr-only">, {badge} por atender</span> : null}
-          </span>
-        </Link>
-        <button
-          type="button"
-          onClick={() => toggle(group.label)}
-          aria-pressed={fav}
-          aria-label={`${fav ? "Quitar de" : "Agregar a"} favoritos: ${group.label}`}
-          className={cn("absolute -left-0.5 -top-1.5 grid size-7 place-items-center rounded-full bg-card/90 shadow-sm outline-none focus-visible:outline-2 focus-visible:outline-ring", fav ? "text-accent-text" : "text-muted-foreground opacity-0 group-hover/app:opacity-100 focus-visible:opacity-100")}
-        >
-          <Star aria-hidden="true" className={cn("size-3.5", fav && "fill-current")} />
-        </button>
-      </li>
-    );
-  };
+  // Acciones rápidas: las mismas de «Crear»; las que tienen mini-modal se abren aquí mismo, las demás llevan a su pantalla.
+  // «Nueva reserva» no tiene mini-modal: no va aquí (se crea desde la agenda).
+  const actions = createActions.filter((a) => a.key !== "booking").slice(0, 4);
 
   const now = new Date();
   const month = summary?.month ?? null;
@@ -130,6 +58,9 @@ export function AppHome({ trial, summary, userName }: { trial?: AppHomeTrial | n
   const attention = summary?.attention ?? null;
   const crm = summary?.crm ?? null;
   const crmToday = crm?.today ?? [];
+  const customers = summary?.customers ?? null;
+  const team = summary?.team ?? { members: [], total: 0 };
+  const recent = summary?.recent ?? [];
   // Columnas laterales: base 240 px, entre 220 y 290 (bajo 1100 px ocupan el ancho y se apilan arriba y abajo del cajón).
   const side = "w-full max-w-xl pt-2 min-[1100px]:w-auto min-[1100px]:min-w-[220px] min-[1100px]:max-w-[290px] min-[1100px]:flex-[1_1_240px]";
 
@@ -165,8 +96,10 @@ export function AppHome({ trial, summary, userName }: { trial?: AppHomeTrial | n
 
         {/* Tres columnas: Este mes · apps · Hoy y Atención (bajo 1100 px se apilan en ese orden) */}
         <div className="flex flex-wrap items-start justify-center gap-8">
-          {month ? (
-            <section aria-labelledby="home-mes" className={side}>
+          {month || customers || team.members.length ? (
+            <div className={cn(side, "grid gap-6")}>
+            {month ? (
+            <section aria-labelledby="home-mes">
               <h2 id="home-mes" className={eyebrow}>
                 Este mes
               </h2>
@@ -191,13 +124,38 @@ export function AppHome({ trial, summary, userName }: { trial?: AppHomeTrial | n
                     )}
                   </Figure>
                 ) : null}
-                <Figure label="Balance del mes" value={formatCurrency(month.balance)} href={hrefFor("/finanzas")}>
-                  <span suppressHydrationWarning className="text-muted-foreground">
-                    Actualizado hoy, {timeFmt.format(new Date(summary?.updatedAt ?? now))}
-                  </span>
-                </Figure>
               </dl>
             </section>
+            ) : null}
+            {customers?.latest.length ? (
+              <section aria-labelledby="home-clientes" className="grid gap-2.5">
+                <h2 id="home-clientes" className={eyebrow}>
+                  Clientes nuevos
+                </h2>
+                <AvatarStack
+                  label="Últimos clientes creados"
+                  people={customers.latest.map((c) => ({ key: c.id, name: c.name, href: hrefFor(`/contactos/${c.id}`), identity: { name: c.name, id: c.id }, photoUrl: c.photoId ? `/api/files/${c.photoId}` : null }))}
+                  extra={customers.today > 0 ? { text: `+${customers.today}`, href: hrefFor("/contactos"), label: `${customers.today} ${customers.today === 1 ? "cliente nuevo" : "clientes nuevos"} hoy` } : null}
+                />
+                <p className="text-xs text-muted-foreground">{customers.today > 0 ? `${customers.today} ${customers.today === 1 ? "nuevo" : "nuevos"} hoy · ${customers.total} en total` : `${customers.total} en total`}</p>
+              </section>
+            ) : null}
+            {team.members.length ? (
+              <section aria-labelledby="home-equipo" className="grid gap-2.5">
+                <h2 id="home-equipo" className={eyebrow}>
+                  Equipo
+                </h2>
+                <AvatarStack
+                  label="Equipo del negocio"
+                  people={team.members.map((m) => ({ key: m.id, name: m.name, href: hrefFor("/settings?seccion=team"), identity: { name: m.name, email: m.email, id: m.id } }))}
+                  extra={team.total > team.members.length ? { text: `+${team.total - team.members.length}`, href: hrefFor("/settings?seccion=team"), label: `${team.total - team.members.length} integrantes más` } : null}
+                />
+                <p className="text-xs text-muted-foreground">
+                  {team.total} {team.total === 1 ? "persona" : "personas"} en el equipo
+                </p>
+              </section>
+            ) : null}
+            </div>
           ) : null}
 
           <nav aria-label="Aplicaciones" className="w-full pt-2 min-[1100px]:w-auto min-[1100px]:flex-[0_1_560px]">
@@ -207,14 +165,33 @@ export function AppHome({ trial, summary, userName }: { trial?: AppHomeTrial | n
                 <BalanceCard label="Balance · últimos 30 días" balance={summary.balance30.balance} income={summary.balance30.income} expenses={summary.balance30.expenses} />
               </div>
             ) : null}
-            {areas.length === 0 ? (
-              <p className="text-center text-sm text-muted-foreground">No hay aplicaciones disponibles para tu cuenta.</p>
-            ) : (
-              <ul className="mx-auto grid w-fit grid-cols-[repeat(2,112px)] justify-center gap-x-7 gap-y-[30px] min-[420px]:grid-cols-[repeat(3,112px)] min-[600px]:grid-cols-[repeat(4,112px)]">{areas.map(tile)}</ul>
-            )}
+            {actions.length ? (
+              <section aria-labelledby="home-acciones" className="mx-auto mb-8 grid w-full max-w-[532px] gap-2.5">
+                <h2 id="home-acciones" className={eyebrow}>
+                  Acciones rápidas
+                </h2>
+                <ul className="flex flex-wrap gap-2">
+                  {actions.map((a) => (
+                    <li key={a.key}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!quick.open(a.key)) router.push(hrefFor(a.href));
+                        }}
+                        className="inline-flex h-9 items-center gap-2 rounded-full border border-border bg-card px-3.5 text-ui font-medium text-foreground outline-none transition-[border-color,transform] duration-(--d1) ease-(--nx-ease-out) hover:-translate-y-0.5 hover:border-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                      >
+                        <a.icon aria-hidden="true" className="size-4 text-accent-text" />
+                        {a.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
+            <AppGrid areas={areas} badges={summary?.badges ?? {}} />
           </nav>
 
-          {today || crm || attention ? (
+          {today || crm || attention || recent.length ? (
             <div className={cn(side, "grid gap-[22px]")}>
               {today || crm ? (
                 <section aria-labelledby="home-hoy">
@@ -260,6 +237,18 @@ export function AppHome({ trial, summary, userName }: { trial?: AppHomeTrial | n
                     {crm?.overdue ? <Row dot="bg-danger" href={hrefFor("/crm?vista=actividades")} title={`${crm.overdue} ${crm.overdue === 1 ? "actividad vencida" : "actividades vencidas"}`} note="En el CRM" /> : null}
                     {crm?.withoutActivity ? <Row dot="bg-muted-foreground/50" href={hrefFor("/crm")} title={`${crm.withoutActivity} ${crm.withoutActivity === 1 ? "oportunidad sin actividad" : "oportunidades sin actividad"}`} note="Programa el siguiente paso" /> : null}
                     {attention.overdueCount === 0 && !attention.expiringCount && !crm?.overdue && !crm?.withoutActivity ? <Row dot="bg-success" title="Todo al día" note="Nada vencido ni por vencer" /> : null}
+                  </ul>
+                </section>
+              ) : null}
+              {recent.length ? (
+                <section aria-labelledby="home-reciente">
+                  <h2 id="home-reciente" className={eyebrow}>
+                    Actividad reciente
+                  </h2>
+                  <ul className="mt-1.5">
+                    {recent.map((r) => (
+                      <Row key={r.id} dot={r.kind === "expense" ? "bg-muted-foreground/50" : r.kind === "payment" ? "bg-success" : "bg-accent"} href={hrefFor(r.href)} title={r.title} note={r.note} />
+                    ))}
                   </ul>
                 </section>
               ) : null}

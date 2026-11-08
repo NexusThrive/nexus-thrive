@@ -116,7 +116,7 @@ export function QuickCreateProvider({ children }: { children: ReactNode }) {
       ) : null}
 
       {sheet === "customer" ? (
-        <CustomerQuickCreate tenantSlug={slug} onClose={close} fullHref={hrefFor("/contactos")} />
+        <CustomerQuickCreate tenantSlug={slug} onClose={close} fullHref={hrefFor("/contactos/nuevo")} />
       ) : null}
     </QuickCreateContext.Provider>
   );

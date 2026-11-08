@@ -35,6 +35,12 @@ export type HomeSummary = {
   attention: { overdueCount: number; overdueTotal: number | null; expiringCount: number | null; expiringDays: number };
   /** CRM (de sus actividades): llamadas y reuniones de hoy, actividades vencidas y oportunidades abiertas sin actividad. */
   crm?: { today: { id: string; label: string; time: string; opportunityId: string }[]; overdue: number; withoutActivity: number } | null;
+  /** Últimos clientes creados (para los círculos) y cuántos entraron hoy. */
+  customers: { latest: { id: string; name: string; photoId: string | null }[]; today: number; total: number } | null;
+  /** Integrantes activos del equipo (para los círculos). */
+  team: { members: { id: string; name: string; email: string | null }[]; total: number };
+  /** Actividad reciente: cobros, gastos y clientes nuevos, lo más nuevo primero. */
+  recent: { id: string; kind: "payment" | "expense" | "customer"; title: string; note: string; at: string; href: string }[];
   /** Insignias del cajón por nombre de app (solo > 0). */
   badges: Record<string, number>;
   updatedAt: string;
@@ -52,7 +58,8 @@ export async function loadHomeSummary(tenantId: string, modules: readonly Module
   const [y, m] = day.split("-").map(Number) as [number, number];
   const prev = m === 1 ? { month: 12, year: y - 1 } : { month: m - 1, year: y };
 
-  const [metrics, prevMetrics, week, month30, cartera, membership, bookings, unread, toVerify, crm] = await Promise.all([
+  const startOfToday = Temporal.Instant.from(`${day}T05:00:00Z`);
+  const [metrics, prevMetrics, week, month30, cartera, membership, bookings, unread, toVerify, crm, latestCustomers, customersToday, customersTotal, team, activity] = await Promise.all([
     seesMoney && has("finance") ? tenantDb.finance.getMetrics() : null,
     seesMoney && has("finance") ? tenantDb.finance.getMetrics(prev) : null,
     seesMoney && has("finance") ? tenantDb.finance.getSeries(7, false) : null,
@@ -63,7 +70,27 @@ export async function loadHomeSummary(tenantId: string, modules: readonly Module
     has("whatsapp") ? unreadConversationsCount(tenantId) : 0,
     has("payments") || has("online_payments") ? intentsToVerify(tenantId) : 0,
     has("crm") ? crmHomeSignals(tenantId) : null,
+    has("crm") ? db.orm.public.Customer.where({ tenantId, active: true }).orderBy((c) => c.createdAt.desc()).limit(5).select("id", "name", "photoId", "createdAt").all() : [],
+    has("crm") ? db.orm.public.Customer.where({ tenantId }).where((c) => c.createdAt.gte(startOfToday)).aggregate((a) => ({ n: a.count() })) : { n: 0 },
+    has("crm") ? db.orm.public.Customer.where({ tenantId, active: true }).aggregate((a) => ({ n: a.count() })) : { n: 0 },
+    db.orm.public.User.where({ tenantId, active: true }).orderBy((u) => u.createdAt.asc()).limit(50).select("id", "name", "email").all(),
+    seesMoney && has("finance") ? tenantDb.finance.getRecentActivity(6) : [],
   ]);
+  const ago = new Intl.RelativeTimeFormat("es-CO", { numeric: "auto" });
+  const relative = (iso: string) => {
+    const min = Math.round((new Date(iso).getTime() - now.getTime()) / 60_000);
+    if (Math.abs(min) < 60) return ago.format(min, "minute");
+    if (Math.abs(min) < 1440) return ago.format(Math.round(min / 60), "hour");
+    return ago.format(Math.round(min / 1440), "day");
+  };
+  const fmtMoney = (n: number) => new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(Math.abs(n));
+  const recent = [
+    ...activity.map((a) => ({ id: `m-${a.id}`, kind: a.type, title: a.title, note: `${a.type === "expense" ? "Gasto" : "Cobro"} · ${fmtMoney(a.amount)}`, at: String(a.date), href: "/finanzas" })),
+    ...latestCustomers.map((c) => ({ id: `c-${c.id}`, kind: "customer" as const, title: c.name, note: "Cliente nuevo", at: String(c.createdAt), href: `/contactos/${c.id}` })),
+  ]
+    .sort((x, y) => y.at.localeCompare(x.at))
+    .slice(0, 5)
+    .map((r) => ({ ...r, note: `${r.note} · ${relative(r.at)}` }));
 
   const overdueRows = cartera?.rows.filter((r) => r.daysOverdue > 0) ?? [];
   const overdue = cartera ? { total: Math.round(overdueRows.reduce((s, r) => s + r.balance, 0) * 100) / 100, count: overdueRows.length } : null;
@@ -102,6 +129,9 @@ export async function loadHomeSummary(tenantId: string, modules: readonly Module
       expiringDays: EXPIRING_WINDOW_DAYS,
     },
     crm: crm ? { today: crm.today.slice(0, 3).map((t) => ({ id: t.id, label: t.label, time: hourFmt.format(new Date(t.at)), opportunityId: t.opportunityId })), overdue: crm.overdue, withoutActivity: crm.withoutActivity } : null,
+    customers: has("crm") ? { latest: latestCustomers.map((c) => ({ id: c.id, name: c.name, photoId: c.photoId ?? null })), today: Number(customersToday.n ?? 0), total: Number(customersTotal.n ?? 0) } : null,
+    team: { members: team.slice(0, 5).map((u) => ({ id: u.id, name: u.name?.trim() || u.email?.split("@")[0] || "Integrante", email: u.email })), total: team.length },
+    recent,
     badges: Object.fromEntries(
       [
         ["Ventas y cobros", toVerify],

@@ -148,6 +148,18 @@ export function activeNavItem(groups: NavGroup[], relativePath: string): NavItem
 }
 
 /**
+ * Nombre de View Transition de una app del cajón: el icono de Inicio y la vista de la app comparten este nombre, así el icono crece
+ * hasta la vista al abrirla y vuelve a él al regresar a Inicio. La app es el grupo de la barra (su primer ítem); Configuración es la suya.
+ */
+export function appTransitionName(groups: NavGroup[], itemKey: string | undefined): string | undefined {
+  if (!itemKey) return undefined;
+  if (itemKey === "settings") return "nx-app-settings";
+  const group = groups.find((g) => g.items.some((item) => item.key === itemKey));
+  if (!group || group.label === "General" || group.label === "Sistema") return undefined;
+  return `nx-app-${group.items[0]!.key.replace(/[^a-zA-Z0-9_-]/g, "-")}`;
+}
+
+/**
  * Categoría de una pantalla del negocio ("/ventas/pos" → «Ventas y cobros»): la misma de la barra lateral y de «Funciones».
  * Los encabezados de página la usan para que el menú y la página siempre digan lo mismo.
  */

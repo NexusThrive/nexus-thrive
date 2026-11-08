@@ -171,6 +171,8 @@ Storybook con sus estados.
 | Nombre de un botón de icono | `Tooltip` (además del `aria-label`) | `components/molecules/tooltip.tsx` |
 | Campo con etiqueta, descripción y error | `Field` (+ `FieldError`, `FieldDescription`, `focusFirstInvalid`) | `components/molecules/field.tsx` |
 | Resultado de una acción | `useToast()` | `components/molecules/toast.tsx` |
+| Varias personas de un vistazo (clientes nuevos, equipo) | `AvatarStack`: círculos superpuestos con foto o blobatar; se alzan al pasar el cursor o enfocar, y un círculo final opcional de resumen («+3») | `components/molecules/avatar-stack.tsx` |
+| Cajón de aplicaciones de Inicio | `AppGrid`: nombre en una línea con «…», transición al pasar el cursor, favoritos y orden propio (mantener presionado para alzar y soltar, asa «Mover» con teclado; `nx-settle` al soltar; orden y favoritos en este navegador) | `components/organisms/app-grid.tsx` |
 | Error o aviso dentro del formulario | `Alert` | `components/molecules/alert.tsx` |
 | Nada que mostrar | `EmptyState` ([formato completo](../04-patrones/estados-vacios.md)). Vista entera vacía (una lista o un tablero sin nada): `mark="page"`, centrado y sin dejar scroll: icono del área en un recuadro, título, para qué sirve, la acción principal (con destello `nx-flash`, apagado con movimiento reducido) y `secondaryAction` (p. ej. importar), y `highlights` con tres primeros pasos; detrás, `preview` con datos de ejemplo (no un esqueleto de carga). La precarga siguiente muestra este estado en esqueleto (`remember`; apágalo con búsqueda o filtros). Vacíos pequeños (tarjeta, panel, Actividad reciente): `corner`, texto a la izquierda y N en la esquina inferior derecha. En una lista vacía, `action` lleva el botón de crear el primero | `components/molecules/empty-state.tsx` |
 | Una pantalla o un bloque no se pudo cargar (`error.tsx`) | `ErrorState` (`page` o `block`; reintentar + salida + referencia) | `components/molecules/error-state.tsx` |
@@ -267,6 +269,8 @@ Reglas:
    | Cifras, barras, gráficos | Web Animations (`lib/motion`) |
 
    | Barra superior al cambiar de barra (Inicio ↔ módulo ↔ Sistema) | View Transitions: `<ViewTransition>` de React en `app-topbar.tsx` |
+   | Abrir una app desde Inicio y volver (≥ 768 px) | View Transitions: icono del cajón (`app-grid.tsx`) y vista de la app (`AppStage`), mismo nombre `appTransitionName`, clase `nx-app` |
+   | Soltar una app reordenada en el cajón | CSS: `nx-settle` (cae y rebota una vez, `--d4`, `--nx-ease-spring`) |
 
    **View Transitions: solo la barra superior.** Next 16.3 trae `<ViewTransition>` en el React del App Router. Caso real: la barra de
    Inicio y la de módulo son componentes distintos, así que el logo, los avisos, el tema, el nombre del negocio y la cuenta se quitaban
@@ -274,6 +278,12 @@ Reglas:
    módulo y sus pestañas solo aparecen (`nx-appear`, `--d2`). El final de la barra es el mismo en todas y en el mismo orden (avisos,
    tema, negocio, cuenta) para que nada se cruce. `default="none"`: nada más anima con esta API, y la entrada de vistas sigue siendo de
    CSS. No se agregan otros nombres sin un caso de elemento compartido y su justificación en el PR.
+
+   **Segundo caso: abrir una app.** El icono del cajón y la vista de la app son el mismo objeto (la app), en páginas distintas: una
+   ventana redondeada crece del icono hasta la vista (`--d4`) y al volver, con el enlace o con «atrás» del navegador, se encoge hasta
+   él. Las capturas no se estiran (`object-fit: none`): la vista se revela nítida y el icono no se pixela. Sin pareja (Inicio aún
+   cargando su esqueleto) la vista se encoge y se apaga en su sitio (`nx-app-exit`). En el celular no anima: ahí manda
+   `NavTransitions`.
 7. **Movimiento reducido:** `prefers-reduced-motion` o Ajustes → Reducir
    movimiento (`<html data-motion="off">`) llevan toda animación a 1 ms (también las de View Transitions: el cambio es inmediato).
    El cambio de estado se sigue entendiendo (texto, color, icono).

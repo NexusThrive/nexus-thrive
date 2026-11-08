@@ -59,15 +59,28 @@ function solid(color: string | undefined, fallback: string) {
   return !color || color === "transparent" || color === "rgba(0, 0, 0, 0)" ? fallback : color;
 }
 
+/**
+ * Radio que se ve de verdad: el CSS limita el radio a la mitad del lado menor, pero el valor calculado de una píldora
+ * (`rounded-full`) es enorme (9999 px o más). Si se interpola desde ese número, la tarjeta viaja como un círculo casi todo el
+ * camino y no aterriza en sus esquinas; con el radio visible el paso de píldora a tarjeta (y de vuelta) es continuo.
+ */
+function visibleRadius(raw: string, w: number, h: number): string {
+  const px = Number.parseFloat(raw);
+  if (!Number.isFinite(px) || px <= 0) return "0px";
+  return `${Math.min(px, Math.min(w, h) / 2)}px`;
+}
+
 function boxOf(el: HTMLElement): Box {
   const r = el.getBoundingClientRect();
   const cs = getComputedStyle(el);
+  const w = el.offsetWidth;
+  const h = el.offsetHeight;
   return {
-    w: el.offsetWidth,
-    h: el.offsetHeight,
+    w,
+    h,
     cx: r.left + r.width / 2,
     cy: r.top + r.height / 2,
-    radius: cs.borderTopLeftRadius,
+    radius: visibleRadius(cs.borderTopLeftRadius, w, h),
     bg: cs.backgroundColor,
   };
 }

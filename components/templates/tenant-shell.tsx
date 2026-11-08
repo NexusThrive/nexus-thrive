@@ -3,6 +3,7 @@ import type { VerticalValue } from "@/lib/core/sectors/verticals";
 import type { ModuleValue } from "@/lib/core/capabilities/modules";
 import { ToastProvider } from "@/components/molecules/toast";
 import { WorkspaceLauncher } from "@/components/organisms/workspace-launcher";
+import { AppStage } from "@/components/organisms/app-stage";
 import { AppTopbar } from "@/components/organisms/app-topbar";
 import { CommandPalette } from "@/components/organisms/command-palette";
 import { BusinessSwitcher } from "@/components/organisms/business-switcher";
@@ -81,7 +82,7 @@ export function TenantShell({
             <NavTransitions />
             <main id="contenido" tabIndex={-1} className={styles.view}>
               <RouteBreadcrumbs />
-              {children}
+              <AppStage>{children}</AppStage>
             </main>
           </div>
           <MobileTabBar accountExtra={accountExtra} />

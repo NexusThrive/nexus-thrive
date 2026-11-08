@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { withShell } from "../../.storybook/decorators";
 import { AppShellProvider } from "@/components/providers/shell-context";
 import { buildTenantNav } from "@/lib/experience/navigation/tenant-nav";
+import { quickCreateActions } from "@/lib/experience/navigation/quick-create";
 import type { HomeSummary } from "@/lib/experience/dashboard/home-summary";
 import { AppHome } from "./app-home";
 
@@ -15,12 +16,36 @@ const summary: HomeSummary = {
   today: { next: { title: "Consulta inicial", customer: "María Pérez", time: "10:00 a. m.", status: "Pendiente" }, more: 2 },
   attention: { overdueCount: 3, overdueTotal: 7_200_000, expiringCount: 2, expiringDays: 3 },
   badges: { "Ventas y cobros": 3, Canales: 2 },
+  customers: {
+    latest: [
+      { id: "c1", name: "María Pérez", photoId: null },
+      { id: "c2", name: "Colegio San José", photoId: null },
+      { id: "c3", name: "Carlos Ramírez", photoId: null },
+      { id: "c4", name: "Hotel Marbella", photoId: null },
+      { id: "c5", name: "Laura Gómez", photoId: null },
+    ],
+    today: 3,
+    total: 48,
+  },
+  team: {
+    members: [
+      { id: "u1", name: "Santiago Ortiz", email: "santiago@simpleapp.co" },
+      { id: "u2", name: "Valentina Ruiz", email: "vale@simpleapp.co" },
+      { id: "u3", name: "Andrés Torres", email: "andres@simpleapp.co" },
+    ],
+    total: 3,
+  },
+  recent: [
+    { id: "r1", kind: "payment", title: "Pago de María Pérez", note: "Cobro · $ 120.000 · hace 12 minutos", at: "2026-11-07T22:00:00Z", href: "/finanzas" },
+    { id: "r2", kind: "customer", title: "Laura Gómez", note: "Cliente nuevo · hace 1 hora", at: "2026-11-07T21:00:00Z", href: "/contactos/c5" },
+    { id: "r3", kind: "expense", title: "Arriendo del local", note: "Gasto · $ 1.800.000 · hace 3 horas", at: "2026-11-07T19:00:00Z", href: "/finanzas" },
+  ],
   updatedAt: "2026-11-07T22:40:00.000Z",
 };
 
 function Shell({ children }: { children: ReactElement }) {
   return (
-    <AppShellProvider value={{ brandName: "Simplapp", brandSub: "simplapp", groups, activeKey: undefined, title: "Aplicaciones", hrefFor: (href) => href, quickActions: [], openSearch: () => {} }}>
+    <AppShellProvider value={{ brandName: "Simplapp", brandSub: "simplapp", groups, activeKey: undefined, title: "Aplicaciones", hrefFor: (href) => href, quickActions: [], createActions: quickCreateActions("retail", ["crm", "finance", "bookings"], Infinity), openSearch: () => {} }}>
       {children}
     </AppShellProvider>
   );
@@ -49,7 +74,7 @@ export const SinDatos: Story = {
   render: () => (
     <Shell>
       <div className="min-h-dvh bg-background pt-14">
-        <AppHome summary={{ month: null, balance30: null, today: null, attention: { overdueCount: 0, overdueTotal: null, expiringCount: null, expiringDays: 3 }, badges: {}, updatedAt: "2026-11-07T22:40:00.000Z" }} userName="Santiago" />
+        <AppHome summary={{ month: null, balance30: null, today: null, attention: { overdueCount: 0, overdueTotal: null, expiringCount: null, expiringDays: 3 }, badges: {}, customers: null, team: { members: [], total: 0 }, recent: [], updatedAt: "2026-11-07T22:40:00.000Z" }} userName="Santiago" />
       </div>
     </Shell>
   ),
