@@ -35,6 +35,15 @@ export async function pricingFor(tenantId: string, listId: string | null, produc
   return out;
 }
 
+/** A quién se aplica una lista: los grupos de clientes (con si la usan) y los clientes que la tienen asignada. */
+export async function listAssignments(tenantId: string, priceListId: string): Promise<{ groups: { id: string; name: string; usesThis: boolean }[]; customers: { id: string; name: string }[] }> {
+  const [groups, customers] = await Promise.all([
+    db.orm.public.CustomerGroup.where({ tenantId }).select("id", "name", "priceListId").orderBy((g) => g.name.asc()).limit(200).all(),
+    db.orm.public.Customer.where({ tenantId, priceListId }).select("id", "name").orderBy((c) => c.name.asc()).limit(200).all(),
+  ]);
+  return { groups: groups.map((g) => ({ id: g.id, name: g.name, usesThis: g.priceListId === priceListId })), customers: customers.map((c) => ({ id: c.id, name: c.name })) };
+}
+
 /** Escalones de un producto en una lista, de menor a mayor cantidad. */
 export async function listTiers(tenantId: string, priceListId: string, productId: string): Promise<PriceTierInput[]> {
   const rows = await db.orm.public.PriceTier.where({ tenantId, priceListId, productId }).orderBy((t) => t.minQty.asc()).limit(20).all();

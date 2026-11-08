@@ -30,6 +30,8 @@ export function useOfflineSales(slug: string, onSent: (result: { number: number;
   });
 
   const flush = useCallback(async () => {
+    // La cola vive en el dispositivo: se lee aquí (no en el render) para que servidor y navegador pinten lo mismo.
+    setQueue(readQueue(store(), slug));
     if (busy.current) return;
     busy.current = true;
     setSending(true);
@@ -53,14 +55,15 @@ export function useOfflineSales(slug: string, onSent: (result: { number: number;
   }, [slug]);
 
   useEffect(() => {
-    setQueue(readQueue(store(), slug));
-    void flush();
+    // Al montar se lee la cola del dispositivo (no durante el render: el servidor no la tiene) y se intenta enviar lo pendiente.
+    const first = window.setTimeout(() => void flush(), 0);
     const onOnline = () => void flush();
     window.addEventListener("online", onOnline);
     const timer = window.setInterval(() => {
       if (readQueue(store(), slug).some((s) => !s.error)) void flush();
     }, 30_000);
     return () => {
+      window.clearTimeout(first);
       window.removeEventListener("online", onOnline);
       window.clearInterval(timer);
     };

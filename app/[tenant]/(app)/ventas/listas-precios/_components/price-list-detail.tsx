@@ -118,7 +118,7 @@ export default function PriceListDetail({ slug, list, lines, tiers = {}, groups 
         </>
       )}
       <section aria-labelledby="aplica-a" className="grid gap-3 rounded-xl border border-border bg-surface p-4">
-        <h2 id="aplica-a" className="flex items-center gap-2 font-display text-[15px] font-semibold"><Users aria-hidden="true" className="size-4" />A quién se aplica</h2>
+        <h2 id="aplica-a" className="flex items-center gap-2 font-display text-base font-semibold"><Users aria-hidden="true" className="size-4" />A quién se aplica</h2>
         <p className="text-ui text-muted-foreground">Un cliente usa la lista que tenga asignada; si no, la de su grupo; si no, la predeterminada.</p>
         {groups.length > 0 ? (
           <ul className="grid gap-2">
