@@ -83,6 +83,20 @@ impuestos y los tipos de documento de identidad. **No se vio facturación electr
 si existe en otro lugar de `addons/`. Nexus ya cubre la DIAN con un puerto y un proveedor tecnológico externo, así que de
 aquí solo sirve contrastar el plan de cuentas y los tipos de documento.
 
+## 4b. Adoptado en la hoja de ruta del comercio general (2026-11-08)
+
+Ideas funcionales (no código ni aspecto) tomadas de las capturas de Odoo que dejó el equipo en la raíz y de la estructura de sus aplicaciones:
+
+| Idea de Odoo | Qué adopta Nexus | Qué se deja fuera | Dónde |
+|---|---|---|---|
+| Barra de cada app con secciones y menús Informes y Configuración | `APP_MENUS` por app, con entradas «Pronto» apagadas | Menús de decenas de entradas | `lib/experience/navigation/app-menus.ts` |
+| Listas de precios y atributos con variantes | Listas por cliente/canal y atributos que crean variantes (máx. 100) | Reglas de precio por fecha y por cantidad (pendientes) | Catálogo |
+| Formulario de producto con vista previa | Página con pestañas y previsualización fija | Vista de lista editable densa | `/inventario/productos/nuevo` |
+| Movimientos de stock con tipo, ubicación y motivo | «Nuevo movimiento» (entrada, salida, ajuste) y kardex general | Rutas, reglas de reabastecimiento automáticas | `/inventario/existencias` |
+| Punto de venta con categorías, fotos y pantalla completa | `/pos` sin barra, F4 para cobrar, cliente opcional | Mesas, impresión en cocina, modo sin conexión (después) | `/pos` |
+| Medios de pago por diario | Medios del negocio con nombre e instrucciones | Diarios contables por medio | `/pos/medios-de-pago` |
+| Equipos de ventas como canales | `channel` y `externalId` en el pedido | Reglas de asignación a vendedores | `orders.create` |
+
 ## 5. Lo que no se pudo verificar
 
 - Botones inteligentes del partner en `base` y en `account`: `base/views/res_partner_views.xml` dio 404.
