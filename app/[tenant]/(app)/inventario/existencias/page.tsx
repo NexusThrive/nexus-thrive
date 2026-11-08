@@ -13,8 +13,9 @@ import StockView from "./_components/stock-view";
  * Existencias: qué hay en cada bodega, traslados entre bodegas, conteos físicos
  * con ajuste en el kardex y reposición. Parte de «Catálogo e inventario».
  */
-export default async function StockPage({ params }: { params: Promise<{ tenant: string }> }) {
+export default async function StockPage({ params, searchParams }: { params: Promise<{ tenant: string }>; searchParams: Promise<{ tab?: string }> }) {
   const { tenant } = await params;
+  const { tab } = await searchParams;
   const ctx = await requireTenantContext(tenant, "/inventario/existencias");
   if (!ctx) notFound();
   if (!canManage(ctx.role)) {
@@ -40,6 +41,7 @@ export default async function StockPage({ params }: { params: Promise<{ tenant: 
       <PageHeader title="Existencias" description="Qué hay en cada bodega, cómo se mueve y qué conviene reponer." />
       <StockView
         slug={tenant}
+        initialTab={tab}
         warehouses={warehouses}
         overview={overview}
         transfers={transfers}

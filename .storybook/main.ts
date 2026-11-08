@@ -63,7 +63,7 @@ const config: StorybookConfig = {
       "@/app/[tenant]/(app)/ventas/cotizaciones/actions": path.resolve(import.meta.dirname, "mocks/cotizaciones-actions.ts"),
       "@/app/[tenant]/(app)/integrations/actions": path.resolve(import.meta.dirname, "mocks/integrations-actions.ts"),
       "@/app/[tenant]/(app)/finanzas/facturacion/actions": path.resolve(import.meta.dirname, "mocks/billing-actions.ts"),
-      "@/app/[tenant]/(app)/ventas/pos/actions": path.resolve(import.meta.dirname, "mocks/pos-actions.ts"),
+      "@/app/[tenant]/(app)/pos/actions": path.resolve(import.meta.dirname, "mocks/pos-actions.ts"),
       "@/app/[tenant]/(app)/finanzas/cartera/actions": path.resolve(import.meta.dirname, "mocks/cartera-actions.ts"),
       "@/app/[tenant]/(app)/finanzas/impuestos/actions": path.resolve(import.meta.dirname, "mocks/taxes-actions.ts"),
       "@/app/[tenant]/(app)/data/actions": path.resolve(import.meta.dirname, "mocks/data-actions.ts"),

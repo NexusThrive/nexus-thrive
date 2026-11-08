@@ -1,6 +1,7 @@
 import { startTransition, useState } from "react";
 import { Bell } from "lucide-react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { expect, userEvent, within } from "storybook/test";
 import { AppShellProvider } from "@/components/providers/shell-context";
 import { buildTenantNav } from "@/lib/experience/navigation/tenant-nav";
 import { withShell } from "../../.storybook/decorators";
@@ -83,4 +84,26 @@ function BarSwitch() {
 export const CambioDeBarra: Story = {
   parameters: { nextjs: { navigation: { pathname: "/demo" } } },
   render: () => <BarSwitch />,
+};
+
+const inventoryGroups = buildTenantNav("retail", ["dashboard", "inventory"], "ADMIN");
+
+/**
+ * La barra de una app con sus menús desplegables al final, como en Odoo: **Informes** y **Configuración**. Las entradas con pantalla son
+ * enlaces; las que aún no existen se ven apagadas con «Pronto» (nunca un enlace roto). Solo quien gerencia el negocio ve los menús.
+ */
+export const MenusDeLaApp: Story = {
+  parameters: { nextjs: { navigation: { pathname: "/demo/inventario/existencias" } } },
+  render: () => (
+    <AppShellProvider value={{ brandName: "Simpleapp", brandSub: "simpleapp", groups: inventoryGroups, activeKey: "/inventario/productos", title: "Catálogo", hrefFor: (href) => `/demo${href}`, quickActions: [], openSearch: () => {} }}>
+      <AppTopbar />
+    </AppShellProvider>
+  ),
+  play: async ({ canvasElement }) => {
+    const bar = within(canvasElement);
+    await userEvent.click(await bar.findByRole("button", { name: "Configuración" }));
+    const menu = await within(document.body).findByRole("menu");
+    await expect(within(menu).getByRole("menuitem", { name: /Ubicaciones y bodegas/ })).toBeVisible();
+    await expect(within(menu).getByRole("menuitem", { name: /Categorías/ })).toHaveAttribute("aria-disabled", "true");
+  },
 };

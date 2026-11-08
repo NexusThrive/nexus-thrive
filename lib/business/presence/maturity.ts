@@ -36,7 +36,7 @@ export function computeMaturity(i: MaturityInput): Maturity {
   const ACTIONS: Record<MaturityKey, Signal["action"] & { message: string }> = {
     sales: { message: "Casi no registras ventas en NEXUS.", label: "Abrir facturación", href: "/finanzas/facturacion" },
     inventory: { message: "Tu inventario apenas se mueve en NEXUS.", label: "Ir a inventario", href: "/inventario/productos" },
-    cash: { message: "Casi no usas la caja de NEXUS.", label: "Abrir la caja", href: "/ventas/pos" },
+    cash: { message: "Casi no usas la caja de NEXUS.", label: "Abrir la caja", href: "/pos" },
     customers: { message: "Pocos de tus clientes están en NEXUS o compran con registro.", label: "Ir a clientes", href: "/contactos" },
     expenses: { message: "Tus gastos no se registran: no sabrás tu utilidad real.", label: "Registrar gastos", href: "/finanzas" },
   };

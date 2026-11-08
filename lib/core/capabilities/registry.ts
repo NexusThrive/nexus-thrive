@@ -36,6 +36,7 @@ import {
   Wallet,
   BarChart3,
   Settings2,
+  Store,
 } from "lucide-react";
 import type { VerticalValue } from "@/lib/core/sectors/verticals";
 import type { VerticalTerms } from "@/lib/core/sectors/lexicon";
@@ -79,9 +80,9 @@ export type CapabilityNav = {
 };
 
 /** Categoría de la función: la misma en la barra lateral y en la página Funciones. */
-export type CapabilityCategory = "Clientes y agenda" | "CRM" | "Ventas y cobros" | "Producto" | "Obras y proyectos" | "Compras y gastos" | "Finanzas y contabilidad" | "Presencia en línea" | "Canales";
+export type CapabilityCategory = "Clientes y agenda" | "CRM" | "Ventas y cobros" | "Punto de venta" | "Inventario" | "Facturación" | "Obras y proyectos" | "Compras y gastos" | "Finanzas y contabilidad" | "Presencia en línea" | "Canales";
 /** Orden de la barra lateral y de «Funciones»: del trato con el cliente, a vender y cobrar, a gastar y contabilizar, a darse a conocer. */
-export const CAPABILITY_CATEGORIES: readonly CapabilityCategory[] = ["Clientes y agenda", "CRM", "Ventas y cobros", "Producto", "Obras y proyectos", "Compras y gastos", "Finanzas y contabilidad", "Presencia en línea", "Canales"];
+export const CAPABILITY_CATEGORIES: readonly CapabilityCategory[] = ["Clientes y agenda", "CRM", "Ventas y cobros", "Punto de venta", "Inventario", "Facturación", "Obras y proyectos", "Compras y gastos", "Finanzas y contabilidad", "Presencia en línea", "Canales"];
 
 export type CapabilityDefinition = {
   id: string;
@@ -172,7 +173,7 @@ export const CAPABILITIES = [
   },
   {
     id: "billing",
-    category: "Ventas y cobros",
+    category: "Facturación",
     kind: "base",
     label: "Facturación",
     name: "Facturación",
@@ -188,7 +189,7 @@ export const CAPABILITIES = [
   },
   {
     id: "inventory",
-    category: "Producto",
+    category: "Inventario",
     kind: "base",
     label: "Inventario",
     name: "Catálogo e inventario",
@@ -338,7 +339,7 @@ export const CAPABILITIES = [
   },
   {
     id: "pos",
-    category: "Ventas y cobros",
+    category: "Punto de venta",
     parent: "payments",
     kind: "base",
     label: "Punto de venta",
@@ -349,7 +350,7 @@ export const CAPABILITIES = [
     status: "READY",
     priceUsd: 0,
     general: true,
-    nav: [{ href: "/ventas/pos", icon: ShoppingCart, label: () => "Punto de venta" }],
+    nav: [{ href: "/pos", icon: Store, label: () => "Punto de venta" }],
   },
   {
     id: "online_payments",
@@ -368,7 +369,7 @@ export const CAPABILITIES = [
   },
   {
     id: "einvoicing",
-    category: "Ventas y cobros",
+    category: "Facturación",
     parent: "billing",
     kind: "base",
     label: "Factura electrónica",

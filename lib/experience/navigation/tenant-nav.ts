@@ -3,13 +3,14 @@
  * relativa al negocio, el elemento activo y la categoría de una ruta.
  */
 import { can, type BusinessPermission } from "@/lib/core/auth/permissions";
-import { Blocks, FileSpreadsheet, Globe, HardHat, MessageCircle, Package, Plug, Receipt, Settings, ShoppingCart, Truck, Users, Wallet, type LucideIcon, Target } from "lucide-react";
+import { Blocks, FileSpreadsheet, FileText, Store, Globe, HardHat, MessageCircle, Package, Plug, Receipt, Settings, ShoppingCart, Truck, Users, Wallet, type LucideIcon, Target } from "lucide-react";
 import { type VerticalValue } from "@/lib/core/sectors/verticals";
 import { MODULES, type ModuleValue } from "@/lib/core/capabilities/modules";
 import { CAPABILITIES, CAPABILITY_CATEGORIES, NAV_CATEGORY, type CapabilityCategory } from "@/lib/core/capabilities/registry";
 import { MODULE_NAV } from "@/lib/core/capabilities/route-modules";
 import { getVerticalTerms, hasMemberAccess } from "@/lib/core/sectors/terms";
 import type { NavGroup, NavItem } from "../../core/capabilities/nav-types";
+import { menusFor } from "./app-menus";
 
 export type { NavGroup, NavItem };
 export { modulesForRoute } from "@/lib/core/capabilities/route-modules";
@@ -62,7 +63,9 @@ type GroupName = CapabilityCategory;
 const GROUP_ICONS: Record<GroupName, LucideIcon> = {
   "Clientes y agenda": Users,
   CRM: Target,
-  Producto: Package,
+  "Punto de venta": Store,
+  Inventario: Package,
+  Facturación: FileText,
   "Obras y proyectos": HardHat,
   "Ventas y cobros": ShoppingCart,
   "Compras y gastos": Truck,
@@ -119,6 +122,7 @@ export function buildTenantNav(vertical: VerticalValue, activeModules: readonly 
       items: label === "Compras y gastos" ? [...expenses, ...forGroup(label)] : forGroup(label),
       collapsible: true,
       icon: GROUP_ICONS[label],
+      menus: menusFor(label, active, role),
     })),
     { label: "Sistema", items: gym ? [SETTINGS_ITEM] : [FUNCTIONS_ITEM, DATA_ITEM, INTEGRATIONS_ITEM, SETTINGS_ITEM], pinned: true },
   ].filter((group) => group.items.length > 0);
@@ -160,7 +164,7 @@ export function appTransitionName(groups: NavGroup[], itemKey: string | undefine
 }
 
 /**
- * Categoría de una pantalla del negocio ("/ventas/pos" → «Ventas y cobros»): la misma de la barra lateral y de «Funciones».
+ * Categoría de una pantalla del negocio ("/pos" → «Punto de venta»): la misma de la barra lateral y de «Funciones».
  * Los encabezados de página la usan para que el menú y la página siempre digan lo mismo.
  */
 export function routeCategory(route: string): CapabilityCategory {

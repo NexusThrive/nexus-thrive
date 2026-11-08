@@ -8,7 +8,7 @@ import { buttonVariants } from "@/components/atoms/button-variants";
 import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
 import { FormDialog } from "@/components/organisms/form-sheet";
-import { findSaleAction, returnSaleAction } from "@/app/[tenant]/(app)/ventas/pos/actions";
+import { findSaleAction, returnSaleAction } from "@/app/[tenant]/(app)/pos/actions";
 import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
 import { formatCurrency } from "@/lib/foundation/format";
 import type { SaleToReturn } from "@/lib/business/pos/returns-db";

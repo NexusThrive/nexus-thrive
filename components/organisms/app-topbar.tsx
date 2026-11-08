@@ -3,7 +3,7 @@
 import { ViewTransition, useCallback, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ChevronLeft, Plus, Search } from "lucide-react";
+import { ChevronDown, ChevronLeft, Plus, Search } from "lucide-react";
 import { N_PATH, THRIVE_LETTERS } from "@nexus/brand/BrandLogo";
 import { Button } from "@/components/atoms/button";
 import { ThemeToggle } from "@/components/atoms/theme-toggle";
@@ -13,6 +13,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/molecules/dropdown-menu";
 import { MobileTopbarSearch } from "@/components/organisms/mobile-topbar-search";
@@ -20,7 +21,7 @@ import { AccountButton } from "@/components/molecules/account-button";
 import { RouteBar } from "@/components/molecules/route-bar";
 import { useQuickCreate } from "@/components/organisms/quick-create-host";
 import { useOptionalPalette, useShell } from "@/components/providers/shell-context";
-import type { NavGroup } from "@/lib/core/capabilities/nav-types";
+import type { NavGroup, NavMenu } from "@/lib/core/capabilities/nav-types";
 import { cn } from "@/lib/utils";
 import styles from "./app-topbar.module.css";
 
@@ -242,10 +243,51 @@ function ModuleBar({
             </Link>
           );
         })}
+        {group.menus?.map((menu) => (
+          <AppMenu key={menu.key} menu={menu} hrefFor={hrefFor} />
+        ))}
       </nav>
       </ViewTransition>
       <TopbarEnd brandName={brandName} notifications={notifications} />
     </header>
+  );
+}
+
+/**
+ * Menú desplegable al final de la barra de una app («Informes», «Configuración»), como en Odoo. Las entradas sin pantalla todavía
+ * (`soon`) se ven apagadas con «Pronto»: el lugar queda a la vista sin enlaces rotos. Operable con teclado (Radix).
+ */
+function AppMenu({ menu, hrefFor }: { menu: NavMenu; hrefFor: (href: string) => string }) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        data-app-menu={menu.key}
+        className="group relative mt-3 inline-flex shrink-0 items-center gap-1 self-start rounded-md px-3 py-1.5 text-sm text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring data-[state=open]:text-foreground"
+      >
+        {menu.label}
+        <ChevronDown aria-hidden="true" className="size-3.5 transition-transform group-data-[state=open]:rotate-180" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" sideOffset={6} className="min-w-56">
+        {menu.sections.map((section, index) => (
+          <div key={section.title ?? index}>
+            {index > 0 ? <DropdownMenuSeparator /> : null}
+            {section.title ? <DropdownMenuLabel>{section.title}</DropdownMenuLabel> : null}
+            {section.items.map((item) =>
+              item.soon || !item.href ? (
+                <DropdownMenuItem key={item.key} disabled className="justify-between">
+                  {item.label}
+                  <span className="text-2xs text-muted-foreground">Pronto</span>
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem key={item.key} asChild>
+                  <Link href={hrefFor(item.href)}>{item.label}</Link>
+                </DropdownMenuItem>
+              ),
+            )}
+          </div>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 

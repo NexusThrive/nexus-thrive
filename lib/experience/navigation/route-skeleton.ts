@@ -55,7 +55,7 @@ const RULES: [pattern: string, skeleton: RouteSkeleton][] = [
   ["/ventas/cotizaciones/anteriores", { variant: "table", label: "Cargando cotizaciones", kpis: false }],
   ["/ventas/cotizaciones/anteriores/*", { variant: "detail", label: "Cargando cotización" }],
   ["/ventas/pedidos", { variant: "table", label: "Cargando pedidos", kpis: false }],
-  ["/ventas/pos", { variant: "table", label: "Cargando el punto de venta", kpis: false }],
+  ["/pos", { variant: "table", label: "Cargando el punto de venta", kpis: false }],
 ];
 
 const FALLBACK: RouteSkeleton = { variant: "dashboard", label: "Cargando" };

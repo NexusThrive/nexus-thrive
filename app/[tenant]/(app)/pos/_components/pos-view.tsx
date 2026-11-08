@@ -14,7 +14,7 @@ import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
 import { FormDialog } from "@/components/organisms/form-sheet";
 import ReturnDialog from "./return-dialog";
-import { closeTurnAction, createTerminalAction, openTurnAction, scanBarcodeAction, sellAction } from "@/app/[tenant]/(app)/ventas/pos/actions";
+import { closeTurnAction, createTerminalAction, openTurnAction, scanBarcodeAction, sellAction } from "@/app/[tenant]/(app)/pos/actions";
 import { cartTotals, settlePayments, tipFor } from "@/lib/business/pos/cart";
 import { formatCurrency } from "@/lib/foundation/format";
 import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
@@ -145,7 +145,7 @@ function Sale({ slug, turn, products }: { slug: string; turn: { sessionId: strin
           {done.tip ? ` + propina ${formatCurrency(done.tip)}` : ""}
           {done.change ? ` · Cambio ${formatCurrency(done.change)}` : ""}
           {" · "}
-          <a href={`/${slug}/ventas/pos/receipt/${done.id}`} target="_blank" rel="noopener noreferrer" className="font-semibold underline underline-offset-2">Imprimir tiquete</a>
+          <a href={`/${slug}/pos/receipt/${done.id}`} target="_blank" rel="noopener noreferrer" className="font-semibold underline underline-offset-2">Imprimir tiquete</a>
         </Alert>
       ) : null}
       <div className="grid gap-4 lg:grid-cols-[1fr_380px]">

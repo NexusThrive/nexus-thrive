@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { withShell } from "../../../../../../.storybook/decorators";
+import { withShell } from "../../../../../.storybook/decorators";
 import PosView from "./pos-view";
 
 const products = [

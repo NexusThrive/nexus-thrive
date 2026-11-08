@@ -1,25 +1,7 @@
-import { notFound } from "next/navigation";
-import { PrintButton } from "@/components/molecules/print-button";
-import { can } from "@/lib/core/auth/permissions";
-import { receiptOf } from "@/lib/business/pos/pos-db";
-import { receiptLines } from "@/lib/business/pos/receipt";
-import { requireTenantContext } from "@/lib/core/tenancy/context";
+import { redirect } from "next/navigation";
 
-/** Tiquete de una venta, listo para impresora térmica de 80 mm (o guardar como PDF). */
-export default async function ReceiptPage({ params }: { params: Promise<{ tenant: string; id: string }> }) {
+/** Comprobante del punto de venta: ahora en `/pos/receipt/[id]`. Se conserva para los enlaces de antes. */
+export default async function LegacyPosReceiptPage({ params }: { params: Promise<{ tenant: string; id: string }> }) {
   const { tenant, id } = await params;
-  const ctx = await requireTenantContext(tenant, "/ventas/pos");
-  if (!ctx || !can(ctx.role, "money.handle")) notFound();
-  const data = await receiptOf(ctx.tenantId, id);
-  if (!data) notFound();
-  return (
-    <div className="grid justify-center gap-3 print:block">
-      <style>{"@page { size: 80mm auto; margin: 4mm; } @media print { body { background: #fff; } }"}</style>
-      <div className="flex gap-2 print:hidden">
-        <PrintButton label="Imprimir tiquete" />
-        <a href={`/${tenant}/ventas/pos/receipt/${id}/escpos`} className="inline-flex items-center rounded-md border border-border px-3 text-ui font-medium">Descargar ESC/POS</a>
-      </div>
-      <pre aria-label="Tiquete" className="w-[80mm] max-w-full overflow-x-auto bg-white p-3 font-mono text-2xs leading-snug text-black">{receiptLines(data, 42).join("\n")}</pre>
-    </div>
-  );
+  redirect(`/${tenant}/pos/receipt/${id}`);
 }

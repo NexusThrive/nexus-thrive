@@ -20,11 +20,13 @@ describe("buildTenantNav", () => {
 
   it("agrupa por trabajo, con todas las categorías desplegables, y omite los grupos vacíos", () => {
     const groups = buildTenantNav("retail", ["dashboard", "crm", "memberships", "finance", "payments", "pos", "online_payments", "billing", "einvoicing", "receivables", "accounting", "taxes", "whatsapp"]);
-    expect(groups.map((g) => g.label)).toEqual(["General", "Clientes y agenda", "CRM", "Ventas y cobros", "Compras y gastos", "Finanzas y contabilidad", "Canales", "Sistema"]);
-    // Facturación, punto de venta y cobros van en Ingresos; Pagos vive dentro de Finanzas y no se repite.
+    expect(groups.map((g) => g.label)).toEqual(["General", "Clientes y agenda", "CRM", "Ventas y cobros", "Punto de venta", "Facturación", "Compras y gastos", "Finanzas y contabilidad", "Canales", "Sistema"]);
+    // Punto de venta y Facturación son apps propias; los cobros en línea siguen en Ventas y cobros. Pagos vive dentro de Finanzas y no se repite.
     const ingresos = groups.find((g) => g.label === "Ventas y cobros")!;
     expect(ingresos.collapsible).toBe(true);
-    expect(ingresos.items.map((i) => i.label)).toEqual(["Facturación", "Punto de venta", "Cobros en línea", "Factura electrónica"]);
+    expect(ingresos.items.map((i) => i.label)).toEqual(["Cobros en línea"]);
+    expect(groups.find((g) => g.label === "Punto de venta")!.items.map((i) => i.href)).toEqual(["/pos"]);
+    expect(groups.find((g) => g.label === "Facturación")!.items.map((i) => i.label)).toEqual(["Facturación", "Factura electrónica"]);
     // Con Finanzas activa hay una categoría «Gastos».
     const gastos = groups.find((g) => g.label === "Compras y gastos")!;
     expect(gastos.collapsible).toBe(true);
@@ -225,5 +227,44 @@ describe("appTransitionName", () => {
     expect(appTransitionName(groups, "settings")).toBe("nx-app-settings");
     expect(appTransitionName(groups, undefined)).toBeUndefined();
     expect(appTransitionName(groups, keysOf("General")[0])).toBeUndefined();
+  });
+});
+
+describe("menús Informes y Configuración de cada app", () => {
+  const modules = ["dashboard", "pos", "inventory", "billing", "einvoicing", "taxes", "receivables", "quotes", "finance"] as const;
+  const groups = buildTenantNav("retail", [...modules]);
+
+  it("cada app lleva Informes y Configuración como menús, con secciones y entradas", () => {
+    for (const label of ["Ventas y cobros", "Punto de venta", "Inventario", "Facturación"]) {
+      const group = groups.find((g) => g.label === label);
+      if (!group) continue; // «Ventas y cobros» solo sale con módulos de ventas
+      expect(group.menus?.map((m) => m.key)).toEqual(["informes", "configuracion"]);
+    }
+    expect(groups.find((g) => g.label === "Inventario")!.menus![0]!.sections[0]!.items.map((i) => i.href)).toContain("/inventario/existencias?tab=reorder");
+  });
+
+  it("las entradas sin pantalla se marcan «soon» y no llevan ruta; nunca un enlace roto", () => {
+    for (const group of groups) {
+      for (const menu of group.menus ?? []) {
+        for (const item of menu.sections.flatMap((s) => s.items)) {
+          expect(Boolean(item.soon)).toBe(item.href === "");
+        }
+      }
+    }
+  });
+
+  it("sin el módulo, la entrada que lo pide no aparece (la serie de comprobantes necesita Impuestos)", () => {
+    const sinImpuestos = buildTenantNav("retail", ["dashboard", "billing"]);
+    const items = sinImpuestos.find((g) => g.label === "Facturación")!.menus!.flatMap((m) => m.sections.flatMap((s) => s.items.map((i) => i.key)));
+    expect(items).not.toContain("series");
+    expect(items).toContain("ajustes");
+  });
+
+  it("solo quien gerencia el negocio ve los menús: el equipo de caja no", () => {
+    const cajero = buildTenantNav("retail", [...modules], "STAFF");
+    const facturacion = cajero.find((g) => g.label === "Facturación");
+    expect(facturacion?.menus).toBeUndefined();
+    const admin = buildTenantNav("retail", [...modules], "ADMIN");
+    expect(admin.find((g) => g.label === "Facturación")?.menus?.map((m) => m.key)).toEqual(["informes", "configuracion"]);
   });
 });

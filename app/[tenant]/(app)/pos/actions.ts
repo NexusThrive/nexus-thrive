@@ -11,13 +11,13 @@ import { requireTenantContext } from "@/lib/core/tenancy/context";
 
 export type PosResult = { ok: true; message: string } | { ok: false; message: string };
 const cashier = async (slug: string) => {
-  const ctx = await requireTenantContext(slug, "/ventas/pos");
+  const ctx = await requireTenantContext(slug, "/pos");
   return ctx && can(ctx.role, "money.handle") ? ctx : null;
 };
-const refresh = (slug: string) => revalidatePath(`/${slug}/ventas/pos`);
+const refresh = (slug: string) => revalidatePath(`/${slug}/pos`);
 
 export async function createTerminalAction(slug: string, name: string): Promise<PosResult> {
-  const ctx = await requireTenantContext(slug, "/ventas/pos");
+  const ctx = await requireTenantContext(slug, "/pos");
   if (!ctx || !can(ctx.role, "business.manage")) return { ok: false, message: "Solo el dueño o administración crea terminales." };
   const r = await createTerminal(ctx.tenantId, name, null);
   if (!r.ok) return r;

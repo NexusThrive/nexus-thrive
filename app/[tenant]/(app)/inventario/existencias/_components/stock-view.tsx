@@ -23,8 +23,8 @@ type Tab = "stock" | "transfers" | "counts" | "reorder" | "warehouses";
 const COUNT_TONES = { DRAFT: "warning", COMPLETED: "success", CANCELED: "muted" } as const;
 
 /** Existencias: por bodega, traslados, conteos físicos, reposición y bodegas. */
-export default function StockView({ slug, warehouses, overview, transfers, counts, reorder, products, purchasesActive }: { slug: string; warehouses: WarehouseOption[]; overview: OverviewRow[]; transfers: TransferRow[]; counts: CountRow[]; reorder: ReorderRow[]; products: { id: string; name: string }[]; purchasesActive: boolean }) {
-  const [tab, setTab] = useState<Tab>("stock");
+export default function StockView({ initialTab, slug, warehouses, overview, transfers, counts, reorder, products, purchasesActive }: { initialTab?: string; slug: string; warehouses: WarehouseOption[]; overview: OverviewRow[]; transfers: TransferRow[]; counts: CountRow[]; reorder: ReorderRow[]; products: { id: string; name: string }[]; purchasesActive: boolean }) {
+  const [tab, setTab] = useState<Tab>((["stock", "transfers", "counts", "reorder", "warehouses"] as const).find((t) => t === initialTab) ?? "stock");
   const [warehouse, setWarehouse] = useState("all");
   const [transferring, setTransferring] = useState(false);
   const [counting, setCounting] = useState(false);
