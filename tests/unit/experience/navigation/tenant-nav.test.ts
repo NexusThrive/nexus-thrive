@@ -268,3 +268,11 @@ describe("menús Informes y Configuración de cada app", () => {
     expect(admin.find((g) => g.label === "Facturación")?.menus?.map((m) => m.key)).toEqual(["informes", "configuracion"]);
   });
 });
+
+describe("ruta antigua del punto de venta", () => {
+  it("/ventas/pos activa la misma app que /pos", () => {
+    expect(tenantRelativePath("/demo/ventas/pos", "demo")).toBe("/pos");
+    expect(tenantRelativePath("/demo/ventas/pos/receipt/9", "demo")).toBe("/pos/receipt/9");
+    expect(tenantRelativePath("/demo/ventas/posters", "demo")).toBe("/ventas/posters");
+  });
+});

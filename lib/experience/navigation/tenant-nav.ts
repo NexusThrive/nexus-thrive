@@ -132,7 +132,9 @@ export function buildTenantNav(vertical: VerticalValue, activeModules: readonly 
 export function tenantRelativePath(pathname: string | null, tenantSlug: string): string {
   const base = `/${tenantSlug}`;
   if (!pathname || pathname === base || pathname === `${base}/`) return "/";
-  return pathname.startsWith(`${base}/`) ? pathname.slice(base.length) : pathname;
+  const relative = pathname.startsWith(`${base}/`) ? pathname.slice(base.length) : pathname;
+  // El punto de venta vivió en /ventas/pos: esa ruta antigua sigue mostrándolo y debe activar la misma app (y su barra).
+  return relative === "/ventas/pos" || relative.startsWith("/ventas/pos/") ? relative.replace("/ventas/pos", "/pos") : relative;
 }
 
 /** ¿El ítem con `href` está activo en `relativePath`? */
