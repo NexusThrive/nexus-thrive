@@ -16,6 +16,8 @@ import { ACTIVITY_LABEL, DEFAULT_LOST_REASONS, DEFAULT_STAGES, LEGACY_STAGE_INDE
  */
 
 type Result<T = object> = ({ ok: true } & T) | { ok: false; message: string };
+/** Un pedido cancelado (o abandonado) ya no ata a la oportunidad: se puede borrar y, al volver a ganarla, se crea otro. */
+const isCanceledOrder = (o: { status: string; fulfillment: string } | null | undefined) => !!o && (o.status === "CANCELED" || o.status === "ABANDONED" || o.fulfillment === "CANCELED");
 const now = () => Temporal.Instant.fromEpochMilliseconds(Date.now());
 
 export type PipelineStage = { id: string; name: string; position: number; probability: number; isWon: boolean };
@@ -35,6 +37,8 @@ export type PipelineCard = {
   orderId: string | null;
   /** `null` sin pedido; `false` con pedido sin cobrar; `true` cobrado. */
   orderPaid: boolean | null;
+  /** El pedido creado al ganarla se canceló. */
+  orderCanceled: boolean;
   position: number | null;
   expectedClose: string | null;
   createdAt: string;
@@ -127,13 +131,14 @@ export async function loadPipeline(tenantId: string, filters: PipelineFilters = 
   const orderIds = rows.map((r) => r.orderId).filter((id): id is string => Boolean(id));
   const [customers, orders, next] = await Promise.all([
     customerIds.length ? db.orm.public.Customer.where({ tenantId }).where((c) => c.id.in(customerIds)).select("id", "name").all() : [],
-    orderIds.length ? db.orm.public.StoreOrder.where({ tenantId }).where((o) => o.id.in(orderIds)).select("id", "paidAt", "status").all() : [],
+    orderIds.length ? db.orm.public.StoreOrder.where({ tenantId }).where((o) => o.id.in(orderIds)).select("id", "paidAt", "status", "fulfillment").all() : [],
     nextActivities(tenantId, rows.map((r) => r.id)),
   ]);
   const names = new Map(customers.map((c) => [c.id, c.name]));
   const nameOf = (u: { name: string | null; email: string | null }) => u.name?.trim() || u.email?.split("@")[0] || "Integrante";
   const owners = new Map(team.map((u) => [u.id, nameOf(u)]));
   const paid = new Map(orders.map((o) => [o.id, Boolean(o.paidAt) || o.status === "PAID"]));
+  const canceled = new Set(orders.filter((o) => isCanceledOrder(o)).map((o) => o.id));
 
   let cards: PipelineCard[] = rows.map((o) => {
     const stage = stageOf(o, stages);
@@ -151,6 +156,7 @@ export async function loadPipeline(tenantId: string, filters: PipelineFilters = 
       won: o.status === "WON",
       orderId: o.orderId,
       orderPaid: o.orderId ? (paid.get(o.orderId) ?? false) : null,
+      orderCanceled: Boolean(o.orderId && canceled.has(o.orderId)),
       position: o.position ?? null,
       expectedClose: o.expectedClose ?? null,
       createdAt: String(o.createdAt),
@@ -284,7 +290,8 @@ export async function winWithOrder(tenantId: string, id: string, userId: string 
         if (!o || o.status !== "OPEN") return { ok: false as const, message: "La oportunidad ya está cerrada o no existe." };
         const value = o.estimatedValue == null ? 0 : toNumber(o.estimatedValue);
         // Si ya se ganó antes (y se reabrió), se reutiliza su pedido: no se crea otro.
-        let orderId: string | null = o.orderId ?? null;
+        const previous = o.orderId ? await tx.orm.public.StoreOrder.where({ tenantId, id: o.orderId }).select("status", "fulfillment").first() : null;
+        let orderId: string | null = previous && !isCanceledOrder(previous) ? o.orderId : null;
         if (!orderId && value > 0) {
           const customer = o.customerId ? await tx.orm.public.Customer.where({ tenantId, id: o.customerId }).select("name", "phone", "email", "city").first() : null;
           const last = await tx.orm.public.StoreOrder.where({ tenantId }).orderBy((x) => x.number.desc()).first();
@@ -463,11 +470,15 @@ export async function duplicateOpportunity(tenantId: string, id: string, userId:
   });
 }
 
-/** Elimina una oportunidad sin pedido (con sus actividades pendientes e historial). Con pedido, se pide archivarla (perderla). */
+/** Elimina una oportunidad sin pedido activo (con sus actividades pendientes e historial). Con un pedido activo, se pide cancelarlo antes. */
 export async function deleteOpportunity(tenantId: string, id: string): Promise<Result> {
   const o = await db.orm.public.Opportunity.where({ tenantId, id }).select("id", "orderId").first();
   if (!o) return { ok: false, message: "La oportunidad no existe." };
-  if (o.orderId) return { ok: false, message: "Tiene un pedido: no se puede eliminar." };
+  if (o.orderId) {
+    const order = await db.orm.public.StoreOrder.where({ tenantId, id: o.orderId }).select("status", "fulfillment").first();
+    // Con el pedido cancelado (o ya borrado) sí se elimina: el pedido cancelado se queda en Ventas y cobros como registro.
+    if (order && !isCanceledOrder(order)) return { ok: false, message: "Tiene un pedido activo: cancélalo en Ventas y cobros antes de eliminarla." };
+  }
   await db.transaction(async (tx) => {
     await tx.orm.public.Task.where({ tenantId, opportunityId: id, status: "OPEN" }).deleteAll();
     await tx.orm.public.OpportunityEvent.where({ tenantId, opportunityId: id }).deleteAll();

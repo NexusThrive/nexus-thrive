@@ -481,7 +481,7 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
                   <p className="flex flex-wrap items-center gap-3 text-sm">
                     <span className="text-foreground">Pedido T-{String(o.order.number).padStart(4, "0")}</span>
                     <span className="tabular-nums text-muted-foreground">{formatCurrency(o.order.total)}</span>
-                    <span className={cn("rounded-md px-2 py-0.5 text-xs font-medium", o.order.paid ? "border border-success/40 text-success" : "bg-accent-subtle text-accent-text")}>{o.order.paid ? "Cobrado" : "Por cobrar"}</span>
+                    <span className={cn("rounded-md px-2 py-0.5 text-xs font-medium", o.order.canceled ? "bg-surface-muted text-muted-foreground" : o.order.paid ? "border border-success/40 text-success" : "bg-accent-subtle text-accent-text")}>{o.order.canceled ? "Cancelado" : o.order.paid ? "Cobrado" : "Por cobrar"}</span>
                     <Link href={`/${slug}/ventas/pedidos`} className={cn(addLink, "text-ui")}>
                       Ver en Ventas y cobros
                     </Link>

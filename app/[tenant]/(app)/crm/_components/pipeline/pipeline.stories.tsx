@@ -17,7 +17,7 @@ const stages: PipelineStage[] = [
   { id: "s4", name: "Ganado", position: 3, probability: 100, isWon: true },
 ];
 const owner = { id: "u1", name: "Santiago Ortiz" };
-const base = { tags: [] as string[], owner, orderId: null, orderPaid: null, position: null, expectedClose: null, createdAt: "2026-11-01T12:00:00Z", won: false };
+const base = { tags: [] as string[], owner, orderId: null, orderPaid: null, orderCanceled: false, position: null, expectedClose: null, createdAt: "2026-11-01T12:00:00Z", won: false };
 const next = (kind: "CALL" | "MEETING" | "PROPOSAL" | "OTHER", days: number, title = "") => ({ id: `t-${kind}-${days}`, kind, title, dueAt: at(days), assigneeId: "u1" });
 const cards: PipelineCard[] = [
   { ...base, id: "o1", name: "Uniformes · 200 camisetas", value: 4_800_000, probability: 20, stageId: "s1", customer: { id: "c1", name: "Colegio San José" }, tags: ["Mayorista"], priority: 2, next: next("CALL", 0, "Llamar") },

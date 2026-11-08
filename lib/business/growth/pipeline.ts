@@ -45,7 +45,8 @@ export type CardChip = { text: string; tone: ChipTone };
 /**
  * Chip de la tarjeta: «Llamar hoy», «Vencida · 2 d», «Reunión · jue», «Sin actividad»; en las ganadas, «Pedido creado» o «Cobrado».
  */
-export function cardChip(card: { won: boolean; orderPaid: boolean | null; next: { kind: ActivityKind; dueAt: string } | null }, now = Date.now()): CardChip {
+export function cardChip(card: { won: boolean; orderPaid: boolean | null; orderCanceled?: boolean; next: { kind: ActivityKind; dueAt: string } | null }, now = Date.now()): CardChip {
+  if (card.won && card.orderCanceled) return { text: "Pedido cancelado", tone: "planned" };
   if (card.won) return card.orderPaid ? { text: "Cobrado", tone: "done" } : { text: card.orderPaid === false ? "Pedido creado" : "Ganada", tone: "done" };
   if (!card.next) return { text: "Sin actividad", tone: "planned" };
   const due = new Date(card.next.dueAt).getTime();

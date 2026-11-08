@@ -45,7 +45,7 @@ export type OpportunityDetail = {
   createdAt: string;
   customer: { id: string; name: string; email: string | null; phone: string | null } | null;
   owner: { id: string; name: string } | null;
-  order: { id: string; number: number; total: number; paid: boolean } | null;
+  order: { id: string; number: number; total: number; paid: boolean; canceled: boolean } | null;
   stages: PipelineStage[];
   activities: ActivityRow[];
   events: OpportunityEventRow[];
@@ -69,7 +69,7 @@ export async function getOpportunityDetail(tenantId: string, id: string): Promis
     db.orm.public.User.where({ tenantId }).select("id", "name", "email", "active").all(),
     db.orm.public.Task.where({ tenantId, opportunityId: id }).orderBy((t) => t.createdAt.desc()).limit(50).all(),
     db.orm.public.OpportunityEvent.where({ tenantId, opportunityId: id }).orderBy((e) => e.createdAt.desc()).limit(100).all(),
-    o.orderId ? db.orm.public.StoreOrder.where({ tenantId, id: o.orderId }).select("id", "number", "total", "paidAt", "status").first() : null,
+    o.orderId ? db.orm.public.StoreOrder.where({ tenantId, id: o.orderId }).select("id", "number", "total", "paidAt", "status", "fulfillment").first() : null,
     db.orm.public.CrmLostReason.where({ tenantId }).orderBy((r) => r.position.asc()).select("id", "name").all(),
     db.orm.public.Attachment.where({ tenantId, kind: OPPORTUNITY_FILE, ownerId: id }).orderBy((a) => a.createdAt.desc()).limit(50).select("id", "fileName", "createdAt").all(),
   ]);
@@ -94,7 +94,7 @@ export async function getOpportunityDetail(tenantId: string, id: string): Promis
     createdAt: String(o.createdAt),
     customer: customer ? { id: customer.id, name: customer.name, email: customer.email, phone: customer.phone } : null,
     owner: o.ownerId ? { id: o.ownerId, name: people.get(o.ownerId) ?? "Integrante" } : null,
-    order: order ? { id: order.id, number: order.number, total: toNumber(order.total), paid: Boolean(order.paidAt) || order.status === "PAID" } : null,
+    order: order ? { id: order.id, number: order.number, total: toNumber(order.total), paid: Boolean(order.paidAt) || order.status === "PAID", canceled: order.status === "CANCELED" || order.status === "ABANDONED" || order.fulfillment === "CANCELED" } : null,
     stages,
     activities: tasks
       .filter((t) => t.dueAt || t.dueDay)

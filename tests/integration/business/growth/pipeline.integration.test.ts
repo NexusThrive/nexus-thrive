@@ -3,7 +3,8 @@ import { db } from "@/prisma/db";
 import { createAdminDb } from "@/lib/platform/admin/db";
 import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
 import { createStage, deleteStage, setStageOrder } from "@/lib/business/growth/pipeline-config-db";
-import { completeActivity, createQuickOpportunity, ensureStages, loadPipeline, loseWithReason, moveToStage, reopenOpportunity, scheduleActivity, updateOpportunity, winWithOrder } from "@/lib/business/growth/pipeline-db";
+import { cancelOrder } from "@/lib/business/store/store-db";
+import { completeActivity, createQuickOpportunity, deleteOpportunity, ensureStages, loadPipeline, loseWithReason, moveToStage, reopenOpportunity, scheduleActivity, updateOpportunity, winWithOrder } from "@/lib/business/growth/pipeline-db";
 
 /** Pipeline del CRM de punta a punta contra la base de pruebas, y aislado por negocio. */
 const TEST_URL = process.env.TEST_DATABASE_URL;
@@ -159,5 +160,24 @@ describe.skipIf(!TEST_URL)("pipeline del CRM (integración)", () => {
     const again = await winWithOrder(a, r.id, null);
     expect(again).toMatchObject({ ok: true, orderId: won.orderId });
     expect(await db.orm.public.StoreOrder.where({ tenantId: a, customerId: r.customerId! }).aggregate((x) => ({ n: x.count() }))).toEqual({ n: 1 });
+  });
+
+  test("con el pedido cancelado, la ganada se puede eliminar (y volver a ganar crea un pedido nuevo)", async () => {
+    const r = await createQuickOpportunity(a, null, { name: "Pedido que se cancela", newCustomerName: "Cliente Cancela", phone: "3207770000", value: "300000" });
+    if (!r.ok) throw new Error(r.message);
+    const won = await winWithOrder(a, r.id, null);
+    if (!won.ok || !won.orderId) throw new Error("sin pedido");
+    expect(await deleteOpportunity(a, r.id)).toMatchObject({ ok: false });
+    expect(await cancelOrder(a, won.orderId)).toMatchObject({ ok: true });
+    expect((await loadPipeline(a)).cards.find((c) => c.id === r.id)).toMatchObject({ orderCanceled: true });
+    // Reabrir y volver a ganar: el pedido cancelado no se reutiliza.
+    const [nuevo] = await ensureStages(a);
+    await moveToStage(a, r.id, nuevo!.id, null);
+    const again = await winWithOrder(a, r.id, null);
+    expect(again.ok && again.orderId !== won.orderId).toBe(true);
+    if (again.ok && again.orderId) await cancelOrder(a, again.orderId);
+    expect(await deleteOpportunity(a, r.id)).toMatchObject({ ok: true });
+    expect(await db.orm.public.Opportunity.where({ tenantId: a, id: r.id }).first()).toBeNull();
+    expect(await db.orm.public.StoreOrder.where({ tenantId: a, id: won.orderId }).first()).toMatchObject({ status: "CANCELED" });
   });
 });
