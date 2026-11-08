@@ -23,6 +23,7 @@ import { buttonVariants } from "@/components/atoms/button-variants";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/molecules/dropdown-menu";
 import { useReducedMotion } from "@/lib/experience/hooks/use-reduced-motion";
 import type { PipelineCard, PipelineStage } from "@/lib/business/growth/pipeline-db";
+import type { PickerCustomer } from "@/lib/business/growth/pipeline-read";
 import { cardChip, columnBar, shortMoney } from "@/lib/business/growth/pipeline";
 import { cn } from "@/lib/utils";
 import { ActivityChip, Initials, Stars } from "./pipeline-ui";
@@ -176,6 +177,7 @@ function Column({
   now,
   savingIds,
   quick,
+  preset,
   onOpenQuick,
   onCloseQuick,
   onMove,
@@ -189,6 +191,7 @@ function Column({
   now: number;
   savingIds: ReadonlySet<string>;
   quick: boolean;
+  preset: PickerCustomer | null;
   onOpenQuick: () => void;
   onCloseQuick: () => void;
   onMove: (card: PipelineCard, stageId: string) => void;
@@ -225,7 +228,7 @@ function Column({
         <i className="block h-full bg-danger" style={{ width: `${bar.overdue}%` }} />
         <i className="block h-full bg-border-strong" style={{ width: `${bar.none}%` }} />
       </div>
-      {quick ? <QuickCreate slug={slug} stageId={stage.id} onClose={onCloseQuick} /> : null}
+      {quick ? <QuickCreate slug={slug} stageId={stage.id} preset={preset} onClose={onCloseQuick} /> : null}
       <ul className="flex min-h-16 flex-col gap-3">
         {cards.map((c, i) => (
           <Card key={c.id} slug={slug} card={c} stages={stages} now={now} saving={savingIds.has(c.id)} index={i} count={cards.length} onMove={onMove} onShift={onShift} />
@@ -265,6 +268,7 @@ export function Board({
   now,
   savingIds,
   quickStage,
+  preset,
   empty,
   onQuick,
   onMove,
@@ -278,6 +282,7 @@ export function Board({
   now: number;
   savingIds: ReadonlySet<string>;
   quickStage: string | null;
+  preset: PickerCustomer | null;
   empty: boolean;
   onQuick: (stageId: string | null) => void;
   onMove: (card: PipelineCard, stageId: string) => void;
@@ -358,6 +363,7 @@ export function Board({
               now={now}
               savingIds={savingIds}
               quick={quickStage === s.id || (quickStage === "first" && i === 0)}
+              preset={preset}
               onOpenQuick={() => onQuick(s.id)}
               onCloseQuick={() => onQuick(null)}
               onMove={onMove}

@@ -69,6 +69,11 @@ export default function OrdersView({ slug, orders, canCharge = true }: { slug: s
                 <Badge variant={o.fulfillment === "DELIVERED" ? "success" : o.fulfillment === "CANCELED" ? "secondary" : "default"}>{FULFILLMENT_TEXT[o.fulfillment as Fulfillment] ?? o.fulfillment}</Badge>
                 {canCharge ? <Badge variant={PAY[o.status as keyof typeof PAY]?.tone ?? "secondary"}>{PAY[o.status as keyof typeof PAY]?.label ?? o.status}</Badge> : null}
                 {o.fromQuote ? <Badge variant="outline">De cotización</Badge> : null}
+                {o.opportunityId ? (
+                  <Link href={`/${slug}/crm/oportunidades/${o.opportunityId}`} className="text-xs font-medium text-accent-text underline-offset-2 hover:underline">
+                    Ver oportunidad
+                  </Link>
+                ) : null}
                 {canCharge ? <b className="ml-auto font-mono tabular-nums">{formatCurrency(o.total)}</b> : null}
               </div>
               <p className="break-words text-ui"><b>{o.customerName}</b> · <a href={`https://wa.me/${o.phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">{o.phone}</a></p>

@@ -127,6 +127,8 @@ export function AppHome({ trial, summary, userName }: { trial?: AppHomeTrial | n
   const month = summary?.month ?? null;
   const today = summary?.today ?? null;
   const attention = summary?.attention ?? null;
+  const crm = summary?.crm ?? null;
+  const crmToday = crm?.today ?? [];
   // Columnas laterales: base 240 px, entre 220 y 290 (bajo 1100 px ocupan el ancho y se apilan arriba y abajo del cajón).
   const side = "w-full max-w-xl pt-2 min-[1100px]:w-auto min-[1100px]:min-w-[220px] min-[1100px]:max-w-[290px] min-[1100px]:flex-[1_1_240px]";
 
@@ -205,20 +207,24 @@ export function AppHome({ trial, summary, userName }: { trial?: AppHomeTrial | n
             )}
           </nav>
 
-          {today || attention ? (
+          {today || crm || attention ? (
             <div className={cn(side, "grid gap-[22px]")}>
-              {today ? (
+              {today || crm ? (
                 <section aria-labelledby="home-hoy">
                   <h2 id="home-hoy" className={eyebrow}>
                     Hoy
                   </h2>
                   <ul className="mt-1.5">
-                    {today.next ? (
+                    {today?.next ? (
                       <Row dot="bg-accent" href={hrefFor("/bookings")} title={[today.next.title, today.next.customer].filter(Boolean).join(" · ")} note={[today.next.time, today.next.status].filter(Boolean).join(" · ")} />
-                    ) : (
+                    ) : today && !crmToday.length ? (
                       <Row dot="bg-muted-foreground/50" href={hrefFor("/bookings")} title="Nada programado para hoy" note="Abre la agenda para agendar una cita" />
-                    )}
-                    {today.more > 0 ? <Row dot="bg-muted-foreground/50" href={hrefFor("/bookings")} title={`${today.more} ${today.more === 1 ? "cita más programada" : "citas más programadas"}`} note="Ver la agenda del día" /> : null}
+                    ) : null}
+                    {crmToday.map((t) => (
+                      <Row key={t.id} dot="bg-accent" href={hrefFor(`/crm/oportunidades/${t.opportunityId}`)} title={t.label} note={t.time} />
+                    ))}
+                    {!today && !crmToday.length ? <Row dot="bg-muted-foreground/50" href={hrefFor("/crm")} title="Nada programado para hoy" note="Sin llamadas ni reuniones" /> : null}
+                    {today && today.more > 0 ? <Row dot="bg-muted-foreground/50" href={hrefFor("/bookings")} title={`${today.more} ${today.more === 1 ? "cita más programada" : "citas más programadas"}`} note="Ver la agenda del día" /> : null}
                   </ul>
                 </section>
               ) : null}
@@ -244,7 +250,9 @@ export function AppHome({ trial, summary, userName }: { trial?: AppHomeTrial | n
                         note={`En los próximos ${attention.expiringDays} días`}
                       />
                     ) : null}
-                    {attention.overdueCount === 0 && !attention.expiringCount ? <Row dot="bg-success" title="Todo al día" note="Nada vencido ni por vencer" /> : null}
+                    {crm?.overdue ? <Row dot="bg-danger" href={hrefFor("/crm?vista=actividades")} title={`${crm.overdue} ${crm.overdue === 1 ? "actividad vencida" : "actividades vencidas"}`} note="En el CRM" /> : null}
+                    {crm?.withoutActivity ? <Row dot="bg-muted-foreground/50" href={hrefFor("/crm")} title={`${crm.withoutActivity} ${crm.withoutActivity === 1 ? "oportunidad sin actividad" : "oportunidades sin actividad"}`} note="Programa el siguiente paso" /> : null}
+                    {attention.overdueCount === 0 && !attention.expiringCount && !crm?.overdue && !crm?.withoutActivity ? <Row dot="bg-success" title="Todo al día" note="Nada vencido ni por vencer" /> : null}
                   </ul>
                 </section>
               ) : null}

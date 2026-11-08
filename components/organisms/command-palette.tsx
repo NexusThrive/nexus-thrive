@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "
 import { useRouter } from "next/navigation";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Command } from "cmdk";
-import { Blocks, Download, HandCoins, Moon, Package, Receipt, Search, User } from "lucide-react";
+import { Blocks, Download, HandCoins, Moon, Package, Receipt, Search, Target, User } from "lucide-react";
 import { searchEntitiesAction, type SearchHit } from "@/app/[tenant]/(app)/_actions/search";
 import { Kbd } from "@/components/atoms/kbd";
 import { setTheme } from "@/components/atoms/theme-toggle";
@@ -178,7 +178,7 @@ export function PaletteList({
                 style={leaving ? undefined : { animationDelay: `${Math.min(index, 5) * 25}ms` }}
                 className={cn(itemClass, leaving ? "nx-hit-out" : "nx-hit-in")}
               >
-                {hit.kind === "customer" ? <User aria-hidden="true" /> : hit.kind === "payment" ? <HandCoins aria-hidden="true" /> : hit.kind === "expense" ? <Receipt aria-hidden="true" /> : <Package aria-hidden="true" />}
+                {hit.kind === "customer" ? <User aria-hidden="true" /> : hit.kind === "opportunity" ? <Target aria-hidden="true" /> : hit.kind === "payment" ? <HandCoins aria-hidden="true" /> : hit.kind === "expense" ? <Receipt aria-hidden="true" /> : <Package aria-hidden="true" />}
                 <span className="truncate">{hit.title}</span>
                 <small className="ml-auto truncate text-xs text-muted-foreground">{hit.subtitle}</small>
               </Command.Item>

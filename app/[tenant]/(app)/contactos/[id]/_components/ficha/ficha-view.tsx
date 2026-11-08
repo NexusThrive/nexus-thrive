@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { Banknote, CalendarDays, CreditCard, FileText, Mail, MapPin, MessageCircle, Phone, Receipt, ShoppingBag } from "lucide-react";
+import { Banknote, CalendarDays, CreditCard, FileText, Mail, MapPin, MessageCircle, Phone, Receipt, ShoppingBag, Target } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { cn } from "@/lib/utils";
@@ -39,7 +39,9 @@ export default function FichaView(props: {
   saleHref: string | null;
   activityHref: string | null;
   pager: { index: number; total: number; prevHref: string | null; nextHref: string | null } | null;
-  summary: { bookings: number; sales: number; plan: string | null; owed: string; invoiced: string };
+  summary: { bookings: number; sales: number; plan: string | null; owed: string; invoiced: string; opportunities?: number | null };
+  /** Pipeline del CRM filtrado por este cliente (con el CRM activo). */
+  crmHref?: string | null;
   data: { label: string; value: string | null; empty: string; field?: string }[];
   tab: FichaTab;
   rows: FichaRow[];
@@ -61,7 +63,8 @@ export default function FichaView(props: {
     { icon: Mail, value: customer.email, empty: "Sin correo", field: "email" },
     { icon: MapPin, value: customer.address, empty: "Sin dirección", field: "address" },
   ];
-  const summary: { key: FichaTab; icon: typeof Phone; value: string; label: string }[] = [
+  const summary: { key: FichaTab; icon: typeof Phone; value: string; label: string; href?: string }[] = [
+    ...(props.crmHref && props.summary.opportunities != null ? [{ key: "citas" as FichaTab, icon: Target, value: String(props.summary.opportunities), label: "Oportunidades", href: props.crmHref }] : []),
     { key: "citas", icon: CalendarDays, value: String(props.summary.bookings), label: "Citas" },
     { key: "ventas", icon: ShoppingBag, value: String(props.summary.sales), label: "Ventas" },
     { key: "membresias", icon: CreditCard, value: props.summary.plan ?? "Sin plan", label: "Membresía" },
@@ -81,6 +84,7 @@ export default function FichaView(props: {
         canRemove={props.canRemove}
         bookHref={props.bookHref}
         saleHref={props.saleHref}
+        opportunityHref={props.crmHref ? `${props.crmHref}&nueva=1` : null}
         pager={props.pager}
       />
 
@@ -157,11 +161,11 @@ export default function FichaView(props: {
           </section>
 
           {/* Botones de resumen: cada uno abre su pestaña del historial */}
-          <nav aria-label="Resumen del cliente" className="grid grid-cols-[repeat(auto-fit,minmax(136px,1fr))] gap-3">
-            {summary.map(({ key, icon: Icon, value, label }) => (
+          <nav aria-label="Resumen del cliente" className={cn("grid gap-3", summary.length > 5 ? "grid-cols-2 sm:grid-cols-3" : "grid-cols-[repeat(auto-fit,minmax(136px,1fr))]")}>
+            {summary.map(({ key, icon: Icon, value, label, href }) => (
               <Link
                 key={label}
-                href={`${hrefFor({ tab: key })}#historial`}
+                href={href ?? `${hrefFor({ tab: key })}#historial`}
                 className="flex items-center gap-3 rounded-[10px] border border-border bg-card px-3.5 py-3 outline-none transition-colors duration-(--d1) hover:border-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none"
               >
                 <span aria-hidden="true" className="grid size-9 shrink-0 place-items-center rounded-lg bg-surface-muted text-accent-text">

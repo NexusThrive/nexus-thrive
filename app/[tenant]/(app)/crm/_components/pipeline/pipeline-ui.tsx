@@ -49,7 +49,7 @@ const CHIP_TONE = {
   today: "bg-accent-subtle text-accent-text",
   overdue: "bg-danger-subtle text-danger",
   planned: "bg-surface-muted text-muted-foreground",
-  done: "bg-success-subtle text-success",
+  done: "border border-success/40 text-success",
 } as const;
 
 /** Chip de la próxima actividad (o «Pedido creado» / «Cobrado» en las ganadas). */

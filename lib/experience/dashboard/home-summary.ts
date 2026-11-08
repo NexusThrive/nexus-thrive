@@ -8,6 +8,7 @@ import { unreadConversationsCount } from "@/lib/integrations/channels/conversati
 import { createMembershipsDb } from "@/lib/industry/gym/memberships-repo";
 import { EXPIRING_WINDOW_DAYS } from "@/lib/industry/gym/memberships";
 import { db } from "@/prisma/db";
+import { crmHomeSignals } from "@/lib/business/growth/pipeline-read";
 import { percentChange } from "./index";
 
 /**
@@ -30,6 +31,8 @@ export type HomeSummary = {
   } | null;
   today: { next: { title: string; customer: string; time: string; status: string } | null; more: number } | null;
   attention: { overdueCount: number; overdueTotal: number | null; expiringCount: number | null; expiringDays: number };
+  /** CRM (de sus actividades): llamadas y reuniones de hoy, actividades vencidas y oportunidades abiertas sin actividad. */
+  crm?: { today: { id: string; label: string; time: string; opportunityId: string }[]; overdue: number; withoutActivity: number } | null;
   /** Insignias del cajón por nombre de app (solo > 0). */
   badges: Record<string, number>;
   updatedAt: string;
@@ -47,7 +50,7 @@ export async function loadHomeSummary(tenantId: string, modules: readonly Module
   const [y, m] = day.split("-").map(Number) as [number, number];
   const prev = m === 1 ? { month: 12, year: y - 1 } : { month: m - 1, year: y };
 
-  const [metrics, prevMetrics, week, cartera, membership, bookings, unread, toVerify] = await Promise.all([
+  const [metrics, prevMetrics, week, cartera, membership, bookings, unread, toVerify, crm] = await Promise.all([
     seesMoney && has("finance") ? tenantDb.finance.getMetrics() : null,
     seesMoney && has("finance") ? tenantDb.finance.getMetrics(prev) : null,
     seesMoney && has("finance") ? tenantDb.finance.getSeries(7, false) : null,
@@ -56,6 +59,7 @@ export async function loadHomeSummary(tenantId: string, modules: readonly Module
     has("bookings") ? bookingsBetween(tenantId, bogotaToMs(day, "00:00"), bogotaToMs(addDaysKey(day, 1), "00:00")) : null,
     has("whatsapp") ? unreadConversationsCount(tenantId) : 0,
     has("payments") || has("online_payments") ? intentsToVerify(tenantId) : 0,
+    has("crm") ? crmHomeSignals(tenantId) : null,
   ]);
 
   const overdueRows = cartera?.rows.filter((r) => r.daysOverdue > 0) ?? [];
@@ -93,6 +97,7 @@ export async function loadHomeSummary(tenantId: string, modules: readonly Module
       expiringCount: membership ? membership.expiringCount : null,
       expiringDays: EXPIRING_WINDOW_DAYS,
     },
+    crm: crm ? { today: crm.today.slice(0, 3).map((t) => ({ id: t.id, label: t.label, time: hourFmt.format(new Date(t.at)), opportunityId: t.opportunityId })), overdue: crm.overdue, withoutActivity: crm.withoutActivity } : null,
     badges: Object.fromEntries(
       [
         ["Ventas y cobros", toVerify],

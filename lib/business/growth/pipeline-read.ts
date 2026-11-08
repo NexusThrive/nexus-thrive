@@ -238,7 +238,8 @@ export async function searchOpportunities(tenantId: string, q: string) {
   return rows.map((o) => ({ id: o.id, title: o.interest, subtitle: [o.customerId ? names.get(o.customerId) : null, status[o.status]].filter(Boolean).join(" · ") }));
 }
 
-/** Nombre de un cliente del negocio (chip del filtro por cliente). */
-export async function customerNameOf(tenantId: string, customerId: string): Promise<string | null> {
-  return (await db.orm.public.Customer.where({ tenantId, id: customerId }).select("name").first())?.name ?? null;
+/** Cliente del negocio para el chip del filtro y para dejarlo elegido en la creación rápida (desde su ficha). */
+export async function pickerCustomer(tenantId: string, customerId: string): Promise<PickerCustomer | null> {
+  const c = await db.orm.public.Customer.where({ tenantId, id: customerId }).select("id", "name", "phone", "email", "documentId").first();
+  return c ? { id: c.id, name: c.name, phone: c.phone, email: c.email, kind: "PERSON", document: c.documentId } : null;
 }

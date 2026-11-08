@@ -35,19 +35,19 @@ function Highlight({ text, query }: { text: string; query: string }) {
  * teléfono y liga la oportunidad a él; «Crear …» lo crea al añadir (sin duplicar: se busca antes por teléfono o correo). Solo el
  * nombre es obligatorio. Enter añade y cierra, Mayús+Enter añade y deja el formulario para la siguiente, Esc cancela.
  */
-export function QuickCreate({ slug, stageId, onClose }: { slug: string; stageId: string; onClose: () => void }) {
+export function QuickCreate({ slug, stageId, preset = null, onClose }: { slug: string; stageId: string; preset?: PickerCustomer | null; onClose: () => void }) {
   const router = useRouter();
   const { toast } = useToast();
   const [pending, start] = useTransition();
   const listId = useId();
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(preset?.name ?? "");
   const [results, setResults] = useState<PickerCustomer[]>([]);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
-  const [contact, setContact] = useState<Contact>(null);
+  const [contact, setContact] = useState<Contact>(preset ? { kind: "existing", customer: preset } : null);
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState(preset?.email ?? "");
+  const [phone, setPhone] = useState(preset?.phone ?? "");
   const [value, setValue] = useState("");
   const [priority, setPriority] = useState(0);
   const [activity, setActivity] = useState<ActivityKind | "NONE">("CALL");
@@ -58,8 +58,9 @@ export function QuickCreate({ slug, stageId, onClose }: { slug: string; stageId:
   const seq = useRef(0);
 
   useEffect(() => {
-    contactRef.current?.focus();
-  }, []);
+    // Con el cliente ya elegido (desde su ficha) se empieza por el nombre de la oportunidad.
+    (preset ? nameRef.current : contactRef.current)?.focus();
+  }, [preset]);
 
   const search = (text: string) => {
     setQuery(text);

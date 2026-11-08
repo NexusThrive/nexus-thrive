@@ -255,7 +255,7 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
                       type="button"
                       disabled={!open || current || pending}
                       aria-current={current ? "step" : undefined}
-                      aria-label={current ? `${s.name} (etapa actual)` : `Mover a ${s.name}`}
+                      aria-label={current ? `${i + 1} · ${s.name} (etapa actual)` : `${i + 1} · Mover a ${s.name}`}
                       onClick={() => run(() => moveStageAction(slug, o.id, s.id))}
                       className={cn(
                         "relative z-[1] grid size-7 place-items-center rounded-full border-2 text-xs outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
@@ -401,7 +401,7 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
               <div className="grid gap-1">
                 <dt className="text-xs text-muted-foreground">Teléfono</dt>
                 <dd className="text-sm">
-                  {o.customer ? inline({ k: "phone", type: "tel", value: o.customer.phone ?? "", placeholder: "Teléfono del cliente", parse: (v) => ({ phone: v.trim() || null }), render: o.customer.phone ? <span className="text-foreground">+57 {o.customer.phone}</span> : <span className="text-muted-foreground">Sin teléfono <span className={cn(addLink, "ms-1")}>Añadir</span></span> }) : <span className="text-muted-foreground">—</span>}
+                  {o.customer ? inline({ k: "phone", type: "tel", value: o.customer.phone ?? "", placeholder: "Teléfono del cliente", parse: (v) => ({ phone: v.trim() || null }), render: o.customer.phone ? <span className="text-foreground">+57 {o.customer.phone.replace(/\D/g, "").replace(/^(\d{3})(\d{3})(\d{4})$/, "$1 $2 $3")}</span> : <span className="text-muted-foreground">Sin teléfono <span className={cn(addLink, "ms-1")}>Añadir</span></span> }) : <span className="text-muted-foreground">—</span>}
                 </dd>
               </div>
               <div className="grid gap-1">
@@ -478,7 +478,7 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
                   <p className="flex flex-wrap items-center gap-3 text-sm">
                     <span className="text-foreground">Pedido T-{String(o.order.number).padStart(4, "0")}</span>
                     <span className="tabular-nums text-muted-foreground">{formatCurrency(o.order.total)}</span>
-                    <span className={cn("rounded-md px-2 py-0.5 text-xs font-medium", o.order.paid ? "bg-success-subtle text-success" : "bg-accent-subtle text-accent-text")}>{o.order.paid ? "Cobrado" : "Por cobrar"}</span>
+                    <span className={cn("rounded-md px-2 py-0.5 text-xs font-medium", o.order.paid ? "border border-success/40 text-success" : "bg-accent-subtle text-accent-text")}>{o.order.paid ? "Cobrado" : "Por cobrar"}</span>
                     <Link href={`/${slug}/ventas/pedidos`} className={cn(addLink, "text-ui")}>
                       Ver en Ventas y cobros
                     </Link>

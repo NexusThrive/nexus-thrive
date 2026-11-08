@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ensureStages, loadPipeline, type PipelineFilters } from "@/lib/business/growth/pipeline-db";
 import { listOpportunities } from "@/lib/business/growth/opportunities-db";
-import { customerNameOf, pendingCrmActivities } from "@/lib/business/growth/pipeline-read";
+import { pendingCrmActivities, pickerCustomer } from "@/lib/business/growth/pipeline-read";
 import { bogotaMonth, parseMoney } from "@/lib/business/growth/pipeline";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
 import PipelineView, { type PipelineViewName } from "./_components/pipeline/pipeline-view";
@@ -43,7 +43,7 @@ export default async function PipelinePage({ params, searchParams }: { params: P
   await ensureStages(ctx.tenantId);
   const [board, everything, lost] = await Promise.all([loadPipeline(ctx.tenantId, filters), loadPipeline(ctx.tenantId), listOpportunities(ctx.tenantId, "LOST", 100)]);
   const activities = view === "actividades" ? await pendingCrmActivities(ctx.tenantId, board.cards.map((c) => c.id)) : [];
-  const customerName = customerId ? await customerNameOf(ctx.tenantId, customerId) : null;
+  const customer = customerId ? await pickerCustomer(ctx.tenantId, customerId) : null;
   const month = /^\d{4}-\d{2}$/.test(first(sp.mes)) ? first(sp.mes) : bogotaMonth();
   const lostRows = lost.map((o) => ({ id: o.id, name: o.interest, customer: o.customerId ? o.customerName : null, value: o.estimatedValue ?? 0, reason: o.lostReason }));
   return (
@@ -59,7 +59,8 @@ export default async function PipelinePage({ params, searchParams }: { params: P
       activities={activities}
       month={month}
       mine={mine}
-      customerName={customerName}
+      customerName={customer?.name ?? null}
+      preset={first(sp.nueva) === "1" ? customer : null}
       hasAny={everything.cards.length > 0 || everything.lost.count > 0}
     />
   );

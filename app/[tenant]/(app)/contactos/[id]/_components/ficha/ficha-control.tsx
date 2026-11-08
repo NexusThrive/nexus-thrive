@@ -29,6 +29,7 @@ export default function FichaControl({
   canRemove,
   bookHref,
   saleHref,
+  opportunityHref = null,
   pager,
 }: {
   slug: string;
@@ -41,6 +42,8 @@ export default function FichaControl({
   canRemove: boolean;
   bookHref: string | null;
   saleHref: string | null;
+  /** «Nueva oportunidad» en el CRM con este cliente ya elegido. */
+  opportunityHref?: string | null;
   pager: { index: number; total: number; prevHref: string | null; nextHref: string | null } | null;
 }) {
   const router = useRouter();
@@ -110,6 +113,11 @@ export default function FichaControl({
           <DropdownMenuContent align="start">
             {canRemove ? <DropdownMenuItem onSelect={archive}>{active ? "Archivar" : "Restaurar"}</DropdownMenuItem> : null}
             <DropdownMenuItem onSelect={duplicate}>Duplicar</DropdownMenuItem>
+            {opportunityHref ? (
+              <DropdownMenuItem asChild>
+                <Link href={opportunityHref}>Nueva oportunidad</Link>
+              </DropdownMenuItem>
+            ) : null}
             {canRemove ? (
               <>
                 <DropdownMenuSeparator />

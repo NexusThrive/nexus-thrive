@@ -49,6 +49,25 @@ adapta a su sistema de diseño, a su móvil primero y a un dueño de negocio que
 | **Nota de cocina por línea** | `pos.order.line.note`: nota interna del mesero; `pos.order` guarda mesa y número de comensales | Nota por plato en la comanda | `HU-comandas-01` |
 | **Dividir cuenta** | **No verificado:** no está en los modelos Python leídos; probablemente es de la interfaz en JS | Diseñarlo propio (`HU-cuentas-01`) | `HU-cuentas-01` |
 
+## 3b. CRM (pipeline de oportunidades)
+
+Leído en `addons/crm` y `addons/sale_crm` (rama `master`, noviembre de 2026). `crm_lead.py` y `crm_lead_views.xml` se leyeron
+truncados: lo marcado con *(resumen)* no se vio literal.
+
+| Patrón | Qué hace Odoo (verificado) | Qué adopta Nexus | Qué se deja fuera |
+|---|---|---|---|
+| **Contacto ligado, sin duplicar datos** | `crm.lead.partner_id`; `email_from` y `phone` son `compute` desde el partner con `inverse` (`_inverse_email_from`, `_inverse_phone`) que escribe de vuelta en el partner | La oportunidad apunta al cliente y lee su correo y teléfono; editarlos en el CRM (creación rápida o detalle) actualiza el cliente | Dirección, cargo, idioma y sitio web en la oportunidad |
+| **Crear el cliente sin duplicarlo** | *(resumen)* `_find_matching_partner` busca por correo antes de `_create_customer` | «Crear … como cliente nuevo» pasa por `findOrCreateContact` (teléfono canónico y correo) | El botón «Leads similares» |
+| **Creación rápida en el tablero** | `quick_create_opportunity_form`: contacto, nombre, correo, teléfono, ingreso esperado, prioridad | Los mismos campos más la próxima actividad; solo el nombre es obligatorio | Ingresos recurrentes |
+| **Barra de la columna** | `<progressbar field="activity_state" colors='{"planned": "success", "today": "warning", "overdue": "danger"}' sum_field="expected_revenue">` | Barra de 3 px planeada, para hoy, vencida y sin actividad, con el total en dinero | Filtrar al tocar un segmento |
+| **Etapa ganada y plegadas** | `crm.stage.is_won`, `fold`; ganar fija probabilidad 100 | Etapa con `isWon` (Ganado, al final) y Perdidos plegada | Requisitos por etapa, equipos por etapa |
+| **Ganar, perder y reabrir** | `action_set_won` (etapa ganada, 100 %); `action_set_lost` archiva con `lost_reason_id` y 0 %; `action_restore` | Ganar crea el pedido; perder pide un motivo configurable (y texto libre) y deja 0 %; reabrir vuelve a la etapa con su probabilidad | El arcoíris de celebración |
+| **Probabilidad por etapa** | Probabilidad automática (PLS) que solo cambia si no se editó a mano | Al cambiar de etapa toma la probabilidad por defecto de la etapa; se edita después | El modelo predictivo (PLS) |
+| **Pedido desde la oportunidad** | `sale_crm`: `sale.order.opportunity_id`, `action_new_quotation` con el partner por defecto | Ganar crea el pedido con el cliente y el valor (`StoreOrder.origin` enlaza la oportunidad) y abre el cobro; «Nueva cotización» con el cliente elegido | Subir el valor esperado desde el pedido |
+| **Oportunidades del contacto** | `res.partner.opportunity_count` y `action_view_opportunity` | Botón «Oportunidades» en la Ficha del cliente que abre el pipeline filtrado | Contar los contactos hijos |
+
+Historia: app CRM (pantallas 8 y 9 del canvas). Nada de código, textos, iconos ni estilos de Odoo.
+
 ## 4. Localización de Colombia
 
 `addons/l10n_co` (versión 0.9) depende de `account`, `account_debit_note` y `l10n_latam_base`; aporta el plan de cuentas con

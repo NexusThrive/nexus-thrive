@@ -3,7 +3,7 @@ import { withShell } from "../../../../../../.storybook/decorators";
 import type { OrderRow } from "@/lib/business/store/store-db";
 import OrdersView from "./orders-view";
 
-const order = (n: number, status: string, fulfillment: string, extra: Partial<OrderRow> = {}): OrderRow => ({ id: `o${n}`, code: `T-000${n}`, status, fulfillment, fromQuote: false, customerName: "María Pérez", phone: "300 123 4567", email: "maria@correo.com", address: "Calle 1 # 2-3", city: "Bogotá", notes: null, total: 278_000, review: null, createdAt: "2026-10-24T10:30:00.000Z", reference: "abcd2345efgh67", lines: [{ name: "Camiseta", quantity: 2, unitPrice: 119_000 }, { name: "Gorra", quantity: 1, unitPrice: 40_000 }], ...extra });
+const order = (n: number, status: string, fulfillment: string, extra: Partial<OrderRow> = {}): OrderRow => ({ id: `o${n}`, code: `T-000${n}`, status, fulfillment, fromQuote: false, opportunityId: null, customerName: "María Pérez", phone: "300 123 4567", email: "maria@correo.com", address: "Calle 1 # 2-3", city: "Bogotá", notes: null, total: 278_000, review: null, createdAt: "2026-10-24T10:30:00.000Z", reference: "abcd2345efgh67", lines: [{ name: "Camiseta", quantity: 2, unitPrice: 119_000 }, { name: "Gorra", quantity: 1, unitPrice: 40_000 }], ...extra });
 
 const meta = {
   title: "Páginas/Ventas/Pedidos",

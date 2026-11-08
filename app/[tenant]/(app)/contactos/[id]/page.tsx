@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { commercialTimeline, mergeTimeline } from "@/lib/business/growth/commercial-timeline";
 import { customerFicha, customerNeighbors } from "@/lib/business/customers/customer-ficha-db";
+import { customerOpportunityCount } from "@/lib/business/growth/pipeline-read";
 import { customerFormValues } from "@/lib/business/customers/new-customer-db";
 import { COUNTRIES, DOCUMENT_TYPES, type NewCustomerInput } from "@/lib/business/customers/new-customer";
 import { tenantWithModules } from "@/lib/core/tenancy/membership";
@@ -72,7 +73,7 @@ export default async function CustomerPage({
     );
   }
   const tenantDb = createTenantDb(tenantRecord.id);
-  const [base, gym, ficha, commercial, canBook, canSell, canTasks] = await Promise.all([
+  const [base, gym, ficha, commercial, canBook, canSell, canTasks, canCrm] = await Promise.all([
     tenantDb.customers.get360Base(id),
     getCustomer360Memberships(tenantRecord.id, id),
     customerFicha(tenantRecord.id, id),
@@ -80,7 +81,9 @@ export default async function CustomerPage({
     isRouteEnabled(pageCtx.tenantId, "/bookings"),
     isRouteEnabled(pageCtx.tenantId, "/ventas/cotizaciones"),
     isRouteEnabled(pageCtx.tenantId, "/crm/tareas"),
+    isRouteEnabled(pageCtx.tenantId, "/crm"),
   ]);
+  const opportunities = canCrm ? await customerOpportunityCount(tenantRecord.id, id) : null;
   if (!base || !ficha) notFound();
   const { customer, payments, notes } = buildCustomer360(base, [gym.contribution]);
   const { memberships } = gym;
@@ -186,6 +189,7 @@ export default async function CustomerPage({
       bookHref={bookHref}
       saleHref={saleHref}
       activityHref={canTasks ? `/${tenantSlug}/crm/tareas?nuevo=1&cliente=${id}` : null}
+      crmHref={canCrm ? `/${tenantSlug}/crm?cliente=${id}&mios=0` : null}
       pager={pager}
       summary={{
         bookings: ficha.bookingsCount,
@@ -193,6 +197,7 @@ export default async function CustomerPage({
         plan: activeMembership ? typeLabel(activeMembership.type) : null,
         owed: formatCurrency(ficha.owed),
         invoiced: formatCurrency(ficha.invoicedTotal),
+        opportunities,
       }}
       data={[
         { label: "Tipo de documento", value: ficha.documentNumber ? documentLabel : null, empty: "Sin registrar", field: "documentType" },

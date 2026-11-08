@@ -73,7 +73,13 @@ export async function placeOrder(siteSlug: string, input: { customer: CustomerDa
   }
 }
 
-export type OrderRow = { id: string; code: string; status: string; customerName: string; phone: string; email: string | null; address: string | null; city: string | null; notes: string | null; total: number; review: string | null; createdAt: string; reference: string | null; /** Cumplimiento, separado del pago (`status`). */ fulfillment: string; fromQuote: boolean; lines: { name: string; quantity: number; unitPrice: number }[] };
+export type OrderRow = { id: string; code: string; status: string; customerName: string; phone: string; email: string | null; address: string | null; city: string | null; notes: string | null; total: number; review: string | null; createdAt: string; reference: string | null; /** Cumplimiento, separado del pago (`status`). */ fulfillment: string; fromQuote: boolean; /** Oportunidad del CRM de la que nació (al ganarla), si la hay. */ opportunityId: string | null; lines: { name: string; quantity: number; unitPrice: number }[] };
+
+/** Id de la oportunidad si el pedido nació al ganarla en el CRM (`origin.type = "opportunity"`). */
+const opportunityOf = (origin: unknown): string | null => {
+  const o = origin as { type?: unknown; opportunityId?: unknown } | null;
+  return o && o.type === "opportunity" && typeof o.opportunityId === "string" ? o.opportunityId : null;
+};
 
 /** Pedidos de la tienda, del más reciente al más antiguo (100 por defecto), con sus líneas y el estado del cobro. */
 export async function listOrders(tenantId: string, limit = 100): Promise<OrderRow[]> {
@@ -84,7 +90,7 @@ export async function listOrders(tenantId: string, limit = 100): Promise<OrderRo
     db.orm.public.PaymentIntent.where({ tenantId }).where((i) => i.id.in(orders.map((o) => o.intentId).filter((x): x is string => Boolean(x)))).select("id", "reference").all(),
   ]);
   const ref = new Map(intents.map((i) => [i.id, i.reference]));
-  return orders.map((o) => ({ id: o.id, code: orderCode(o.number), status: o.status, customerName: o.customerName, phone: o.phone, email: o.email, address: o.address, city: o.city, notes: o.notes, total: toNumber(o.total), review: o.review, createdAt: String(o.createdAt), reference: o.intentId ? (ref.get(o.intentId) ?? null) : null, fulfillment: o.fulfillment, fromQuote: Boolean(o.quoteId), lines: lines.filter((l) => l.orderId === o.id).map((l) => ({ name: l.name, quantity: l.quantity, unitPrice: toNumber(l.unitPrice) })) }));
+  return orders.map((o) => ({ id: o.id, code: orderCode(o.number), status: o.status, customerName: o.customerName, phone: o.phone, email: o.email, address: o.address, city: o.city, notes: o.notes, total: toNumber(o.total), review: o.review, createdAt: String(o.createdAt), reference: o.intentId ? (ref.get(o.intentId) ?? null) : null, fulfillment: o.fulfillment, fromQuote: Boolean(o.quoteId), opportunityId: opportunityOf(o.origin), lines: lines.filter((l) => l.orderId === o.id).map((l) => ({ name: l.name, quantity: l.quantity, unitPrice: toNumber(l.unitPrice) })) }));
 }
 
 /** Cancela un pedido que aún no se pagó (y su enlace de cobro). */

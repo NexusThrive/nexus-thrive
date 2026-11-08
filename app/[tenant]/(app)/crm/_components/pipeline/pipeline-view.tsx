@@ -15,6 +15,7 @@ import { useToast } from "@/components/molecules/toast";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { completeActivityAction, moveStageAction, reopenAction, reorderAction } from "@/app/[tenant]/(app)/crm/pipeline-actions";
 import type { PipelineCard, PipelineStage } from "@/lib/business/growth/pipeline-db";
+import type { PickerCustomer } from "@/lib/business/growth/pipeline-read";
 import { shortMoney } from "@/lib/business/growth/pipeline";
 import { cn } from "@/lib/utils";
 import { Board } from "./board";
@@ -51,6 +52,7 @@ export default function PipelineView({
   month,
   mine,
   customerName,
+  preset,
   hasAny,
 }: {
   slug: string;
@@ -65,6 +67,8 @@ export default function PipelineView({
   month: string;
   mine: boolean;
   customerName: string | null;
+  /** Cliente ya elegido en la creación rápida (al llegar desde su ficha con «Nueva oportunidad»). */
+  preset?: PickerCustomer | null;
   /** ¿El negocio tiene alguna oportunidad (sin filtros)? Si no, el tablero invita a crear la primera. */
   hasAny: boolean;
 }) {
@@ -229,6 +233,7 @@ export default function PipelineView({
           now={now}
           savingIds={saving}
           quickStage={quickStage}
+          preset={preset ?? null}
           empty={!hasAny && !quickStage}
           onQuick={setQuickStage}
           onMove={move}

@@ -297,6 +297,11 @@ Reglas:
   alta y la edición son el mismo formulario (`?editar=1`; `?campo=` enfoca un dato); la ficha es su modo lectura: los datos que
   faltan muestran «Sin registrar» y un enlace «Añadir» a ese campo. Los botones de resumen abren su pestaña del historial; el
   paginador recorre la lista de origen (`q`, `status`, `sort` viajan en la URL). Estados con `Badge` + `StatusDot`.
+- **Tablero de etapas (pipeline del CRM)** (`crm/_components/pipeline`): panel de control de 3 zonas como las listas; columnas de
+  300 px con scroll horizontal, encabezado (nombre, cantidad, total corto «$9,6 M», «+» de 28 px) y barra de 3 px por estado de la
+  actividad; tarjetas `bg-card` radio 12, padding 14, gap 10, con estrellas, chip de actividad y responsable. Creación rápida como
+  tarjeta con borde y halo dorados al inicio de la columna, con un combobox de contacto que busca o crea. Arrastrar y soltar según
+  `movimiento.md` §6 (asa para teclado, «Mover a», Subir/Bajar, optimista). La etapa ganada lleva borde izquierdo verde.
 
 ---
 
