@@ -55,6 +55,8 @@ export const TENANT_DELETION_TABLES: readonly string[] = [
   "Charge",
   "ChargeEvidence",
   "Customer",
+  "CustomerGroup",
+  "CustomerGroupMember",
   "CustomerNote",
   "Departure",
   "DismissedNotification",
@@ -90,6 +92,7 @@ export const TENANT_DELETION_TABLES: readonly string[] = [
   "Task",
   "SalesQuote",
   "SalesQuoteLine",
+  "SavedSearch",
   "PaymentAllocation",
   "PaymentAttempt",
   "FinancialAccount",
@@ -375,6 +378,9 @@ export async function deleteTenantCompletely(
   count("CashSession", await tx.orm.public.CashSession.where({ tenantId }).deleteAll());
   count("CashBox", await tx.orm.public.CashBox.where({ tenantId }).deleteAll());
   count("Charge", await tx.orm.public.Charge.where({ tenantId }).deleteAll());
+  count("CustomerGroupMember", await tx.orm.public.CustomerGroupMember.where({ tenantId }).deleteAll());
+  count("CustomerGroup", await tx.orm.public.CustomerGroup.where({ tenantId }).deleteAll());
+  count("SavedSearch", await tx.orm.public.SavedSearch.where({ tenantId }).deleteAll());
   count("CustomerNote", await tx.orm.public.CustomerNote.where({ tenantId }).deleteAll());
   count("Payment", await tx.orm.public.Payment.where({ tenantId }).deleteAll());
   count("Membership", await tx.orm.public.Membership.where({ tenantId }).deleteAll());

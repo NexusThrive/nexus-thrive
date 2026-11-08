@@ -44,6 +44,7 @@ model Customer {
   payments Payment[]
   memberships Membership[]
   notes CustomerNote[]
+  groupMemberships CustomerGroupMember[]
   quotes Quote[]
   projects Project[]
   partyId  String?
@@ -286,5 +287,62 @@ model OpportunityEvent {
   createdAt     DateTime @default(now())
 
   @@index([tenantId, opportunityId, createdAt])
+  @@rls
+}
+
+/// Grupo de clientes que el negocio arma a mano («Clientes VIP», «Rutas del norte»…). Los del sistema (ciudad, origen,
+/// etiqueta, responsable…) no se guardan: salen de los datos del cliente. Un cliente puede estar en varios grupos.
+///
+/// Campos:
+/// - `icon`: Nombre del icono del conjunto de la interfaz (`users`, `star`, `tag`…); se muestra junto al nombre en el buscador.
+model CustomerGroup {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name      String
+  icon      String   @default("users")
+  createdAt DateTime @default(now())
+
+  members CustomerGroupMember[]
+
+  @@unique([tenantId, name])
+  @@rls
+}
+
+/// Pertenencia de un cliente a un grupo propio. Se borra con el grupo o con el cliente.
+model CustomerGroupMember {
+  id         String        @id @default(uuid())
+  tenantId   String
+  tenant     Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  groupId    String
+  group      CustomerGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  customerId String
+  customer   Customer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  createdAt  DateTime      @default(now())
+
+  @@unique([groupId, customerId])
+  @@index([tenantId, customerId])
+  @@rls
+}
+
+/// Búsqueda guardada (favorito) de una lista: los filtros, las agrupaciones y el texto que alguien dejó listos. Es por usuario
+/// y por sección; la que está marcada por defecto se aplica sola al entrar a la sección.
+///
+/// Campos:
+/// - `userId`: User.id de quien la guardó (no se comparte).
+/// - `section`: Lista a la que pertenece: `customers`, `crm`, `bookings`…
+/// - `params`: Estado de la búsqueda tal como va en la URL (`q`, `filtros`, `grupo`, `en`, `reglas`).
+model SavedSearch {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  userId    String
+  section   String
+  name      String
+  params    Json
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([tenantId, userId, section])
   @@rls
 }

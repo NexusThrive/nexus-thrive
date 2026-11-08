@@ -39,6 +39,7 @@ export const AUDIT_ACTION_LABELS: Record<string, string> = {
   BIZ_CUSTOMER_ARCHIVE: "Negocio · cliente archivado",
   BIZ_CUSTOMER_RESTORE: "Negocio · cliente restaurado",
   BIZ_CUSTOMERS_DELETE: "Negocio · clientes eliminados",
+  BIZ_CUSTOMER_GROUP_DELETE: "Negocio · grupo de clientes eliminado",
   BIZ_MEMBER_INVITE: "Negocio · persona invitada",
   BIZ_INVITE_REVOKE: "Negocio · invitación cancelada",
   BIZ_MEMBER_ROLE: "Negocio · rol cambiado",
