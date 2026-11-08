@@ -1,7 +1,2 @@
-import { redirect } from "next/navigation";
-
-/** Comprobante del punto de venta: ahora en `/pos/receipt/[id]`. Se conserva para los enlaces de antes. */
-export default async function LegacyPosReceiptPage({ params }: { params: Promise<{ tenant: string; id: string }> }) {
-  const { tenant, id } = await params;
-  redirect(`/${tenant}/pos/receipt/${id}`);
-}
+/** Comprobante del punto de venta: vive en `/pos/receipt/[id]`. Esta ruta muestra lo mismo (sin redirigir, para no entrar en bucle con redirecciones guardadas). */
+export { default } from "@/app/[tenant]/(app)/pos/receipt/[id]/page";

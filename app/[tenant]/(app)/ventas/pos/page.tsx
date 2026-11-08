@@ -1,7 +1,5 @@
-import { redirect } from "next/navigation";
-
-/** El punto de venta vive en `/pos`. Esta ruta se conserva para los enlaces y marcadores de antes. */
-export default async function LegacyPosPage({ params }: { params: Promise<{ tenant: string }> }) {
-  const { tenant } = await params;
-  redirect(`/${tenant}/pos`);
-}
+/**
+ * El punto de venta vive en `/pos`. Esta ruta se conserva para los enlaces y marcadores de antes: muestra lo mismo en vez de
+ * redirigir, porque los navegadores que guardaron la redirección permanente de `/pos` hacia aquí entrarían en bucle.
+ */
+export { default } from "@/app/[tenant]/(app)/pos/page";
