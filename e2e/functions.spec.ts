@@ -22,7 +22,7 @@ test.describe("Funciones", () => {
     await openStory(page, "páginas-funciones-funciones--default");
     await page.getByLabel("Buscar una función").fill("contabilidad");
     await expect(page.getByText("Plan de cuentas, asientos y estados financieros")).toBeVisible();
-    await expect(page.getByText("Punto de venta")).toHaveCount(0);
+    await expect(page.getByRole("switch", { name: /Punto de venta/ })).toHaveCount(0);
     await page.getByLabel("Buscar una función").fill("zzzz");
     await expect(page.getByText("Ninguna función coincide")).toBeVisible();
     await page.getByLabel("Buscar una función").fill("");

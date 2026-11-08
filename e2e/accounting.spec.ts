@@ -81,7 +81,7 @@ test.describe("Contabilidad", () => {
   test("informes: balance de prueba que cuadra, estado de resultados y descarga CSV", async ({ page }) => {
     await openStory(page, "páginas-finanzas-contabilidad--default");
     await page.getByRole("button", { name: "Informes" }).click();
-    await expect(page.getByRole("link", { name: /Descargar CSV/ })).toHaveAttribute("href", /\/demo\/contabilidad\/export\/trial\?desde=2026-10-01&hasta=2026-10-24/);
+    await expect(page.getByRole("link", { name: /Descargar CSV/ })).toHaveAttribute("href", /\/demo\/finanzas\/contabilidad\/export\/trial\?desde=2026-10-01&hasta=2026-10-24/);
     await page.getByRole("button", { name: "Ver informe" }).click();
     await expect(page.getByText("El balance de prueba cuadra")).toBeVisible();
     // Tabla en contenedor ancho; lista en angosto (DR-08): los totales están en cualquiera de las dos.

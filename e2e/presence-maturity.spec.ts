@@ -8,7 +8,7 @@ test.describe("Madurez NEXUS", () => {
     await expect(page.getByRole("heading", { name: /Madurez NEXUS/ })).toBeVisible();
     await expect(page.getByRole("progressbar", { name: "Gastos" })).toHaveAttribute("aria-valuenow", "0");
     await expect(page.getByText("Tus gastos no se registran: no sabrás tu utilidad real.")).toBeVisible();
-    await expect(page.getByRole("link", { name: "Registrar gastos" })).toHaveAttribute("href", "/demo/finance");
+    await expect(page.getByRole("link", { name: "Registrar gastos" })).toHaveAttribute("href", "/demo/finanzas");
     await expectNoAxeViolations(page);
   });
   test("un negocio consolidado no tiene señales", async ({ page }) => {
