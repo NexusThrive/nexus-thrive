@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { N_PATH } from "@/components/atoms/n-path";
-import { EmptyPageFrame } from "./empty-page-frame";
+import { EmptyPageFrame, type EmptyPreview } from "./empty-page-frame";
 
 /**
  * Estado vacío NEXUS THRIVE: texto alineado a la izquierda con su acción (el botón para crear el primero) y la N en
@@ -42,8 +42,8 @@ export function EmptyState({
   secondaryAction?: ReactNode;
   /** Con `page`: primeros pasos (idealmente tres) que explican para qué sirve la vista. */
   highlights?: { icon: ReactNode; title: string; text: string }[];
-  /** Con `page`: vista previa fantasma detrás (cómo se verá la lista con datos), difuminada por debajo del contenido. */
-  preview?: "table";
+  /** Con `page`: datos de ejemplo detrás (cómo se verá la lista con datos), difuminados por debajo del contenido. */
+  preview?: EmptyPreview;
   className?: string;
 }) {
   const Heading = `h${headingLevel}` as const;

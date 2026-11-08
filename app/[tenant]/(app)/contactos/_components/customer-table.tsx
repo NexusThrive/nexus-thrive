@@ -102,6 +102,35 @@ function cellFor(key: ColumnKey, row: CustomerRow): ReactNode {
   }
 }
 
+/** Datos de ejemplo detrás de la lista vacía (formato de los estados vacíos: packages/brand/docs/04-patrones/estados-vacios.md). */
+const CUSTOMER_PREVIEW = {
+  columns: ["Cliente", "Correo", "Teléfono", "Próxima cita", "Saldo"],
+  rows: [
+    ["María Pérez", "maria@correo.com", "300 123 4567", "Hoy, 10:00 a. m.", "$ 0"],
+    ["Colegio San José", "compras@sanjose.edu.co", "301 555 0101", "Jue, 3:00 p. m.", "$ 480.000"],
+    ["Carlos Ramírez", "carlos.r@correo.com", "310 222 3344", "—", "$ 0"],
+    ["Hotel Marbella", "reservas@marbella.co", "605 660 1200", "Vie, 9:30 a. m.", "$ 1.250.000"],
+    ["Laura Gómez", "laura.gomez@correo.com", "315 987 6543", "Lun, 11:00 a. m.", "$ 0"],
+    ["Tienda Moda Centro", "pedidos@modacentro.com", "320 444 1122", "—", "$ 320.000"],
+    ["Andrés Torres", "andres.t@correo.com", "312 765 4321", "Mar, 4:00 p. m.", "$ 0"],
+    ["Fundación Cartagena", "contacto@fcartagena.org", "605 664 7788", "—", "$ 90.000"],
+    ["Valentina Ruiz", "vale.ruiz@correo.com", "316 111 2233", "Hoy, 5:30 p. m.", "$ 0"],
+    ["Banco Gran Caribe", "eventos@grancaribe.co", "605 642 0000", "Mié, 10:00 a. m.", "$ 2.100.000"],
+    ["Sebastián Díaz", "sdiaz@correo.com", "318 333 9988", "—", "$ 0"],
+    ["Liga Deportiva", "liga@deportes.co", "304 222 7766", "Sáb, 8:00 a. m.", "$ 0"],
+    ["Camila Herrera", "camila.h@correo.com", "317 654 3210", "—", "$ 150.000"],
+    ["Agencia Tropical", "hola@tropical.travel", "300 909 1010", "Jue, 2:00 p. m.", "$ 0"],
+    ["Juan Esteban Mejía", "jemejia@correo.com", "311 246 8101", "—", "$ 0"],
+    ["Constructora Bolívar", "obras@cbolivar.com", "605 693 2020", "Lun, 9:00 a. m.", "$ 3.400.000"],
+    ["Daniela Castro", "dani.castro@correo.com", "314 135 7911", "—", "$ 0"],
+    ["Familia Torres", "torres.familia@correo.com", "313 864 2097", "Vie, 6:00 p. m.", "$ 0"],
+    ["Mateo Vargas", "mateo.v@correo.com", "319 753 1597", "—", "$ 60.000"],
+    ["Clínica del Sol", "citas@clinicadelsol.co", "605 650 3030", "Mar, 7:30 a. m.", "$ 0"],
+    ["Sofía Morales", "sofia.m@correo.com", "305 852 9630", "—", "$ 0"],
+    ["Restaurante La Ola", "admin@laola.co", "300 147 2589", "Hoy, 1:00 p. m.", "$ 210.000"],
+  ],
+};
+
 export default function CustomerTable({
   tenantSlug,
   rows,
@@ -331,7 +360,7 @@ export default function CustomerTable({
           title={query ? `Sin coincidencias para «${query}»` : isArchivedView ? `No hay ${customersLabel} archivados` : `Aún no tienes ${customersLabel}`}
           description={query ? "Prueba con otro término o limpia la búsqueda." : isArchivedView ? `Los ${customersLabel} que archives aparecen aquí.` : "Registra el primero para llevar su historial, sus citas y sus cobros."}
           icon={query ? <Search /> : isArchivedView ? <Archive /> : <Users />}
-          preview={!query && !isArchivedView ? "table" : undefined}
+          preview={!query && !isArchivedView ? CUSTOMER_PREVIEW : undefined}
           action={!query && !isArchivedView ? <Link href={`/${tenantSlug}/contactos/nuevo`} className={buttonVariants({ variant: "accent", size: "sm", className: "h-[34px]" })}><Plus aria-hidden="true" className="size-4" /> Nuevo cliente</Link> : undefined}
           secondaryAction={!query && !isArchivedView ? <Link href={`/${tenantSlug}/data`} className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-[34px] border border-border")}>Importar desde Excel</Link> : undefined}
           highlights={

@@ -2,6 +2,7 @@
 
 import { useEffect, useLayoutEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
+import { CustomerAvatar } from "@/components/atoms/customer-avatar";
 import { cn } from "@/lib/utils";
 
 /** Marca por ruta: «esta vista estaba vacía la última vez». La precarga la usa para pintar el esqueleto del estado vacío y no filas. */
@@ -62,10 +63,10 @@ function fit(el: HTMLElement) {
 
 /**
  * Marco del estado vacío de una vista entera: llena el alto disponible (sin dejar scroll) y centra el contenido. Con
- * `preview="table"`, detrás va una tabla fantasma (cómo se verá la lista con datos) que llena hasta abajo y se difumina por
- * debajo del contenido. `remember` anota la ruta como vacía para la próxima precarga.
+ * `preview`, detrás van datos de ejemplo (cómo se verá la lista con datos) que llenan hasta abajo y se difuminan por debajo del
+ * contenido. `remember` anota la ruta como vacía para la próxima precarga.
  */
-export function EmptyPageFrame({ remember = true, preview, className, children }: { remember?: boolean; preview?: "table"; className?: string; children: ReactNode }) {
+export function EmptyPageFrame({ remember = true, preview, className, children }: { remember?: boolean; preview?: EmptyPreview; className?: string; children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
   const path = usePathname() ?? "";
 
@@ -89,52 +90,57 @@ export function EmptyPageFrame({ remember = true, preview, className, children }
 
   return (
     <div ref={ref} className={cn("relative isolate flex min-h-80 flex-col items-center justify-center overflow-hidden px-6 py-12 text-center sm:px-10", className)}>
-      {preview === "table" ? <GhostTable /> : null}
+      {preview ? <SampleTable preview={preview} /> : null}
       {children}
     </div>
   );
 }
 
-/** Filas de muestra (anchos fijos, sin aleatoriedad: el servidor y el navegador pintan lo mismo). */
-const GHOST_ROWS = [62, 48, 70, 55, 66, 44, 58, 72, 50, 64, 46, 68, 53, 60, 49, 67, 57, 63, 45, 69, 52, 61];
+/** Datos de ejemplo de una vista vacía: columnas y filas tal como se verían con datos (la primera columna lleva avatar). */
+export type EmptyPreview = { columns: string[]; rows: string[][] };
 
 /**
- * Vista previa fantasma de una lista: encabezado y filas de 38 px con casilla, avatar y columnas, en tonos de borde. Decorativa
- * (`aria-hidden`), detrás del contenido; se desvanece hacia el centro (donde va el texto) y hacia abajo.
+ * Datos de ejemplo detrás del estado vacío: la tabla como se verá con datos (encabezado y filas de 38 px, con la cara de cada
+ * cliente —su blobatar— en la primera columna), desenfocada. Decorativa (`aria-hidden`, sin foco ni clics), detrás del contenido; se desvanece hacia el centro (donde va
+ * el texto) y hacia abajo. En celular solo se ven las dos primeras columnas.
  */
-function GhostTable() {
-  const bar = "h-2.5 rounded-sm bg-border";
+function SampleTable({ preview }: { preview: EmptyPreview }) {
+  const hide = (i: number) => (i >= 4 ? "hidden lg:block" : i >= 2 ? "hidden sm:block" : "");
   return (
     <div
       aria-hidden="true"
+      inert
       className="pointer-events-none absolute inset-0 -z-10 select-none overflow-hidden text-left"
       style={{
-        maskImage: "radial-gradient(ellipse 46% 42% at 50% 52%, transparent 0%, rgba(0,0,0,.35) 55%, #000 100%), linear-gradient(to bottom, #000 30%, transparent 100%)",
-        WebkitMaskImage: "radial-gradient(ellipse 46% 42% at 50% 52%, transparent 0%, rgba(0,0,0,.35) 55%, #000 100%), linear-gradient(to bottom, #000 30%, transparent 100%)",
+        maskImage: "radial-gradient(ellipse 52% 48% at 50% 52%, transparent 0%, rgba(0,0,0,.25) 50%, rgba(0,0,0,.8) 100%), linear-gradient(to bottom, #000 10%, transparent 92%)",
+        WebkitMaskImage: "radial-gradient(ellipse 52% 48% at 50% 52%, transparent 0%, rgba(0,0,0,.25) 50%, rgba(0,0,0,.8) 100%), linear-gradient(to bottom, #000 10%, transparent 92%)",
         maskComposite: "intersect",
         WebkitMaskComposite: "source-in",
-        opacity: 0.75,
+        filter: "blur(1.5px)",
+        opacity: 0.45,
       }}
     >
-      <div className="flex h-[38px] items-center gap-6 border-b border-border px-5">
-        <span className="size-3.5 shrink-0 rounded-sm border border-border" />
-        <span className={cn(bar, "w-[14%]")} />
-        <span className={cn(bar, "w-[12%]")} />
-        <span className={cn(bar, "w-[10%]")} />
-        <span className={cn(bar, "hidden w-[9%] sm:block")} />
-        <span className={cn(bar, "hidden w-[8%] md:block")} />
-      </div>
-      {GHOST_ROWS.map((w, i) => (
-        <div key={i} className="flex h-[38px] items-center gap-6 border-b border-border/60 px-5">
-          <span className="size-3.5 shrink-0 rounded-sm border border-border" />
-          <span className="flex w-[22%] items-center gap-2.5">
-            <span className="size-6 shrink-0 rounded-md bg-border" />
-            <span className={bar} style={{ width: `${w}%` }} />
+      <div className="grid h-[38px] grid-cols-[2fr_repeat(4,1fr)] items-center gap-6 border-b border-border px-5 text-xs font-medium text-muted-foreground max-lg:grid-cols-[2fr_repeat(3,1fr)] max-sm:grid-cols-[2fr_1fr]">
+        {preview.columns.map((c, i) => (
+          <span key={c} className={cn("truncate", hide(i))}>
+            {c}
           </span>
-          <span className={bar} style={{ width: `${8 + (w % 7)}%` }} />
-          <span className={bar} style={{ width: `${7 + (w % 5)}%` }} />
-          <span className={cn(bar, "hidden sm:block")} style={{ width: `${6 + (w % 4)}%` }} />
-          <span className={cn(bar, "hidden md:block")} style={{ width: `${5 + (w % 3)}%` }} />
+        ))}
+      </div>
+      {preview.rows.map((row, r) => (
+        <div key={r} className="grid h-[38px] grid-cols-[2fr_repeat(4,1fr)] items-center gap-6 border-b border-border/60 px-5 text-sm text-muted-foreground max-lg:grid-cols-[2fr_repeat(3,1fr)] max-sm:grid-cols-[2fr_1fr]">
+          {row.map((cell, i) =>
+            i === 0 ? (
+              <span key={i} className="flex min-w-0 items-center gap-2.5 text-foreground">
+                <CustomerAvatar identity={{ name: cell }} className="size-6 rounded-md" />
+                <span className="truncate">{cell}</span>
+              </span>
+            ) : (
+              <span key={i} className={cn("truncate tabular-nums", hide(i))}>
+                {cell}
+              </span>
+            ),
+          )}
         </div>
       ))}
     </div>
