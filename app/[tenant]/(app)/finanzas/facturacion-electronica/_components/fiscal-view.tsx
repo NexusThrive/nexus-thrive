@@ -90,7 +90,7 @@ export default function FiscalView({ slug, settings, docs }: { slug: string; set
       <div className="flex flex-wrap gap-2" role="group" aria-label="Filtrar por estado">
         {(["all", "PENDING_PROVIDER", "ACCEPTED", "REJECTED"] as const).map((f) => (
           <button key={f} type="button" aria-pressed={filter === f} onClick={() => setFilter(f)} className={buttonVariants({ variant: filter === f ? "default" : "outline", size: "sm" })}>
-            {f === "all" ? "Todos" : STATUS[f].label}{f === "REJECTED" && docs.some((d) => d.status === "REJECTED") ? ` (${docs.filter((d) => d.status === "REJECTED").length})` : ""}
+            {f === "all" ? "Todos" : STATUS[f].label}
           </button>
         ))}
       </div>

@@ -63,7 +63,7 @@ export default function StockView({ initialTab, slug, warehouses, overview, tran
       <dl className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
         {[
           { icon: <Boxes />, label: "Unidades en inventario", value: String(units) },
-          { icon: <Coins />, label: "Valor del inventario", value: formatCurrency(totalAll) },
+          { icon: <Coins />, label: "Inventario valorizado", value: formatCurrency(totalAll) },
           { icon: <TriangleAlert />, label: "Por reponer", value: String(needed) },
           { icon: <PackageX />, label: "Agotados", value: String(soldOut) },
         ].map((k) => (
