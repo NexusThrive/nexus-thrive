@@ -4,8 +4,9 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "
 import { useRouter } from "next/navigation";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Command, useCommandState } from "cmdk";
-import { Blocks, Download, HandCoins, Moon, Package, Receipt, Search, Sparkles, Target, User } from "lucide-react";
+import { Blocks, Download, HandCoins, Moon, Package, Receipt, Search, Target, User } from "lucide-react";
 import { searchEntitiesAction, type SearchHit } from "@/app/[tenant]/(app)/_actions/search";
+import { EyeTracker } from "@/components/atoms/eye-tracker";
 import { Kbd } from "@/components/atoms/kbd";
 import { setTheme } from "@/components/atoms/theme-toggle";
 import { usePwa } from "@/components/providers/pwa";
@@ -79,20 +80,40 @@ const groupClass =
   "[&_[cmdk-group-heading]]:px-2.5 [&_[cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:pt-2 [&_[cmdk-group-heading]]:text-2xs [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-[0.08em] [&_[cmdk-group-heading]]:text-muted-foreground";
 
 /**
- * Cuando nada coincide con lo escrito, la consulta se le ofrece a AURI AI (Enter la envía). Va dentro de un `<Command>`: lee de
- * cmdk cuántos elementos pasaron el filtro. Mientras llegan los resultados del servidor no se ofrece, para que no parpadee.
+ * AURI AI al final del campo de búsqueda, en su círculo y mirando al frente (sin seguir el puntero): un clic le pasa lo escrito y
+ * abre su chat. Cuando nada coincide con lo escrito se destaca con un anillo dorado y Enter también la envía. Va dentro de un
+ * `<Command>`: lee de cmdk cuántos elementos pasaron el filtro. Mientras llegan los resultados del servidor no se destaca.
  */
-function AskAuri({ query, status, run }: { query: string; status: "idle" | "loading" | "error"; run: (action: () => void) => void }) {
+export function AuriAskButton({ query, status, run, className }: { query: string; status: "idle" | "loading" | "error"; run: (action: () => void) => void; className?: string }) {
   const matches = useCommandState((state) => state.filtered.count);
-  if (matches > 0 || status === "loading" || !query.trim()) return null;
+  const nothing = matches === 0 && status !== "loading" && query.trim() !== "";
+  useEffect(() => {
+    if (!nothing) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Enter" || event.isComposing) return;
+      event.preventDefault();
+      run(() => askAuri(query));
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [nothing, query, run]);
   return (
-    <Command.Group heading="¿No lo encuentras?" forceMount className={groupClass}>
-      <Command.Item forceMount value={`__auri__ ${query}`} onSelect={() => run(() => askAuri(query))} className={itemClass}>
-        <Sparkles aria-hidden="true" className="text-accent-text" />
-        <span className="truncate">Preguntarle a AURI: «{query.trim()}»</span>
-        <small className="ml-auto shrink-0 text-xs text-muted-foreground">Enter</small>
-      </Command.Item>
-    </Command.Group>
+    <span className={cn("absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-2", className)}>
+      {nothing ? <span aria-hidden="true" className="hidden text-xs text-muted-foreground sm:inline">Pregúntale a AURI · Enter</span> : null}
+      <button
+        type="button"
+        aria-label={query.trim() ? `Preguntarle a AURI: ${query.trim()}` : "Abrir el chat con AURI"}
+        onMouseDown={(event) => event.preventDefault()}
+        onClick={() => run(() => askAuri(query))}
+        data-press=""
+        className={cn(
+          "grid size-8 shrink-0 place-items-center rounded-full outline-none transition-shadow focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring pointer-coarse:size-11",
+          nothing && "ring-2 ring-accent",
+        )}
+      >
+        <EyeTracker fit decorative poke={false} front size={28} shape="Ball" eyeScale={1.2} />
+      </button>
+    </span>
   );
 }
 
@@ -185,7 +206,6 @@ export function PaletteList({
         <Command.Empty className="nx-search-note px-4 py-6 text-center text-sm text-muted-foreground">
           {status === "loading" ? "Buscando…" : "Sin resultados."}
         </Command.Empty>
-        <AskAuri query={query} status={status} run={run} />
         {shownHits.length > 0 ? (
           <Command.Group forceMount heading="Resultados" className={groupClass}>
             {shownHits.map(({ hit, leaving }, index) => (
@@ -339,8 +359,9 @@ export function CommandPalette({ inlineOnDesktop = false, inline = false }: { in
                 value={search.query}
                 onValueChange={search.setQuery}
                 placeholder="Busca clientes, pagos, gastos, catálogo o acciones"
-                className="h-[54px] w-full bg-transparent pl-[46px] pr-4 text-[15px] outline-none placeholder:text-muted-foreground"
+                className="h-[54px] w-full bg-transparent pl-[46px] pr-14 text-[15px] outline-none placeholder:text-muted-foreground"
               />
+              <AuriAskButton query={search.query} status={search.status} run={run} />
             </div>
             <PaletteList query={search.query} hits={search.hits} status={search.status} run={run} className="max-h-[min(380px,56vh)]" />
           </Command>

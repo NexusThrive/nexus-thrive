@@ -5,7 +5,7 @@ import { Command } from "cmdk";
 import { Search } from "lucide-react";
 import { Kbd } from "@/components/atoms/kbd";
 import { usePalette } from "@/components/providers/shell-context";
-import { PaletteList, useIsDesktop, usePaletteSearch } from "@/components/organisms/command-palette";
+import { AuriAskButton, PaletteList, useIsDesktop, usePaletteSearch } from "@/components/organisms/command-palette";
 import { cn } from "@/lib/utils";
 
 /**
@@ -79,10 +79,11 @@ export function NavbarSearch({ className }: { className?: string }) {
           />
           <Kbd
             aria-hidden="true"
-            className={cn("pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 transition-opacity duration-200 pointer-coarse:hidden", panelOpen && "opacity-0")}
+            className={cn("pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 transition-opacity duration-200 pointer-coarse:hidden", (panelOpen || search.query.trim() !== "") && "opacity-0")}
           >
             Ctrl K
           </Kbd>
+          <AuriAskButton query={search.query} status={search.status} run={run} className={cn("right-1.5", !search.query.trim() && "hidden")} />
         </div>
 
         {panelOpen ? (

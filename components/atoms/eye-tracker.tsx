@@ -210,6 +210,9 @@ export function EyeTracker({
   /* a press makes it talk. Off, it is just a face: a button around
      it decides what a press does */
   poke: pokeable = true,
+  /* mira siempre al frente: no sigue el puntero ni echa vistazos.
+     Solo parpadea de vez en cuando, para que se vea viva */
+  front = false,
   /* accompanies a text that already says what it is */
   decorative = false,
   label = "Ojos que siguen el cursor",
@@ -229,6 +232,7 @@ export function EyeTracker({
   idle?: boolean;
   within?: string;
   poke?: boolean;
+  front?: boolean;
   decorative?: boolean;
   label?: string;
   fit?: boolean;
@@ -418,6 +422,12 @@ export function EyeTracker({
     /* ── idle: straight ahead, and now and then a glance ──────
        Every 5 seconds it looks off in a random direction,
        holds it for a moment, and comes back to centre. */
+    if (front) {
+      return () => {
+        cancelAnimationFrame(raf);
+        unwatch();
+      };
+    }
     if (idle) {
       let glance = 0;
       const look = () => {
@@ -446,7 +456,7 @@ export function EyeTracker({
       window.removeEventListener("pointermove", aim);
       document.documentElement.removeEventListener("pointerleave", rest);
     };
-  }, [still, idle, within]);
+  }, [still, idle, within, front]);
 
   const s = clamp(size, 16, 180);
   const body = SHAPES[shape] ?? SHAPES.Ball;

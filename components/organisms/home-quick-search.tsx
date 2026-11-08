@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { Command } from "cmdk";
 import { Search } from "lucide-react";
-import { PaletteList, usePaletteSearch } from "@/components/organisms/command-palette";
+import { AuriAskButton, PaletteList, usePaletteSearch } from "@/components/organisms/command-palette";
 
 /** ¿El foco está en algo donde se escribe? Ahí las teclas son del campo, no del buscador. */
 function isEditable(target: EventTarget | null): boolean {
@@ -16,7 +16,7 @@ function isEditable(target: EventTarget | null): boolean {
 /**
  * Búsqueda por teclado en Inicio: al teclear una letra o un número (sin tocar ningún campo) se abre un buscador flotante con esa
  * tecla ya escrita, para llegar a una sección, una función, un cliente, un pago o un gasto sin buscar el icono. Si nada coincide,
- * ofrece la consulta a AURI AI. Es la misma lista de la paleta (Ctrl K): mismos resultados y mismas reglas de acceso.
+ * AURI AI está al final del campo, en su círculo y mirando al frente: un clic o Enter (si nada coincide) le pasa la consulta. Es la misma lista de la paleta (Ctrl K): mismos resultados y mismas reglas de acceso.
  *
  * Espacio y Enter no la abren: son las teclas con que se mueve y se abre un icono del cajón. Con otro panel abierto, tampoco.
  */
@@ -70,8 +70,9 @@ export function HomeQuickSearch() {
                 value={search.query}
                 onValueChange={search.setQuery}
                 placeholder="Busca una sección, función, cliente, pago… o pregúntale a AURI"
-                className="h-[54px] w-full bg-transparent pl-[46px] pr-4 text-[15px] outline-none placeholder:text-muted-foreground"
+                className="h-[54px] w-full bg-transparent pl-[46px] pr-14 text-[15px] outline-none placeholder:text-muted-foreground"
               />
+              <AuriAskButton query={search.query} status={search.status} run={run} />
             </div>
             <PaletteList query={search.query} hits={search.hits} status={search.status} run={run} className="max-h-[min(380px,56vh)]" />
           </Command>

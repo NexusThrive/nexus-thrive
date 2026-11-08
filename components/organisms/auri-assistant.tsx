@@ -76,9 +76,8 @@ export function AuriAssistant({
   useEffect(() => {
     const onAsk = (event: Event) => {
       const text = (event as CustomEvent<{ text: string }>).detail?.text;
-      if (!text) return;
       setOpen(true);
-      void sendRef.current(text);
+      if (text) void sendRef.current(text);
     };
     window.addEventListener(AURI_ASK_EVENT, onAsk);
     return () => window.removeEventListener(AURI_ASK_EVENT, onAsk);

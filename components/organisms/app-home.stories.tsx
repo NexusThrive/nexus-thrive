@@ -92,12 +92,12 @@ export const CifrasEnCamino: Story = {
   ),
 };
 
-/** Teclear en Inicio abre un buscador flotante con esa tecla escrita; si nada coincide, la consulta se ofrece a AURI AI. */
+/** Teclear en Inicio abre un buscador flotante con esa tecla escrita; AURI AI está al final del campo, en su círculo y mirando al frente; con un clic (o Enter si nada coincide) recibe la consulta. */
 export const BuscadorPorTeclado: Story = {
   play: async () => {
     await userEvent.keyboard("zqxw");
     const search = await within(document.body).findByRole("dialog");
     await expect(within(search).getByRole("combobox")).toHaveValue("zqxw");
-    await expect(await within(search).findByText(/Preguntarle a AURI/, {}, { timeout: 3000 })).toBeVisible();
+    await expect(await within(search).findByRole("button", { name: /Preguntarle a AURI: zqxw/ })).toBeVisible();
   },
 };
