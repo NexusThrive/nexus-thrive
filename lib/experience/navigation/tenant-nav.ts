@@ -78,7 +78,7 @@ const allowedFor = (role: string | undefined, href: string): boolean => {
   return !role || !permission || can(role, permission);
 };
 
-const LEAN_HIDDEN: readonly string[] = ["/crm", "/crm/tareas", "/crm/formularios", "/proyectos/entregables"];
+const LEAN_HIDDEN: readonly string[] = ["/crm", "/crm/informes", "/crm/configuracion", "/crm/tareas", "/crm/formularios", "/proyectos/entregables"];
 /** Grupo de cada función: su categoría en el registro (la misma que ve en «Funciones»). */
 const MODULE_GROUP: Partial<Record<string, GroupName>> = Object.fromEntries(CAPABILITIES.map((c) => [c.id, c.category]));
 
@@ -93,7 +93,7 @@ export function buildTenantNav(vertical: VerticalValue, activeModules: readonly 
   // Rubros con control de acceso de socios (gimnasio): menú reducido, sin tienda en línea, funciones, datos ni integraciones.
   const lean = hasMemberAccess(vertical);
   const items = (moduleName: ModuleValue): NavItem[] => {
-    return MODULE_NAV[moduleName].filter((nav) => !nav.verticals || nav.verticals.includes(vertical)).filter((nav) => allowedFor(role, nav.href)).filter((nav) => !(lean && (LEAN_HIDDEN.includes(nav.href) || (moduleName === "website" && nav.href === "/ventas/pedidos")))).map((nav) => ({
+    return MODULE_NAV[moduleName].filter((nav) => nav.menu !== false).filter((nav) => !nav.verticals || nav.verticals.includes(vertical)).filter((nav) => allowedFor(role, nav.href)).filter((nav) => !(lean && (LEAN_HIDDEN.includes(nav.href) || (moduleName === "website" && nav.href === "/ventas/pedidos")))).map((nav) => ({
       key: nav.href || "home",
       module: moduleName,
       href: nav.href,

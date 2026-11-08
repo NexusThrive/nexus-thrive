@@ -22,6 +22,9 @@ export type ActivityKind = (typeof ACTIVITY_KINDS)[number];
 export const ACTIVITY_LABEL: Record<ActivityKind, string> = { CALL: "Llamar", MEETING: "Reunión", PROPOSAL: "Enviar propuesta", OTHER: "Otro" };
 export const isActivityKind = (v: unknown): v is ActivityKind => typeof v === "string" && (ACTIVITY_KINDS as readonly string[]).includes(v);
 
+/** Mes «AAAA-MM» de hoy en Bogotá. */
+export const bogotaMonth = () => bogotaDay(Date.now()).slice(0, 7);
+
 /** Día «AAAA-MM-DD» en Bogotá de un instante. */
 export const bogotaDay = (ms: number) => new Date(ms - 5 * 3_600_000).toISOString().slice(0, 10);
 

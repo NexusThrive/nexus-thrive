@@ -2,12 +2,12 @@ import { can } from "@/lib/core/auth/permissions";
 import type { ModuleValue } from "@/lib/core/capabilities/modules";
 import { createTenantDb } from "@/lib/core/tenancy/db";
 import { receivables } from "@/lib/domains/finance/receivables/receivables-db";
-import { intentsToVerifyCount } from "@/lib/domains/finance/payments/intents-db";
 import { bookingsBetween, customersByIds } from "@/lib/business/scheduling/bookings-db";
 import { addDaysKey, bogotaParts, bogotaToMs } from "@/lib/business/scheduling/calendar";
 import { unreadConversationsCount } from "@/lib/integrations/channels/conversations-db";
 import { createMembershipsDb } from "@/lib/industry/gym/memberships-repo";
 import { EXPIRING_WINDOW_DAYS } from "@/lib/industry/gym/memberships";
+import { db } from "@/prisma/db";
 import { percentChange } from "./index";
 
 /**
@@ -55,7 +55,7 @@ export async function loadHomeSummary(tenantId: string, modules: readonly Module
     has("memberships") ? createMembershipsDb(tenantId).getMetrics() : null,
     has("bookings") ? bookingsBetween(tenantId, bogotaToMs(day, "00:00"), bogotaToMs(addDaysKey(day, 1), "00:00")) : null,
     has("whatsapp") ? unreadConversationsCount(tenantId) : 0,
-    has("payments") || has("online_payments") ? intentsToVerifyCount(tenantId) : 0,
+    has("payments") || has("online_payments") ? intentsToVerify(tenantId) : 0,
   ]);
 
   const overdueRows = cartera?.rows.filter((r) => r.daysOverdue > 0) ?? [];
@@ -101,4 +101,10 @@ export async function loadHomeSummary(tenantId: string, modules: readonly Module
     ) as Record<string, number>,
     updatedAt: now.toISOString(),
   };
+}
+
+/** Transferencias que el cliente avisó y falta verificar (insignia de Ventas y cobros); el mismo criterio de «¿Dónde está mi plata?». */
+async function intentsToVerify(tenantId: string): Promise<number> {
+  const r = await db.orm.public.PaymentIntent.where({ tenantId, status: "VERIFYING" }).aggregate((a) => ({ n: a.count() }));
+  return Number(r.n ?? 0);
 }

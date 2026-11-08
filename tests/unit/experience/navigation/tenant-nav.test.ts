@@ -15,7 +15,7 @@ describe("buildTenantNav", () => {
   it("solo muestra funciones activas y siempre Funciones y Configuración", () => {
     const groups = buildTenantNav("retail", ["dashboard", "crm"]);
     expect(groups.map((g) => g.label)).toEqual(["General", "Clientes y agenda", "CRM", "Sistema"]);
-    expect(groups.flatMap((g) => g.items).map((i) => i.href)).toEqual(["/resumen", "/contactos", "/crm", "/crm/tareas", "/proyectos/entregables", "/crm/formularios", "/functions", "/data", "/integrations", "/settings"]);
+    expect(groups.flatMap((g) => g.items).map((i) => i.href)).toEqual(["/resumen", "/contactos", "/crm", "/crm/informes", "/crm/configuracion", "/functions", "/data", "/integrations", "/settings"]);
   });
 
   it("agrupa por trabajo, con todas las categorías desplegables, y omite los grupos vacíos", () => {
@@ -49,7 +49,7 @@ describe("buildTenantNav", () => {
     const items = groups.flatMap((g) => g.items);
     expect(items.map((i) => i.href)).toEqual(["/resumen", "/contactos", "/memberships", "/checkin", "/finanzas", "/finanzas/dinero", "/presencia/sitio", "/settings"]);
     expect(items.find((i) => i.href === "/presencia/sitio")?.label).toBe("Panel de registro de cliente");
-    for (const hidden of ["/ventas/pedidos", "/crm", "/crm/tareas", "/crm/formularios", "/proyectos/entregables"]) expect(items.map((i) => i.href)).not.toContain(hidden);
+    for (const hidden of ["/ventas/pedidos", "/crm", "/crm/informes", "/crm/configuracion", "/crm/tareas", "/crm/formularios", "/proyectos/entregables"]) expect(items.map((i) => i.href)).not.toContain(hidden);
   });
 
   it("sin facturación ni gastos no aparecen esas categorías", () => {
@@ -188,10 +188,10 @@ describe("menú por rol (HU-navegacion-commerce-01)", () => {
 });
 
 describe("reparto del menú por trabajo (etapa A6)", () => {
-  it("CRM tiene oportunidades, tareas, entregables y formularios; Clientes queda con los contactos", () => {
+  it("CRM tiene Ventas, Informes y Configuración (tareas, entregables y formularios conservan su ruta); Clientes queda con los contactos", () => {
     const groups = buildTenantNav("retail", ["dashboard", "crm"]);
     const crm = groups.find((g) => g.label === "CRM")!;
-    expect(crm.items.map((i) => i.href)).toEqual(["/crm", "/crm/tareas", "/proyectos/entregables", "/crm/formularios"]);
+    expect(crm.items.map((i) => i.href)).toEqual(["/crm", "/crm/informes", "/crm/configuracion"]);
     expect(groups.find((g) => g.label === "Clientes y agenda")!.items.map((i) => i.href)).toEqual(["/contactos"]);
   });
   it("cotizaciones y pedidos van en Ventas, no en obras", () => {

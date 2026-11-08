@@ -24,6 +24,14 @@ describe.skipIf(!TEST_URL)("pipeline del CRM (integración)", () => {
     await db.close();
   });
 
+  test("dos cargas a la vez en un negocio nuevo dejan una sola vez cada etapa (una ganada)", async () => {
+    await Promise.all([ensureStages(b), ensureStages(b), loadPipeline(b), loadPipeline(b)]);
+    const stages = await ensureStages(b);
+    expect(stages.map((s) => s.name)).toEqual(["Nuevo", "Calificado", "Propuesta", "Ganado"]);
+    expect(stages.filter((s) => s.isWon)).toHaveLength(1);
+    expect(await db.orm.public.CrmStage.where({ tenantId: b }).aggregate((x) => ({ n: x.count() }))).toEqual({ n: 4 });
+  });
+
   test("etapas iniciales y motivos de pérdida al abrir el CRM", async () => {
     const stages = await ensureStages(a);
     expect(stages.map((s) => [s.name, s.probability, s.isWon])).toEqual([["Nuevo", 20, false], ["Calificado", 40, false], ["Propuesta", 60, false], ["Ganado", 100, true]]);

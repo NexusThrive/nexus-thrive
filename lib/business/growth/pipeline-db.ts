@@ -52,7 +52,32 @@ export type Pipeline = {
 /** Etapas del negocio en orden; si aún no tiene, crea las iniciales (y los motivos de pérdida de partida). */
 export async function ensureStages(tenantId: string): Promise<PipelineStage[]> {
   const rows = await db.orm.public.CrmStage.where({ tenantId }).orderBy((s) => s.position.asc()).all();
-  if (rows.length) return rows.map((s) => ({ id: s.id, name: s.name, position: s.position, probability: s.probability, isWon: s.isWon }));
+  if (rows.length) {
+    // Dos cargas a la vez en un negocio nuevo podían crear las etapas iniciales dos veces: se conserva la primera de cada nombre
+    // (y una sola ganada), sus oportunidades pasan a ella y las repetidas se borran.
+    const sorted = [...rows].sort((a, b) => a.position - b.position || String(a.createdAt).localeCompare(String(b.createdAt)));
+    const keep = new Map<string, string>();
+    const dupes: { id: string; keepId: string }[] = [];
+    for (const s of sorted) {
+      const key = s.isWon ? "\u0000won" : s.name.trim().toLocaleLowerCase("es");
+      const kept = keep.get(key);
+      if (kept) dupes.push({ id: s.id, keepId: kept });
+      else keep.set(key, s.id);
+    }
+    if (dupes.length) {
+      await db.transaction(async (tx) => {
+        for (const d of dupes) {
+          await tx.orm.public.Opportunity.where({ tenantId, stageId: d.id }).update({ stageId: d.keepId });
+          await tx.orm.public.CrmStage.where({ tenantId, id: d.id }).deleteAll();
+        }
+        const left = await tx.orm.public.CrmStage.where({ tenantId }).orderBy((s) => s.position.asc()).all();
+        const ordered = [...left.filter((s) => !s.isWon), ...left.filter((s) => s.isWon)];
+        for (const [i, s] of ordered.entries()) if (s.position !== i) await tx.orm.public.CrmStage.where({ tenantId, id: s.id }).update({ position: i });
+      });
+      return ensureStages(tenantId);
+    }
+    return rows.map((s) => ({ id: s.id, name: s.name, position: s.position, probability: s.probability, isWon: s.isWon }));
+  }
   await db.transaction(async (tx) => {
     if (await tx.orm.public.CrmStage.where({ tenantId }).select("id").first()) return;
     await tx.orm.public.CrmStage.createAll(DEFAULT_STAGES.map((s, i) => ({ tenantId, name: s.name, position: i, probability: s.probability, isWon: s.isWon }))).toArray();
@@ -207,7 +232,9 @@ export async function createQuickOpportunity(tenantId: string, userId: string | 
     const created = await createOpportunity(tx, tenantId, { customerId, interest: input.name, estimatedValue: parseMoney(input.value ?? ""), ownerId: userId, source: "CRM" });
     if (!created.ok) return created;
     const { id } = created;
-    await tx.orm.public.Opportunity.where({ tenantId, id }).update({ stageId: stage.id, probability: stage.probability, priority: Math.max(0, Math.min(3, input.priority ?? 0)), stageSince: now() });
+    // La nueva queda arriba de su columna: una posición antes de la primera con orden manual (o 0 si no hay).
+    const top = await tx.orm.public.Opportunity.where({ tenantId, stageId: stage.id, status: "OPEN" }).where((o) => o.position.isNotNull()).orderBy((o) => o.position.asc()).select("position").first();
+    await tx.orm.public.Opportunity.where({ tenantId, id }).update({ stageId: stage.id, probability: stage.probability, priority: Math.max(0, Math.min(3, input.priority ?? 0)), stageSince: now(), position: (top?.position ?? 1) - 1 });
     await logEvent(tx, tenantId, id, "CREATED", userId, { stage: stage.name });
     if (input.activity && input.activity !== "NONE") {
       await tx.orm.public.Task.create({ tenantId, title: ACTIVITY_LABEL[input.activity], kind: input.activity, dueAt: todayAt5(), dueDay: bogotaDay(Date.now()), assigneeId: userId, customerId, opportunityId: id, createdById: userId });
@@ -437,5 +464,12 @@ export async function deleteOpportunity(tenantId: string, id: string): Promise<R
     await tx.orm.public.OpportunityEvent.where({ tenantId, opportunityId: id }).deleteAll();
     await tx.orm.public.Opportunity.where({ tenantId, id }).deleteAll();
   });
+  return { ok: true };
+}
+
+/** Registra en el historial que se adjuntó un archivo (comprueba que la oportunidad sea del negocio). */
+export async function addOpportunityFileEvent(tenantId: string, id: string, fileName: string, userId: string | null): Promise<Result> {
+  if (!(await db.orm.public.Opportunity.where({ tenantId, id }).select("id").first())) return { ok: false, message: "La oportunidad no existe." };
+  await db.transaction((tx) => logEvent(tx, tenantId, id, "FILE", userId, { name: fileName.slice(0, 120) }));
   return { ok: true };
 }
