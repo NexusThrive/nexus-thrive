@@ -108,7 +108,7 @@ export default function Sale({ slug, turn, products, categories, customers, meth
   const firstMethod = (methods.find((m) => m.kind === "CASH") ?? methods[0])?.id ?? "";
   const [pays, setPays] = useState<Pay[]>([{ methodId: firstMethod, amount: "" }]);
   const [error, setError] = useState<string | null>(null);
-  const [done, setDone] = useState<{ id: string; number: number; total: number; tip: number; change: number } | null>(null);
+  const [done, setDone] = useState<{ id: string; number: number; code?: string; total: number; tip: number; change: number } | null>(null);
   const [returning, setReturning] = useState(false);
   const [closing, setClosing] = useState(false);
   const [customizing, setCustomizing] = useState<string | null>(null);
@@ -153,12 +153,12 @@ export default function Sale({ slug, turn, products, categories, customers, meth
       setError(null);
       const r = await sellAction(slug, { lines: lines.map((l) => ({ productId: l.productId, quantity: l.quantity, discountPct: l.discountPct, note: l.note, unitPrice: l.unitPrice })), tip: { pct: tipPct }, payments: payNums, customerId: customerId || null });
       if (!r.ok) return setError(r.message);
-      setDone({ id: r.documentId, number: r.number, total: r.total, tip: r.tip, change: r.change });
+      setDone({ id: r.documentId, number: r.number, code: r.code, total: r.total, tip: r.tip, change: r.change });
       setLines([]);
       setPays([{ methodId: firstMethod, amount: "" }]);
       setTipPct(0);
       setCustomerId("");
-      toast(`Venta N.º ${r.number} registrada`, "success");
+      toast(`Venta ${r.code ?? `N.º ${r.number}`} registrada`, "success");
       router.refresh();
     });
 
@@ -206,7 +206,7 @@ export default function Sale({ slug, turn, products, categories, customers, meth
       </div>
       {done ? (
         <Alert tone="success">
-          Venta N.º {done.number} · {formatCurrency(done.total)}
+          Venta {done.code ?? `N.º ${done.number}`} · {formatCurrency(done.total)}
           {done.tip ? ` + propina ${formatCurrency(done.tip)}` : ""}
           {done.change ? ` · Cambio ${formatCurrency(done.change)}` : ""}
           {" · "}

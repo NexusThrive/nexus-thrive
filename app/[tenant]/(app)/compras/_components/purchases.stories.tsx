@@ -7,8 +7,8 @@ import OrderSheet from "./order-sheet";
 import PurchasesView from "./purchases-view";
 
 const suppliers: PartyRow[] = [
-  { id: "s1", kind: "COMPANY", documentType: "NIT", documentNumber: "900123456", legalName: "Distribuidora Andina SAS", tradeName: null, email: "ventas@andina.co", phone: "3001112233", city: "Medellín", active: true, roles: ["SUPPLIER"] },
-  { id: "s2", kind: "PERSON", documentType: "CC", documentNumber: "1023456789", legalName: "Luis Gómez", tradeName: null, email: null, phone: "3102223344", city: null, active: true, roles: ["CUSTOMER", "SUPPLIER"] },
+  { id: "s1", kind: "COMPANY", documentType: "NIT", documentNumber: "900123456", legalName: "Distribuidora Andina SAS", tradeName: null, email: "ventas@andina.co", phone: "3001112233", contact: { name: "Marta Ríos", phone: "3004445566", email: "marta@andina.co" }, city: "Medellín", active: true, roles: ["SUPPLIER"] },
+  { id: "s2", kind: "PERSON", documentType: "CC", documentNumber: "1023456789", legalName: "Luis Gómez", tradeName: null, email: null, phone: "3102223344", city: null, contact: null, active: true, roles: ["CUSTOMER", "SUPPLIER"] },
 ];
 const orders: OrderRow[] = [
   { id: "draft", number: 7, code: "OC-0007", status: "DRAFT", supplierPartyId: "s1", supplierName: "Distribuidora Andina SAS", warehouseId: "w1", total: 1_785_000, expectedDate: "2026-10-30", createdAt: "2026-10-24T14:00:00.000Z", lineCount: 2, pendingUnits: 30 },

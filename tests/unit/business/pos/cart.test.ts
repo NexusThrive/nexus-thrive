@@ -45,3 +45,12 @@ describe("renglón a medida", () => {
     expect(lineDescription("Taza", "x".repeat(500)).length).toBe("Taza — ".length + MAX_CUSTOM_NOTE);
   });
 });
+
+describe("número de la venta impreso", () => {
+  it("lleva la serie de la resolución o V- si no hay", async () => {
+    const { saleCode } = await import("@/lib/business/pos/pos-db");
+    expect(saleCode(null, 42)).toBe("V-000042");
+    expect(saleCode("POS", 42)).toBe("POS-000042");
+    expect(saleCode("POS-", 7)).toBe("POS-000007");
+  });
+});

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { canManage } from "@/lib/core/auth/roles";
-import { createParty, type DuplicateMatch, type PartyInput } from "@/lib/core/parties/parties-db";
+import { createParty, updatePartyContact, type DuplicateMatch, type PartyInput } from "@/lib/core/parties/parties-db";
 import { cancelOrder, closeOrder, createOrder, getOrder, markOrdered, receiveOrder, type OrderDetail, type OrderInput, type ReceiveInput } from "@/lib/business/purchasing/purchases-db";
 import { logTenantAction } from "@/lib/core/tenancy/audit";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
@@ -75,7 +75,7 @@ export async function closeOrderAction(slug: string, id: string): Promise<Purcha
   return { ok: true, message: "Orden cerrada" };
 }
 
-export type SupplierInput = Pick<PartyInput, "kind" | "documentType" | "documentNumber" | "legalName" | "email" | "phone" | "city">;
+export type SupplierInput = Pick<PartyInput, "kind" | "documentType" | "documentNumber" | "legalName" | "email" | "phone" | "city" | "contact">;
 
 export async function createSupplierAction(slug: string, input: SupplierInput): Promise<PurchaseActionResult & { duplicates?: DuplicateMatch[] }> {
   const ctx = await manager(slug);
@@ -86,3 +86,15 @@ export async function createSupplierAction(slug: string, input: SupplierInput): 
   refresh(slug);
   return { ok: true, id: r.party.id, message: "Proveedor creado", duplicates: r.possibleDuplicates };
 }
+
+/** Persona de contacto de un proveedor (con quién se habla para pedirle). */
+export async function updateSupplierContactAction(slug: string, partyId: string, contact: { name: string; phone: string; email: string }): Promise<PurchaseActionResult> {
+  const ctx = await manager(slug);
+  if (!ctx) return DENIED;
+  const r = await updatePartyContact(ctx.tenantId, partyId, contact);
+  if (!r.ok) return { ok: false, message: r.message };
+  await logTenantAction(ctx, "BIZ_SUPPLIER_CREATE", { partyId, change: "contact" });
+  refresh(slug);
+  return { ok: true, message: "Contacto guardado" };
+}
+

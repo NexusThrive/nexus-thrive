@@ -74,10 +74,16 @@ export async function closeTurn(tenantId: string, sessionId: string, counted: nu
 /** `note` y `unitPrice` solo valen en productos marcados como personalizables (renglón a medida); en los demás el servidor los ignora. */
 export type CartLineInput = { productId: string; quantity: number; discountPct?: number; note?: string; unitPrice?: number };
 export type SaleInput = { lines: CartLineInput[]; tip?: { pct?: number; fixed?: number }; payments: PaymentInput[]; customerId?: string | null };
-export type SaleResult = { ok: true; documentId: string; number: number; total: number; tip: number; change: number; receipts: string[] } | { ok: false; message: string };
+export type SaleResult = { ok: true; documentId: string; number: number; /** Número tal como sale en el tiquete: con el prefijo de la resolución de numeración si el negocio la tiene. */ code?: string; total: number; tip: number; change: number; receipts: string[] } | { ok: false; message: string };
 
 /** Descuento máximo que un cajero puede dar por su cuenta en una línea. */
 export const MAX_CASHIER_DISCOUNT = 30;
+
+/** Número de la venta como sale impreso: con la serie de la resolución («POS-000042») o, sin ella, «V-000042». */
+export function saleCode(prefix: string | null | undefined, number: number): string {
+  const n = String(number).padStart(6, "0");
+  return prefix ? `${prefix.replace(/-$/, "")}-${n}` : `V-${n}`;
+}
 
 /**
  * Cobra un carrito en el turno abierto de quien vende: valida descuentos (los altos requieren autorización), crea el documento de venta, registra cada pago en caja y descuenta el inventario, todo en una sola transacción del servicio de dinero.
@@ -135,7 +141,7 @@ export async function sellCart(tenantId: string, input: SaleInput, userId: strin
         }
       }
       await emitEvent(tx, tenantId, { type: "sale.completed", resourceType: "document", resourceId: doc.id, payload: { document_id: doc.id, total: totals.total, tip, currency: "COP", terminal_id: terminal.id, payments: settled.applied } });
-      return { ok: true as const, documentId: doc.id, number: doc.number, total: totals.total, tip, change: settled.change, receipts };
+      return { ok: true as const, documentId: doc.id, number: doc.number, code: saleCode(doc.prefix, doc.number), total: totals.total, tip, change: settled.change, receipts };
     });
   } catch (e) {
     if (e instanceof MoneyError) return { ok: false, message: e.message };
@@ -160,7 +166,7 @@ export async function receiptOf(tenantId: string, documentId: string): Promise<i
   return {
     business: shop?.name ?? "Mi negocio",
     taxId: shop?.taxId ?? null,
-    code: `V-${String(doc.number).padStart(6, "0")}`,
+    code: saleCode(doc.prefix, doc.number),
     date: String(doc.issueDate).slice(0, 16).replace("T", " "),
     lines: lines.map((l) => ({ description: l.description, quantity: toNumber(l.quantity), unitPrice: toNumber(l.unitPrice), discountPct: toNumber(l.discountPct) || undefined, total: toNumber(l.total) })),
     subtotal,
