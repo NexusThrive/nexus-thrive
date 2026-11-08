@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { expect, userEvent, within } from "storybook/test";
 import { Field } from "@/components/molecules/field";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { Select } from "./select";
@@ -20,7 +21,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "Select propio de NEXUS: botón con forma de campo y lista flotante dibujada con divs, no el menú nativo del sistema. Misma API que `<select>` (hijos `<option>`/`<optgroup>`, `value`/`defaultValue`, `onChange(e)` con `e.target.value`, `name`, `required`, `disabled`) y participa en formularios y Server Actions porque debajo vive un `<select>` real oculto. Teclado: ↑ ↓ abren y mueven, Inicio/Fin, escribir salta a una opción, Enter/Espacio eligen, Esc cierra. Opciones de 44 px en táctil. Prohibido el `<select>` nativo (lo vigila `tests/architecture/ui-rules.test.ts`).",
+          "Select propio de NEXUS: botón con forma de campo y lista flotante dibujada con divs, no el menú nativo del sistema. Misma API que `<select>` (hijos `<option>`/`<optgroup>`, `value`/`defaultValue`, `onChange(e)` con `e.target.value`, `name`, `required`, `disabled`) y participa en formularios y Server Actions porque debajo vive un `<select>` real oculto. Siempre trae un buscador arriba de la lista (`searchable={false}` lo quita). Teclado: ↑ ↓ abren y mueven, Inicio/Fin, escribir salta a una opción, Enter/Espacio eligen, Esc cierra. Opciones de 44 px en táctil. Prohibido el `<select>` nativo (lo vigila `tests/architecture/ui-rules.test.ts`).",
       },
     },
   },
@@ -72,8 +73,23 @@ function LongList() {
     </Select>
   );
 }
-/** Lista larga: se desplaza con rueda y teclado; la opción activa siempre queda a la vista. */
-export const LongListStory: Story = { name: "Lista larga", render: () => <LongList /> };
+/** Lista larga con buscador arriba; escribir filtra, sin importar tildes, y Enter elige. */
+export const LongListStory: Story = {
+  name: "Lista larga con buscador",
+  render: () => <LongList />,
+  play: async ({ canvasElement }) => {
+    await userEvent.click(within(canvasElement).getByRole("combobox", { name: "Ciudad" }));
+    const search = await within(document.body).findByRole("combobox", { name: /Buscar/ });
+    await expect(search).toHaveFocus();
+    await userEvent.type(search, "ciudad 3");
+    await expect(within(document.body).getAllByRole("option").length).toBeLessThan(40);
+    await userEvent.keyboard("{Enter}");
+    await expect(within(canvasElement).getByRole("combobox", { name: "Ciudad" })).toHaveTextContent("Ciudad 3");
+  },
+};
+
+/** `searchable={false}` quita el buscador en una lista que no lo necesita. */
+export const WithoutSearch: Story = { name: "Sin buscador", args: { searchable: false } };
 
 /** Dentro de un diálogo: la lista flota por encima y elegir no cierra el diálogo. */
 export const InsideDialog: Story = {

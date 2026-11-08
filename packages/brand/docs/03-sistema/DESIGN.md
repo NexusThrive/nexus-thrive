@@ -184,7 +184,7 @@ Storybook con sus estados.
 | Esperando una sección (sin forma conocida / en línea) | `LoadingState` (la N) | `components/molecules/loading-state.tsx` |
 | Esperando contenido dentro de un panel, ficha o lista | `SkeletonRows` (esqueleto con la forma de lo que viene) | `components/molecules/skeleton-rows.tsx` |
 | Esperando la página | `PageSkeleton` (en `loading.tsx`) | `components/organisms/page-skeleton.tsx` |
-| Elegir una opción de una lista | `Select` propio (mismos props que `<select>`; **no** usar `<select>` nativo) | `components/atoms/select.tsx` |
+| Elegir una opción de una lista | `Select` propio (mismos props que `<select>`; **no** usar `<select>` nativo). Siempre trae un buscador arriba de la lista (`searchable={false}` lo quita) | `components/atoms/select.tsx` |
 | Elegir una fecha | `DateInput` (calendario propio; **no** usar `<input type="date">`) | `components/molecules/date-input.tsx` |
 | Menú de acciones | `DropdownMenu` (el panel viaja desde su botón y vuelve a él; ver `packages/brand/docs/04-patrones/movimiento.md`) | `components/molecules/dropdown-menu.tsx` |
 | Inicio que cada persona ordena | `CustomizableDashboard` (12 columnas; se edita manteniendo presionado un bloque, sin botón «Personalizar»; arrastrar, ancho y alto por las esquinas, ocultar y «Agregar» gráficos del catálogo `lib/dashboard/chart-catalog.ts`; cada tarjeta es su propio bloque `widgets` con `id`, `label`, `span` y `half`; preferencia versionada en `localStorage`) | `components/organisms/customizable-dashboard.tsx`, lógica en `lib/dashboard/layout.ts` |

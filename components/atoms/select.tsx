@@ -2,11 +2,13 @@
 
 import * as React from "react";
 import * as PopoverPrimitive from "@radix-ui/react-popover";
-import { Check, ChevronDown } from "lucide-react";
+import { Check, ChevronDown, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { fieldClasses } from "./input";
 
 type Opt = { value: string; label: string; disabled: boolean; group?: string };
+
+const fold = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
 /** Aplana `<option>`, `<optgroup>`, fragmentos y arreglos en una lista de opciones. */
 function parseOptions(children: React.ReactNode, group?: string, out: Opt[] = []): Opt[] {
@@ -38,6 +40,10 @@ function parseOptions(children: React.ReactNode, group?: string, out: Opt[] = []
  * cierra sin cambiar. La lista es `role="listbox"`; el foco se queda en el
  * botón (`aria-activedescendant`). Etiqueta con `<label htmlFor>` o `Field`.
  *
+ * Buscador: la lista abre con un campo «Buscar…» arriba (si hay más de una opción) que filtra mientras
+ * escribes, sin importar tildes ni mayúsculas. El foco va al campo; ↑ ↓ mueven, Enter elige, Esc cierra y devuelve el
+ * foco al botón. `searchable={false}` lo quita.
+ *
  * Táctil: opciones de 44 px. Sin hover para nada importante.
  */
 function Select({
@@ -58,8 +64,9 @@ function Select({
   "aria-describedby": ariaDescribedby,
   "aria-invalid": ariaInvalid,
   ref: _ref,
+  searchable,
   ...rest
-}: React.ComponentProps<"select"> & { placeholder?: string }) {
+}: React.ComponentProps<"select"> & { placeholder?: string; searchable?: boolean }) {
   void _ref;
   void rest;
   const options = React.useMemo(() => parseOptions(children), [children]);
@@ -76,13 +83,20 @@ function Select({
   const [open, setOpen] = React.useState(false);
   const [active, setActive] = React.useState(-1);
   const typed = React.useRef({ text: "", timer: 0 });
+  const searchRef = React.useRef<HTMLInputElement>(null);
+  const [query, setQuery] = React.useState("");
+  const hasSearch = searchable ?? options.length > 1;
 
-  const enabledIndexes = options.flatMap((o, i) => (o.disabled ? [] : [i]));
+  // Con búsqueda activa solo se ven las opciones que contienen lo escrito.
+  const needle = fold(query.trim());
+  const visible = options.map((o) => !needle || fold(o.label).includes(needle));
+  const enabledIndexes = options.flatMap((o, i) => (o.disabled || !visible[i] ? [] : [i]));
 
   function commit(index: number) {
     const option = options[index];
     if (!option || option.disabled) return;
     setOpen(false);
+    setQuery("");
     if (option.value === current) return;
     if (!controlled) setInner(option.value);
     // Se dispara un `change` real en el <select> oculto: el onChange del
@@ -94,10 +108,18 @@ function Select({
     }
   }
 
+  /** Al escribir en el buscador, la primera coincidencia queda activa. */
+  function changeQuery(next: string) {
+    setQuery(next);
+    const n = fold(next.trim());
+    setActive(options.findIndex((o) => !o.disabled && (!n || fold(o.label).includes(n))));
+  }
+
   function openList() {
     if (disabled) return;
     const i = options.findIndex((o) => o.value === current && !o.disabled);
-    setActive(i >= 0 ? i : (enabledIndexes[0] ?? -1));
+    setQuery("");
+    setActive(i >= 0 ? i : (options.findIndex((o) => !o.disabled)));
     setOpen(true);
   }
 
@@ -109,13 +131,26 @@ function Select({
     setActive(enabledIndexes[next]);
   }
 
-  function onKeyDown(event: React.KeyboardEvent) {
+  function onKeyDown(event: React.KeyboardEvent, fromSearch = false) {
     const { key } = event;
     if (!open) {
       if (["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight", "Enter", " "].includes(key)) {
         event.preventDefault();
         openList();
+      } else if (hasSearch && key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
+        // Escribir con la lista cerrada la abre con esas letras ya en el buscador.
+        event.preventDefault();
+        openList();
+        changeQuery(key);
       }
+      return;
+    }
+    if (fromSearch) {
+      // En el buscador, Espacio, Inicio, Fin y las letras son del texto; solo se navega con ↑ ↓ y se elige con Enter.
+      if (key === "ArrowDown") { event.preventDefault(); move("next"); }
+      else if (key === "ArrowUp") { event.preventDefault(); move("prev"); }
+      else if (key === "Enter") { event.preventDefault(); commit(active); }
+      else if (key === "Tab") setOpen(false);
       return;
     }
     if (key === "ArrowDown" || key === "ArrowRight") { event.preventDefault(); move("next"); }
@@ -154,7 +189,7 @@ function Select({
           aria-haspopup="listbox"
           aria-expanded={open}
           aria-controls={open ? listId : undefined}
-          aria-activedescendant={open && active >= 0 ? `${uid}-opt-${active}` : undefined}
+          aria-activedescendant={open && !hasSearch && active >= 0 ? `${uid}-opt-${active}` : undefined}
           aria-label={ariaLabel}
           aria-labelledby={ariaLabelledby}
           aria-describedby={ariaDescribedby}
@@ -198,19 +233,49 @@ function Select({
           sideOffset={6}
           collisionPadding={12}
           // El foco se queda en el botón: la lista se maneja con aria-activedescendant.
-          onOpenAutoFocus={(event) => event.preventDefault()}
-          onCloseAutoFocus={(event) => event.preventDefault()}
-          onMouseDown={(event) => event.preventDefault()}
+          onOpenAutoFocus={(event) => {
+            event.preventDefault();
+            if (hasSearch) searchRef.current?.focus({ preventScroll: true });
+          }}
+          onCloseAutoFocus={(event) => {
+            event.preventDefault();
+            // Con buscador el foco estaba en su campo: vuelve al botón.
+            if (hasSearch) triggerRef.current?.focus({ preventScroll: true });
+          }}
+          onMouseDown={(event) => {
+            if (!(event.target as HTMLElement).closest("input")) event.preventDefault();
+          }}
           // Dentro de un diálogo modal el <body> queda con pointer-events:none; la lista flota fuera y debe seguir recibiendo clics.
           style={{ pointerEvents: "auto" }}
           className="nx-select-list z-(--z-popover) w-[max(var(--radix-popover-trigger-width),180px)] max-w-[calc(100vw-24px)] origin-(--radix-popover-content-transform-origin) rounded-md border border-border bg-popover p-1 text-sm text-popover-foreground shadow-(--shadow-popover) outline-none"
         >
+          {hasSearch ? (
+            <div className="relative mb-1 border-b border-border px-1 pb-1">
+              <Search aria-hidden="true" className="pointer-events-none absolute left-3 top-[calc(50%-2px)] size-3.5 -translate-y-1/2 text-muted-foreground" />
+              <input
+                ref={searchRef}
+                type="text"
+                role="combobox"
+                aria-expanded="true"
+                aria-controls={listId}
+                aria-label={`Buscar${ariaLabel ? ` en ${ariaLabel}` : ""}`}
+                aria-activedescendant={active >= 0 ? `${uid}-opt-${active}` : undefined}
+                autoComplete="off"
+                placeholder="Buscar…"
+                value={query}
+                onChange={(event) => changeQuery(event.target.value)}
+                onKeyDown={(event) => onKeyDown(event, true)}
+                className="h-9 w-full rounded-sm bg-transparent pl-8 pr-2 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:bg-surface-muted pointer-coarse:h-11"
+              />
+            </div>
+          ) : null}
           <div ref={listRef} id={listId} role="listbox" aria-label={ariaLabel} className="max-h-[min(280px,var(--radix-popover-content-available-height))] overflow-y-auto">
             {groups.map((group) => (
+              !options.some((o, i) => o.group === group && visible[i]) ? null :
               <div key={group ?? "_"} role={group ? "group" : "presentation"} aria-label={group}>
                 {group ? <div className="px-2.5 pb-1 pt-2 text-2xs font-semibold uppercase tracking-[0.08em] text-muted-foreground" aria-hidden="true">{group}</div> : null}
                 {options.map((option, index) =>
-                  option.group !== group ? null : (
+                  option.group !== group || !visible[index] ? null : (
                     <div
                       key={`${option.value}-${index}`}
                       id={`${uid}-opt-${index}`}
@@ -236,6 +301,7 @@ function Select({
               </div>
             ))}
             {options.length === 0 ? <div className="px-2.5 py-3 text-center text-muted-foreground">Sin opciones</div> : null}
+            {options.length > 0 && !visible.some(Boolean) ? <div role="status" className="px-2.5 py-3 text-center text-muted-foreground">Nada coincide con «{query.trim()}»</div> : null}
           </div>
         </PopoverPrimitive.Content>
       </PopoverPrimitive.Portal>
