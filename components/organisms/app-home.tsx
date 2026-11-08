@@ -4,6 +4,7 @@ import { useMemo, useSyncExternalStore, type ReactNode } from "react";
 import Link from "next/link";
 import { Star } from "lucide-react";
 import { GridBackdrop } from "@/components/molecules/grid-backdrop";
+import { BalanceCard } from "@/components/organisms/balance-card";
 import { useShell } from "@/components/providers/shell-context";
 import { formatCurrency } from "@/lib/foundation/format";
 import type { HomeSummary } from "@/lib/experience/dashboard/home-summary";
@@ -200,6 +201,12 @@ export function AppHome({ trial, summary, userName }: { trial?: AppHomeTrial | n
           ) : null}
 
           <nav aria-label="Aplicaciones" className="w-full pt-2 min-[1100px]:w-auto min-[1100px]:flex-[0_1_560px]">
+            {/* La tarjeta de balance de Finanzas (la misma, con su línea de ingresos y gastos), del ancho del cajón. */}
+            {summary?.balance30 ? (
+              <div className="mx-auto mb-8 w-full max-w-[532px]">
+                <BalanceCard label="Balance · últimos 30 días" balance={summary.balance30.balance} income={summary.balance30.income} expenses={summary.balance30.expenses} />
+              </div>
+            ) : null}
             {areas.length === 0 ? (
               <p className="text-center text-sm text-muted-foreground">No hay aplicaciones disponibles para tu cuenta.</p>
             ) : (

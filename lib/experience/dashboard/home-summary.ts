@@ -29,6 +29,8 @@ export type HomeSummary = {
     /** Ingresos − gastos del mes (el «Balance neto» de Resumen para el mes). */
     balance: number;
   } | null;
+  /** La tarjeta de balance de Finanzas: últimos 30 días (misma serie que Finanzas, `finance.getSeries(30)`). */
+  balance30: { balance: number; income: number; expenses: number } | null;
   today: { next: { title: string; customer: string; time: string; status: string } | null; more: number } | null;
   attention: { overdueCount: number; overdueTotal: number | null; expiringCount: number | null; expiringDays: number };
   /** CRM (de sus actividades): llamadas y reuniones de hoy, actividades vencidas y oportunidades abiertas sin actividad. */
@@ -50,10 +52,11 @@ export async function loadHomeSummary(tenantId: string, modules: readonly Module
   const [y, m] = day.split("-").map(Number) as [number, number];
   const prev = m === 1 ? { month: 12, year: y - 1 } : { month: m - 1, year: y };
 
-  const [metrics, prevMetrics, week, cartera, membership, bookings, unread, toVerify, crm] = await Promise.all([
+  const [metrics, prevMetrics, week, month30, cartera, membership, bookings, unread, toVerify, crm] = await Promise.all([
     seesMoney && has("finance") ? tenantDb.finance.getMetrics() : null,
     seesMoney && has("finance") ? tenantDb.finance.getMetrics(prev) : null,
     seesMoney && has("finance") ? tenantDb.finance.getSeries(7, false) : null,
+    seesMoney && has("finance") ? tenantDb.finance.getSeries(30, false) : null,
     has("receivables") ? receivables(tenantId) : null,
     has("memberships") ? createMembershipsDb(tenantId).getMetrics() : null,
     has("bookings") ? bookingsBetween(tenantId, bogotaToMs(day, "00:00"), bogotaToMs(addDaysKey(day, 1), "00:00")) : null,
@@ -90,6 +93,7 @@ export async function loadHomeSummary(tenantId: string, modules: readonly Module
           balance: metrics.balance,
         }
       : null,
+    balance30: month30 ? { balance: month30.current.balance, income: month30.current.income, expenses: month30.current.expenses } : null,
     today,
     attention: {
       overdueCount: overdue?.count ?? 0,

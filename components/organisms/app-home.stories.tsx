@@ -11,6 +11,7 @@ const groups = buildTenantNav("retail", ["dashboard", "crm", "bookings", "member
 /** Cifras de muestra con la forma de `loadHomeSummary` (en la app salen de las mismas fuentes que Resumen). */
 const summary: HomeSummary = {
   month: { sales: 48_600_000, salesChange: 12, weekTrend: [5.1, 4.2, 6.3, 5.9, 7.4, 6.8, 8.9], overdue: { total: 7_200_000, count: 3 }, balance: 21_400_000 },
+  balance30: { balance: 27_000, income: 27_000, expenses: 0 },
   today: { next: { title: "Consulta inicial", customer: "María Pérez", time: "10:00 a. m.", status: "Pendiente" }, more: 2 },
   attention: { overdueCount: 3, overdueTotal: 7_200_000, expiringCount: 2, expiringDays: 3 },
   badges: { "Ventas y cobros": 3, Canales: 2 },
@@ -48,7 +49,7 @@ export const SinDatos: Story = {
   render: () => (
     <Shell>
       <div className="min-h-dvh bg-background pt-14">
-        <AppHome summary={{ month: null, today: null, attention: { overdueCount: 0, overdueTotal: null, expiringCount: null, expiringDays: 3 }, badges: {}, updatedAt: "2026-11-07T22:40:00.000Z" }} userName="Santiago" />
+        <AppHome summary={{ month: null, balance30: null, today: null, attention: { overdueCount: 0, overdueTotal: null, expiringCount: null, expiringDays: 3 }, badges: {}, updatedAt: "2026-11-07T22:40:00.000Z" }} userName="Santiago" />
       </div>
     </Shell>
   ),
