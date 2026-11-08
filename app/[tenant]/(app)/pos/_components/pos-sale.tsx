@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Clock, Maximize2, Minimize2, Minus, Package, Pencil, Plus, Search, Store, Trash2, UserRound } from "lucide-react";
 import { Alert } from "@/components/molecules/alert";
@@ -53,14 +53,16 @@ function useClock(): string {
 
 /** Pantalla completa del navegador (como F11), para dejar el punto de venta abierto todo el día. */
 function useFullscreen() {
-  const [on, setOn] = useState(false);
-  const [available, setAvailable] = useState(false);
-  useEffect(() => {
-    setAvailable(document.fullscreenEnabled);
-    const sync = () => setOn(Boolean(document.fullscreenElement));
-    document.addEventListener("fullscreenchange", sync);
-    return () => document.removeEventListener("fullscreenchange", sync);
-  }, []);
+  const on = useSyncExternalStore(
+    (notify) => {
+      document.addEventListener("fullscreenchange", notify);
+      return () => document.removeEventListener("fullscreenchange", notify);
+    },
+    () => Boolean(document.fullscreenElement),
+    () => false,
+  );
+  // Si el navegador no permite pantalla completa (o el servidor aún no lo sabe), el botón no se ofrece.
+  const available = useSyncExternalStore(() => () => {}, () => document.fullscreenEnabled, () => false);
   const toggle = useCallback(() => {
     if (document.fullscreenElement) void document.exitFullscreen();
     else void document.documentElement.requestFullscreen().catch(() => {});

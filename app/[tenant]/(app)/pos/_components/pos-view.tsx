@@ -1,11 +1,9 @@
 "use client";
 
-import { formatMoneyInput } from "@/lib/business/sales/money";
-import { parseMoney } from "@/lib/business/sales/money";
 import { MoneyInput } from "@/components/molecules/money-input";
-import { useMemo, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Minus, Plus, Trash2 } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Alert } from "@/components/molecules/alert";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { inputClasses } from "@/components/atoms/input";
@@ -14,10 +12,7 @@ import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
 import { FormDialog } from "@/components/organisms/form-sheet";
 import Sale, { type PosCategory, type PosCustomer, type PosProduct } from "./pos-sale";
-import { closeTurnAction, createTerminalAction, openTurnAction, scanBarcodeAction, sellAction } from "@/app/[tenant]/(app)/pos/actions";
-import { cartTotals, settlePayments, tipFor } from "@/lib/business/pos/cart";
-import { formatCurrency } from "@/lib/foundation/format";
-import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
+import { createTerminalAction, openTurnAction } from "@/app/[tenant]/(app)/pos/actions";
 
 export type { PosCategory, PosCustomer, PosProduct } from "./pos-sale";
 export type PosTerminalOption = { id: string; name: string; busy: boolean };
