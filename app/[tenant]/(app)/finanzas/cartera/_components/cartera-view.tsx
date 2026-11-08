@@ -22,7 +22,7 @@ import type { Cartera, CarteraRow } from "@/lib/domains/finance/receivables/rece
 
 type Side = "in" | "out";
 
-export default function CarteraView({ slug, receivable, payable }: { slug: string; receivable: Cartera; payable: Cartera | null }) {
+export default function CarteraView({ slug, receivable, payable, methods }: { slug: string; receivable: Cartera; payable: Cartera | null; /** Medios de pago del negocio (para cobrar un abono); sin ellos, efectivo y transferencia. */ methods?: { id: string; name: string }[] }) {
   const [side, setSide] = useState<Side>("in");
   const current = side === "in" ? receivable : (payable ?? { rows: [], aging: receivable.aging });
   return (
@@ -40,12 +40,12 @@ export default function CarteraView({ slug, receivable, payable }: { slug: strin
           />
         </div>
       ) : null}
-      <Panel key={side} slug={slug} side={side} cartera={current} />
+      <Panel key={side} slug={slug} side={side} cartera={current} methods={methods} />
     </div>
   );
 }
 
-function Panel({ slug, side, cartera }: { slug: string; side: Side; cartera: Cartera }) {
+function Panel({ slug, side, cartera, methods }: { slug: string; side: Side; cartera: Cartera; methods?: { id: string; name: string }[] }) {
   const [paying, setPaying] = useState<CarteraRow | null>(null);
   const router = useRouter();
   const { toast } = useToast();
@@ -121,7 +121,8 @@ function Panel({ slug, side, cartera }: { slug: string; side: Side; cartera: Car
           const method = String(d.get("method") ?? "");
           if (!(amount > 0)) return { ok: false, message: "Revisa los campos marcados.", fieldErrors: { amount: "Escribe un valor mayor que cero." } };
           if (amount > paying.balance) return { ok: false, message: "Revisa los campos marcados.", fieldErrors: { amount: "No puede ser mayor que el saldo." } };
-          const r = side === "in" ? await receivePaymentAction(slug, paying.id, { amount, method }) : await paySupplierAction(slug, paying.id, { amount, method, note: String(d.get("note") ?? "") });
+          const chosen = methods?.find((m) => m.id === method);
+          const r = side === "in" ? await receivePaymentAction(slug, paying.id, chosen ? { amount, method: "", methodId: chosen.id } : { amount, method }) : await paySupplierAction(slug, paying.id, { amount, method, note: String(d.get("note") ?? "") });
           return r.ok ? { ok: true, message: r.message } : { ok: false, message: r.message };
         }}
         onSuccess={({ message }) => {
@@ -136,8 +137,8 @@ function Panel({ slug, side, cartera }: { slug: string; side: Side; cartera: Car
             </Field>
             <Field label="Medio de pago" required>
               {(c) => (
-                <Select {...c} name="method" defaultValue="CASH">
-                  {PAYMENT_METHODS.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
+                <Select {...c} name="method" defaultValue={side === "in" && methods?.length ? methods[0]!.id : "CASH"}>
+                  {(side === "in" && methods?.length ? methods.map((m) => ({ value: m.id, label: m.name })) : PAYMENT_METHODS).map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
                 </Select>
               )}
             </Field>

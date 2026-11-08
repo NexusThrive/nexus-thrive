@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { receiveInvoicePayment } from "@/lib/business/sales/money-service";
 import { can } from "@/lib/core/auth/permissions";
 import { paySupplierInvoice } from "@/lib/domains/finance/receivables/receivables-db";
+import { offeredPaymentMethods } from "@/lib/business/sales/payment-methods-db";
 import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
 import { logTenantAction } from "@/lib/core/tenancy/audit";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
@@ -14,11 +15,19 @@ const refresh = (slug: string) => revalidatePath(`/${slug}/finanzas/cartera`);
 const peso = (n: number) => n.toLocaleString("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 });
 
 /** Abono a una cuenta por cobrar: lo hace quien maneja dinero. */
-export async function receivePaymentAction(slug: string, invoiceId: string, input: { amount: number; method: string }): Promise<CarteraResult> {
+export async function receivePaymentAction(slug: string, invoiceId: string, input: { amount: number; method: string; methodId?: string }): Promise<CarteraResult> {
   const ctx = await requireTenantContext(slug, "/finanzas/cartera");
   if (!ctx || !can(ctx.role, "money.handle")) return { ok: false, message: "Tu rol no puede registrar cobros." };
-  if (!methodOk(input.method)) return { ok: false, message: "Elige el medio de pago." };
-  const r = await receiveInvoicePayment(ctx.tenantId, invoiceId, input.amount, input.method, ctx.memberId);
+  // Con un medio del negocio, el tipo y el nombre salen de su configuración (un cobro de cartera no puede ser «a crédito»).
+  let method = input.method;
+  let methodName: string | null = null;
+  if (input.methodId) {
+    const chosen = (await offeredPaymentMethods(ctx.tenantId)).find((m) => m.id === input.methodId && m.kind !== "CREDIT");
+    if (!chosen) return { ok: false, message: "Ese medio de pago ya no está disponible." };
+    method = chosen.kind;
+    methodName = chosen.name;
+  } else if (!methodOk(method)) return { ok: false, message: "Elige el medio de pago." };
+  const r = await receiveInvoicePayment(ctx.tenantId, invoiceId, input.amount, method, ctx.memberId, methodName);
   if (!r.ok) return r;
   await logTenantAction(ctx, "BIZ_CARTERA_PAYMENT", { direction: "in", invoiceId, amount: input.amount, settled: r.settled });
   refresh(slug);

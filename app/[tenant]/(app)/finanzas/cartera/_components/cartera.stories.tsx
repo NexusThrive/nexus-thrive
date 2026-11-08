@@ -35,3 +35,6 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {};
 export const SoloPorCobrar: Story = { args: { payable: null } };
 export const SinCartera: Story = { args: { receivable: make([]), payable: make([]) } };
+
+/** El abono se cobra con los medios que el negocio configuró (aquí, Nequi además de efectivo). */
+export const ConMediosDelNegocio: Story = { args: { payable: null, methods: [{ id: "m1", name: "Efectivo" }, { id: "m2", name: "Nequi" }] } };

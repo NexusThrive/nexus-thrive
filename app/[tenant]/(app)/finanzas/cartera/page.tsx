@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/molecules/page-header";
 import { can } from "@/lib/core/auth/permissions";
 import { payables, receivables } from "@/lib/domains/finance/receivables/receivables-db";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
+import { offeredPaymentMethods } from "@/lib/business/sales/payment-methods-db";
 import CarteraView from "./_components/cartera-view";
 
 /** Cartera: lo que te deben (cuentas de cobro) y lo que debes (facturas de proveedor), por antigüedad. */
@@ -25,7 +26,7 @@ export default async function CarteraPage({ params }: { params: Promise<{ tenant
   return (
     <div className="grid gap-5">
       {header}
-      <CarteraView slug={tenant} receivable={toCollect} payable={toPay} />
+      <CarteraView slug={tenant} receivable={toCollect} payable={toPay} methods={(await offeredPaymentMethods(ctx.tenantId)).filter((m) => m.kind !== "CREDIT").map((m) => ({ id: m.id, name: m.name }))} />
     </div>
   );
 }

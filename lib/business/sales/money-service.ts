@@ -316,6 +316,8 @@ export async function receiveInvoicePayment(
   amount: number,
   method: string,
   userId: string,
+  /** Nombre del medio que eligió el negocio («Nequi»): queda en las notas del pago. */
+  methodName?: string | null,
 ): Promise<{ ok: true; receipt: string; balance: number; settled: boolean } | { ok: false; message: string }> {
   try {
     return await moneyTransaction(async (tx) => {
@@ -341,6 +343,7 @@ export async function receiveInvoicePayment(
         {
           amount,
           method,
+          notes: methodName ?? null,
           customerId: inv.customerId,
           invoiceId: inv.id,
           description: `Abono a cuenta de cobro N.º ${inv.number} · ${inv.customerName}`,
