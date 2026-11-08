@@ -24,7 +24,7 @@ function Demo({ fail = false, fullHref }: { fail?: boolean; fullHref?: string })
           await new Promise((r) => setTimeout(r, 900));
           return fail
             ? { ok: false, message: "El valor supera el máximo permitido de $ 50.000.000 por operación. Revísalo o pide a Nexus ampliar el límite de tu negocio." }
-            : { ok: true, reference: "REC-1158", createdAt: new Date().toISOString() };
+            : { ok: true, reference: "REC-1158", createdAt: new Date().toISOString(), link: "https://nexus.example/r/demo" };
         }}
       />
     </>
@@ -36,7 +36,7 @@ const meta = {
   component: Demo,
   // El cobro avisa con toasts: sin proveedor la historia fallaba al pintar.
   decorators: [(Story) => <ToastProvider><Story /></ToastProvider>],
-  parameters: { docs: { description: { component: "FLU·04 — teclado (también el del computador) → cliente → medio → Cobrar con la N → recibo impreso → WhatsApp o Listo." } } },
+  parameters: { docs: { description: { component: "FLU·04 — teclado (también el del computador) → cliente → medio → Cobrar con la N → la hoja se cierra y el comprobante sale abajo a la derecha con «Compartir» y «Ver», y luego se oculta." } } },
 } satisfies Meta<typeof Demo>;
 export default meta;
 

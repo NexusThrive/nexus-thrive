@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Banknote, Check, Send } from "lucide-react";
+import { Banknote, ExternalLink, Send } from "lucide-react";
 import { AmountDisplay } from "@/components/atoms/amount-display";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { Chip, ChipRow } from "@/components/atoms/chip";
@@ -11,7 +11,7 @@ import { Alert } from "@/components/molecules/alert";
 import { Field } from "@/components/molecules/field";
 import { FullPanelLink } from "@/components/molecules/full-panel-link";
 import { Keypad, applyKey, type KeypadKey } from "@/components/molecules/keypad";
-import { ReceiptPrinter, type ReceiptData } from "@/components/organisms/receipt-printer";
+import type { ReceiptData } from "@/components/organisms/receipt-printer";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { drawReceiptPng, shareReceiptOnWhatsapp } from "@/lib/business/sales/receipt-share";
 import { receiptQrDataUrl, receiptQrPayload } from "@/lib/business/sales/receipt-qr";
@@ -36,7 +36,8 @@ const cop = (n: number) => `$ ${n.toLocaleString("es-CO")}`;
  * Cobro completo del artefacto (FLU·04): cifra que salta con cada tecla,
  * teclado numérico (también el del computador), cliente, medio de pago en
  * chips y concepto. "Cobrar" gira la N mientras el servidor guarda y, al
- * confirmar, la hoja muestra la impresora de recibos con el comprobante.
+ * confirmar, la hoja se cierra y el comprobante sale abajo a la derecha
+ * (aviso tipo recibo de `useToast`) con «Compartir» y «Ver»; luego se oculta.
  * Genérico: la escritura real la hace `onCharge`.
  */
 export function PaymentSheet({
@@ -65,8 +66,6 @@ export function PaymentSheet({
   const [description, setDescription] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [receipt, setReceipt] = useState<ReceiptData | null>(null);
-  const [printed, setPrinted] = useState(false);
 
   const customer = customers.find((c) => c.id === customerId);
   const methodLabel = methods.find((m) => m.value === method)?.label ?? method;
@@ -75,7 +74,7 @@ export function PaymentSheet({
 
   // Teclado del computador: dígitos y borrar, salvo escribiendo en un campo.
   useEffect(() => {
-    if (!open || receipt) return;
+    if (!open) return;
     const onKey = (event: KeyboardEvent) => {
       const tag = (event.target as HTMLElement | null)?.tagName;
       if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA") return;
@@ -84,7 +83,7 @@ export function PaymentSheet({
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [open, receipt]);
+  }, [open]);
 
   const reset = () => {
     setAmount(0);
@@ -92,8 +91,6 @@ export function PaymentSheet({
     setMethod(methods[0]?.value ?? "");
     setDescription("");
     setError(null);
-    setReceipt(null);
-    setPrinted(false);
   };
 
   const close = (next: boolean) => {
@@ -114,7 +111,7 @@ export function PaymentSheet({
       toast({ title: "No se registró el cobro", description: result.message, variant: "error" });
       return;
     }
-    setLink(result.link ?? null);
+    const link = result.link ?? null;
     const date = new Intl.DateTimeFormat("es-CO", {
       timeZone: "America/Bogota",
       day: "2-digit",
@@ -126,7 +123,7 @@ export function PaymentSheet({
     const qr = await receiptQrDataUrl(
       receiptQrPayload({ link: result.link, reference: result.reference, total: cop(amount), business: business.name }),
     ).catch(() => undefined);
-    setReceipt({
+    const receipt: ReceiptData = {
       business: business.name,
       subtitle: business.subtitle,
       client: customer?.name ?? "Mostrador",
@@ -139,17 +136,25 @@ export function PaymentSheet({
         { label: "Medio", value: methodLabel },
         { label: "Fecha", value: date },
       ],
+    };
+    const phone = customer?.phone;
+    const firstName = customer?.name.split(" ")[0];
+    // El modal se cierra y el comprobante sale abajo a la derecha (sube y, al rato, baja y se oculta).
+    close(false);
+    toast({
+      title: "Comprobante generado",
+      receipt: { total: receipt.total, concept, client: receipt.client, reference: result.reference },
+      actions: [
+        { label: "Compartir", icon: Send, onClick: () => shareReceipt(receipt, link, phone, firstName) },
+        ...(link ? [{ label: "Ver", icon: ExternalLink, onClick: () => void window.open(link, "_blank", "noopener") }] : []),
+      ],
     });
   };
 
-  const [link, setLink] = useState<string | null>(null);
-  const [sharing, setSharing] = useState(false);
   const { toast } = useToast();
 
-  /** Imagen del recibo + texto + enlace: hoja de compartir en celular, portapapeles + chat en computador. */
-  const sendWhatsapp = async () => {
-    if (!receipt || sharing) return;
-    setSharing(true);
+  /** Imagen del recibo + texto + enlace: hoja de compartir en celular, portapapeles + chat en computador. Sirve con la hoja cerrada. */
+  const shareReceipt = async (receipt: ReceiptData, link: string | null, phone: string | null | undefined, firstName: string | undefined) => {
     try {
       const image = await drawReceiptPng({
         business: receipt.business,
@@ -160,36 +165,17 @@ export function PaymentSheet({
         qr: receipt.qr,
         footer: link ? "Recibo verificable en el enlace" : undefined,
       });
-      const first = customer ? ` ${customer.name.split(" ")[0]}` : "";
+      const first = firstName ? ` ${firstName}` : "";
       const text = `Hola${first}, este es tu comprobante de ${business.name}: ${receipt.total} por ${receipt.concept} (${receipt.meta[0].value}).${link ? `\nVer recibo: ${link}` : ""}\n¡Gracias por tu pago!`;
-      const r = await shareReceiptOnWhatsapp({ image, fileName: `recibo-${receipt.meta[0].value}.png`, text, phone: customer?.phone });
+      const r = await shareReceiptOnWhatsapp({ image, fileName: `recibo-${receipt.meta[0].value}.png`, text, phone });
       if (r === "copied") toast({ title: "Imagen del recibo copiada", description: "En el chat de WhatsApp pégala con Ctrl+V (o Cmd+V) y envía.", variant: "success" });
       if (r === "text-only") toast({ title: "Abrimos WhatsApp con el texto", description: "Tu navegador no permite copiar la imagen; el enlace del recibo va en el mensaje.", variant: "info" });
-      if (r !== "cancelled") close(false);
     } catch {
       toast({ title: "No se pudo preparar el recibo", variant: "error" });
-    } finally {
-      setSharing(false);
     }
   };
 
-  const footer = receipt ? (
-    <>
-      <button
-        type="button"
-        onClick={sendWhatsapp}
-        disabled={!printed || sharing}
-        className={cn(buttonVariants({ variant: "outline" }), "flex-1 sm:flex-none")}
-      >
-        <Send aria-hidden="true" className="size-4" />
-        {sharing ? "Preparando…" : "Enviar por WhatsApp"}
-      </button>
-      <button type="button" onClick={() => close(false)} className={cn(buttonVariants(), "flex-1 sm:flex-none")}>
-        <Check aria-hidden="true" className="size-4" />
-        Listo
-      </button>
-    </>
-  ) : (
+  const footer = (
     <>
       <button type="button" onClick={() => close(false)} disabled={busy} className={cn(buttonVariants({ variant: "outline" }), "flex-1 sm:flex-none")}>
         Cancelar
@@ -214,15 +200,13 @@ export function PaymentSheet({
       title="Registrar pago"
       description={
         <>
-          {receipt ? "Comprobante listo para entregar." : "Cobra y genera el comprobante."}
-          {fullHref && !receipt ? <> <FullPanelLink href={fullHref} /></> : null}
+          Cobra y genera el comprobante.
+          {fullHref ? <> <FullPanelLink href={fullHref} /></> : null}
         </>
       }
       footer={footer}
     >
-      {receipt ? (
-        <ReceiptPrinter data={receipt} onPrinted={() => setPrinted(true)} className="py-2" />
-      ) : (
+      {
         <div className="grid grid-cols-1 gap-4">
           {error ? <Alert tone="danger">{error}</Alert> : null}
           <div>
@@ -270,7 +254,7 @@ export function PaymentSheet({
             )}
           </Field>
         </div>
-      )}
+      }
     </ResponsiveSheet>
   );
 }

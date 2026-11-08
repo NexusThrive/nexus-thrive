@@ -94,6 +94,8 @@ export function AppHome({ trial = null, summary: input, userName = null }: { tri
   }, [input, tenant, trial, userName]);
   const ready = !isPromise || fresh?.from === input;
   const summary: HomeSummary | null = !isThenable<HomeSummary | null>(input) ? (input ?? null) : ready ? fresh!.data : (lastHome.get(tenant)?.summary ?? null);
+  // El balance que ya se había visto: al volver, cuenta desde ahí hasta la cifra nueva (no desde 0). Se lee una vez, al montar.
+  const [seenBalance] = useState(() => lastHome.get(tenant)?.summary?.balance30?.balance);
   // Solo la primera vez (nada guardado) se ven bloques en esqueleto; nunca la página entera.
   const pending = !ready && !summary;
 
@@ -230,7 +232,7 @@ export function AppHome({ trial = null, summary: input, userName = null }: { tri
             {pending ? <Skeleton className="mx-auto mb-8 h-[156px] w-full max-w-[532px] rounded-xl" /> : null}
             {summary?.balance30 ? (
               <div className="mx-auto mb-8 w-full max-w-[532px]">
-                <BalanceCard label="Balance · últimos 30 días" balance={summary.balance30.balance} income={summary.balance30.income} expenses={summary.balance30.expenses} />
+                <BalanceCard label="Balance · últimos 30 días" balance={summary.balance30.balance} income={summary.balance30.income} expenses={summary.balance30.expenses} from={seenBalance} />
               </div>
             ) : null}
             {actions.length ? (
