@@ -518,6 +518,7 @@ export function Board({
 
   return (
     <DndContext
+      id="crm-pipeline"
       sensors={sensors}
       onDragStart={(e) => setActiveId(String(e.active.id))}
       onDragEnd={onDragEnd}

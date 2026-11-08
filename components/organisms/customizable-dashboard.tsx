@@ -733,6 +733,7 @@ export function CustomizableDashboard({
         </p>
       ) : (
         <DndContext
+          id="dashboard-widgets"
           sensors={sensors}
           collisionDetection={collision}
           onDragStart={onDragStart}

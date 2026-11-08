@@ -207,6 +207,7 @@ export function AppGrid({ areas, badges }: { areas: AppArea[]; badges: Record<st
 
   return (
     <DndContext
+      id="app-grid"
       sensors={sensors}
       onDragStart={(e) => setActiveId(String(e.active.id))}
       onDragEnd={onDragEnd}
