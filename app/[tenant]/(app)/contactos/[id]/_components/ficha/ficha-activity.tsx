@@ -169,7 +169,8 @@ export default function FichaActivity({
       {groups.length === 0 ? (
         <p className="mt-6 text-center text-sm text-muted-foreground">{term ? "Nada coincide con la búsqueda." : "Aún no hay actividad."}</p>
       ) : (
-        <div className="mt-2">
+        // Alto máximo y scroll propio: la columna no se alarga sin fin. Se enfoca con Tab para desplazarla.
+        <div role="region" aria-label="Historial de actividad" tabIndex={0} className="-me-2 mt-2 max-h-[min(60vh,560px)] overflow-y-auto overscroll-contain pe-2 outline-none focus-visible:outline-2 focus-visible:outline-ring">
           {groups.map((group) => (
             <div key={group.label}>
               <p className="my-4 flex items-center gap-3 text-xs text-muted-foreground">

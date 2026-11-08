@@ -666,42 +666,45 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
                 </div>
               </form>
             ) : null}
-            {groups.map((g) => (
-              <div key={g.label} className="grid gap-4">
-                <p className="flex items-center gap-3 text-xs text-muted-foreground">
-                  <span aria-hidden="true" className="h-px flex-1 bg-border" />
-                  {g.label}
-                  <span aria-hidden="true" className="h-px flex-1 bg-border" />
-                </p>
-                <ol className="grid gap-4">
-                  {g.items.map((e) => {
-                    const t = eventText(e);
-                    return (
-                      <li key={e.id} className="flex items-start gap-3">
-                        <span aria-hidden="true" className={cn("mt-1.5 size-2 shrink-0 rounded-full", e.kind === "STAGE" || e.kind === "WON" ? "bg-accent" : "bg-muted-foreground/60")} />
-                        <div className="grid min-w-0 gap-1">
-                          <span className="text-ui text-foreground">{t.title}</span>
-                          {t.stage ? (
-                            <span className="flex items-center gap-1.5">
-                              <span className="rounded-md bg-surface-muted px-2 py-0.5 text-xs font-medium text-foreground">{t.stage.from}</span>
-                              <span aria-label="a" className="text-xs text-muted-foreground">
-                                →
+            {/* La línea de tiempo tiene alto máximo y scroll propio: la columna no se alarga sin fin. Se enfoca con Tab para desplazarla. */}
+            <div role="region" aria-label="Historial de actividad" tabIndex={0} className="-me-2 grid max-h-[min(60vh,560px)] gap-[18px] overflow-y-auto overscroll-contain pe-2 outline-none focus-visible:outline-2 focus-visible:outline-ring">
+              {groups.map((g) => (
+                <div key={g.label} className="grid gap-4">
+                  <p className="flex items-center gap-3 text-xs text-muted-foreground">
+                    <span aria-hidden="true" className="h-px flex-1 bg-border" />
+                    {g.label}
+                    <span aria-hidden="true" className="h-px flex-1 bg-border" />
+                  </p>
+                  <ol className="grid gap-4">
+                    {g.items.map((e) => {
+                      const t = eventText(e);
+                      return (
+                        <li key={e.id} className="flex items-start gap-3">
+                          <span aria-hidden="true" className={cn("mt-1.5 size-2 shrink-0 rounded-full", e.kind === "STAGE" || e.kind === "WON" ? "bg-accent" : "bg-muted-foreground/60")} />
+                          <div className="grid min-w-0 gap-1">
+                            <span className="text-ui text-foreground">{t.title}</span>
+                            {t.stage ? (
+                              <span className="flex items-center gap-1.5">
+                                <span className="rounded-md bg-surface-muted px-2 py-0.5 text-xs font-medium text-foreground">{t.stage.from}</span>
+                                <span aria-label="a" className="text-xs text-muted-foreground">
+                                  →
+                                </span>
+                                <span className="rounded-md bg-surface-muted px-2 py-0.5 text-xs font-medium text-accent-text">{t.stage.to}</span>
                               </span>
-                              <span className="rounded-md bg-surface-muted px-2 py-0.5 text-xs font-medium text-accent-text">{t.stage.to}</span>
+                            ) : null}
+                            {t.body ? <span className="whitespace-pre-line text-ui text-muted-foreground">{t.body}</span> : null}
+                            <span className="text-xs text-muted-foreground">
+                              {e.author ? `${e.author} · ` : ""}
+                              {TIME.format(new Date(e.at))}
                             </span>
-                          ) : null}
-                          {t.body ? <span className="whitespace-pre-line text-ui text-muted-foreground">{t.body}</span> : null}
-                          <span className="text-xs text-muted-foreground">
-                            {e.author ? `${e.author} · ` : ""}
-                            {TIME.format(new Date(e.at))}
-                          </span>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ol>
-              </div>
-            ))}
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ol>
+                </div>
+              ))}
+            </div>
             {groups.length === 0 ? <p className="text-center text-sm text-muted-foreground">{q ? "Nada coincide con la búsqueda." : "Aún no hay actividad."}</p> : null}
           </section>
 

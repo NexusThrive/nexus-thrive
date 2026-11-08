@@ -36,6 +36,7 @@ const detail: Detail = {
   ],
   activities: [{ id: "t1", kind: "CALL", title: "Llamar para confirmar cantidades", dueAt: at(17), assigneeId: "u1", assignee: "Santiago", done: false }],
   events: [
+    ...Array.from({ length: 14 }, (_, i) => ({ id: `n${i}`, kind: "NOTE", data: { text: `Nota de seguimiento ${i + 1}: confirmó tallas y fecha de entrega.` }, author: "Santiago", at: at(18, -(i + 1)) })),
     { id: "e3", kind: "STAGE", data: { from: "Calificado", to: "Nuevo" }, author: "Santiago", at: at(18) },
     { id: "e2", kind: "STAGE", data: { from: "Nuevo", to: "Calificado" }, author: "Santiago", at: at(18) },
     { id: "e1", kind: "CREATED", data: { stage: "Nuevo" }, author: "Santiago", at: at(18) },
