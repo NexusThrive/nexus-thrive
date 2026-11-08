@@ -63,6 +63,13 @@ function useFullscreen() {
   );
   // Si el navegador no permite pantalla completa (o el servidor aún no lo sabe), el botón no se ofrece.
   const available = useSyncExternalStore(() => () => {}, () => document.fullscreenEnabled, () => false);
+  // Al salir del punto de venta (Inicio, otra app o cerrar el turno) el navegador no se queda en pantalla completa.
+  useEffect(
+    () => () => {
+      if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
+    },
+    [],
+  );
   const toggle = useCallback(() => {
     if (document.fullscreenElement) void document.exitFullscreen();
     else void document.documentElement.requestFullscreen().catch(() => {});
