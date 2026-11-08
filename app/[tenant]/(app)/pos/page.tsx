@@ -32,7 +32,8 @@ export default async function PosPage({ params }: { params: Promise<{ tenant: st
   ]);
   return (
     <div className="grid gap-5">
-      {header}
+      {/* Con el turno abierto no hay encabezado de página: la barra de la venta ya dice la caja, quién atiende y la hora. */}
+      {turn ? null : header}
       <PosView
         slug={tenant}
         canManage={can(ctx.role, "business.manage")}

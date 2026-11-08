@@ -181,7 +181,7 @@ export default function Sale({ slug, turn, products, categories, customers }: { 
           <a href={`/${slug}/pos/receipt/${done.id}`} target="_blank" rel="noopener noreferrer" className="font-semibold underline underline-offset-2">Imprimir tiquete</a>
         </Alert>
       ) : null}
-      <div className="grid gap-4 lg:h-[calc(100dvh-11.5rem)] lg:min-h-[520px] lg:grid-cols-[minmax(0,1fr)_400px]">
+      <div className="grid gap-4 lg:h-[calc(100dvh-9.5rem)] lg:min-h-[520px] lg:grid-cols-[minmax(0,1fr)_400px]">
         <section aria-label="Productos" className="flex min-h-0 min-w-0 flex-col gap-3">
           <div className="relative">
             <Search aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
