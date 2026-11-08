@@ -1,5 +1,6 @@
 "use client";
 
+import { MoneyInput } from "@/components/molecules/money-input";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Copy, Plus, Star } from "lucide-react";
@@ -140,7 +141,7 @@ export default function GrowthView({ slug, baseUrl, siteSlug, siteEnabled, links
               <Field label="Medio" required hint="social, cpc, correo…">{(c) => <input {...c} name="medium" autoComplete="off" className={inputClasses} placeholder="social" />}</Field>
             </div>
             <Field label="Campaña" required>{(c) => <input {...c} name="campaign" autoComplete="off" className={inputClasses} placeholder="lanzamiento-octubre" />}</Field>
-            <Field label="Inversión (COP)" optional hint="Para calcular el costo por contacto y el retorno.">{(c) => <input {...c} name="spend" inputMode="numeric" autoComplete="off" className={inputClasses} placeholder="200000" />}</Field>
+            <Field label="Inversión (COP)" optional hint="Para calcular el costo por contacto y el retorno.">{(c) => <MoneyInput {...c} name="spend" placeholder="200000" />}</Field>
           </div>
         )}
       </FormDialog>

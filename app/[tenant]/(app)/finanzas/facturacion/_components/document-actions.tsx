@@ -1,5 +1,6 @@
 "use client";
 
+import { MoneyInput } from "@/components/molecules/money-input";
 import { useState } from "react";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { inputClasses } from "@/components/atoms/input";
@@ -81,7 +82,7 @@ export default function DocumentActions({ slug, doc, canManage, canCharge, onCha
           <div className="grid gap-3">
             <Field label="Concepto" required>{(c) => <input {...c} name="concept" autoComplete="off" className={inputClasses} placeholder={open === "debit" ? "Intereses de mora" : "Descuento por pronto pago"} />}</Field>
             <div className="grid grid-cols-2 gap-3">
-              <Field label="Valor (antes de impuestos)" required error={fieldErrors.amount}>{(c) => <input {...c} name="amount" inputMode="decimal" autoComplete="off" className={inputClasses} />}</Field>
+              <Field label="Valor (antes de impuestos)" required error={fieldErrors.amount}>{(c) => <MoneyInput {...c} name="amount" />}</Field>
               <Field label="IVA %" optional>{(c) => <input {...c} name="tax" inputMode="decimal" autoComplete="off" defaultValue="0" className={inputClasses} />}</Field>
             </div>
             <Field label="Motivo" required>{(c) => <input {...c} name="reason" autoComplete="off" maxLength={200} className={inputClasses} />}</Field>

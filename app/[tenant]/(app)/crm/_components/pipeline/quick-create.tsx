@@ -1,5 +1,7 @@
 "use client";
 
+import { parseMoney } from "@/lib/business/sales/money";
+import { MoneyInput } from "@/components/molecules/money-input";
 import { useEffect, useId, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, Search, X } from "lucide-react";
@@ -271,7 +273,7 @@ export function QuickCreate({ slug, stageId, preset = null, onClose }: { slug: s
           <input type="tel" aria-label="Teléfono" aria-invalid={errors.phone ? true : undefined} value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+57 Teléfono" className={field} />
         </div>
         <div className="flex items-center gap-2">
-          <input inputMode="numeric" aria-label="Valor estimado" aria-invalid={errors.value ? true : undefined} value={value} onChange={(e) => setValue(e.target.value)} placeholder="$ 0 · Valor estimado" className={field} />
+          <MoneyInput aria-label="Valor estimado" aria-invalid={errors.value ? true : undefined} value={parseMoney(value)} onValueChange={(v) => setValue(v == null ? "" : String(v))} placeholder="Valor estimado" className={field} />
           <StarsInput value={priority} onChange={setPriority} />
         </div>
         <Select aria-label="Próxima actividad" value={activity} onChange={(e) => setActivity(e.target.value as ActivityKind | "NONE")} className="h-9 text-ui">

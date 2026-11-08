@@ -1,5 +1,8 @@
 "use client";
 
+import { formatMoneyInput } from "@/lib/business/sales/money";
+import { parseMoney } from "@/lib/business/sales/money";
+import { MoneyInput } from "@/components/molecules/money-input";
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Minus, Plus, Trash2 } from "lucide-react";
@@ -30,7 +33,7 @@ function NoTurn({ slug, canManage, terminals }: { slug: string; canManage: boole
   const { toast } = useToast();
   const [pending, start] = useTransition();
   const [terminalId, setTerminalId] = useState(terminals.find((t) => !t.busy)?.id ?? "");
-  const [opening, setOpening] = useState("0");
+  const [opening, setOpening] = useState<number | null>(0);
   const [naming, setNaming] = useState(false);
   const run = (fn: () => Promise<{ ok: boolean; message: string }>) =>
     start(async () => {
@@ -53,9 +56,9 @@ function NoTurn({ slug, canManage, terminals }: { slug: string; canManage: boole
             )}
           </Field>
           <Field label="Efectivo con el que abres" required hint="Lo que hay en la caja al empezar.">
-            {(c) => <input {...c} inputMode="decimal" value={opening} onChange={(e) => setOpening(e.target.value)} className={inputClasses} />}
+            {(c) => <MoneyInput id={c.id} aria-describedby={c["aria-describedby"]} value={opening} onValueChange={setOpening} />}
           </Field>
-          <button type="button" disabled={pending || !terminalId} onClick={() => run(() => openTurnAction(slug, terminalId, Number(opening.replace(",", ".")) || 0))} className={buttonVariants({ className: "justify-self-start" })}>
+          <button type="button" disabled={pending || !terminalId} onClick={() => run(() => openTurnAction(slug, terminalId, opening ?? 0))} className={buttonVariants({ className: "justify-self-start" })}>
             {pending ? "Abriendo…" : "Abrir turno"}
           </button>
         </div>
@@ -215,7 +218,7 @@ function Sale({ slug, turn, products }: { slug: string; turn: { sessionId: strin
                 <Select aria-label={`Medio de pago ${i + 1}`} value={p.method} onChange={(e) => setPays((ps) => ps.map((x, j) => (j === i ? { ...x, method: e.target.value } : x)))} className="w-36">
                   {PAYMENT_METHODS.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
                 </Select>
-                <input aria-label={`Valor del pago ${i + 1}`} inputMode="decimal" value={p.amount} onChange={(e) => setPays((ps) => ps.map((x, j) => (j === i ? { ...x, amount: e.target.value } : x)))} placeholder={i === 0 ? String(due) : ""} className={inputClasses} />
+                <MoneyInput aria-label={`Valor del pago ${i + 1}`} value={parseMoney(p.amount)} onValueChange={(v) => setPays((ps) => ps.map((x, j) => (j === i ? { ...x, amount: v == null ? "" : String(v) } : x)))} placeholder={i === 0 ? formatMoneyInput(due) : ""} />
               </div>
             ))}
             <button type="button" onClick={() => setPays((ps) => [...ps, { method: "TRANSFER", amount: "" }])} className={buttonVariants({ variant: "ghost", size: "sm", className: "justify-self-start" })}>Agregar otro pago</button>
@@ -251,7 +254,7 @@ function Sale({ slug, turn, products }: { slug: string; turn: { sessionId: strin
       >
         {({ fieldErrors }) => (
           <div className="grid gap-3">
-            <Field label="Efectivo contado" required error={fieldErrors.counted}>{(c) => <input {...c} name="counted" inputMode="decimal" autoComplete="off" className={inputClasses} />}</Field>
+            <Field label="Efectivo contado" required error={fieldErrors.counted}>{(c) => <MoneyInput {...c} name="counted" />}</Field>
             <Field label="Notas" optional>{(c) => <input {...c} name="notes" autoComplete="off" maxLength={300} className={inputClasses} />}</Field>
           </div>
         )}

@@ -1,5 +1,6 @@
 "use client";
 
+import { MoneyInput } from "@/components/molecules/money-input";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
@@ -156,7 +157,7 @@ function RatesPanel({ slug, rates }: { slug: string; rates: TaxRateRow[] }) {
             </Field>
             <div className="grid grid-cols-2 gap-3">
               <Field label="Tarifa (%)" required>{(c) => <input {...c} name="ratePct" inputMode="decimal" autoComplete="off" className={inputClasses} placeholder="19" />}</Field>
-              <Field label="Base mínima" optional hint="Retenciones: desde qué valor se practican.">{(c) => <input {...c} name="minBase" inputMode="decimal" autoComplete="off" className={inputClasses} placeholder="0" />}</Field>
+              <Field label="Base mínima" optional hint="Retenciones: desde qué valor se practican.">{(c) => <MoneyInput {...c} name="minBase" placeholder="0" />}</Field>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <Field label="Rige desde" required>{(c) => <DateInput {...c} name="validFrom" defaultValue={todayCO()} className={inputClasses} />}</Field>

@@ -1,5 +1,6 @@
 "use client";
 
+import { MoneyInput } from "@/components/molecules/money-input";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
@@ -111,7 +112,7 @@ export default function OpportunitiesView({ slug, open, won, lost, customers, to
               )}
             </Field>
             <Field label="Qué le interesa" required error={fieldErrors.interest}>{(c) => <input {...c} name="interest" autoComplete="off" maxLength={200} className={inputClasses} placeholder="Ej.: 40 camisetas con logo" />}</Field>
-            <Field label="Valor estimado (COP)">{(c) => <input {...c} name="value" inputMode="numeric" autoComplete="off" className={inputClasses} />}</Field>
+            <Field label="Valor estimado (COP)">{(c) => <MoneyInput {...c} name="value" />}</Field>
             <Field label="Siguiente paso">{(c) => <input {...c} name="nextAction" autoComplete="off" maxLength={200} className={inputClasses} placeholder="Ej.: Enviar cotización" />}</Field>
             <Field label="Para cuándo">{(c) => <DateInput {...c} name="nextDay" defaultValue={today} />}</Field>
           </div>

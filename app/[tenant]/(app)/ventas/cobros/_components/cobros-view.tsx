@@ -1,5 +1,6 @@
 "use client";
 
+import { MoneyInput } from "@/components/molecules/money-input";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Copy, Plus } from "lucide-react";
@@ -133,7 +134,7 @@ export default function CobrosView({ slug, baseUrl, intents, runs, canAdmin, tod
       >
         {({ fieldErrors }) => (
           <div className="grid gap-3">
-            <Field label="Valor (COP)" required error={fieldErrors.amount}>{(c) => <input {...c} name="amount" inputMode="numeric" autoComplete="off" className={inputClasses} placeholder="150000" />}</Field>
+            <Field label="Valor (COP)" required error={fieldErrors.amount}>{(c) => <MoneyInput {...c} name="amount" placeholder="150000" />}</Field>
             <Field label="Qué se cobra" required>{(c) => <input {...c} name="description" autoComplete="off" maxLength={160} className={inputClasses} placeholder="Concepto" />}</Field>
             {gateways.length > 1 ? (
               <Field label="Pasarela" required>
@@ -222,7 +223,7 @@ export default function CobrosView({ slug, baseUrl, intents, runs, canAdmin, tod
       >
         {({ fieldErrors }) => (
           <div className="grid gap-3">
-            <Field label="Valor a reembolsar" required error={fieldErrors.amount} hint="Total o parcial.">{(c) => <input {...c} name="amount" inputMode="numeric" autoComplete="off" defaultValue={small ? String(small.row.amount - small.row.refundedTotal) : ""} className={inputClasses} />}</Field>
+            <Field label="Valor a reembolsar" required error={fieldErrors.amount} hint="Total o parcial.">{(c) => <MoneyInput {...c} name="amount" defaultValue={small ? small.row.amount - small.row.refundedTotal : null} />}</Field>
             <Field label="Motivo" required>{(c) => <input {...c} name="reason" autoComplete="off" maxLength={200} className={inputClasses} />}</Field>
           </div>
         )}
@@ -277,7 +278,7 @@ function Settlements({ slug, rows, today, onDone }: { slug: string; rows: Settle
             <Field label="Fecha del depósito" required>{(c) => <DateInput {...c} name="day" defaultValue={today} />}</Field>
             <Field label="Transacciones («id, valor»)" required hint="Una por línea.">{(c) => <textarea {...c} name="report" rows={5} className={inputClasses} placeholder={"11883-1700-3541, 100000\n11883-1700-3542, 45000"} />}</Field>
             <Field label="Comisión real (COP)" required>{(c) => <input {...c} name="fee" inputMode="decimal" autoComplete="off" className={inputClasses} />}</Field>
-            <Field label="Valor depositado (COP)" required hint="Bruto menos comisión real.">{(c) => <input {...c} name="net" inputMode="decimal" autoComplete="off" className={inputClasses} />}</Field>
+            <Field label="Valor depositado (COP)" required hint="Bruto menos comisión real.">{(c) => <MoneyInput {...c} name="net" />}</Field>
           </div>
         )}
       </FormDialog>

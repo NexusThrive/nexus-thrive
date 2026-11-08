@@ -1,5 +1,6 @@
 "use client";
 
+import { MoneyInput } from "@/components/molecules/money-input";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { buttonVariants } from "@/components/atoms/button-variants";
@@ -121,7 +122,7 @@ export function WompiConnection({ slug, connection, eventsUrl, tariff }: { slug:
               {(c) => <input {...c} name="feePct" inputMode="decimal" autoComplete="off" defaultValue={String(tariff.feePct)} className={inputClasses} />}
             </Field>
             <Field label="Valor fijo por transacción (COP)" required>
-              {(c) => <input {...c} name="feeFixed" inputMode="decimal" autoComplete="off" defaultValue={String(tariff.feeFixed)} className={inputClasses} />}
+              {(c) => <MoneyInput {...c} name="feeFixed" defaultValue={tariff.feeFixed} />}
             </Field>
             <Field label="IVA sobre la comisión (%)" required hint="0 si no aplica.">
               {(c) => <input {...c} name="feeVatPct" inputMode="decimal" autoComplete="off" defaultValue={String(tariff.feeVatPct)} className={inputClasses} />}

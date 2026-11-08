@@ -1,5 +1,6 @@
 "use client";
 
+import { MoneyInput } from "@/components/molecules/money-input";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -131,7 +132,7 @@ function Panel({ slug, side, cartera }: { slug: string; side: Side; cartera: Car
         {({ fieldErrors }) => (
           <div className="grid gap-3">
             <Field label="Valor" required error={fieldErrors.amount} hint={paying ? `Máximo ${formatCurrency(paying.balance)}` : undefined}>
-              {(c) => <input {...c} name="amount" inputMode="decimal" autoComplete="off" defaultValue={paying ? String(paying.balance) : ""} className={inputClasses} />}
+              {(c) => <MoneyInput {...c} name="amount" defaultValue={paying ? paying.balance : null} />}
             </Field>
             <Field label="Medio de pago" required>
               {(c) => (

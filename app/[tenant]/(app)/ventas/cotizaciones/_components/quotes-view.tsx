@@ -1,5 +1,6 @@
 "use client";
 
+import { MoneyInput } from "@/components/molecules/money-input";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Trash2 } from "lucide-react";
@@ -121,7 +122,7 @@ export default function QuotesView({ slug, quotes, customers, products, today, i
                     <Trash2 aria-hidden="true" className="size-4" />
                   </button>
                   <Field label="Cantidad">{(c) => <input {...c} inputMode="numeric" value={l.quantity} onChange={(e) => setLine(i, { quantity: Math.max(0, Math.round(Number(e.target.value) || 0)) })} className={inputClasses} />}</Field>
-                  <Field label="Valor unitario (COP)">{(c) => <input {...c} inputMode="decimal" value={l.unitPrice} onChange={(e) => setLine(i, { unitPrice: Math.max(0, Number(e.target.value) || 0) })} className={inputClasses} />}</Field>
+                  <Field label="Valor unitario (COP)">{(c) => <MoneyInput id={c.id} aria-describedby={c["aria-describedby"]} value={l.unitPrice} onValueChange={(v) => setLine(i, { unitPrice: Math.max(0, v ?? 0) })} />}</Field>
                 </div>
               ))}
               <button type="button" onClick={() => setLines((ls) => [...ls, { productId: products[0]?.id ?? "", quantity: 1, unitPrice: products[0]?.price ?? 0 }])} className={buttonVariants({ variant: "outline", size: "sm", className: "justify-self-start" })}>
