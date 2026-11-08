@@ -14,7 +14,7 @@ import { redirect } from "next/navigation";
 import { buildCustomerList } from "@/lib/business/customers/customer-list";
 import { customerSearchDefs } from "@/lib/business/customers/customer-search";
 import { groupIdsOfCustomers, listCustomerGroups, listOwners, loadCustomerSearchRows } from "@/lib/business/customers/customer-search-db";
-import { listSavedSearches } from "@/lib/core/saved-searches-db";
+import { listSavedSearches } from "@/lib/core/tenancy/saved-searches-db";
 import { isAdvanced, parseSearchState, paramsOfSnapshot, toSchema, type SearchAlias } from "@/lib/foundation/list-search";
 
 /** Enlaces de antes: `?status=archived` equivale al filtro «Archivados». */

@@ -8,7 +8,7 @@ import {
   renameSavedSearch,
   setDefaultSavedSearch,
   type SavedSearchResult,
-} from "@/lib/core/saved-searches-db";
+} from "@/lib/core/tenancy/saved-searches-db";
 
 /**
  * Favoritos de las listas (búsquedas guardadas). Son de quien las guarda: cada operación se acota por negocio y por la

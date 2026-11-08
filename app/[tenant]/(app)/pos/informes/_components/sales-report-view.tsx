@@ -56,7 +56,7 @@ export default function SalesReportView({ slug, report }: { slug: string; report
           </dl>
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
             <section aria-labelledby="top-productos" className="grid gap-2 rounded-xl border border-border bg-surface p-4">
-              <h2 id="top-productos" className="font-display text-[15px] font-semibold">Lo que más se vende</h2>
+              <h2 id="top-productos" className="font-display text-base font-semibold">Lo que más se vende</h2>
               <table className="w-full text-left text-ui">
                 <caption className="sr-only">Productos más vendidos del periodo</caption>
                 <thead><tr className="border-b border-border text-xs text-muted-foreground"><th scope="col" className="py-2 pe-3 font-medium">Producto</th><th scope="col" className="px-3 py-2 text-right font-medium">Unidades</th><th scope="col" className="py-2 ps-3 text-right font-medium">Vendido</th></tr></thead>
@@ -69,7 +69,7 @@ export default function SalesReportView({ slug, report }: { slug: string; report
             </section>
             <div className="grid content-start gap-4">
               <section aria-labelledby="por-cajero" className="grid gap-2 rounded-xl border border-border bg-surface p-4">
-                <h2 id="por-cajero" className="font-display text-[15px] font-semibold">Quién vendió</h2>
+                <h2 id="por-cajero" className="font-display text-base font-semibold">Quién vendió</h2>
                 <ul className="grid gap-1.5 text-ui">
                   {report.byCashier.map((c) => (
                     <li key={c.cashierId ?? "sin"} className="flex items-center justify-between gap-3"><span className="min-w-0 truncate">{(c.cashierId && report.cashiers[c.cashierId]) || "Sin registrar"} <span className="text-muted-foreground">· {c.count} {c.count === 1 ? "venta" : "ventas"}</span></span><b className="font-mono tabular-nums">{money(c.total)}</b></li>
@@ -77,7 +77,7 @@ export default function SalesReportView({ slug, report }: { slug: string; report
                 </ul>
               </section>
               <section aria-labelledby="por-medio" className="grid gap-2 rounded-xl border border-border bg-surface p-4">
-                <h2 id="por-medio" className="font-display text-[15px] font-semibold">Cómo pagaron</h2>
+                <h2 id="por-medio" className="font-display text-base font-semibold">Cómo pagaron</h2>
                 <ul className="grid gap-1.5 text-ui">
                   {report.byMethod.map((m) => (
                     <li key={m.method} className="flex items-center justify-between gap-3"><span className="min-w-0 truncate">{m.method}</span><b className="font-mono tabular-nums">{money(m.total)}</b></li>

@@ -66,7 +66,7 @@ Nexus como SaaS: administración, equipo, cobranza, soporte, CRM, bandeja, cuent
 
 Interfaz: navegación, dashboard, onboarding, sitio, movimiento.
 
-- **Módulos** (archivos): `dashboard/` (8) · `hooks/` (2) · `motion/` (8) · `navigation/` (2) · `onboarding/` (5) · `payment-input/` (2) · `site/` (2)
+- **Módulos** (archivos): `assistant/` (1) · `dashboard/` (8) · `hooks/` (2) · `motion/` (8) · `navigation/` (5) · `onboarding/` (5) · `payment-input/` (2) · `site/` (2)
 - **Archivos sueltos**: `fonts.ts`, `vertical-icons.ts`
 
 ### `lib/runtime`

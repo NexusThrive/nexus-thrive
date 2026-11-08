@@ -14,7 +14,7 @@ import { classify, loadJson } from "../../scripts/check-layers.mjs";
 
 const ROOT = join(import.meta.dirname, "..", "..");
 const layers = loadJson("docs/architecture/layers.json");
-const MODULOS = ["dashboard", "fonts.ts", "hooks", "motion", "navigation", "onboarding", "payment-input", "site", "vertical-icons.ts"];
+const MODULOS = ["assistant", "dashboard", "fonts.ts", "hooks", "motion", "navigation", "onboarding", "payment-input", "site", "vertical-icons.ts"];
 const MOVIDOS = ["admin", "dashboard", "hooks", "motion", "navigation/nav-types.ts", "onboarding", "payment-input", "site"];
 
 describe("Etapa X · lib/experience", () => {
@@ -33,7 +33,7 @@ describe("Etapa X · lib/experience", () => {
 
   test("lib/fonts.ts ya no existe y nav-types.ts es Core (core/capabilities), no Experience", () => {
     expect(existsSync(join(ROOT, "lib/fonts.ts"))).toBe(false);
-    expect(readdirSync(join(ROOT, "lib/experience/navigation")).sort()).toEqual(["quick-create.ts", "route-skeleton.ts", "short-label.ts", "tenant-nav.ts"]);
+    expect(readdirSync(join(ROOT, "lib/experience/navigation")).sort()).toEqual(["app-menus.ts", "quick-create.ts", "route-skeleton.ts", "short-label.ts", "tenant-nav.ts"]);
     expect(classify("lib/core/capabilities/nav-types.ts", layers)?.layer).toBe("core");
   });
 

@@ -70,7 +70,7 @@ export function HomeQuickSearch() {
                 value={search.query}
                 onValueChange={search.setQuery}
                 placeholder="Busca una sección, función, cliente, pago… o pregúntale a AURI"
-                className="h-[54px] w-full bg-transparent pl-[46px] pr-14 text-[15px] outline-none placeholder:text-muted-foreground"
+                className="h-[54px] w-full bg-transparent pl-[46px] pr-14 text-base outline-none placeholder:text-muted-foreground"
               />
               <AuriAskButton query={search.query} status={search.status} run={run} />
             </div>

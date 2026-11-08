@@ -295,7 +295,7 @@ export default function Sale({ slug, turn, products, categories, customers, meth
                 <dt><label htmlFor="pos-tip">Propina %</label></dt>
                 <dd className="flex items-center gap-2"><input id="pos-tip" inputMode="decimal" value={tipPct || ""} onChange={(e) => setTipPct(Math.max(0, Math.min(100, Number(e.target.value.replace(",", ".")) || 0)))} className={`${inputClasses} h-7 w-16 px-2 text-right`} />{tip ? <span className="font-mono tabular-nums">{formatCurrency(tip)}</span> : null}</dd>
               </div>
-              <div className="flex justify-between border-t border-border pt-1.5 text-[15px] font-semibold"><dt>Total a cobrar</dt><dd className="font-mono tabular-nums">{formatCurrency(due)}</dd></div>
+              <div className="flex justify-between border-t border-border pt-1.5 text-base font-semibold"><dt>Total a cobrar</dt><dd className="font-mono tabular-nums">{formatCurrency(due)}</dd></div>
             </dl>
             <div className="grid gap-2">
               {pays.map((p, i) => (

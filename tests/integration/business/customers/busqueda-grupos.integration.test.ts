@@ -10,7 +10,7 @@ import {
   setGroupMembers,
   updateCustomerGroup,
 } from "@/lib/business/customers/customer-search-db";
-import { createSavedSearch, deleteSavedSearch, listSavedSearches, setDefaultSavedSearch } from "@/lib/core/saved-searches-db";
+import { createSavedSearch, deleteSavedSearch, listSavedSearches, setDefaultSavedSearch } from "@/lib/core/tenancy/saved-searches-db";
 
 /** Grupos propios de clientes y favoritos de la búsqueda: aislados por negocio y, los favoritos, por persona. */
 const TEST_URL = process.env.TEST_DATABASE_URL;

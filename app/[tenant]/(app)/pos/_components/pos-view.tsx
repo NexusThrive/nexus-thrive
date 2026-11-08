@@ -37,7 +37,7 @@ function NoTurn({ slug, canManage, terminals }: { slug: string; canManage: boole
     });
   return (
     <section aria-labelledby="pos-open" className="grid max-w-xl gap-4 rounded-lg border border-border bg-surface p-5">
-      <h2 id="pos-open" className="font-display text-[15px] font-semibold">Abrir turno</h2>
+      <h2 id="pos-open" className="font-display text-base font-semibold">Abrir turno</h2>
       {terminals.length === 0 ? (
         <Alert tone="info">{canManage ? "Aún no hay terminales. Crea la primera para empezar a vender." : "Aún no hay terminales: pídele al dueño o a administración que cree una."}</Alert>
       ) : (

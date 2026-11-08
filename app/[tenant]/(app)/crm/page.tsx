@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ensureStages, loadPipeline, type PipelineFilters } from "@/lib/business/growth/pipeline-db";
 import { CRM_SECTION, crmSearchDefs } from "@/lib/business/growth/crm-search";
-import { listSavedSearches } from "@/lib/core/saved-searches-db";
+import { listSavedSearches } from "@/lib/core/tenancy/saved-searches-db";
 import { applySearch, isAdvanced, paramsOfSnapshot, parseSearchState, toSchema, type SearchAlias } from "@/lib/foundation/list-search";
 import { redirect } from "next/navigation";
 

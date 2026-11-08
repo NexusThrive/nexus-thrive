@@ -59,7 +59,7 @@ export type AdvancedSearchProps = {
 
 const DEBOUNCE_MS = 250;
 const itemBase =
-  "flex min-h-8 w-full items-center gap-2.5 rounded-lg px-2.5 text-left text-[13px] text-foreground/85 outline-none transition-colors hover:bg-surface-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring pointer-coarse:min-h-11";
+  "flex min-h-8 w-full items-center gap-2.5 rounded-lg px-2.5 text-left text-ui text-foreground/85 outline-none transition-colors hover:bg-surface-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring pointer-coarse:min-h-11";
 const sep = <div role="separator" className="mx-1 my-1.5 h-px bg-border" />;
 
 function PanelTitle({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
@@ -77,7 +77,7 @@ function Option({ active, count, onClick, children, ...rest }: { active: boolean
     <button type="button" data-sp-item="" aria-pressed={active} onClick={onClick} className={cn(itemBase, active && "bg-surface-muted text-foreground")} {...rest}>
       <span className="flex w-3.5 shrink-0 text-accent-text" aria-hidden="true">{active ? <Check className="size-3.5" strokeWidth={2.6} /> : null}</span>
       <span className="min-w-0 flex-1 truncate">{children}</span>
-      {count !== undefined ? <span className="text-[11px] tabular-nums text-muted-foreground">{count}</span> : null}
+      {count !== undefined ? <span className="text-xs tabular-nums text-muted-foreground">{count}</span> : null}
     </button>
   );
 }
@@ -438,7 +438,7 @@ export default function AdvancedSearch({ etiqueta, esquema, favoritos, conteos, 
                     <Option active={current?.id === favorite.id} onClick={() => { apply(stateOfSnapshot(favorite.params, esquema)); close(); }}>
                       <span className="inline-flex max-w-full items-center gap-1.5">
                         <span className="truncate">{favorite.name}</span>
-                        {favorite.isDefault ? <span className="shrink-0 rounded bg-surface-muted px-1 text-[10px] text-muted-foreground">Por defecto</span> : null}
+                        {favorite.isDefault ? <span className="shrink-0 rounded bg-surface-muted px-1 text-2xs text-muted-foreground">Por defecto</span> : null}
                       </span>
                     </Option>
                   </div>
@@ -471,7 +471,7 @@ export default function AdvancedSearch({ etiqueta, esquema, favoritos, conteos, 
                     value={name}
                     maxLength={60}
                     onChange={(event) => setName(event.target.value)}
-                    className="h-[34px] w-full rounded-lg border border-border bg-background px-2.5 text-[13px] text-foreground outline-none focus-visible:border-accent focus-visible:outline-2 focus-visible:outline-ring"
+                    className="h-[34px] w-full rounded-lg border border-border bg-background px-2.5 text-ui text-foreground outline-none focus-visible:border-accent focus-visible:outline-2 focus-visible:outline-ring"
                   />
                   <label className="flex items-center gap-2 text-xs text-muted-foreground">
                     <Switch checked={asDefault} onCheckedChange={setAsDefault} aria-label="Usar como filtro por defecto" />
@@ -482,7 +482,7 @@ export default function AdvancedSearch({ etiqueta, esquema, favoritos, conteos, 
                       type="button"
                       disabled={saving || !name.trim()}
                       onClick={() => void save()}
-                      className="h-8 rounded-lg border border-accent bg-accent px-3.5 text-[13px] font-semibold text-accent-foreground outline-none hover:bg-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-50 pointer-coarse:h-11"
+                      className="h-8 rounded-lg border border-accent bg-accent px-3.5 text-ui font-semibold text-accent-foreground outline-none hover:bg-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-50 pointer-coarse:h-11"
                     >
                       {saving ? "Guardando…" : "Guardar"}
                     </button>
@@ -490,12 +490,12 @@ export default function AdvancedSearch({ etiqueta, esquema, favoritos, conteos, 
                       type="button"
                       disabled={!current}
                       onClick={() => current && setDialog({ kind: "rename", favorite: current })}
-                      className="h-8 rounded-lg border border-border px-3.5 text-[13px] text-foreground outline-none hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-40 pointer-coarse:h-11"
+                      className="h-8 rounded-lg border border-border px-3.5 text-ui text-foreground outline-none hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-40 pointer-coarse:h-11"
                     >
                       Editar
                     </button>
                   </div>
-                  {!current ? <p className="text-[11px] text-muted-foreground">«Editar» abre el favorito que coincide con esta búsqueda.</p> : null}
+                  {!current ? <p className="text-xs text-muted-foreground">«Editar» abre el favorito que coincide con esta búsqueda.</p> : null}
                 </div>
               ) : null}
             </section>
