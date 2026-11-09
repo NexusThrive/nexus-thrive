@@ -1,11 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { ArrowUp, LifeBuoy } from "lucide-react";
 import { EyeTracker } from "@/components/atoms/eye-tracker";
 import { Alert } from "@/components/molecules/alert";
 import { Chip, ChipRow } from "@/components/atoms/chip";
 import { useAuriGreeting } from "@/components/molecules/use-auri-greeting";
+import { useCurrentUserName } from "@/components/providers/current-user";
+import { AuriHomeIntroCard } from "@/components/organisms/auri-home-intro";
+import { homeIntroSteps, introSeen, isHomePath, markIntroSeen } from "@/lib/experience/assistant/home-intro";
 import { HelpCenter } from "@/components/organisms/help-center";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { AURI_ASK_EVENT } from "@/lib/experience/assistant/ask-auri";
@@ -39,6 +43,31 @@ export function AuriAssistant({
   showFunctions?: boolean;
 }) {
   const hello = useAuriGreeting();
+  const pathname = usePathname();
+  const name = useCurrentUserName();
+  const steps = useMemo(() => homeIntroSteps(name), [name]);
+  // Recorrido de la primera visita al Inicio: AURI crece en su esquina y explica el panel (una vez por navegador y negocio).
+  const [intro, setIntro] = useState<number | null>(null);
+  const atHome = isHomePath(pathname ?? "", tenantSlug);
+  useEffect(() => {
+    if (!atHome || introSeen(window.localStorage, tenantSlug)) return;
+    // Deja pasar la intro de la N y las entradas del Inicio antes de presentarse.
+    const id = window.setTimeout(() => setIntro(0), 3200);
+    return () => window.clearTimeout(id);
+  }, [atHome, tenantSlug]);
+  const endIntro = () => {
+    markIntroSeen(window.localStorage, tenantSlug);
+    setIntro(null);
+  };
+  // Si se va del Inicio a mitad del recorrido, termina (no se queda hablando en otra pantalla).
+  useEffect(() => {
+    if (!atHome && intro !== null) {
+      markIntroSeen(window.localStorage, tenantSlug);
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- al salir del Inicio el recorrido termina
+      setIntro(null);
+    }
+  }, [atHome, intro, tenantSlug]);
+  const introJoy = intro !== null && Boolean(steps[intro]?.joy);
   const [open, setOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -128,7 +157,10 @@ export function AuriAssistant({
     <>
       <ResponsiveSheet
         open={open}
-        onOpenChange={setOpen}
+        onOpenChange={(next) => {
+          if (next && intro !== null) endIntro();
+          setOpen(next);
+        }}
         drawer
         floating
         unsavedGuard={false}
@@ -148,9 +180,9 @@ export function AuriAssistant({
             aria-label="Abrir el chat con AURI AI"
             data-press=""
             {...hello.bind}
-            className="fixed bottom-[calc(76px+env(safe-area-inset-bottom,0px))] right-4 z-(--z-sticky) grid size-14 select-none place-items-center rounded-full shadow-(--shadow-popover) outline-none transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring pointer-coarse:size-16 md:bottom-6 md:right-6"
+            className={cn("fixed bottom-[calc(76px+env(safe-area-inset-bottom,0px))] right-4 z-(--z-sticky) grid select-none place-items-center rounded-full shadow-(--shadow-popover) outline-none transition-[transform,width,height] duration-500 ease-out hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none md:bottom-6 md:right-6", intro !== null ? "size-24" : "size-14 pointer-coarse:size-16")}
           >
-            <EyeTracker fit decorative poke={false} size={56} shape="Ball" eyeScale={1.2} joy={hello.joy} say={hello.say} sayAt="tl" />
+            <EyeTracker fit decorative poke={false} size={intro !== null ? 92 : 56} shape="Ball" eyeScale={1.2} joy={hello.joy || introJoy} say={intro !== null ? null : hello.say} sayAt="tl" />
             {/* punto de «en línea»: la asistente está disponible */}
             <span aria-hidden="true" className="absolute right-0.5 top-0.5 size-3 rounded-full border-2 border-background bg-success" />
           </button>
@@ -200,9 +232,25 @@ export function AuriAssistant({
           >
             <LifeBuoy aria-hidden="true" className="size-4" /> ¿Necesitas ayuda de soporte? Abre el Centro de ayuda
           </button>
+          {atHome ? (
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                setIntro(0);
+              }}
+              className="inline-flex items-center gap-1.5 justify-self-start text-ui font-medium text-accent-text underline-offset-2 outline-none hover:underline focus-visible:outline-2 focus-visible:outline-ring"
+            >
+              Ver otra vez el recorrido del Inicio
+            </button>
+          ) : null}
           <div ref={endRef} />
         </div>
       </ResponsiveSheet>
+
+      {intro !== null && !open ? (
+        <AuriHomeIntroCard steps={steps} index={intro} onNext={() => setIntro((i) => (i === null ? i : Math.min(steps.length - 1, i + 1)))} onSkip={endIntro} />
+      ) : null}
 
       {/* El Centro de ayuda ya no tiene botón propio: se abre desde el chat. */}
       <HelpCenter

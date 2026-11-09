@@ -24,3 +24,17 @@ test.describe("Registro: tu negocio y tu operación", () => {
     await expectNoAxeViolations(page);
   });
 });
+
+test.describe("AURI en el Inicio", () => {
+  test("la primera visita la presenta paso a paso y no se repite", async ({ page }) => {
+    await openStory(page, "organismos-auriassistant--primera-visita-al-inicio");
+    const tarjeta = page.getByRole("region", { name: /AURI te muestra tu panel/ });
+    await expect(tarjeta).toBeVisible({ timeout: 10_000 });
+    await expect(tarjeta.getByText("1 de 5")).toBeVisible();
+    await tarjeta.getByRole("button", { name: "Siguiente" }).click();
+    await expect(tarjeta.getByText("2 de 5")).toBeVisible();
+    await expectNoAxeViolations(page);
+    await tarjeta.getByRole("button", { name: "Omitir" }).click();
+    await expect(tarjeta).toBeHidden();
+  });
+});

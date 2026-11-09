@@ -13,7 +13,8 @@ const meta = {
   title: "Organismos/AuriAssistant",
   component: AuriAssistant,
   args: { tenantSlug: "gym-norte", businessName: "Gimnasio Norte", activeModules: ["crm", "finance", "bookings"] },
-  parameters: { layout: "fullscreen" },
+  // Fuera del Inicio, para que el recorrido de la primera visita no aparezca en las demás historias.
+  parameters: { layout: "fullscreen", nextjs: { navigation: { pathname: "/gym-norte/contactos" } } },
   decorators: [
     (Story) => (
       <ToastProvider>
@@ -59,4 +60,23 @@ export const SaludoAlMantener: Story = {
     await userEvent.pointer({ keys: "[/MouseLeft]", target: button });
     await expect(within(document.body).queryByRole("dialog")).toBeNull();
   },
+};
+
+/**
+ * Primera visita al Inicio: AURI crece en su esquina, pone cara de alegría y explica qué hay en el panel, paso a paso, en una
+ * tarjeta. «Omitir» o «Entendido» la cierran y no vuelve a salir; se puede repetir desde el chat. Sin `play`: la interacción la
+ * prueba `e2e/onboarding.spec.ts` (un `play` correría solo y la saltaría).
+ */
+export const PrimeraVisitaAlInicio: Story = {
+  parameters: { nextjs: { navigation: { pathname: "/gym-norte" } } },
+  decorators: [
+    (Story) => {
+      try {
+        window.localStorage.removeItem("nx:auri-home-intro:v1:gym-norte");
+      } catch {
+        /* sin almacenamiento */
+      }
+      return <Story />;
+    },
+  ],
 };
