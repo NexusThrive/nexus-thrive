@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { db } from "@/prisma/db";
-import { isVertical, OFFERED_VERTICALS } from "@/lib/core/sectors/verticals";
+import { isVertical, OFFERED_VERTICALS, VERTICAL_LABELS, type VerticalValue } from "@/lib/core/sectors/verticals";
 import { isModule, type ModuleValue } from "@/lib/core/capabilities/modules";
 import { isUniqueViolation } from "@/lib/foundation/db/db-errors";
 import type { PlanKey } from "./catalog";
@@ -108,7 +108,7 @@ export const loadPricingConfig = cache(async (): Promise<PricingConfig> => {
         (v): VerticalConfig => ({
           vertical: v.vertical as VerticalConfig["vertical"],
           // «Tienda» era el nombre anterior del rubro de comercio y quedó guardado en la base.
-          label: v.vertical === "retail" && v.label === "Tienda" ? "Comercio" : v.label,
+          label: v.label === "Tienda" ? VERTICAL_LABELS[v.vertical as VerticalValue] : v.label,
           // Los rubros que se ofrecen salen de la lista fija del código: el interruptor guardado en la base no los apaga ni enciende otros.
           signupEnabled: (OFFERED_VERTICALS as readonly string[]).includes(v.vertical),
           priceFactorPct: v.priceFactorPct,

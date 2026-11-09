@@ -11,7 +11,7 @@ function Group<T extends string>({ legend, hint, options, value, onChange }: { l
   const toggle = (v: T) => onChange(value.includes(v) ? value.filter((x) => x !== v) : [...value, v]);
   return (
     <fieldset className="min-w-0">
-      <legend className="text-[13px] font-medium">{legend}</legend>
+      <legend className="text-ui font-medium">{legend}</legend>
       {hint ? <p className="mt-0.5 text-xs text-muted-foreground">{hint}</p> : null}
       <div className="mt-2 grid gap-2 sm:grid-cols-2">
         {options.map((o) => {
