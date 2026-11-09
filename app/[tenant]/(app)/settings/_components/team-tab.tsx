@@ -13,7 +13,7 @@ import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { rolesFor, roleLabel } from "@/lib/core/auth/roles";
 import type { PendingInvite, TeamMember } from "@/lib/core/tenancy/team-db";
 import { cn } from "@/lib/utils";
-import { changeMemberRoleAction, inviteMemberAction, revokeInviteAction, setMemberActiveAction } from "../team-actions";
+import { changeMemberRoleAction, inviteMemberAction, revokeInviteAction, setMemberActiveAction } from "@/app/[tenant]/(app)/settings/team-actions";
 import { Select } from "@/components/atoms/select";
 
 export type Seats = { limit: number | null; used: number; planName: string };

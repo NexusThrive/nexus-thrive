@@ -18,10 +18,10 @@ export function SettingsRow({ label, value }: { label: string; value: ReactNode 
  */
 export function SettingsSection({ id, title, description, canManage = false, onEdit, children }: { id: string; title: string; description: string; canManage?: boolean; onEdit?: () => void; children: ReactNode }) {
   return (
-    <section aria-labelledby={id} className="rounded-lg border border-border bg-card px-5 py-4">
+    <section aria-labelledby={id} className="rounded-xl border border-border bg-card px-6 py-5">
       <header className="flex items-start justify-between gap-3">
         <div>
-          <h2 id={id} className="font-display text-[15px] font-semibold text-foreground">{title}</h2>
+          <h2 id={id} className="font-display text-base font-semibold text-foreground">{title}</h2>
           <p className="mt-0.5 text-ui text-muted-foreground">{description}</p>
         </div>
         {canManage && onEdit ? (
@@ -30,7 +30,7 @@ export function SettingsSection({ id, title, description, canManage = false, onE
           </button>
         ) : null}
       </header>
-      <dl className="mt-2 divide-y divide-border">{children}</dl>
+      <dl className="mt-3 divide-y divide-border">{children}</dl>
     </section>
   );
 }

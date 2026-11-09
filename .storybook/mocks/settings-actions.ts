@@ -10,3 +10,9 @@ export async function updateTenantProfileAction(_prev: unknown, formData: FormDa
   if (String(formData.get("city") ?? "") === "falla") return { status: "error" as const, message: "Error al actualizar el perfil. Inténtalo de nuevo." };
   return { status: "ok" as const, message: "Perfil actualizado correctamente." };
 }
+
+/** Eliminar el negocio: en Storybook no borra nada. */
+export async function deleteOwnBusinessAction() {
+  await new Promise((r) => setTimeout(r, 250));
+  return { ok: false as const, message: "No se elimina en la vista previa." };
+}

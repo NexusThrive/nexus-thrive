@@ -70,34 +70,41 @@ export default function ProfileTab({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="grid gap-4">
       {!canManage ? <Alert tone="info">Solo el dueño del negocio puede modificar esta información.</Alert> : null}
 
-      <SettingsSection id="profile-identity" title="Identidad" description="Cómo se llama tu negocio y cuál es la dirección de tu panel." canManage={canManage} onEdit={() => open("identity")}>
-        <SettingsRow label="Nombre comercial" value={values.name} />
-        <SettingsRow label="Dirección del panel" value={<span className="font-mono text-ui">/{values.slug}</span>} />
-      </SettingsSection>
+      {/* Dos columnas que se llenan hacia abajo (no filas desiguales): lo que se edita a la izquierda, lo fiscal y lo informativo a la derecha. */}
+      <div className="grid items-start gap-4 xl:grid-cols-2">
+        <div className="grid gap-4">
+          <SettingsSection id="profile-identity" title="Identidad" description="Cómo se llama tu negocio y cuál es la dirección de tu panel." canManage={canManage} onEdit={() => open("identity")}>
+            <SettingsRow label="Nombre comercial" value={values.name} />
+            <SettingsRow label="Dirección del panel" value={<span className="font-mono text-ui">/{values.slug}</span>} />
+          </SettingsSection>
 
-      <SettingsSection id="profile-contact" title="Contacto y ubicación" description="Dónde y cómo te encuentran tus clientes." canManage={canManage} onEdit={() => open("contact")}>
-        <SettingsRow label="Ciudad" value={values.city} />
-        <SettingsRow label="Dirección" value={values.address} />
-        <SettingsRow label="Teléfono / WhatsApp" value={values.phone} />
-      </SettingsSection>
+          <SettingsSection id="profile-contact" title="Contacto y ubicación" description="Dónde y cómo te encuentran tus clientes." canManage={canManage} onEdit={() => open("contact")}>
+            <SettingsRow label="Ciudad" value={values.city} />
+            <SettingsRow label="Dirección" value={values.address} />
+            <SettingsRow label="Teléfono / WhatsApp" value={values.phone} />
+          </SettingsSection>
+        </div>
 
-      <SettingsSection id="profile-tax" title="Datos fiscales" description="Para tus documentos y facturas." canManage={canManage} onEdit={() => open("tax")}>
-        <SettingsRow label="NIT / RUT" value={values.taxId} />
-      </SettingsSection>
+        <div className="grid gap-4">
+          <SettingsSection id="profile-tax" title="Datos fiscales" description="Para tus documentos y facturas." canManage={canManage} onEdit={() => open("tax")}>
+            <SettingsRow label="NIT / RUT" value={values.taxId} />
+          </SettingsSection>
+
+          <section aria-labelledby="profile-system" className="rounded-xl border border-border bg-card px-6 py-5">
+            <h2 id="profile-system" className="font-display text-base font-semibold text-foreground">Información del sistema</h2>
+            <dl className="mt-3 divide-y divide-border">
+              {systemInfo.map((item) => (
+                <SettingsRow key={item.label} label={item.label} value={item.value} />
+              ))}
+            </dl>
+          </section>
+        </div>
+      </div>
 
       <BusinessContextCard slug={tenantSlug} canManage={canManage} initial={context} />
-
-      <section aria-labelledby="profile-system" className="rounded-lg border border-border bg-card px-5 py-4">
-        <h2 id="profile-system" className="font-display text-[15px] font-semibold text-foreground">Información del sistema</h2>
-        <dl className="mt-2 divide-y divide-border">
-          {systemInfo.map((item) => (
-            <SettingsRow key={item.label} label={item.label} value={item.value} />
-          ))}
-        </dl>
-      </section>
 
       <FormDialog
         open={editing === "identity"}

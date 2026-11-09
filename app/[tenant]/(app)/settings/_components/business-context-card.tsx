@@ -34,8 +34,8 @@ export default function BusinessContextCard({ slug, canManage, initial }: { slug
     });
 
   return (
-    <section aria-labelledby="context-title" className="rounded-lg border border-border bg-card p-6">
-      <h3 id="context-title" className="font-display text-[15px] font-semibold text-foreground">
+    <section aria-labelledby="context-title" className="rounded-xl border border-border bg-card px-6 py-5">
+      <h3 id="context-title" className="font-display text-base font-semibold text-foreground">
         Cómo es tu negocio
       </h3>
       <p className="mt-0.5 text-sm text-muted-foreground">Sirve para ponerle nombre a las cosas y sugerirte funciones. No limita nada: puedes usar cualquier función, sea cual sea tu perfil.</p>

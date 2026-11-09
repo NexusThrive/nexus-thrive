@@ -44,3 +44,27 @@ test("AURI: la historia muestra todas sus caras", async ({ page }) => {
   for (const cara of ["Neutral", "Alegría", "Guiño", "Sorpresa", "Pensando", "Curiosa", "Triste", "Hablando"]) await expect(page.getByText(cara, { exact: true })).toBeVisible();
   await expectNoAxeViolations(page);
 });
+
+test.describe("Configuración a todo el ancho", () => {
+  test("ocupa el ancho de la pantalla y ordena las tarjetas en dos columnas", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openStory(page, "páginas-configuración-pantalla-completa--perfil");
+    const identidad = await page.getByRole("heading", { name: "Identidad" }).boundingBox();
+    const contacto = await page.getByRole("heading", { name: "Contacto y ubicación" }).boundingBox();
+    const fiscales = await page.getByRole("heading", { name: "Datos fiscales" }).boundingBox();
+    // Izquierda: Identidad y Contacto, una bajo la otra; derecha: Datos fiscales a la altura de Identidad.
+    expect(Math.abs(identidad!.x - contacto!.x)).toBeLessThan(8);
+    expect(contacto!.y).toBeGreaterThan(identidad!.y + 60);
+    expect(fiscales!.x).toBeGreaterThan(identidad!.x + 300);
+    expect(Math.abs(fiscales!.y - identidad!.y)).toBeLessThan(8);
+    const desborde = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+    expect(desborde).toBe(false);
+    await expectNoAxeViolations(page);
+  });
+  test("en celular no hay desplazamiento horizontal", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 800 });
+    await openStory(page, "páginas-configuración-pantalla-completa--perfil");
+    const desborde = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+    expect(desborde).toBe(false);
+  });
+});
