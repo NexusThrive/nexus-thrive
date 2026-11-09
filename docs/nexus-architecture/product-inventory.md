@@ -86,7 +86,7 @@ Cada página llama a `getStaffContext()` y comprueba un permiso de
 | POS con carrito, descuentos, varios medios | NO ENCONTRADO (solo venta de un producto, `inventory/actions.ts:72`) |
 | Compras y proveedores | NO ENCONTRADO (solo `Expense.supplier` texto) |
 | Factura electrónica DIAN | PLANIFICADO (`Invoice` lo dice en su comentario) |
-| Pagos en línea (Wompi) | PLANIFICADO (`IDEAS-E-IMPLEMENTACIONES-IMPORTANTES.md` §3); `WOMPI` existe solo como valor de enum |
+| Pagos en línea (Wompi) | PLANIFICADO ([ideas-e-implementaciones-importantes.md](../internal/ideas-e-implementaciones-importantes.md) §3); `WOMPI` existe solo como valor de enum |
 | Automatizaciones configurables / motor de eventos | NO ENCONTRADO (solo `docs/wiki/04-modulos/capas/I-…/05-Motor-de-Eventos-y-Webhooks`) |
 | Integraciones por negocio (WhatsApp Business, Meta) | PARCIAL: variables `META_APP_ID`, `META_CONFIG_ID` en `.env.produccion`, sin flujo |
 | Reportes configurables | PARCIAL: informes de construcción y reporte de visitantes; no hay módulo de reportes genérico |

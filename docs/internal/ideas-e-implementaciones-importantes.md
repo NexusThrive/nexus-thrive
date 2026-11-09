@@ -1,10 +1,10 @@
 # Ideas e implementaciones importantes
 
-> **Pendiente de validación (revisión del 31 oct 2026).** Cita 1 rutas del código y 1 ya no existen: el contenido se escribió antes de V10. No lo tomes como vigente sin comprobarlo en el código. Veredicto y siguiente paso: [revisión de documentos pendientes](docs/internal/revision-documentos-pendientes.md).
+> **Pendiente de validación (revisión del 31 oct 2026).** Cita 1 rutas del código y 1 ya no existen: el contenido se escribió antes de V10. No lo tomes como vigente sin comprobarlo en el código. Veredicto y siguiente paso: [revisión de documentos pendientes](revision-documentos-pendientes.md).
 
 Lista de lo que **falta o conviene hacer**, ordenada por prioridad. Cada punto
 dice qué es, por qué importa y cómo quedaría. Lo que ya está hecho no está
-aquí: eso vive en el [CHANGELOG](CHANGELOG.md).
+aquí: eso vive en el [CHANGELOG](../../CHANGELOG.md).
 
 ---
 

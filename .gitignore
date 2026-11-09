@@ -76,3 +76,6 @@ __pycache__/
 
 # Herramientas locales del repositorio (entornos aislados)
 .tools/
+
+# Estado local de superpowers (planes y sesiones de trabajo)
+/.superpowers/

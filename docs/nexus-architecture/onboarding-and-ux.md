@@ -73,6 +73,6 @@ Estados de cada capacidad en Ajustes → Módulos: *incluida en tu plan*,
 Separar la entrada del equipo (`/admin`) por enlace de invitación y no por
 coincidencia de correo ([SEC-01](../internal/historico/nexus-architecture/security-audit.md#sec-01)), y permitir que un
 integrante tenga también su negocio como decisión explícita
-(`IDEAS-E-IMPLEMENTACIONES-IMPORTANTES.md` §2).
+([ideas-e-implementaciones-importantes.md](../internal/ideas-e-implementaciones-importantes.md) §2).
 
 Siguiente: [roadmap.md](roadmap.md).

@@ -85,7 +85,7 @@ aquí solo sirve contrastar el plan de cuentas y los tipos de documento.
 
 ## 4b. Adoptado en la hoja de ruta del comercio general (2026-11-08)
 
-Ideas funcionales (no código ni aspecto) tomadas de las capturas de Odoo que dejó el equipo en la raíz y de la estructura de sus aplicaciones:
+Ideas funcionales (no código ni aspecto) tomadas de capturas de Odoo revisadas por el equipo y de la estructura de sus aplicaciones:
 
 | Idea de Odoo | Qué adopta Nexus | Qué se deja fuera | Dónde |
 |---|---|---|---|

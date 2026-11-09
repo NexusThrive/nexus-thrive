@@ -20,7 +20,7 @@ Regla aplicada: si una afirmación no se puede confirmar en el código, queda ma
 | 10 | `docs/construction/convencion-semanas-lean.md` | 5 / 4 | 1 | **Promover** a `04-modulos` corrigiendo rutas (`lean-engine.ts` está en `lib/industry/construction/`); la convención de semanas es de dominio y sigue siendo válida |
 | 11 | `docs/PENDIENTES.md` | 14 / 7 | 3 | **Revisar con el dueño** y fusionar con la hoja de ruta; es lista viva, no se archiva. Rutas con equivalente: `money-service` → `lib/business/sales/`, `inbox-providers` → `lib/platform/inbox/`, `rate-limit` → `lib/core/api/` y `lib/foundation/`, `finance-db` → `lib/business/sales/`, `products-db` → `lib/business/catalog/` |
 | 12 | `docs/SIGUIENTE-PASO.md` | 1 / 0 (corregida) | 2 | **Fusionar** con la hoja de ruta cuando se decida el siguiente paso. Su enlace roto a `ARQUITECTURA-CORE-Y-RUBROS.md` ahora apunta a `B-core-y-compartidas.md` |
-| 13 | `IDEAS-E-IMPLEMENTACIONES-IMPORTANTES.md` | 1 / 1 | — | **Revisar idea por idea** (invitaciones por correo, Wompi, NFC…): cita `lib/ops/invitations.ts`, que no existe; clasificar vigente / obsoleta antes de trasladar |
+| 13 | `docs/internal/ideas-e-implementaciones-importantes.md` | 1 / 1 | — | **Trasladado desde la raíz (2026-11-09).** Sigue pendiente **revisar idea por idea** (invitaciones por correo, Wompi, NFC…): cita `lib/ops/invitations.ts`, que no existe; clasificar vigente / obsoleta |
 
 ## Contraste de las cuatro páginas anteriores a V10
 
