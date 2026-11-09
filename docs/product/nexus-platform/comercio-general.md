@@ -369,6 +369,6 @@ Cada punto se confirma leyendo el código al abrir su historia; nada de esto se 
 ## 13. Foco de producto (2026-11-09)
 
 - **Rubros que se ofrecen:** comercio, gimnasio y restaurante (`OFFERED_VERTICALS`). El registro y Configuración solo muestran esos tres; «General / Otro» y el resto quedan como valores internos para los negocios que ya existen, que conservan el suyo. El Operations Center puede apagar uno, pero no encender otro.
-- **Primer comercio de referencia:** un negocio de personalización y estampados para marcas (vende en tienda física y recibe pedidos y preguntas por canales en línea). Encaja con el POS, los productos «a medida», los pedidos por canal (`orders.create`) y las listas de precios por cantidad.
+- **Quién es el cliente objetivo:** emprendedores y personas con un local y mercancía, que quieren administrarlo desde el celular (vender, cobrar, inventario, fiado, pedidos por WhatsApp). Hay una agencia de publicidad y marketing interesada, pero **no es cliente** y vende servicios por cotización (material publicitario, campañas, eventos, suministro de equipos), no mercancía de mostrador: sirve de conversación, no de requisito del producto.
 - **Receta de Comercio:** Inicio, CRM, Punto de venta, Pedidos, Inventario, Compras, Cobros, Finanzas, WhatsApp y Facturación.
 
