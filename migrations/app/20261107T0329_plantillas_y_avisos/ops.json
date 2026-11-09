@@ -1,0 +1,563 @@
+[
+  {
+    "id": "table.MessageTemplate",
+    "label": "Create table \"MessageTemplate\"",
+    "summary": "Creates table \"MessageTemplate\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "MessageTemplate"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"MessageTemplate\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"MessageTemplate\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"MessageTemplate\"",
+        "sql": "CREATE TABLE \"public\".\"MessageTemplate\" (\n  \"body\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"enabled\" bool DEFAULT true NOT NULL,\n  \"event\" text,\n  \"id\" text NOT NULL,\n  \"key\" text NOT NULL,\n  \"language\" text DEFAULT 'es' NOT NULL,\n  \"metaName\" text,\n  \"metaStatus\" text DEFAULT 'NONE' NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"title\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"MessageTemplate\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"MessageTemplate\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.WhatsappNotice",
+    "label": "Create table \"WhatsappNotice\"",
+    "summary": "Creates table \"WhatsappNotice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "WhatsappNotice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"WhatsappNotice\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WhatsappNotice\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"WhatsappNotice\"",
+        "sql": "CREATE TABLE \"public\".\"WhatsappNotice\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"customerId\" text NOT NULL,\n  \"event\" text NOT NULL,\n  \"id\" text NOT NULL,\n  \"messageId\" text,\n  \"processedAt\" timestamptz,\n  \"reason\" text,\n  \"sourceId\" text,\n  \"status\" text DEFAULT 'PENDING' NOT NULL,\n  \"templateKey\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"variables\" json NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"WhatsappNotice\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WhatsappNotice\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Customer.optOutAt",
+    "label": "Add column \"optOutAt\" to \"Customer\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "optOutAt",
+        "table": "Customer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"optOutAt\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "optOutAt"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"optOutAt\"",
+        "sql": "ALTER TABLE \"public\".\"Customer\" ADD COLUMN \"optOutAt\" timestamptz"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"optOutAt\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "optOutAt"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.MessageTemplate.MessageTemplate_tenantId_key_key",
+    "label": "Add unique constraint on \"MessageTemplate\" (tenantId, key)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "MessageTemplate_tenantId_key_key",
+        "table": "MessageTemplate"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"MessageTemplate_tenantId_key_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "MessageTemplate_tenantId_key_key",
+          "public",
+          "\"public\".\"MessageTemplate\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"MessageTemplate_tenantId_key_key\"",
+        "sql": "ALTER TABLE \"public\".\"MessageTemplate\" ADD CONSTRAINT \"MessageTemplate_tenantId_key_key\" UNIQUE (\"tenantId\", \"key\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"MessageTemplate_tenantId_key_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "MessageTemplate_tenantId_key_key",
+          "public",
+          "\"public\".\"MessageTemplate\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.WhatsappNotice.WhatsappNotice_tenantId_event_sourceId_key",
+    "label": "Add unique constraint on \"WhatsappNotice\" (tenantId, event, sourceId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "WhatsappNotice_tenantId_event_sourceId_key",
+        "table": "WhatsappNotice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"WhatsappNotice_tenantId_event_sourceId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "WhatsappNotice_tenantId_event_sourceId_key",
+          "public",
+          "\"public\".\"WhatsappNotice\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"WhatsappNotice_tenantId_event_sourceId_key\"",
+        "sql": "ALTER TABLE \"public\".\"WhatsappNotice\" ADD CONSTRAINT \"WhatsappNotice_tenantId_event_sourceId_key\" UNIQUE (\"tenantId\", \"event\", \"sourceId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"WhatsappNotice_tenantId_event_sourceId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "WhatsappNotice_tenantId_event_sourceId_key",
+          "public",
+          "\"public\".\"WhatsappNotice\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.MessageTemplate.MessageTemplate_tenantId_event_idx_a78823f0",
+    "label": "Create index \"MessageTemplate_tenantId_event_idx_a78823f0\" on \"MessageTemplate\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "MessageTemplate_tenantId_event_idx_a78823f0",
+        "table": "MessageTemplate"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"MessageTemplate_tenantId_event_idx_a78823f0\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"MessageTemplate_tenantId_event_idx_a78823f0\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"MessageTemplate_tenantId_event_idx_a78823f0\"",
+        "sql": "CREATE INDEX \"MessageTemplate_tenantId_event_idx_a78823f0\" ON \"public\".\"MessageTemplate\" (\"tenantId\", \"event\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"MessageTemplate_tenantId_event_idx_a78823f0\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"MessageTemplate_tenantId_event_idx_a78823f0\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.MessageTemplate.MessageTemplate_tenantId_idx_c93ed4f1",
+    "label": "Create index \"MessageTemplate_tenantId_idx_c93ed4f1\" on \"MessageTemplate\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "MessageTemplate_tenantId_idx_c93ed4f1",
+        "table": "MessageTemplate"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"MessageTemplate_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"MessageTemplate_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"MessageTemplate_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"MessageTemplate_tenantId_idx_c93ed4f1\" ON \"public\".\"MessageTemplate\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"MessageTemplate_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"MessageTemplate_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.WhatsappNotice.WhatsappNotice_tenantId_customerId_idx_302ad259",
+    "label": "Create index \"WhatsappNotice_tenantId_customerId_idx_302ad259\" on \"WhatsappNotice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "WhatsappNotice_tenantId_customerId_idx_302ad259",
+        "table": "WhatsappNotice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"WhatsappNotice_tenantId_customerId_idx_302ad259\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WhatsappNotice_tenantId_customerId_idx_302ad259\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"WhatsappNotice_tenantId_customerId_idx_302ad259\"",
+        "sql": "CREATE INDEX \"WhatsappNotice_tenantId_customerId_idx_302ad259\" ON \"public\".\"WhatsappNotice\" (\"tenantId\", \"customerId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"WhatsappNotice_tenantId_customerId_idx_302ad259\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WhatsappNotice_tenantId_customerId_idx_302ad259\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.WhatsappNotice.WhatsappNotice_tenantId_idx_c93ed4f1",
+    "label": "Create index \"WhatsappNotice_tenantId_idx_c93ed4f1\" on \"WhatsappNotice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "WhatsappNotice_tenantId_idx_c93ed4f1",
+        "table": "WhatsappNotice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"WhatsappNotice_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WhatsappNotice_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"WhatsappNotice_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"WhatsappNotice_tenantId_idx_c93ed4f1\" ON \"public\".\"WhatsappNotice\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"WhatsappNotice_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WhatsappNotice_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.WhatsappNotice.WhatsappNotice_tenantId_status_createdAt_idx_c3c853c4",
+    "label": "Create index \"WhatsappNotice_tenantId_status_createdAt_idx_c3c853c4\" on \"WhatsappNotice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "WhatsappNotice_tenantId_status_createdAt_idx_c3c853c4",
+        "table": "WhatsappNotice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"WhatsappNotice_tenantId_status_createdAt_idx_c3c853c4\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WhatsappNotice_tenantId_status_createdAt_idx_c3c853c4\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"WhatsappNotice_tenantId_status_createdAt_idx_c3c853c4\"",
+        "sql": "CREATE INDEX \"WhatsappNotice_tenantId_status_createdAt_idx_c3c853c4\" ON \"public\".\"WhatsappNotice\" (\"tenantId\", \"status\", \"createdAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"WhatsappNotice_tenantId_status_createdAt_idx_c3c853c4\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"WhatsappNotice_tenantId_status_createdAt_idx_c3c853c4\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.MessageTemplate.MessageTemplate_tenantId_fkey",
+    "label": "Add foreign key \"MessageTemplate_tenantId_fkey\" on \"MessageTemplate\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "MessageTemplate_tenantId_fkey",
+        "table": "MessageTemplate"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"MessageTemplate_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "MessageTemplate_tenantId_fkey",
+          "public",
+          "\"public\".\"MessageTemplate\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"MessageTemplate_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"MessageTemplate\"\nADD CONSTRAINT \"MessageTemplate_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"MessageTemplate_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "MessageTemplate_tenantId_fkey",
+          "public",
+          "\"public\".\"MessageTemplate\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.WhatsappNotice.WhatsappNotice_tenantId_fkey",
+    "label": "Add foreign key \"WhatsappNotice_tenantId_fkey\" on \"WhatsappNotice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "WhatsappNotice_tenantId_fkey",
+        "table": "WhatsappNotice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"WhatsappNotice_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "WhatsappNotice_tenantId_fkey",
+          "public",
+          "\"public\".\"WhatsappNotice\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"WhatsappNotice_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"WhatsappNotice\"\nADD CONSTRAINT \"WhatsappNotice_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"WhatsappNotice_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "WhatsappNotice_tenantId_fkey",
+          "public",
+          "\"public\".\"WhatsappNotice\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.MessageTemplate",
+    "label": "Enable row-level security on \"MessageTemplate\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "MessageTemplate"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"MessageTemplate\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "MessageTemplate"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"MessageTemplate\"",
+        "sql": "ALTER TABLE \"public\".\"MessageTemplate\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"MessageTemplate\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "MessageTemplate"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.WhatsappNotice",
+    "label": "Enable row-level security on \"WhatsappNotice\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "WhatsappNotice"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"WhatsappNotice\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "WhatsappNotice"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"WhatsappNotice\"",
+        "sql": "ALTER TABLE \"public\".\"WhatsappNotice\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"WhatsappNotice\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "WhatsappNotice"
+        ]
+      }
+    ]
+  }
+]

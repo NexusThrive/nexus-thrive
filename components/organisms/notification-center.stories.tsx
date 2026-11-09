@@ -5,7 +5,7 @@ import { NotificationCenter } from "./notification-center";
 
 const now = Date.now();
 const LIST: AppNotification[] = [
-  { id: "p1", kind: "payment", title: "Cobro registrado · $ 89.000", detail: "Carlos Peña · Membresía Plata · Nequi", at: new Date(now - 6 * 60_000).toISOString(), href: "/finance" },
+  { id: "p1", kind: "payment", title: "Cobro registrado · $ 89.000", detail: "Carlos Peña · Membresía Plata · Nequi", at: new Date(now - 6 * 60_000).toISOString(), href: "/finanzas" },
   { id: "b1", kind: "booking", title: "Cita hoy · Corte y barba", detail: "Laura Gómez", at: new Date(now + 90 * 60_000).toISOString(), href: "/bookings" },
   { id: "m1", kind: "membership", title: "3 membresías vencen esta semana", detail: "Recuérdales renovar por WhatsApp", at: new Date(now - 5 * 3600_000).toISOString(), href: "/memberships" },
 ];
@@ -30,11 +30,11 @@ export const LlegaUnaNueva: StoryObj<typeof meta> = {
       calls += 1;
       return calls === 1
         ? LIST
-        : [{ id: "p-nuevo", kind: "payment" as const, title: "Cobro registrado · $ 120.000", detail: "Laura Méndez · Tarjeta", at: new Date().toISOString(), href: "/finance" }, ...LIST];
+        : [{ id: "p-nuevo", kind: "payment" as const, title: "Cobro registrado · $ 120.000", detail: "Laura Méndez · Tarjeta", at: new Date().toISOString(), href: "/finanzas" }, ...LIST];
     };
     return (
       <div className="flex w-full items-start justify-between">
-        <button type="button" onClick={() => requestNotificationsRefresh({ kind: "payment", title: "Cobro registrado · $ 120.000", detail: "Laura Méndez · Tarjeta", href: "/finance" })} className="rounded-md border border-border px-3 py-2 text-sm">
+        <button type="button" onClick={() => requestNotificationsRefresh({ kind: "payment", title: "Cobro registrado · $ 120.000", detail: "Laura Méndez · Tarjeta", href: "/finanzas" })} className="rounded-md border border-border px-3 py-2 text-sm">
           Registrar un pago (simula la acción)
         </button>
         <NotificationCenter {...args} load={load} storageKey="sb:notifications-llega" />

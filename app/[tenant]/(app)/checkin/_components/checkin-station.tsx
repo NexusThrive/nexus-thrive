@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, Search, UserRound, XCircle } from "lucide-react";
+import { CheckCircle2, Search, XCircle } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
+import { CustomerAvatar } from "@/components/atoms/customer-avatar";
 import { inputClasses } from "@/components/atoms/input";
 import { useToast } from "@/components/molecules/toast";
 import { countdown } from "@/lib/industry/gym/gym";
@@ -14,10 +15,14 @@ import { cn } from "@/lib/utils";
 import { manualCheckInAction, scanAction, searchMembersAction, type ScanResult } from "../actions";
 
 const METHOD_LABEL: Record<string, string> = { QR: "QR", NFC: "Tarjeta", MANUAL: "Manual" };
-function Photo({ id, className }: { id: string | null; className?: string }) {
-  if (!id) return <span className={cn(className, "grid place-items-center bg-surface-muted text-muted-foreground")}><UserRound aria-hidden="true" className="size-1/2" /></span>;
-  // eslint-disable-next-line @next/next/no-img-element
-  return <img src={`/api/files/${id}`} alt="" className={cn(className, "object-cover")} />;
+function Photo({ id, name, photoId, className }: { id: string; name: string; photoId: string | null; className?: string }) {
+  return (
+    <CustomerAvatar
+      identity={{ name, id }}
+      photoUrl={photoId ? `/api/files/${photoId}` : null}
+      className={cn(className, "object-cover")}
+    />
+  );
 }
 
 /** Puesto de recepción: lector de teclado, búsqueda manual, resultado grande y entradas de hoy. */
@@ -119,7 +124,7 @@ export default function CheckinStation({ slug, canScan, entries, customerTerm }:
           aria-live="assertive"
           className={cn("grid grid-cols-1 gap-4 rounded-xl border-2 p-5 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-center", result.allowed ? "border-emerald-500 bg-emerald-500/10" : "border-rose-500 bg-rose-500/10")}
         >
-          <Photo id={result.member.photoId} className="size-28 rounded-xl" />
+          <Photo id={result.member.id} name={result.member.name} photoId={result.member.photoId} className="size-28 rounded-xl" />
           <div className="grid gap-1.5">
             <p className={cn("flex items-center gap-2 font-display text-2xl font-bold", result.allowed ? "text-emerald-700 dark:text-emerald-400" : "text-rose-700 dark:text-rose-400")}>
               {result.allowed ? <CheckCircle2 aria-hidden="true" className="size-7" /> : <XCircle aria-hidden="true" className="size-7" />}
@@ -132,7 +137,7 @@ export default function CheckinStation({ slug, canScan, entries, customerTerm }:
                 Le quedan {cd.text}
               </p>
             ) : null}
-            <a href={`/${slug}/crm/${result.member.id}`} className="text-sm font-medium text-accent-text underline-offset-4 hover:underline">
+            <a href={`/${slug}/contactos/${result.member.id}`} className="text-sm font-medium text-accent-text underline-offset-4 hover:underline">
               Ver ficha del {customerTerm.toLowerCase()}
             </a>
           </div>
@@ -149,7 +154,7 @@ export default function CheckinStation({ slug, canScan, entries, customerTerm }:
           <ul className="divide-y divide-border rounded-md border border-border">
             {found.map((m) => (
               <li key={m.id} className="flex items-center gap-3 px-3 py-2">
-                <Photo id={m.photoId} className="size-9 rounded-full" />
+                <Photo id={m.id} name={m.name} photoId={m.photoId} className="size-9 rounded-full" />
                 <span className="min-w-0 flex-1 text-sm">
                   <b className="block truncate font-medium">{m.name}</b>
                   <small className="text-xs text-muted-foreground">{m.documentId ?? m.phone ?? "Sin documento"}</small>
@@ -180,9 +185,9 @@ export default function CheckinStation({ slug, canScan, entries, customerTerm }:
         <ul className="divide-y divide-border rounded-lg border border-border bg-card">
           {entries.map((e) => (
             <li key={e.id} className="flex items-center gap-3 px-3 py-2.5">
-              <Photo id={e.photoId} className="size-9 rounded-full" />
+              <Photo id={e.customerId} name={e.name} photoId={e.photoId} className="size-9 rounded-full" />
               <span className="min-w-0 flex-1 text-sm">
-                <a href={`/${slug}/crm/${e.customerId}`} className="block truncate font-medium hover:underline">
+                <a href={`/${slug}/contactos/${e.customerId}`} className="block truncate font-medium hover:underline">
                   {e.name}
                 </a>
                 <small className="block truncate text-xs text-muted-foreground">

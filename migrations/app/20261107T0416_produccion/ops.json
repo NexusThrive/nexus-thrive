@@ -1,0 +1,362 @@
+[
+  {
+    "id": "table.ProductionOrder",
+    "label": "Create table \"ProductionOrder\"",
+    "summary": "Creates table \"ProductionOrder\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "ProductionOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"ProductionOrder\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductionOrder\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"ProductionOrder\"",
+        "sql": "CREATE TABLE \"public\".\"ProductionOrder\" (\n  \"assigneeId\" text,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"doneAt\" timestamptz,\n  \"id\" text NOT NULL,\n  \"note\" text,\n  \"orderId\" text NOT NULL,\n  \"orderLineId\" text NOT NULL,\n  \"productName\" text NOT NULL,\n  \"quantity\" int4 NOT NULL,\n  \"stage\" text DEFAULT 'QUEUED' NOT NULL,\n  \"startedAt\" timestamptz,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"ProductionOrder\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductionOrder\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.ProductionOrder.ProductionOrder_tenantId_orderLineId_key",
+    "label": "Add unique constraint on \"ProductionOrder\" (tenantId, orderLineId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "ProductionOrder_tenantId_orderLineId_key",
+        "table": "ProductionOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"ProductionOrder_tenantId_orderLineId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProductionOrder_tenantId_orderLineId_key",
+          "public",
+          "\"public\".\"ProductionOrder\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"ProductionOrder_tenantId_orderLineId_key\"",
+        "sql": "ALTER TABLE \"public\".\"ProductionOrder\" ADD CONSTRAINT \"ProductionOrder_tenantId_orderLineId_key\" UNIQUE (\"tenantId\", \"orderLineId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"ProductionOrder_tenantId_orderLineId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProductionOrder_tenantId_orderLineId_key",
+          "public",
+          "\"public\".\"ProductionOrder\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ProductionOrder.ProductionOrder_orderId_idx_d284871b",
+    "label": "Create index \"ProductionOrder_orderId_idx_d284871b\" on \"ProductionOrder\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ProductionOrder_orderId_idx_d284871b",
+        "table": "ProductionOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ProductionOrder_orderId_idx_d284871b\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductionOrder_orderId_idx_d284871b\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ProductionOrder_orderId_idx_d284871b\"",
+        "sql": "CREATE INDEX \"ProductionOrder_orderId_idx_d284871b\" ON \"public\".\"ProductionOrder\" (\"orderId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ProductionOrder_orderId_idx_d284871b\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductionOrder_orderId_idx_d284871b\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ProductionOrder.ProductionOrder_tenantId_idx_c93ed4f1",
+    "label": "Create index \"ProductionOrder_tenantId_idx_c93ed4f1\" on \"ProductionOrder\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ProductionOrder_tenantId_idx_c93ed4f1",
+        "table": "ProductionOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ProductionOrder_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductionOrder_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ProductionOrder_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"ProductionOrder_tenantId_idx_c93ed4f1\" ON \"public\".\"ProductionOrder\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ProductionOrder_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductionOrder_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ProductionOrder.ProductionOrder_tenantId_orderId_idx_095ca8c4",
+    "label": "Create index \"ProductionOrder_tenantId_orderId_idx_095ca8c4\" on \"ProductionOrder\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ProductionOrder_tenantId_orderId_idx_095ca8c4",
+        "table": "ProductionOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ProductionOrder_tenantId_orderId_idx_095ca8c4\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductionOrder_tenantId_orderId_idx_095ca8c4\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ProductionOrder_tenantId_orderId_idx_095ca8c4\"",
+        "sql": "CREATE INDEX \"ProductionOrder_tenantId_orderId_idx_095ca8c4\" ON \"public\".\"ProductionOrder\" (\"tenantId\", \"orderId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ProductionOrder_tenantId_orderId_idx_095ca8c4\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductionOrder_tenantId_orderId_idx_095ca8c4\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ProductionOrder.ProductionOrder_tenantId_stage_createdAt_idx_99f08344",
+    "label": "Create index \"ProductionOrder_tenantId_stage_createdAt_idx_99f08344\" on \"ProductionOrder\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ProductionOrder_tenantId_stage_createdAt_idx_99f08344",
+        "table": "ProductionOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ProductionOrder_tenantId_stage_createdAt_idx_99f08344\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductionOrder_tenantId_stage_createdAt_idx_99f08344\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ProductionOrder_tenantId_stage_createdAt_idx_99f08344\"",
+        "sql": "CREATE INDEX \"ProductionOrder_tenantId_stage_createdAt_idx_99f08344\" ON \"public\".\"ProductionOrder\" (\"tenantId\", \"stage\", \"createdAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ProductionOrder_tenantId_stage_createdAt_idx_99f08344\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProductionOrder_tenantId_stage_createdAt_idx_99f08344\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ProductionOrder.ProductionOrder_tenantId_fkey",
+    "label": "Add foreign key \"ProductionOrder_tenantId_fkey\" on \"ProductionOrder\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ProductionOrder_tenantId_fkey",
+        "table": "ProductionOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ProductionOrder_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProductionOrder_tenantId_fkey",
+          "public",
+          "\"public\".\"ProductionOrder\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ProductionOrder_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ProductionOrder\"\nADD CONSTRAINT \"ProductionOrder_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ProductionOrder_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProductionOrder_tenantId_fkey",
+          "public",
+          "\"public\".\"ProductionOrder\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ProductionOrder.ProductionOrder_orderId_fkey",
+    "label": "Add foreign key \"ProductionOrder_orderId_fkey\" on \"ProductionOrder\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ProductionOrder_orderId_fkey",
+        "table": "ProductionOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ProductionOrder_orderId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProductionOrder_orderId_fkey",
+          "public",
+          "\"public\".\"ProductionOrder\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ProductionOrder_orderId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ProductionOrder\"\nADD CONSTRAINT \"ProductionOrder_orderId_fkey\"\nFOREIGN KEY (\"orderId\")\nREFERENCES \"public\".\"StoreOrder\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ProductionOrder_orderId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProductionOrder_orderId_fkey",
+          "public",
+          "\"public\".\"ProductionOrder\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.ProductionOrder",
+    "label": "Enable row-level security on \"ProductionOrder\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "ProductionOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"ProductionOrder\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "ProductionOrder"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"ProductionOrder\"",
+        "sql": "ALTER TABLE \"public\".\"ProductionOrder\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"ProductionOrder\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "ProductionOrder"
+        ]
+      }
+    ]
+  }
+]

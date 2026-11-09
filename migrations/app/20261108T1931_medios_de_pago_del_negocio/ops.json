@@ -1,0 +1,203 @@
+[
+  {
+    "id": "table.PaymentMethodSetting",
+    "label": "Create table \"PaymentMethodSetting\"",
+    "summary": "Creates table \"PaymentMethodSetting\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "PaymentMethodSetting"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"PaymentMethodSetting\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PaymentMethodSetting\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"PaymentMethodSetting\"",
+        "sql": "CREATE TABLE \"public\".\"PaymentMethodSetting\" (\n  \"active\" bool DEFAULT true NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"id\" text NOT NULL,\n  \"instructions\" text,\n  \"kind\" text DEFAULT 'TRANSFER' NOT NULL,\n  \"name\" text NOT NULL,\n  \"position\" int4 DEFAULT 0 NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"PaymentMethodSetting\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PaymentMethodSetting\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.PaymentMethodSetting.PaymentMethodSetting_tenantId_name_key",
+    "label": "Add unique constraint on \"PaymentMethodSetting\" (tenantId, name)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "PaymentMethodSetting_tenantId_name_key",
+        "table": "PaymentMethodSetting"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"PaymentMethodSetting_tenantId_name_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PaymentMethodSetting_tenantId_name_key",
+          "public",
+          "\"public\".\"PaymentMethodSetting\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"PaymentMethodSetting_tenantId_name_key\"",
+        "sql": "ALTER TABLE \"public\".\"PaymentMethodSetting\" ADD CONSTRAINT \"PaymentMethodSetting_tenantId_name_key\" UNIQUE (\"tenantId\", \"name\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"PaymentMethodSetting_tenantId_name_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PaymentMethodSetting_tenantId_name_key",
+          "public",
+          "\"public\".\"PaymentMethodSetting\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PaymentMethodSetting.PaymentMethodSetting_tenantId_idx_c93ed4f1",
+    "label": "Create index \"PaymentMethodSetting_tenantId_idx_c93ed4f1\" on \"PaymentMethodSetting\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PaymentMethodSetting_tenantId_idx_c93ed4f1",
+        "table": "PaymentMethodSetting"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PaymentMethodSetting_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PaymentMethodSetting_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PaymentMethodSetting_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"PaymentMethodSetting_tenantId_idx_c93ed4f1\" ON \"public\".\"PaymentMethodSetting\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PaymentMethodSetting_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PaymentMethodSetting_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.PaymentMethodSetting.PaymentMethodSetting_tenantId_fkey",
+    "label": "Add foreign key \"PaymentMethodSetting_tenantId_fkey\" on \"PaymentMethodSetting\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "PaymentMethodSetting_tenantId_fkey",
+        "table": "PaymentMethodSetting"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"PaymentMethodSetting_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PaymentMethodSetting_tenantId_fkey",
+          "public",
+          "\"public\".\"PaymentMethodSetting\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"PaymentMethodSetting_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"PaymentMethodSetting\"\nADD CONSTRAINT \"PaymentMethodSetting_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"PaymentMethodSetting_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PaymentMethodSetting_tenantId_fkey",
+          "public",
+          "\"public\".\"PaymentMethodSetting\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.PaymentMethodSetting",
+    "label": "Enable row-level security on \"PaymentMethodSetting\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "PaymentMethodSetting"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"PaymentMethodSetting\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentMethodSetting"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"PaymentMethodSetting\"",
+        "sql": "ALTER TABLE \"public\".\"PaymentMethodSetting\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"PaymentMethodSetting\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentMethodSetting"
+        ]
+      }
+    ]
+  }
+]

@@ -6,16 +6,23 @@
 /// Campos:
 /// - `number`: Consecutivo por negocio (T-0001).
 /// - `status`: PENDING_PAYMENT | PAID | CANCELED | ABANDONED
+/// - `fulfillment`: Cumplimiento, separado del pago: RECEIVED | CONFIRMED | IN_PRODUCTION | READY | SHIPPED | DELIVERED | CANCELED. Los estados de pago (`status`) no cambian.
+/// - `quoteId`: Cotización comercial aprobada de la que nació el pedido (no pasa por el cobro en línea ni se abandona).
 /// - `intentId`: Cobro en línea del pedido (su enlace y su estado oficial).
 /// - `documentId`: Documento de venta que deja al pagarse.
 /// - `review`: Aviso para revisar a mano (p. ej. se pagó sin existencias suficientes).
 /// - `origin`: De dónde llegó el cliente: { source, medium, campaign } (UTM).
+/// - `channel`: Por dónde entró el pedido: WEB (tienda en línea) | API | WHATSAPP | SHOPIFY | WOOCOMMERCE | OTHER.
+/// - `externalId`: Identificador del pedido en el canal de origen (p. ej. el de Shopify); con `channel` evita crear el mismo pedido dos veces.
 model StoreOrder {
   id                 String    @id @default(uuid())
   tenantId           String
   tenant             Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   number             Int
   status             String    @default("PENDING_PAYMENT")
+  customerId         String?
+  quoteId            String?
+  fulfillment        String    @default("RECEIVED")
   customerName       String
   phone              String
   email              String?
@@ -27,12 +34,18 @@ model StoreOrder {
   documentId         String?
   review             String?
   origin             Json?
+  channel            String    @default("WEB")
+  externalId         String?
   paidAt             DateTime?
   abandonedNotifiedAt DateTime?
   createdAt          DateTime  @default(now())
   lines              StoreOrderLine[]
+  statusChanges      OrderStatusChange[]
+  productionOrders   ProductionOrder[]
+  delivery           Delivery?
 
   @@unique([tenantId, number])
+  @@unique([tenantId, channel, externalId])
   @@index([tenantId, status])
   @@rls
 }
@@ -51,5 +64,81 @@ model StoreOrderLine {
   taxRatePct Decimal   @default(0)
 
   @@index([orderId])
+  @@rls
+}
+
+/// Historial del cumplimiento de un pedido (HU-pedidos-01): cada cambio de estado con quién lo hizo y cuándo.
+///
+/// Campos:
+/// - `fromStatus`, `toStatus`: Estado de cumplimiento antes y después.
+/// - `byId`: Integrante que lo cambió; vacío = el sistema (p. ej. se canceló el pedido).
+model OrderStatusChange {
+  id         String     @id @default(uuid())
+  tenantId   String
+  tenant     Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  orderId    String
+  order      StoreOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  fromStatus String?
+  toStatus   String
+  byId       String?
+  note       String?
+  createdAt  DateTime   @default(now())
+
+  @@index([tenantId, orderId, createdAt])
+  @@rls
+}
+
+/// Orden de producción (HU-produccion-01): lo que se fabrica de un pedido, una por línea, con su etapa y responsable. Nace cuando el pedido
+/// pasa a «en producción»; cuando todas sus líneas están terminadas, el pedido pasa a «listo».
+///
+/// Campos:
+/// - `stage`: QUEUED (en cola) | IN_PROGRESS (en curso) | DONE (terminada). Etapas mínimas a propósito; no se configuran todavía.
+/// - `assigneeId`: Integrante responsable (`User.id`); vacío = sin asignar.
+/// - `orderLineId`: Línea del pedido; una sola orden por línea.
+model ProductionOrder {
+  id          String     @id @default(uuid())
+  tenantId    String
+  tenant      Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  orderId     String
+  order       StoreOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderLineId String
+  productName String
+  quantity    Int
+  stage       String     @default("QUEUED")
+  assigneeId  String?
+  note        String?
+  startedAt   DateTime?
+  doneAt      DateTime?
+  createdAt   DateTime   @default(now())
+
+  @@unique([tenantId, orderLineId])
+  @@index([tenantId, stage, createdAt])
+  @@index([tenantId, orderId])
+  @@rls
+}
+
+/// Entrega de un pedido (HU-entregas-01): cómo y cuándo llega al cliente. Una por pedido.
+///
+/// Campos:
+/// - `method`: PICKUP (recoge en el negocio) | COURIER (transportadora, con guía) | OWN (reparto propio).
+/// - `trackingCode`: guía de la transportadora; vacío si no aplica.
+/// - `scheduledFor`: fecha prometida; `deliveredAt` la fecha real, solo al confirmar.
+/// - `receivedBy`: quién recibió, si se anotó.
+model Delivery {
+  id           String     @id @default(uuid())
+  tenantId     String
+  tenant       Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  orderId      String     @unique
+  order        StoreOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  method       String
+  carrier      String?
+  trackingCode String?
+  scheduledFor DateTime?
+  deliveredAt  DateTime?
+  receivedBy   String?
+  note         String?
+  createdAt    DateTime   @default(now())
+
+  @@index([tenantId, scheduledFor])
   @@rls
 }

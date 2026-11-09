@@ -32,6 +32,8 @@ export type PartyInput = {
   phone?: string | null;
   addressLine?: string | null;
   city?: string | null;
+  /** Persona de contacto (en una empresa o un proveedor). */
+  contact?: { name?: string | null; phone?: string | null; email?: string | null } | null;
   roles?: readonly PartyRoleName[];
 };
 
@@ -45,6 +47,7 @@ export type PartyRow = {
   email: string | null;
   phone: string | null;
   city: string | null;
+  contact: { name: string | null; phone: string | null; email: string | null } | null;
   active: boolean;
   roles: string[];
 };
@@ -71,6 +74,7 @@ const toRow = (p: Record<string, unknown>, roles: string[]): PartyRow => ({
   email: (p.email as string | null) ?? null,
   phone: (p.phone as string | null) ?? null,
   city: (p.city as string | null) ?? null,
+  contact: p.contactName || p.contactPhone || p.contactEmail ? { name: (p.contactName as string | null) ?? null, phone: (p.contactPhone as string | null) ?? null, email: (p.contactEmail as string | null) ?? null } : null,
   active: p.active === true,
   roles: roles.sort(),
 });
@@ -128,6 +132,9 @@ export async function createParty(tenantId: string, input: PartyInput): Promise<
       phone: input.phone?.trim().slice(0, 40) || null,
       addressLine: input.addressLine?.trim().slice(0, 200) || null,
       city: input.city?.trim().slice(0, 80) || null,
+      contactName: input.contact?.name?.trim().slice(0, 120) || null,
+      contactPhone: input.contact?.phone?.trim().slice(0, 40) || null,
+      contactEmail: normEmail(input.contact?.email),
     });
   } catch (error) {
     // Dos altas simultáneas con el mismo documento: la restricción única de la base gana.
@@ -138,6 +145,23 @@ export async function createParty(tenantId: string, input: PartyInput): Promise<
   const roles = [...new Set(input.roles ?? [])];
   for (const role of roles) await addRole(tenantId, created.id, role);
   return { ok: true, party: toRow(created as unknown as Record<string, unknown>, roles), possibleDuplicates };
+}
+
+/** Datos fiscales del tercero que no salen de la ficha del cliente (alta completa). El correo para facturas reemplaza al de contacto. */
+export async function updatePartyDetails(
+  tenantId: string,
+  partyId: string,
+  details: { kind: "PERSON" | "COMPANY"; documentType: string | null; addressLine: string | null; region: string | null; countryCode: string; taxResponsibility: string | null; invoiceEmail: string | null },
+): Promise<void> {
+  await db.orm.public.Party.where({ tenantId, id: partyId }).update({
+    kind: details.kind,
+    documentType: details.documentType,
+    addressLine: details.addressLine,
+    region: details.region,
+    countryCode: details.countryCode,
+    taxResponsibility: details.taxResponsibility,
+    ...(details.invoiceEmail ? { email: details.invoiceEmail } : {}),
+  });
 }
 
 /**
@@ -191,3 +215,13 @@ export async function listParties(tenantId: string, opts: { role?: PartyRoleName
   const roles = await rolesOf(tenantId, parties.map((p) => p.id));
   return parties.map((p) => toRow(p as unknown as Record<string, unknown>, roles.get(p.id) ?? []));
 }
+
+/** Cambia la persona de contacto de un tercero (nombre, celular y correo; vacío = sin dato). */
+export async function updatePartyContact(tenantId: string, partyId: string, contact: { name?: string | null; phone?: string | null; email?: string | null }): Promise<{ ok: true } | { ok: false; message: string }> {
+  if (!(await db.orm.public.Party.where({ tenantId, id: partyId }).select("id").first())) return { ok: false, message: "No encontramos a ese tercero." };
+  const email = normEmail(contact.email);
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return { ok: false, message: "Ese correo no parece válido." };
+  await db.orm.public.Party.where({ tenantId, id: partyId }).update({ contactName: contact.name?.trim().slice(0, 120) || null, contactPhone: contact.phone?.trim().slice(0, 40) || null, contactEmail: email });
+  return { ok: true };
+}
+

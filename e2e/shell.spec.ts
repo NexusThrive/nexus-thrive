@@ -23,7 +23,9 @@ test.describe("Paleta de comandos", () => {
   test("sin texto no vuelca todo: invita a buscar", async ({ page }) => {
     await openStory(page, "organismos-commandpalette--open");
     await expect(page.getByText("Encuentra lo que necesitas")).toBeVisible();
-    await expect(page.getByRole("option")).toHaveCount(0);
+    // Solo las acciones rápidas: no se vuelcan clientes, secciones ni nada más.
+    await expect(page.getByRole("option", { name: /María Fernanda/ })).toHaveCount(0);
+    expect(await page.getByRole("option").count()).toBeLessThanOrEqual(4);
   });
 });
 
@@ -148,18 +150,18 @@ test.describe("Barra lateral: categorías como opciones desplegables", () => {
     const toggle = side.getByRole("button", { name: "Ventas y cobros" });
     // Sin la página activa dentro, la categoría llega cerrada (DR: opción desplegable, no un título con ítems siempre a la vista).
     await expect(toggle).toHaveAttribute("aria-expanded", "false");
-    await expect(side.getByRole("link", { name: "Facturación" })).toBeHidden();
+    await expect(side.getByRole("link", { name: "Pedidos", exact: true })).toBeHidden();
     await toggle.click();
     await expect(toggle).toHaveAttribute("aria-expanded", "true");
-    await expect(side.getByRole("link", { name: "Facturación" })).toBeVisible();
+    await expect(side.getByRole("link", { name: "Pedidos", exact: true })).toBeVisible();
     await toggle.click();
     await expect(toggle).toHaveAttribute("aria-expanded", "false");
-    await expect(side.getByRole("link", { name: "Facturación" })).toBeHidden();
-    await expect(side.getByRole("button", { name: "Compras y gastos" })).toBeVisible();
+    await expect(side.getByRole("link", { name: "Pedidos", exact: true })).toBeHidden();
+    await expect(side.getByRole("button", { name: "Finanzas y contabilidad" })).toBeVisible();
   });
 
   test("con poco alto el menú se desplaza dentro de la barra", async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.setViewportSize({ width: 1280, height: 520 });
     await openStory(page, "organismos-appsidebar--ingresos-y-gastos");
     const nav = page.getByRole("navigation").first();
     const scrolls = await nav.evaluate((el) => el.scrollHeight > el.clientHeight && getComputedStyle(el).overflowY === "auto");

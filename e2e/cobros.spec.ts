@@ -69,4 +69,64 @@ test.describe("Cobros en línea", () => {
     await page.getByRole("option", { name: "Pasarela de prueba" }).click();
     await expect(pasarela).toContainText("Pasarela de prueba");
   });
+
+  test("transferencia en verificación: aviso arriba, confirmar o rechazar con motivo", async ({ page }) => {
+    await openStory(page, "páginas-dinero-cobros-en-línea--en-verificacion");
+    await expect(page.getByText("Hay 1 transferencia por verificar.")).toBeVisible();
+    await expect(page.getByText("En verificación")).toBeVisible();
+    await expect(page.getByText(/el cliente avisó: «Bancolombia 88231»/)).toBeVisible();
+    await expect(page.getByText(/comprobante rechazado: El monto no coincide/)).toBeVisible();
+    await page.getByRole("button", { name: "Rechazar comprobante" }).click();
+    const d = page.getByRole("dialog", { name: "Rechazar comprobante" });
+    await d.getByLabel(/Motivo/).fill("x");
+    await d.getByRole("button", { name: "Rechazar comprobante" }).click();
+    await expect(d.getByText(/por qué rechazas/).first()).toBeVisible();
+    await d.getByLabel(/Motivo/).fill("El monto no coincide");
+    await d.getByRole("button", { name: "Rechazar comprobante" }).click();
+    await expect(page.getByText("Comprobante rechazado: el cobro vuelve a pendiente")).toBeVisible();
+    await expectNoAxeViolations(page);
+  });
+
+  test("un cobro con intentos fallidos sigue abierto y lo dice", async ({ page }) => {
+    await openStory(page, "páginas-dinero-cobros-en-línea--con-intentos-fallidos");
+    await expect(page.getByText(/2 intentos fallidos en la pasarela; el cobro sigue abierto/)).toBeVisible();
+    await expect(page.getByText("Pendiente")).toBeVisible();
+  });
+
+  test("liquidaciones: lista la diferencia de comisión y valida el registro", async ({ page }) => {
+    await openStory(page, "páginas-dinero-cobros-en-línea--liquidaciones");
+    await page.getByRole("tab", { name: /Liquidaciones/ }).or(page.getByRole("button", { name: /Liquidaciones/ })).first().click();
+    await expect(page.getByText("LQ-2026-114")).toBeVisible();
+    await expect(page.getByText(/\+\s?\$\s?10/)).toBeVisible();
+    await page.getByRole("button", { name: "Registrar liquidación" }).click();
+    const d = page.getByRole("dialog", { name: "Registrar liquidación" });
+    await d.getByLabel(/Referencia de la liquidación/).fill("LQ-2026-115");
+    await d.getByLabel(/Comisión real/).fill("3994");
+    await d.getByLabel(/Valor depositado/).fill("96100");
+    await d.getByLabel(/Transacciones/).fill("tx-1, 100000");
+    await d.getByRole("button", { name: "Registrar" }).click();
+    await expect(d.getByText(/El depósito no cuadra/).first()).toBeVisible();
+    await d.getByLabel(/Valor depositado/).fill("96006");
+    await d.getByRole("button", { name: "Registrar" }).click();
+    await expect(page.getByText(/Liquidación registrada/)).toBeVisible();
+    await expectNoAxeViolations(page);
+  });
+
+  test("extracto del banco: propuesto, conciliado y pendiente; confirmar y descartar", async ({ page }) => {
+    await openStory(page, "páginas-dinero-cobros-en-línea--extracto-bancario");
+    await page.getByRole("tab", { name: /Extracto del banco/ }).or(page.getByRole("button", { name: /Extracto del banco/ })).first().click();
+    await expect(page.getByText("1 conciliados")).toBeVisible();
+    await expect(page.getByText("1 propuestos")).toBeVisible();
+    await expect(page.getByText(/coincide exacto con Liquidación LQ-2026-114/)).toBeVisible();
+    await page.getByRole("button", { name: "Confirmar cruce" }).click();
+    await expect(page.getByText("Movimiento conciliado")).toBeVisible();
+    await page.getByRole("button", { name: /No cruza: Pago de nómina/ }).click();
+    await expect(page.getByText("Marcado como revisado: no se vuelve a proponer")).toBeVisible();
+    await page.getByRole("button", { name: "Importar extracto" }).click();
+    const d = page.getByRole("dialog", { name: "Importar extracto" });
+    await d.getByLabel(/Movimientos/).fill("   ");
+    await d.getByRole("button", { name: "Importar" }).click();
+    await expect(d.getByText(/Pega el extracto/).first()).toBeVisible();
+    await expectNoAxeViolations(page);
+  });
 });

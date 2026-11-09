@@ -34,6 +34,10 @@ export async function createTransferAction(_slug: string, input: { lines: unknow
   if (!input.lines.length) return { ok: false as const, message: "Agrega al menos un producto." };
   return { ok: true as const, id: "tr", message: "Traslado TR-0003 hecho" };
 }
+export async function registerMovementAction(_slug: string, input: { kind: string; quantity: number }) {
+  await new Promise((r) => setTimeout(r, 200));
+  return input.kind === "OUT" && input.quantity > 5 ? { ok: false as const, message: "Solo hay 5 en esa bodega." } : { ok: true as const, message: "Movimiento registrado · quedan 12" };
+}
 export async function createCountAction() {
   await wait();
   return { ok: true as const, id: "open", message: "Conteo CT-0004 abierto con 3 productos" };

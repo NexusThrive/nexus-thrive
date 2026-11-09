@@ -252,3 +252,57 @@ export async function setReorderLevels(tenantId: string, productId: string, leve
   const updated = await db.orm.public.Product.where({ tenantId, id: productId, trackStock: true }).update({ minStock: levels.minStock, maxStock: levels.maxStock, reorderPoint: levels.reorderPoint });
   return updated ? { ok: true } : { ok: false, message: "No se encontró el producto con inventario." };
 }
+
+// ── Movimientos manuales y lista general ─────────────────────────────────
+
+export type ManualMovementInput = {
+  productId: string;
+  warehouseId?: string | null;
+  kind: "IN" | "OUT" | "ADJUST";
+  quantity: number;
+  /** Solo entradas: lo que costó cada unidad (si falta, entra al costo promedio vigente). */
+  unitCost?: number | null;
+  note?: string | null;
+};
+
+/** Valida un movimiento manual: cantidad entera, motivo en salidas y ajustes y costo no negativo. Devuelve el error legible o null. */
+export function validateManualMovement(input: ManualMovementInput): string | null {
+  if (!["IN", "OUT", "ADJUST"].includes(input.kind)) return "Elige si es una entrada, una salida o un ajuste.";
+  if (!input.productId) return "Elige el producto.";
+  if (!Number.isInteger(input.quantity) || input.quantity < 0 || (input.kind !== "ADJUST" && input.quantity === 0)) return "La cantidad debe ser un número entero mayor que cero.";
+  if (input.kind !== "IN" && (input.note ?? "").trim().length < 3) return input.kind === "OUT" ? "Explica el motivo de la salida." : "Explica el motivo del ajuste.";
+  if (input.unitCost != null && (!Number.isFinite(input.unitCost) || input.unitCost < 0)) return "El costo no puede ser negativo.";
+  return null;
+}
+
+/** Entrada, salida o ajuste hecho a mano, por el servicio de inventario (bodega, costo promedio y kardex). */
+export async function registerMovement(tenantId: string, input: ManualMovementInput, userId: string | null): Promise<DocResult<{ balance: number }>> {
+  const problem = validateManualMovement(input);
+  if (problem) return { ok: false, message: problem };
+  const product = await db.orm.public.Product.where({ tenantId, id: input.productId }).select("id", "trackStock").first();
+  if (!product || !product.trackStock) return { ok: false, message: "Este producto no lleva inventario." };
+  try {
+    const r = await moneyTransaction((tx) =>
+      applyStockMovement(tx, tenantId, { productId: product.id, warehouseId: input.warehouseId || null, kind: input.kind, quantity: input.quantity, unitCost: input.kind === "IN" ? (input.unitCost ?? null) : null, note: input.note?.trim().slice(0, 200) || null, userId }),
+    );
+    return { ok: true, balance: r.balance };
+  } catch (e) {
+    if (e instanceof StockError) return { ok: false, message: e.message };
+    throw e;
+  }
+}
+
+export type MovementRow = { id: string; date: string; kind: string; productName: string; warehouseName: string; quantity: number; unitCost: number | null; balance: number | null; note: string | null; documentType: string | null };
+
+/** Los últimos movimientos de todo el inventario, con producto y bodega, del más reciente al más antiguo. */
+export async function movementFeed(tenantId: string, limit = 100): Promise<MovementRow[]> {
+  const rows = await db.orm.public.StockMovement.where({ tenantId }).orderBy((m) => m.createdAt.desc()).limit(limit).all();
+  if (!rows.length) return [];
+  const [products, warehouses] = await Promise.all([
+    db.orm.public.Product.where({ tenantId }).where((p) => p.id.in([...new Set(rows.map((r) => r.productId))])).select("id", "name").limit(limit).all(),
+    db.orm.public.Warehouse.where({ tenantId }).select("id", "name").limit(200).all(),
+  ]);
+  const pn = new Map(products.map((p) => [p.id, p.name]));
+  const wn = new Map(warehouses.map((w) => [w.id, w.name]));
+  return rows.map((m) => ({ id: m.id, date: iso(m.createdAt), kind: m.kind, productName: pn.get(m.productId) ?? "—", warehouseName: m.warehouseId ? (wn.get(m.warehouseId) ?? "—") : "—", quantity: m.quantity, unitCost: m.unitCost == null ? null : toNumber(m.unitCost), balance: m.balanceAfter ?? null, note: m.note, documentType: m.documentType }));
+}

@@ -34,14 +34,17 @@ export type VerticalValue = (typeof VERTICALS)[number];
  * se ofrece al crear un negocio.
  */
 export const SIGNUP_VERTICALS = [
-  "general",
+  "retail",
   "gym",
-  "tourism_agency",
-  "construction",
   "restaurant",
-  "real_estate",
-  "museum",
 ] as const satisfies readonly VerticalValue[];
+
+/**
+ * Rubros a los que se ofrece Nexus hoy (decisión de producto, 2026-11-09): comercio, gimnasio y restaurante. Es una lista fija
+ * en código: el Operations Center puede apagar uno, pero no encender los demás. Un negocio de otro rubro que ya existe sigue
+ * funcionando y puede conservar el suyo (el resto del catálogo no se borra).
+ */
+export const OFFERED_VERTICALS: readonly VerticalValue[] = SIGNUP_VERTICALS;
 
 export const VERTICAL_LABELS: Record<VerticalValue, string> = {
   gym: "Gimnasio",
@@ -50,7 +53,7 @@ export const VERTICAL_LABELS: Record<VerticalValue, string> = {
   construction: "Construcción",
   carpentry: "Carpintería",
   restaurant: "Restaurante",
-  retail: "Tienda",
+  retail: "Comercio",
   beauty: "Belleza & Barbería",
   healthcare: "Salud",
   mechanic: "Mecánica",

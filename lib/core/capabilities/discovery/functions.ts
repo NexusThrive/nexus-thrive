@@ -41,12 +41,13 @@ export type FunctionSource = { id: ModuleValue; label: string; pitch: string; ki
 
 /**
  * Arma los grupos: «En uso» (encendidas), «Te sugerimos» (por uso o por el
- * perfil del rubro) y «Más funciones» (el resto). El Inicio no se lista (siempre está).
+ * perfil del rubro) y «Más funciones» (el resto compatible con la solución). El Inicio no se lista (siempre está).
  */
-export function groupFunctions(sources: readonly FunctionSource[], active: ReadonlySet<string>, profileSuggested: ReadonlySet<string>, usage: readonly Suggestion[], profileLabel: string): FunctionGroups {
+export function groupFunctions(sources: readonly FunctionSource[], active: ReadonlySet<string>, profileSuggested: ReadonlySet<string>, usage: readonly Suggestion[], profileLabel: string, compatible?: (id: ModuleValue) => boolean): FunctionGroups {
   const usageReason = new Map(usage.map((u) => [u.module, u.reason]));
   const items = sources
-    .filter((s) => s.id !== "dashboard")
+    // Lo que la solución del negocio no admite no se ofrece; lo que ya usa se conserva siempre.
+    .filter((s) => s.id !== "dashboard" && (!compatible || compatible(s.id) || active.has(s.id)))
     .map<FunctionItem>((s) => ({
       id: s.id,
       label: s.label,

@@ -5,9 +5,12 @@ import { toNumber } from "@/lib/foundation/format";
 import type { PaymentStatusValue } from "@/lib/foundation/kernel/payment-vocabulary";
 import { applyStockMovement, StockError } from "@/lib/business/inventory/stock-service";
 import { balanceOf, validatePayment } from "@/lib/foundation/kernel/aging";
-import { accountingPort } from "./accounting-port";
+import { DUPLICATE_WINDOW_SECONDS, isDuplicatePayment, resolveLimits, validateAmount } from "@/lib/foundation/kernel/integrity";
+import { accountingPort, type AccountingPort } from "./accounting-port";
 import { todayCO } from "@/lib/foundation/dates/plain-date";
 import { MoneyError } from "./money-error";
+import { allocatePayment, releaseAllocations } from "./allocations";
+import { applyToObligation } from "./obligations";
 import { receiptCode } from "./invoice";
 import type { DocumentLineInput } from "./commercial-document";
 import { insertDocument, issueCreditNote, saleDocumentOfPayment } from "./documents-db";
@@ -32,9 +35,24 @@ export type MoneyTx = DbTransaction;
 
 export { MoneyError };
 
+/** Publica un hecho del dinero en el outbox dentro de la transacción de quien llama (Finance no importa Core: pasa por aquí). */
+export { emitEvent as emitFinanceEvent };
+
+/** Informa a la contabilidad un hecho del dinero (Finance/payments no importa la contabilidad: pasa por aquí). Devuelve el asiento o `null` si no hubo que asentar. */
+export const recordFinanceFact = (...args: Parameters<AccountingPort["record"]>) => accountingPort.use().record(...args);
+
 // Dos cobros a la vez pueden tomar el mismo recibo o el mismo número de
 // documento de venta: la restricción única falla y se reintenta todo.
 const isReceiptCollision = (e: unknown) => /receiptNumber|Invoice_tenantId_kind_number|JournalEntry_tenantId_number/i.test(String((e as Error)?.message ?? e));
+
+/**
+ * ¿El monto cabe en los límites del negocio? Para validar ANTES de hacer cambios que no se pueden deshacer (cancelar el
+ * plan anterior, crear una venta) y devolver el problema legible, o `null` si está bien.
+ */
+export async function amountProblem(tenantId: string, amount: number): Promise<string | null> {
+  const tenant = await db.orm.public.Tenant.where({ id: tenantId }).select("settings").first();
+  return validateAmount(amount, resolveLimits(tenant?.settings));
+}
 
 /** Corre `fn` en una transacción; la reintenta completa si dos cobros toman el mismo recibo. */
 export async function moneyTransaction<T>(fn: (tx: MoneyTx) => Promise<T>): Promise<T> {
@@ -82,6 +100,8 @@ export type IncomeInput = {
   membershipId?: string | null;
   invoiceId?: string | null;
   providerRefId?: string | null;
+  /** Nota del pago (p. ej. el medio que el negocio eligió: «Nequi»). */
+  notes?: string | null;
   sourceType?: string | null;
   sourceId?: string | null;
   /**
@@ -94,6 +114,8 @@ export type IncomeInput = {
   cashSessionId?: string | null;
   /** El documento de venta lo crea quien llama (venta con varios pagos): este cobro no crea otro. */
   skipDocument?: boolean;
+  /** Cobro por pasarela: comisión estimada (el neto sale de restarla). El asiento queda «por cobrar a la pasarela». */
+  gatewayFee?: number;
 };
 
 export type Income = { paymentId: string; receiptNumber: number; receipt: string; createdAt: string; documentId: string | null };
@@ -103,9 +125,21 @@ export type Income = { paymentId: string; receiptNumber: number; receipt: string
  * es efectivo aprobado con un turno abierto, el movimiento de caja.
  */
 export async function recordIncome(tx: MoneyTx, tenantId: string, input: IncomeInput, userId: string): Promise<Income> {
-  const amount =
-    typeof input.amount === "string" ? toNumber(input.amount).toFixed(2) : (Math.round(input.amount * 100) / 100).toFixed(2);
+  const raw = typeof input.amount === "string" ? toNumber(input.amount) : input.amount;
+  const tenant = await tx.orm.public.Tenant.where({ id: tenantId }).select("settings").first();
+  const problem = validateAmount(raw, resolveLimits(tenant?.settings));
+  if (problem) throw new MoneyError(problem);
+  const amount = typeof input.amount === "string" ? raw.toFixed(2) : (Math.round(raw * 100) / 100).toFixed(2);
   const status = input.status ?? "APPROVED";
+
+  // Doble envío: el mismo cobro de un cliente u origen repetido en segundos no entra dos veces.
+  if (input.customerId || input.sourceId) {
+    const since = Temporal.Instant.fromEpochMilliseconds(Date.now() - DUPLICATE_WINDOW_SECONDS * 1000);
+    const recent = await tx.orm.public.Payment.where({ tenantId }).where((p) => p.createdAt.gte(since)).where((p) => p.status.neq("VOIDED")).select("customerId", "amount", "provider", "description", "sourceType", "sourceId").all();
+    const candidate = { customerId: input.customerId ?? null, amount, method: input.method, description: input.description ? input.description.slice(0, 200) : null, sourceType: input.sourceType ?? null, sourceId: input.sourceId ?? null };
+    if (recent.some((p) => isDuplicatePayment({ customerId: p.customerId, amount: String(p.amount), method: String(p.provider), description: p.description, sourceType: p.sourceType, sourceId: p.sourceId }, candidate)))
+      throw new MoneyError("Este cobro ya se registró hace unos segundos. Revisa el historial antes de repetirlo.");
+  }
 
   const { top } = await tx.orm.public.Payment.where({ tenantId }).aggregate((a) => ({ top: a.max("receiptNumber") }));
   const receiptNumber = (top ?? 0) + 1;
@@ -121,6 +155,7 @@ export async function recordIncome(tx: MoneyTx, tenantId: string, input: IncomeI
     provider: input.method as "CASH",
     description: input.description ? input.description.slice(0, 200) : null,
     providerRefId: input.providerRefId ?? null,
+    notes: input.notes ? input.notes.slice(0, 200) : null,
     sourceType: input.sourceType ?? null,
     sourceId: input.sourceId ?? null,
     receiptNumber,
@@ -128,14 +163,28 @@ export async function recordIncome(tx: MoneyTx, tenantId: string, input: IncomeI
   });
 
   const receipt = receiptCode(receiptNumber);
+  // Aplicación del pago (D-8): a qué cubrió. Una cuenta de cobro recibe el pago completo; una membresía lo reparte entre sus deudas abiertas.
+  if (status === "APPROVED") {
+    if (input.invoiceId) await allocatePayment(tx, tenantId, { paymentId: payment.id, paymentAmount: Number(amount), targetType: "INVOICE", targetId: input.invoiceId, amount: Number(amount) });
+    else if ((input.sourceType === "MEMBERSHIP" || input.sourceType === "STORE_ORDER") && input.sourceId) {
+      for (const part of await applyToObligation(tx, tenantId, input.sourceType, input.sourceId, Number(amount))) {
+        await allocatePayment(tx, tenantId, { paymentId: payment.id, paymentAmount: Number(amount), targetType: "OBLIGATION", targetId: part.obligationId, amount: part.amount });
+      }
+      // Un pedido con anticipo y saldo queda pagado cuando ya no le queda deuda abierta.
+      if (input.sourceType === "STORE_ORDER") {
+        const open = await tx.orm.public.Obligation.where({ tenantId, originType: "STORE_ORDER", status: "OPEN" }).where((o) => o.originId.ilike(`${input.sourceId}%`)).select("id", "originId").all();
+        if (!open.some((o) => o.originId === input.sourceId || o.originId.startsWith(`${input.sourceId}:`))) await tx.orm.public.StoreOrder.where({ tenantId, id: input.sourceId, status: "PENDING_PAYMENT" }).update({ status: "PAID", paidAt: Temporal.Instant.fromEpochMilliseconds(Date.now()) });
+      }
+    }
+  }
   if (status === "APPROVED") {
     const payer = input.customerId ? await tx.orm.public.Customer.where({ tenantId, id: input.customerId }).select("partyId").first() : null;
-    await accountingPort.use().record(
-      tx,
-      tenantId,
-      { event: "PAYMENT_RECEIVED", amounts: { payment: Number(amount) }, date: todayCO(), description: `Cobro ${receipt}`, sourceType: "PAYMENT", sourceId: payment.id, partyId: payer?.partyId ?? null, paymentMethod: input.method },
-      userId,
-    );
+    const base = { date: todayCO(), description: `Cobro ${receipt}`, sourceType: "PAYMENT", sourceId: payment.id, partyId: payer?.partyId ?? null, paymentMethod: input.method };
+    const fee = input.gatewayFee && input.gatewayFee > 0 ? Math.min(input.gatewayFee, Number(amount)) : 0;
+    // Con comisión estimada el cobro queda «por cobrar a la pasarela» (neto) y la comisión como gasto. Si el negocio aún
+    // no tiene esa regla, se asienta como un cobro normal: nada se pierde.
+    const gateway = fee > 0 ? await accountingPort.use().record(tx, tenantId, { ...base, event: "PAYMENT_RECEIVED_GATEWAY", amounts: { payment: Number(amount), fee, net: Math.round((Number(amount) - fee) * 100) / 100 } }, userId) : null;
+    if (!gateway) await accountingPort.use().record(tx, tenantId, { ...base, event: "PAYMENT_RECEIVED", amounts: { payment: Number(amount) } }, userId);
   }
   if (sessionId) {
     await tx.orm.public.CashMovement.create({
@@ -267,6 +316,8 @@ export async function receiveInvoicePayment(
   amount: number,
   method: string,
   userId: string,
+  /** Nombre del medio que eligió el negocio («Nequi»): queda en las notas del pago. */
+  methodName?: string | null,
 ): Promise<{ ok: true; receipt: string; balance: number; settled: boolean } | { ok: false; message: string }> {
   try {
     return await moneyTransaction(async (tx) => {
@@ -292,6 +343,7 @@ export async function receiveInvoicePayment(
         {
           amount,
           method,
+          notes: methodName ?? null,
           customerId: inv.customerId,
           invoiceId: inv.id,
           description: `Abono a cuenta de cobro N.º ${inv.number} · ${inv.customerName}`,
@@ -420,6 +472,8 @@ export async function voidPayment(tenantId: string, paymentId: string, reason: s
       }
       // Contabilidad: el asiento del cobro se reversa (el libro no se edita, se corrige con otro asiento).
       await accountingPort.use().reverse(tx, tenantId, "PAYMENT", paymentId, reason, userId);
+      // Las aplicaciones del pago se deshacen: lo que cubría vuelve a deberse.
+      await releaseAllocations(tx, tenantId, paymentId);
       // Anular un abono (o el pago) de una cuenta de cobro la devuelve a la cartera.
       if (p.invoiceId && p.sourceType === "INVOICE") {
         const inv = await tx.orm.public.Invoice.where({ tenantId, id: p.invoiceId }).select("status", "paidTotal").first();

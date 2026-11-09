@@ -279,7 +279,7 @@ export async function toggleTenantModuleAction(
 
   // Compatibilidad con el rubro y estado del catálogo (Planes y módulos).
   if (isVertical(tenant.vertical)) {
-    const check = checkModuleToggle(await loadPricingConfig(), tenant.vertical, moduleName, active);
+    const check = checkModuleToggle(await loadPricingConfig(), tenant.vertical, moduleName, active, null, { allowIncompatible: true });
     if (!check.ok) return { status: "error", message: check.message };
   }
 

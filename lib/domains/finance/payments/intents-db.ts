@@ -1,11 +1,13 @@
-import { MoneyError, moneyTransaction, recordIncome, type MoneyTx } from "@/lib/business/sales/money-service";
+import { gatewayAccount } from "./accounts-db";
+import { MoneyError, emitFinanceEvent, moneyTransaction, recordIncome, type MoneyTx } from "@/lib/business/sales/money-service";
+import { sandboxPaymentsAllowed } from "@/lib/foundation/environment";
 import { toNumber } from "@/lib/foundation/format";
 import { balanceOf } from "@/lib/foundation/kernel/aging";
 import { todayCO } from "@/lib/domains/finance/tax/tax";
 import { checkoutPort } from "./checkout-port";
 import { settleStoreOrder, storeOrderLines } from "@/lib/business/store/store-settle";
 import { db } from "@/prisma/db";
-import { effectiveStatus, newReference, reconcile, validateIntent, type IntentStatus, type Reconciliation, type ReportRow } from "./intents";
+import { effectiveStatus, estimateFee, newReference, pickGateway, reconcile, validateIntent, validateProof, validateRejection, type IntentStatus, type Reconciliation, type ReportRow } from "./intents";
 
 /**
  * Cobros en línea (servidor). Una intención de cobro se vuelve ingreso solo con el estado
@@ -31,6 +33,15 @@ export type IntentRow = {
   confirmedBy: string | null;
   refundedTotal: number;
   createdAt: string;
+  /** Lo que escribió el cliente al avisar su transferencia, y cuándo. */
+  proofNote: string | null;
+  proofAt: string | null;
+  rejectionReason: string | null;
+  /** Intentos fallidos que reportó la pasarela y cómo terminó el último. */
+  feeEstimated: number | null;
+  netExpected: number | null;
+  failedAttempts: number;
+  lastAttemptResult: "DECLINED" | "ERROR" | "VOIDED" | null;
 };
 
 const toRow = (i: Record<string, unknown>, now = Date.now()): IntentRow => ({
@@ -47,10 +58,18 @@ const toRow = (i: Record<string, unknown>, now = Date.now()): IntentRow => ({
   confirmedBy: (i.confirmedBy as string | null) ?? null,
   refundedTotal: toNumber(i.refundedTotal as never),
   createdAt: String(i.createdAt),
+  proofNote: (i.proofNote as string | null) ?? null,
+  proofAt: i.proofAt ? String(i.proofAt) : null,
+  rejectionReason: (i.rejectionReason as string | null) ?? null,
+  feeEstimated: i.feeEstimated == null ? null : toNumber(i.feeEstimated as never),
+  netExpected: i.netExpected == null ? null : toNumber(i.netExpected as never),
+  failedAttempts: 0,
+  lastAttemptResult: null,
 });
 
 /**
- * Crea una intención de cobro con su referencia: valida valor y vigencia, que la cuenta de cobro vinculada esté emitida y que el cobro no supere su saldo, y que el cliente exista.
+ * Crea una intención de cobro con su referencia. La pasarela es la pedida si el negocio la tiene conectada, si no la
+ * primera conectada y, sin ninguna, el cobro manual: nunca la de prueba por omisión. Valida valor y vigencia, que la cuenta de cobro vinculada esté emitida y que el cobro no supere su saldo, y que el cliente exista.
  */
 export async function createIntent(tenantId: string, input: { amount: number; description: string; expiresInHours?: number; customerId?: string | null; invoiceId?: string | null; channel?: "LINK" | "QR"; provider?: string }, userId: string): Promise<{ ok: true; id: string; reference: string } | { ok: false; message: string }> {
   const hours = input.expiresInHours ?? 48;
@@ -62,14 +81,20 @@ export async function createIntent(tenantId: string, input: { amount: number; de
     if (input.amount > balanceOf(toNumber(inv.total), toNumber(inv.paidTotal))) return { ok: false, message: "El cobro no puede ser mayor que el saldo de la cuenta." };
   }
   if (input.customerId && !(await db.orm.public.Customer.where({ tenantId, id: input.customerId }).select("id").first())) return { ok: false, message: "El cliente no existe." };
-  const created = await db.orm.public.PaymentIntent.create({ tenantId, reference: newReference(), amount: dec(input.amount), description: input.description.trim().slice(0, 160), channel: input.channel ?? "LINK", provider: input.provider ?? "sandbox", customerId: input.customerId ?? null, invoiceId: input.invoiceId ?? null, expiresAt: instant(Date.now() + hours * 3_600_000), createdById: userId });
+  const provider = pickGateway((await connectedGateways(tenantId)).map((g) => g.value), input.provider);
+  const created = await db.orm.public.PaymentIntent.create({ tenantId, reference: newReference(), amount: dec(input.amount), description: input.description.trim().slice(0, 160), channel: input.channel ?? "LINK", provider, customerId: input.customerId ?? null, invoiceId: input.invoiceId ?? null, expiresAt: instant(Date.now() + hours * 3_600_000), createdById: userId });
+  await db.transaction((tx) => emitFinanceEvent(tx, tenantId, { type: "payment.intent_created", resourceType: "payment_intent", resourceId: created.id, payload: { intent_id: created.id, reference: created.reference, amount: input.amount, currency: "COP", provider } }));
   return { ok: true, id: created.id, reference: created.reference };
 }
 
 /** Intenciones de cobro del negocio, las más recientes primero (100 por defecto). */
 export async function listIntents(tenantId: string, limit = 100): Promise<IntentRow[]> {
   const rows = await db.orm.public.PaymentIntent.where({ tenantId }).orderBy((i) => i.createdAt.desc()).limit(limit).all();
-  return rows.map((r) => toRow(r as unknown as Record<string, unknown>));
+  const attempts = rows.length ? await db.orm.public.PaymentAttempt.where({ tenantId }).where((a) => a.intentId.in(rows.map((r) => r.id))).select("intentId", "result", "createdAt").all() : [];
+  return rows.map((r) => {
+    const mine = attempts.filter((a) => a.intentId === r.id).sort((x, y) => String(y.createdAt).localeCompare(String(x.createdAt)));
+    return { ...toRow(r as unknown as Record<string, unknown>), failedAttempts: mine.length, lastAttemptResult: (mine[0]?.result as AttemptResult | undefined) ?? null };
+  });
 }
 
 /** Lo que ve quien abre el enlace público: el negocio, el valor, la descripción y el estado; nada más. */
@@ -97,7 +122,8 @@ async function checkoutUrlOf(tenantId: string, row: IntentRow): Promise<string |
 /** Pasarelas de cobro que el negocio tiene conectadas (para elegir al crear un cobro). */
 export async function connectedGateways(tenantId: string): Promise<{ value: string; label: string }[]> {
   const rows = await db.orm.public.ExternalConnection.where({ tenantId, kind: "PAYMENT", status: "CONNECTED" }).all();
-  return rows.map((r) => ({ value: r.provider, label: r.provider === "wompi" ? "Wompi" : r.provider === "sandbox" ? "Pasarela de prueba" : r.provider }));
+  const allowSandbox = sandboxPaymentsAllowed();
+  return rows.filter((r) => allowSandbox || r.provider !== "sandbox").map((r) => ({ value: r.provider, label: r.provider === "wompi" ? "Wompi" : r.provider === "sandbox" ? "Pasarela de prueba" : r.provider }));
 }
 
 /** Baja el saldo de una cuenta de cobro dentro de la transacción del cobro. */
@@ -134,16 +160,19 @@ export async function confirmIntent(tenantId: string, reference: string, by: { k
       if (by.kind === "MANUAL" && by.evidence.trim().length < 4) throw new MoneyError("Escribe la referencia o evidencia de la transferencia.");
       // Reclamo único: solo pasa de pendiente (o vencido sin cancelar) a pagado una vez.
       const claim = tx.sql.public.PaymentIntent.update({ status: "PAID", paidAt: instant(Date.now()), confirmedBy: by.kind, evidence: by.kind === "MANUAL" ? by.evidence.trim().slice(0, 200) : null, providerRefId: by.kind === "PROVIDER" ? by.externalId : null })
-        .where((f, fns) => fns.and(fns.eq(f.id, intent.id), fns.eq(f.tenantId, tenantId), fns.eq(f.status, "PENDING")))
+        .where((f, fns) => fns.and(fns.eq(f.id, intent.id), fns.eq(f.tenantId, tenantId), fns.or(fns.eq(f.status, "PENDING"), fns.eq(f.status, "VERIFYING"))))
         .returning("id")
         .build();
       if ((await tx.query(claim)).length === 0) return { ok: true as const, already: true };
       if (intent.invoiceId) await applyToInvoice(tx, tenantId, intent.invoiceId, amount);
       // Un cobro de la tienda deja SU documento de venta con las líneas del pedido y descuenta existencias.
       const store = await storeOrderLines(tx, tenantId, intent.id);
-      const income = await recordIncome(tx, tenantId, { documentLines: store?.lines, amount, method: by.kind === "PROVIDER" ? "WOMPI" : "TRANSFER", customerId: intent.customerId, invoiceId: intent.invoiceId, description: `Cobro en línea · ${intent.description}`, providerRefId: by.kind === "PROVIDER" ? by.externalId : null, sourceType: intent.invoiceId ? "INVOICE" : "ONLINE", sourceId: intent.invoiceId ?? intent.id }, by.kind === "MANUAL" ? by.userId : "proveedor");
-      await tx.orm.public.PaymentIntent.where({ tenantId, id: intent.id }).update({ paymentId: income.paymentId });
-      if (store) await settleStoreOrder(tx, tenantId, store.orderId, income.documentId, by.kind === "MANUAL" ? by.userId : null);
+      // Cobro por pasarela: comisión estimada con la tarifa del negocio (la liquidación confirma la real).
+      const gateway = by.kind === "PROVIDER" ? await gatewayAccount(tenantId, intent.provider) : null;
+      const estimate = gateway ? estimateFee(amount, gateway.tariff) : null;
+      const income = await recordIncome(tx, tenantId, { gatewayFee: estimate?.fee, documentLines: store?.lines, amount, method: by.kind === "PROVIDER" ? "WOMPI" : "TRANSFER", customerId: intent.customerId, invoiceId: intent.invoiceId, description: `Cobro en línea · ${intent.description}`, providerRefId: by.kind === "PROVIDER" ? by.externalId : null, sourceType: intent.invoiceId ? "INVOICE" : "ONLINE", sourceId: intent.invoiceId ?? intent.id }, by.kind === "MANUAL" ? by.userId : "proveedor");
+      await tx.orm.public.PaymentIntent.where({ tenantId, id: intent.id }).update({ paymentId: income.paymentId, ...(gateway && estimate && estimate.fee > 0 ? { feeEstimated: dec(estimate.fee), netExpected: dec(estimate.net), financialAccountId: gateway.id } : {}) });
+      if (store) await settleStoreOrder(tx, tenantId, store.orderId, income.documentId, by.kind === "MANUAL" ? by.userId : null, { id: income.paymentId, amount });
       return { ok: true as const, already: false };
     });
   } catch (e) {
@@ -200,11 +229,36 @@ export async function handlePaymentEvent(tenantId: string, event: { type: string
     const r = await confirmIntent(tenantId, event.reference, { kind: "PROVIDER", externalId: event.paymentRef ?? event.externalId, amount: Number(event.amount ?? NaN) });
     return r.ok ? null : r.message;
   }
-  if (event.type === "payment.failed") {
-    const plan = db.sql.public.PaymentIntent.update({ status: "FAILED" }).where((f, fns) => fns.and(fns.eq(f.reference, event.reference!), fns.eq(f.tenantId, tenantId), fns.eq(f.status, "PENDING"))).returning("id").build();
-    await db.transaction((tx) => tx.query(plan));
+  if (event.type === "payment.failed" || event.type === "payment.voided") {
+    // Un rechazo es un INTENTO, no el fin del cobro: queda registrado y el cobro sigue abierto para que el cliente reintente.
+    await recordAttempt(tenantId, event.reference, { provider: "wompi", externalId: event.externalId, result: event.type === "payment.voided" ? "VOIDED" : "DECLINED", amount: event.amount ?? null });
   }
   return null;
+}
+
+export type AttemptResult = "DECLINED" | "ERROR" | "VOIDED";
+export type AttemptRow = { id: string; provider: string; externalId: string; result: AttemptResult; amount: number | null; createdAt: string };
+
+/** Registra un intento fallido de un cobro abierto. El mismo aviso repetido no lo duplica. Un cobro ya pagado o cerrado no lo recibe. */
+export async function recordAttempt(tenantId: string, reference: string, input: { provider: string; externalId: string; result: AttemptResult; amount?: string | null }): Promise<boolean> {
+  const intent = await db.orm.public.PaymentIntent.where({ tenantId, reference }).select("id", "status", "provider").first();
+  if (!intent || (intent.status !== "PENDING" && intent.status !== "VERIFYING")) return false;
+  const exists = await db.orm.public.PaymentAttempt.where({ tenantId, intentId: intent.id, externalId: input.externalId }).select("id").first();
+  if (exists) return false;
+  const amount = input.amount != null && Number.isFinite(Number(input.amount)) ? Number(input.amount).toFixed(2) : null;
+  try {
+    await db.orm.public.PaymentAttempt.create({ tenantId, intentId: intent.id, provider: intent.provider || input.provider, externalId: input.externalId.slice(0, 120), result: input.result, amount });
+    return true;
+  } catch (error) {
+    if (/PaymentAttempt_tenantId_intentId_externalId|unique|duplicate/i.test(String((error as Error)?.message ?? error))) return false;
+    throw error;
+  }
+}
+
+/** Intentos de un cobro, el más reciente primero. */
+export async function listAttempts(tenantId: string, intentId: string): Promise<AttemptRow[]> {
+  const rows = await db.orm.public.PaymentAttempt.where({ tenantId, intentId }).orderBy((a) => a.createdAt.desc()).limit(50).all();
+  return rows.map((r) => ({ id: r.id, provider: r.provider, externalId: r.externalId, result: r.result as AttemptResult, amount: r.amount == null ? null : toNumber(r.amount), createdAt: String(r.createdAt) }));
 }
 
 /**
@@ -224,4 +278,38 @@ export async function runReconciliation(tenantId: string, provider: string, day:
 export async function listReconciliations(tenantId: string, limit = 15) {
   const rows = await db.orm.public.ReconciliationRun.where({ tenantId }).orderBy((r) => r.createdAt.desc()).limit(limit).all();
   return rows.map((r) => ({ id: r.id, provider: r.provider, day: r.day, expected: toNumber(r.expected), reported: toNumber(r.reported), matched: r.matched, differences: (r.differences ?? []) as unknown as Reconciliation["differences"] }));
+}
+
+export type ProofResult = { ok: true } | { ok: false; message: string };
+
+/**
+ * El cliente avisa que pagó por transferencia (enlace público). El cobro pasa a «en verificación» con lo que escribió; NO se
+ * registra ningún ingreso: solo una persona autorizada (`confirmIntent`) o el proveedor lo confirman. Un cobro que no está
+ * pendiente, o que ya venció, no admite aviso.
+ */
+export async function submitProof(reference: string, note: string): Promise<ProofResult> {
+  if (!/^[a-z0-9]{10,30}$/.test(reference)) return { ok: false, message: "El enlace no es válido." };
+  const problem = validateProof(note);
+  if (problem) return { ok: false, message: problem };
+  const intent = await db.orm.public.PaymentIntent.where({ reference }).first();
+  if (!intent) return { ok: false, message: "El enlace no es válido." };
+  if (effectiveStatus(String(intent.status), String(intent.expiresAt)) !== "PENDING") return { ok: false, message: "Este cobro ya no está pendiente." };
+  const plan = db.sql.public.PaymentIntent.update({ status: "VERIFYING", proofNote: note.trim().slice(0, 200), proofAt: instant(Date.now()), rejectionReason: null })
+    .where((f, fns) => fns.and(fns.eq(f.id, intent.id), fns.eq(f.status, "PENDING")))
+    .returning("id")
+    .build();
+  if ((await db.transaction((tx) => tx.query(plan))).length === 0) return { ok: false, message: "Este cobro ya no está pendiente." };
+  return { ok: true };
+}
+
+/** Una persona autorizada rechaza el comprobante con un motivo: el cobro vuelve a pendiente para que el cliente reintente. */
+export async function rejectProof(tenantId: string, id: string, reason: string): Promise<ProofResult> {
+  const problem = validateRejection(reason);
+  if (problem) return { ok: false, message: problem };
+  const plan = db.sql.public.PaymentIntent.update({ status: "PENDING", rejectionReason: reason.trim().slice(0, 200) })
+    .where((f, fns) => fns.and(fns.eq(f.id, id), fns.eq(f.tenantId, tenantId), fns.eq(f.status, "VERIFYING")))
+    .returning("id")
+    .build();
+  if ((await db.transaction((tx) => tx.query(plan))).length === 0) return { ok: false, message: "Solo se rechazan los cobros en verificación." };
+  return { ok: true };
 }

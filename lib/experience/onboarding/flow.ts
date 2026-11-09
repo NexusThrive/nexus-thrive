@@ -1,8 +1,8 @@
 /**
  * Pasos del onboarding auto-servicio. `intro` es la presentación (sin
- * progreso); los otros cuatro son los que ve el indicador.
+ * progreso); los otros cinco son los que ve el indicador.
  */
-export const FLOW_STEPS = ["intro", "profile", "business", "plan", "confirm"] as const;
+export const FLOW_STEPS = ["intro", "profile", "business", "operation", "plan", "confirm"] as const;
 export type FlowStep = (typeof FLOW_STEPS)[number];
 
 /** Pasos con progreso visible (todo menos la presentación). */
@@ -11,14 +11,19 @@ export const PROGRESS_STEPS = FLOW_STEPS.slice(1) as readonly Exclude<FlowStep, 
 export const FLOW_META: Record<FlowStep, { label: string; title: string; description: string }> = {
   intro: { label: "Presentación", title: "Antes de empezar", description: "" },
   profile: {
-    label: "Perfil",
-    title: "¿Cómo trabajas hoy?",
-    description: "Así ajustamos los datos que te pedimos: nada de más.",
+    label: "Tu etapa",
+    title: "¿En qué etapa está tu negocio?",
+    description: "Así ajustamos lo que te preguntamos: nada de más. Puedes empezar sin NIT ni local.",
   },
   business: {
     label: "Tu negocio",
     title: "Cuéntanos de tu negocio",
-    description: "Con esto armamos tu espacio y tu enlace en NEXUS.",
+    description: "Queremos conocer tu proyecto para preparar tu espacio de trabajo en NEXUS.",
+  },
+  operation: {
+    label: "Tu operación",
+    title: "¿Cómo funciona tu negocio?",
+    description: "Con esto preparamos lo que vas a usar desde el primer día. Todo es opcional y lo cambias después.",
   },
   plan: {
     label: "Acceso",
@@ -44,7 +49,7 @@ export function previousStep(step: FlowStep, firstStep: FlowStep = "intro"): Flo
   return FLOW_STEPS[Math.max(FLOW_STEPS.indexOf(firstStep), i - 1)];
 }
 
-/** Posición 1..4 en el indicador (0 en la presentación). */
+/** Posición 1..5 en el indicador (0 en la presentación). */
 export function progressIndex(step: FlowStep): number {
   return FLOW_STEPS.indexOf(step);
 }

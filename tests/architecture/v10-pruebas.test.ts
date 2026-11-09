@@ -33,7 +33,7 @@ describe("tests/unit e integration reflejan lib/", () => {
   const AREAS = readdirSync(join(ROOT, "lib")).filter((n) => statSync(join(ROOT, "lib", n)).isDirectory());
 
   test.each(["unit", "integration"])("cada carpeta de área en tests/%s existe en lib/ (salvo carpetas temáticas conocidas)", (tipo) => {
-    const TEMATICAS = ["tenant", "accounting", "events", "files"];
+    const TEMATICAS = ["tenant", "accounting", "events", "files", "piloto"];
     const dirs = readdirSync(join(ROOT, "tests", tipo)).filter((n) => statSync(join(ROOT, "tests", tipo, n)).isDirectory());
     for (const d of dirs) {
       if (TEMATICAS.includes(d)) continue;

@@ -1,0 +1,278 @@
+[
+  {
+    "id": "table.Task",
+    "label": "Create table \"Task\"",
+    "summary": "Creates table \"Task\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Task"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Task\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Task\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Task\"",
+        "sql": "CREATE TABLE \"public\".\"Task\" (\n  \"assigneeId\" text,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"createdById\" text,\n  \"customerId\" text,\n  \"doneAt\" timestamptz,\n  \"doneById\" text,\n  \"dueDay\" text,\n  \"id\" text NOT NULL,\n  \"notes\" text,\n  \"opportunityId\" text,\n  \"status\" text DEFAULT 'OPEN' NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"title\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Task\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Task\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Task.Task_tenantId_assigneeId_status_idx_580462e1",
+    "label": "Create index \"Task_tenantId_assigneeId_status_idx_580462e1\" on \"Task\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Task_tenantId_assigneeId_status_idx_580462e1",
+        "table": "Task"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Task_tenantId_assigneeId_status_idx_580462e1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Task_tenantId_assigneeId_status_idx_580462e1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Task_tenantId_assigneeId_status_idx_580462e1\"",
+        "sql": "CREATE INDEX \"Task_tenantId_assigneeId_status_idx_580462e1\" ON \"public\".\"Task\" (\"tenantId\", \"assigneeId\", \"status\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Task_tenantId_assigneeId_status_idx_580462e1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Task_tenantId_assigneeId_status_idx_580462e1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Task.Task_tenantId_customerId_idx_302ad259",
+    "label": "Create index \"Task_tenantId_customerId_idx_302ad259\" on \"Task\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Task_tenantId_customerId_idx_302ad259",
+        "table": "Task"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Task_tenantId_customerId_idx_302ad259\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Task_tenantId_customerId_idx_302ad259\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Task_tenantId_customerId_idx_302ad259\"",
+        "sql": "CREATE INDEX \"Task_tenantId_customerId_idx_302ad259\" ON \"public\".\"Task\" (\"tenantId\", \"customerId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Task_tenantId_customerId_idx_302ad259\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Task_tenantId_customerId_idx_302ad259\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Task.Task_tenantId_idx_c93ed4f1",
+    "label": "Create index \"Task_tenantId_idx_c93ed4f1\" on \"Task\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Task_tenantId_idx_c93ed4f1",
+        "table": "Task"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Task_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Task_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Task_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"Task_tenantId_idx_c93ed4f1\" ON \"public\".\"Task\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Task_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Task_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Task.Task_tenantId_status_dueDay_idx_d302ca36",
+    "label": "Create index \"Task_tenantId_status_dueDay_idx_d302ca36\" on \"Task\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Task_tenantId_status_dueDay_idx_d302ca36",
+        "table": "Task"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Task_tenantId_status_dueDay_idx_d302ca36\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Task_tenantId_status_dueDay_idx_d302ca36\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Task_tenantId_status_dueDay_idx_d302ca36\"",
+        "sql": "CREATE INDEX \"Task_tenantId_status_dueDay_idx_d302ca36\" ON \"public\".\"Task\" (\"tenantId\", \"status\", \"dueDay\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Task_tenantId_status_dueDay_idx_d302ca36\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Task_tenantId_status_dueDay_idx_d302ca36\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Task.Task_tenantId_fkey",
+    "label": "Add foreign key \"Task_tenantId_fkey\" on \"Task\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Task_tenantId_fkey",
+        "table": "Task"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Task_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Task_tenantId_fkey",
+          "public",
+          "\"public\".\"Task\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Task_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Task\"\nADD CONSTRAINT \"Task_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Task_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Task_tenantId_fkey",
+          "public",
+          "\"public\".\"Task\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.Task",
+    "label": "Enable row-level security on \"Task\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "Task"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"Task\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Task"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"Task\"",
+        "sql": "ALTER TABLE \"public\".\"Task\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"Task\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "Task"
+        ]
+      }
+    ]
+  }
+]

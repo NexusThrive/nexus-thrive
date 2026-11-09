@@ -23,7 +23,15 @@ model Party {
   email          String?
   phone          String?
   addressLine    String?
+  /// Departamento o provincia (p. ej. «Bolívar»).
+  region         String?
+  /// Responsabilidad fiscal ante la DIAN: «R-99-PN» (no responsable de IVA) u «O-48» (responsable de IVA).
+  taxResponsibility String?
   city           String?
+  /// Persona con la que se trata en una empresa (proveedores y empresas cliente): nombre, celular y correo.
+  contactName    String?
+  contactPhone   String?
+  contactEmail   String?
   countryCode    String   @default("CO")
   active         Boolean  @default(true)
   createdAt      DateTime @default(now())

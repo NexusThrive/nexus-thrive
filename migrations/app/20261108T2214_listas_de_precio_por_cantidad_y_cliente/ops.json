@@ -1,0 +1,449 @@
+[
+  {
+    "id": "table.PriceTier",
+    "label": "Create table \"PriceTier\"",
+    "summary": "Creates table \"PriceTier\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "PriceTier"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"PriceTier\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PriceTier\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"PriceTier\"",
+        "sql": "CREATE TABLE \"public\".\"PriceTier\" (\n  \"id\" text NOT NULL,\n  \"minQty\" int4 NOT NULL,\n  \"price\" numeric NOT NULL,\n  \"priceListId\" text NOT NULL,\n  \"productId\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"PriceTier\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PriceTier\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Customer.priceListId",
+    "label": "Add column \"priceListId\" to \"Customer\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "priceListId",
+        "table": "Customer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"priceListId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "priceListId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"priceListId\"",
+        "sql": "ALTER TABLE \"public\".\"Customer\" ADD COLUMN \"priceListId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"priceListId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "priceListId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.CustomerGroup.priceListId",
+    "label": "Add column \"priceListId\" to \"CustomerGroup\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "priceListId",
+        "table": "CustomerGroup"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"priceListId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "CustomerGroup",
+          "priceListId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"priceListId\"",
+        "sql": "ALTER TABLE \"public\".\"CustomerGroup\" ADD COLUMN \"priceListId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"priceListId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "CustomerGroup",
+          "priceListId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.PriceTier.PriceTier_priceListId_productId_minQty_key",
+    "label": "Add unique constraint on \"PriceTier\" (priceListId, productId, minQty)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "PriceTier_priceListId_productId_minQty_key",
+        "table": "PriceTier"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"PriceTier_priceListId_productId_minQty_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PriceTier_priceListId_productId_minQty_key",
+          "public",
+          "\"public\".\"PriceTier\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"PriceTier_priceListId_productId_minQty_key\"",
+        "sql": "ALTER TABLE \"public\".\"PriceTier\" ADD CONSTRAINT \"PriceTier_priceListId_productId_minQty_key\" UNIQUE (\"priceListId\", \"productId\", \"minQty\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"PriceTier_priceListId_productId_minQty_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PriceTier_priceListId_productId_minQty_key",
+          "public",
+          "\"public\".\"PriceTier\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PriceTier.PriceTier_priceListId_idx_43057e0f",
+    "label": "Create index \"PriceTier_priceListId_idx_43057e0f\" on \"PriceTier\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PriceTier_priceListId_idx_43057e0f",
+        "table": "PriceTier"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PriceTier_priceListId_idx_43057e0f\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PriceTier_priceListId_idx_43057e0f\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PriceTier_priceListId_idx_43057e0f\"",
+        "sql": "CREATE INDEX \"PriceTier_priceListId_idx_43057e0f\" ON \"public\".\"PriceTier\" (\"priceListId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PriceTier_priceListId_idx_43057e0f\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PriceTier_priceListId_idx_43057e0f\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PriceTier.PriceTier_productId_idx_5858600a",
+    "label": "Create index \"PriceTier_productId_idx_5858600a\" on \"PriceTier\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PriceTier_productId_idx_5858600a",
+        "table": "PriceTier"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PriceTier_productId_idx_5858600a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PriceTier_productId_idx_5858600a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PriceTier_productId_idx_5858600a\"",
+        "sql": "CREATE INDEX \"PriceTier_productId_idx_5858600a\" ON \"public\".\"PriceTier\" (\"productId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PriceTier_productId_idx_5858600a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PriceTier_productId_idx_5858600a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.PriceTier.PriceTier_tenantId_idx_c93ed4f1",
+    "label": "Create index \"PriceTier_tenantId_idx_c93ed4f1\" on \"PriceTier\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "PriceTier_tenantId_idx_c93ed4f1",
+        "table": "PriceTier"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"PriceTier_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PriceTier_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"PriceTier_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"PriceTier_tenantId_idx_c93ed4f1\" ON \"public\".\"PriceTier\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"PriceTier_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"PriceTier_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.PriceTier.PriceTier_tenantId_fkey",
+    "label": "Add foreign key \"PriceTier_tenantId_fkey\" on \"PriceTier\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "PriceTier_tenantId_fkey",
+        "table": "PriceTier"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"PriceTier_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PriceTier_tenantId_fkey",
+          "public",
+          "\"public\".\"PriceTier\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"PriceTier_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"PriceTier\"\nADD CONSTRAINT \"PriceTier_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"PriceTier_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PriceTier_tenantId_fkey",
+          "public",
+          "\"public\".\"PriceTier\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.PriceTier.PriceTier_priceListId_fkey",
+    "label": "Add foreign key \"PriceTier_priceListId_fkey\" on \"PriceTier\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "PriceTier_priceListId_fkey",
+        "table": "PriceTier"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"PriceTier_priceListId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PriceTier_priceListId_fkey",
+          "public",
+          "\"public\".\"PriceTier\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"PriceTier_priceListId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"PriceTier\"\nADD CONSTRAINT \"PriceTier_priceListId_fkey\"\nFOREIGN KEY (\"priceListId\")\nREFERENCES \"public\".\"PriceList\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"PriceTier_priceListId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PriceTier_priceListId_fkey",
+          "public",
+          "\"public\".\"PriceTier\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.PriceTier.PriceTier_productId_fkey",
+    "label": "Add foreign key \"PriceTier_productId_fkey\" on \"PriceTier\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "PriceTier_productId_fkey",
+        "table": "PriceTier"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"PriceTier_productId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PriceTier_productId_fkey",
+          "public",
+          "\"public\".\"PriceTier\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"PriceTier_productId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"PriceTier\"\nADD CONSTRAINT \"PriceTier_productId_fkey\"\nFOREIGN KEY (\"productId\")\nREFERENCES \"public\".\"Product\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"PriceTier_productId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "PriceTier_productId_fkey",
+          "public",
+          "\"public\".\"PriceTier\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.PriceTier",
+    "label": "Enable row-level security on \"PriceTier\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "PriceTier"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"PriceTier\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "PriceTier"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"PriceTier\"",
+        "sql": "ALTER TABLE \"public\".\"PriceTier\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"PriceTier\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "PriceTier"
+        ]
+      }
+    ]
+  }
+]

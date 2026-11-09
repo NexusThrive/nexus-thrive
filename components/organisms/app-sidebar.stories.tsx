@@ -65,7 +65,7 @@ export const IngresosYGastos: Story = {
   render: () => {
     const groups = buildTenantNav("gym", ["dashboard", "crm", "bookings", "memberships", "orders", "quotes", "inventory", "billing", "payments", "finance", "whatsapp"]);
     return (
-      <AppShellProvider value={{ brandName: "Simplapp", brandSub: "simplapp", groups, activeKey: "/crm", title: "Clientes", hrefFor: (href) => href, quickActions: [], openSearch: () => {} }}>
+      <AppShellProvider value={{ brandName: "Simplapp", brandSub: "simplapp", groups, activeKey: "/contactos", title: "Clientes", hrefFor: (href) => href, quickActions: [], openSearch: () => {} }}>
         <div className="h-[420px]" style={sized("248px")}>
           <AppSidebar />
         </div>

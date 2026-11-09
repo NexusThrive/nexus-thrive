@@ -12,6 +12,11 @@ function key(): Buffer {
   return Buffer.from(hex, "hex");
 }
 
+/** ¿Está configurada la clave de cifrado? Permite avisar con claridad antes de guardar credenciales. */
+export function encryptionConfigured(): boolean {
+  return /^[0-9a-f]{64}$/i.test(process.env.WEBHOOK_ENCRYPTION_KEY ?? "");
+}
+
 /**
  * Cifra un secreto con AES-256-GCM usando `WEBHOOK_ENCRYPTION_KEY`. Devuelve un texto versionado («v1») con el vector, la etiqueta y el contenido.
  */

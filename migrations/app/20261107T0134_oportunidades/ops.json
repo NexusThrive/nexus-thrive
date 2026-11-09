@@ -1,0 +1,281 @@
+[
+  {
+    "id": "table.Opportunity",
+    "label": "Create table \"Opportunity\"",
+    "summary": "Creates table \"Opportunity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Opportunity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Opportunity\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Opportunity\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Opportunity\"",
+        "sql": "CREATE TABLE \"public\".\"Opportunity\" (\n  \"closedAt\" timestamptz,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"customerId\" text NOT NULL,\n  \"estimatedValue\" numeric,\n  \"id\" text NOT NULL,\n  \"interest\" text NOT NULL,\n  \"leadId\" text,\n  \"lostReason\" text,\n  \"nextAction\" text,\n  \"nextActionAt\" timestamptz,\n  \"orderId\" text,\n  \"ownerId\" text,\n  \"source\" text,\n  \"stage\" text DEFAULT 'NEW' NOT NULL,\n  \"status\" text DEFAULT 'OPEN' NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Opportunity\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Opportunity\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.Opportunity.Opportunity_tenantId_leadId_key",
+    "label": "Add unique constraint on \"Opportunity\" (tenantId, leadId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "Opportunity_tenantId_leadId_key",
+        "table": "Opportunity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Opportunity_tenantId_leadId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Opportunity_tenantId_leadId_key",
+          "public",
+          "\"public\".\"Opportunity\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"Opportunity_tenantId_leadId_key\"",
+        "sql": "ALTER TABLE \"public\".\"Opportunity\" ADD CONSTRAINT \"Opportunity_tenantId_leadId_key\" UNIQUE (\"tenantId\", \"leadId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Opportunity_tenantId_leadId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Opportunity_tenantId_leadId_key",
+          "public",
+          "\"public\".\"Opportunity\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Opportunity.Opportunity_tenantId_customerId_idx_302ad259",
+    "label": "Create index \"Opportunity_tenantId_customerId_idx_302ad259\" on \"Opportunity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Opportunity_tenantId_customerId_idx_302ad259",
+        "table": "Opportunity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Opportunity_tenantId_customerId_idx_302ad259\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Opportunity_tenantId_customerId_idx_302ad259\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Opportunity_tenantId_customerId_idx_302ad259\"",
+        "sql": "CREATE INDEX \"Opportunity_tenantId_customerId_idx_302ad259\" ON \"public\".\"Opportunity\" (\"tenantId\", \"customerId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Opportunity_tenantId_customerId_idx_302ad259\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Opportunity_tenantId_customerId_idx_302ad259\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Opportunity.Opportunity_tenantId_idx_c93ed4f1",
+    "label": "Create index \"Opportunity_tenantId_idx_c93ed4f1\" on \"Opportunity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Opportunity_tenantId_idx_c93ed4f1",
+        "table": "Opportunity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Opportunity_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Opportunity_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Opportunity_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"Opportunity_tenantId_idx_c93ed4f1\" ON \"public\".\"Opportunity\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Opportunity_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Opportunity_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Opportunity.Opportunity_tenantId_status_stage_idx_824e523e",
+    "label": "Create index \"Opportunity_tenantId_status_stage_idx_824e523e\" on \"Opportunity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Opportunity_tenantId_status_stage_idx_824e523e",
+        "table": "Opportunity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Opportunity_tenantId_status_stage_idx_824e523e\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Opportunity_tenantId_status_stage_idx_824e523e\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Opportunity_tenantId_status_stage_idx_824e523e\"",
+        "sql": "CREATE INDEX \"Opportunity_tenantId_status_stage_idx_824e523e\" ON \"public\".\"Opportunity\" (\"tenantId\", \"status\", \"stage\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Opportunity_tenantId_status_stage_idx_824e523e\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Opportunity_tenantId_status_stage_idx_824e523e\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Opportunity.Opportunity_tenantId_fkey",
+    "label": "Add foreign key \"Opportunity_tenantId_fkey\" on \"Opportunity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Opportunity_tenantId_fkey",
+        "table": "Opportunity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Opportunity_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Opportunity_tenantId_fkey",
+          "public",
+          "\"public\".\"Opportunity\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Opportunity_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Opportunity\"\nADD CONSTRAINT \"Opportunity_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Opportunity_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Opportunity_tenantId_fkey",
+          "public",
+          "\"public\".\"Opportunity\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.Opportunity",
+    "label": "Enable row-level security on \"Opportunity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "Opportunity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"Opportunity\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Opportunity"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"Opportunity\"",
+        "sql": "ALTER TABLE \"public\".\"Opportunity\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"Opportunity\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "Opportunity"
+        ]
+      }
+    ]
+  }
+]

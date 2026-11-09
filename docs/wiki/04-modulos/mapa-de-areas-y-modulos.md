@@ -46,9 +46,9 @@ Dominios especializados con reglas propias (hoy finance).
 
 ### `lib/integrations`
 
-Adaptadores hacia proveedores externos (pagos, facturación electrónica, Google, mapas).
+Adaptadores hacia proveedores externos (pagos, WhatsApp Business por negocio, facturación electrónica, Google, mapas).
 
-- **Módulos** (archivos): `einvoice/` (6) · `google/` (2) · `maps/` (2) · `providers/` (6)
+- **Módulos** (archivos): `channels/` (3) · `einvoice/` (6) · `google/` (2) · `maps/` (2) · `providers/` (6)
 
 ### `lib/industry`
 
@@ -66,7 +66,7 @@ Nexus como SaaS: administración, equipo, cobranza, soporte, CRM, bandeja, cuent
 
 Interfaz: navegación, dashboard, onboarding, sitio, movimiento.
 
-- **Módulos** (archivos): `dashboard/` (8) · `hooks/` (2) · `motion/` (8) · `navigation/` (2) · `onboarding/` (5) · `payment-input/` (2) · `site/` (2)
+- **Módulos** (archivos): `assistant/` (1) · `dashboard/` (8) · `hooks/` (2) · `motion/` (8) · `navigation/` (5) · `onboarding/` (5) · `payment-input/` (2) · `site/` (2)
 - **Archivos sueltos**: `fonts.ts`, `vertical-icons.ts`
 
 ### `lib/runtime`

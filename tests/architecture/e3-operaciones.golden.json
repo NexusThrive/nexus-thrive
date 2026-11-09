@@ -1,167 +1,244 @@
 [
- {
-  "id": "business.get_summary",
-  "module": null,
-  "permission": null,
-  "risk": "read",
-  "rest": {
-   "method": "GET",
-   "path": "/business"
+  {
+    "id": "business.get_summary",
+    "module": null,
+    "permission": null,
+    "risk": "read",
+    "rest": {
+      "method": "GET",
+      "path": "/business"
+    },
+    "title": "Resumen del negocio"
   },
-  "title": "Resumen del negocio"
- },
- {
-  "id": "customers.search",
-  "module": "crm",
-  "permission": null,
-  "risk": "read",
-  "rest": {
-   "method": "GET",
-   "path": "/customers"
+  {
+    "id": "customers.search",
+    "module": "crm",
+    "permission": null,
+    "risk": "read",
+    "rest": {
+      "method": "GET",
+      "path": "/customers"
+    },
+    "title": "Buscar clientes"
   },
-  "title": "Buscar clientes"
- },
- {
-  "id": "products.search",
-  "module": "inventory",
-  "permission": null,
-  "risk": "read",
-  "rest": {
-   "method": "GET",
-   "path": "/products"
+  {
+    "id": "customers.upsert",
+    "module": "crm",
+    "permission": null,
+    "risk": "write",
+    "rest": {
+      "method": "POST",
+      "path": "/customers"
+    },
+    "title": "Crear o actualizar un cliente"
   },
-  "title": "Buscar productos"
- },
- {
-  "id": "inventory.check_stock",
-  "module": "inventory",
-  "permission": null,
-  "risk": "read",
-  "rest": {
-   "method": "GET",
-   "path": "/products/{productId}/stock"
+  {
+    "id": "customer_groups.list",
+    "module": "crm",
+    "permission": null,
+    "risk": "read",
+    "rest": {
+      "method": "GET",
+      "path": "/customers/groups"
+    },
+    "title": "Listar los grupos de clientes"
   },
-  "title": "Consultar existencias"
- },
- {
-  "id": "products.find_by_barcode",
-  "module": "inventory",
-  "permission": null,
-  "risk": "read",
-  "rest": {
-   "method": "GET",
-   "path": "/products/barcode/{code}"
+  {
+    "id": "customer_groups.assign",
+    "module": "crm",
+    "permission": null,
+    "risk": "write",
+    "rest": {
+      "method": "POST",
+      "path": "/customers/groups/assign"
+    },
+    "title": "Agregar o quitar clientes de un grupo"
   },
-  "title": "Buscar por código de barras"
- },
- {
-  "id": "inventory.kardex",
-  "module": "inventory",
-  "permission": "money.handle",
-  "risk": "read",
-  "rest": {
-   "method": "GET",
-   "path": "/products/{productId}/kardex"
+  {
+    "id": "orders.create",
+    "module": "website",
+    "permission": "money.handle",
+    "risk": "write",
+    "rest": {
+      "method": "POST",
+      "path": "/orders"
+    },
+    "title": "Crear un pedido desde un canal"
   },
-  "title": "Kardex de un producto"
- },
- {
-  "id": "inventory.list_warehouses",
-  "module": "inventory",
-  "permission": null,
-  "risk": "read",
-  "rest": {
-   "method": "GET",
-   "path": "/warehouses"
+  {
+    "id": "orders.update_status",
+    "module": "website",
+    "permission": "money.handle",
+    "risk": "write",
+    "rest": {
+      "method": "POST",
+      "path": "/orders/{orderId}/status"
+    },
+    "title": "Cambiar el estado de un pedido de la tienda"
   },
-  "title": "Bodegas"
- },
- {
-  "id": "inventory.reorder_suggestions",
-  "module": "inventory",
-  "permission": "business.manage",
-  "risk": "read",
-  "rest": {
-   "method": "GET",
-   "path": "/inventory/reorder"
+  {
+    "id": "payments.create_intent",
+    "module": "online_payments",
+    "permission": "money.handle",
+    "risk": "write",
+    "rest": {
+      "method": "POST",
+      "path": "/payments/intents"
+    },
+    "title": "Crear un enlace de cobro"
   },
-  "title": "Qué conviene reponer"
- },
- {
-  "id": "presence.get",
-  "module": null,
-  "permission": null,
-  "risk": "read",
-  "rest": {
-   "method": "GET",
-   "path": "/presence"
+  {
+    "id": "payments.confirm",
+    "module": "online_payments",
+    "permission": "business.manage",
+    "risk": "money",
+    "rest": {
+      "method": "POST",
+      "path": "/payments/intents/{reference}/confirm"
+    },
+    "title": "Confirmar un pago a mano"
   },
-  "title": "Presencia digital"
- },
- {
-  "id": "finance.get_summary",
-  "module": "finance",
-  "permission": "money.handle",
-  "risk": "read",
-  "rest": {
-   "method": "GET",
-   "path": "/finance/summary"
+  {
+    "id": "products.search",
+    "module": "inventory",
+    "permission": null,
+    "risk": "read",
+    "rest": {
+      "method": "GET",
+      "path": "/products"
+    },
+    "title": "Buscar productos"
   },
-  "title": "Resumen de ingresos y gastos"
- },
- {
-  "id": "sales.list_recent",
-  "module": "finance",
-  "permission": "money.handle",
-  "risk": "read",
-  "rest": {
-   "method": "GET",
-   "path": "/sales/recent"
+  {
+    "id": "inventory.check_stock",
+    "module": "inventory",
+    "permission": null,
+    "risk": "read",
+    "rest": {
+      "method": "GET",
+      "path": "/products/{productId}/stock"
+    },
+    "title": "Consultar existencias"
   },
-  "title": "Movimientos recientes"
- },
- {
-  "id": "events.list",
-  "module": null,
-  "permission": "business.manage",
-  "risk": "read",
-  "rest": {
-   "method": "GET",
-   "path": "/events"
+  {
+    "id": "products.find_by_barcode",
+    "module": "inventory",
+    "permission": null,
+    "risk": "read",
+    "rest": {
+      "method": "GET",
+      "path": "/products/barcode/{code}"
+    },
+    "title": "Buscar por código de barras"
   },
-  "title": "Eventos del negocio"
- },
- {
-  "id": "parties.search",
-  "module": null,
-  "permission": "business.manage",
-  "risk": "read",
-  "rest": {
-   "method": "GET",
-   "path": "/parties"
+  {
+    "id": "inventory.kardex",
+    "module": "inventory",
+    "permission": "money.handle",
+    "risk": "read",
+    "rest": {
+      "method": "GET",
+      "path": "/products/{productId}/kardex"
+    },
+    "title": "Kardex de un producto"
   },
-  "title": "Buscar terceros"
- },
- {
-  "id": "purchases.list_orders",
-  "module": "purchases",
-  "permission": "business.manage",
-  "risk": "read",
-  "rest": {
-   "method": "GET",
-   "path": "/purchases/orders"
+  {
+    "id": "inventory.list_warehouses",
+    "module": "inventory",
+    "permission": null,
+    "risk": "read",
+    "rest": {
+      "method": "GET",
+      "path": "/warehouses"
+    },
+    "title": "Bodegas"
   },
-  "title": "Órdenes de compra"
- },
- {
-  "id": "purchases.get_order",
-  "module": "purchases",
-  "permission": "business.manage",
-  "risk": "read",
-  "rest": {
-   "method": "GET",
-   "path": "/purchases/orders/{orderId}"
+  {
+    "id": "inventory.reorder_suggestions",
+    "module": "inventory",
+    "permission": "business.manage",
+    "risk": "read",
+    "rest": {
+      "method": "GET",
+      "path": "/inventory/reorder"
+    },
+    "title": "Qué conviene reponer"
   },
-  "title": "Detalle de una orden de compra"
- }
+  {
+    "id": "presence.get",
+    "module": null,
+    "permission": null,
+    "risk": "read",
+    "rest": {
+      "method": "GET",
+      "path": "/presence"
+    },
+    "title": "Presencia digital"
+  },
+  {
+    "id": "finance.get_summary",
+    "module": "finance",
+    "permission": "money.handle",
+    "risk": "read",
+    "rest": {
+      "method": "GET",
+      "path": "/finance/summary"
+    },
+    "title": "Resumen de ingresos y gastos"
+  },
+  {
+    "id": "sales.list_recent",
+    "module": "finance",
+    "permission": "money.handle",
+    "risk": "read",
+    "rest": {
+      "method": "GET",
+      "path": "/sales/recent"
+    },
+    "title": "Movimientos recientes"
+  },
+  {
+    "id": "events.list",
+    "module": null,
+    "permission": "business.manage",
+    "risk": "read",
+    "rest": {
+      "method": "GET",
+      "path": "/events"
+    },
+    "title": "Eventos del negocio"
+  },
+  {
+    "id": "parties.search",
+    "module": null,
+    "permission": "business.manage",
+    "risk": "read",
+    "rest": {
+      "method": "GET",
+      "path": "/parties"
+    },
+    "title": "Buscar terceros"
+  },
+  {
+    "id": "purchases.list_orders",
+    "module": "purchases",
+    "permission": "business.manage",
+    "risk": "read",
+    "rest": {
+      "method": "GET",
+      "path": "/purchases/orders"
+    },
+    "title": "Órdenes de compra"
+  },
+  {
+    "id": "purchases.get_order",
+    "module": "purchases",
+    "permission": "business.manage",
+    "risk": "read",
+    "rest": {
+      "method": "GET",
+      "path": "/purchases/orders/{orderId}"
+    },
+    "title": "Detalle de una orden de compra"
+  }
 ]

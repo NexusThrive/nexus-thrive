@@ -340,12 +340,13 @@ test.describe("Variantes sin viaje", () => {
 test.describe("Select propio", () => {
   test("se abre con teclado, elige con Enter, escribe para saltar y devuelve el foco", async ({ page }) => {
     await openStory(page, "átomos-select--default");
-    const trigger = page.getByRole("combobox", { name: "Medio de pago" });
+    const trigger = page.getByRole("combobox", { name: "Medio de pago", exact: true });
     await trigger.focus();
     await page.keyboard.press("ArrowDown");
     const list = page.getByRole("listbox");
     await expect(list).toBeVisible();
-    await expect(trigger).toBeFocused();
+    // Abierto, el foco pasa al buscador de la lista.
+    await expect(page.getByRole("combobox", { name: "Buscar en Medio de pago" })).toBeFocused();
     await expect(page.getByRole("option", { name: "Nequi" })).toHaveAttribute("aria-selected", "true");
     await page.keyboard.press("ArrowDown");
     await page.keyboard.press("Enter");

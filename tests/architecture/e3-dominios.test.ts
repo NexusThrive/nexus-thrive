@@ -62,7 +62,7 @@ describe("suscriptores de eventos", () => {
 
   test("el suscriptor de presencia vive en su dominio y la ruta de cron lo entrega", () => {
     expect(exists("lib/business/presence/subscribers.ts")).toBe(true);
-    expect(read("app/api/cron/webhooks/route.ts")).toContain("dispatchPending({ subscribers: [presenceSubscriber] })");
+    expect(read("app/api/cron/webhooks/route.ts")).toContain("dispatchPending({ subscribers: [presenceSubscriber, noticeSubscriber] })");
   });
 
   test("`subscribers` es obligatorio: no hay un valor por defecto que lo omita en silencio", () => {

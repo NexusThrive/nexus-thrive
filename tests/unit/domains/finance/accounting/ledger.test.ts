@@ -19,6 +19,8 @@ describe("motor contable", () => {
   it("costo de la venta y cobro cuadran", () => {
     expect(validateEntry(linesFromRule(rule("SALE_COST"), { cost: 62_500.5 }))).toBeNull();
     expect(validateEntry(linesFromRule(rule("PAYMENT_RECEIVED"), { payment: 300_000 }))).toBeNull();
+    // Cobro por pasarela: neto por cobrar + comisión = cobro bruto.
+    expect(validateEntry(linesFromRule(rule("PAYMENT_RECEIVED_GATEWAY"), { payment: 100_000, fee: 3_986.5, net: 96_013.5 }))).toBeNull();
     expect(validateEntry(linesFromRule(rule("PURCHASE_RECEIVED"), { total: 119_000, subtotal: 100_000, tax: 19_000 }))).toBeNull();
   });
   it("detecta lo que no cuadra o está mal armado", () => {

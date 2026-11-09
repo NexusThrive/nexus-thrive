@@ -6,6 +6,7 @@ import { db } from "@/prisma/db";
 import { membershipTypeFor } from "@/lib/business/customers/customer-fields";
 import { bogotaEndOfDay, bogotaStartOfDay, computeMembershipStatus, type MembershipTypeValue } from "@/lib/industry/gym/memberships";
 import { bogotaToday } from "@/lib/foundation/dates/plain-date";
+import { openMembershipDebt } from "./membership-debt";
 import { moneyTransaction, recordIncome } from "@/lib/business/sales/money-service";
 
 type Plan = { id: string; name: string; price: number; durationDays: number };
@@ -46,6 +47,7 @@ export async function enrollInPlan(
       status: computeMembershipStatus(endInstant, now),
       price: plan.price.toFixed(2),
     });
+    await openMembershipDebt(tx, tenantId, { membershipId: membership.id, customerId, amount: plan.price, description: `${plan.name} — inscripción`, dueDate: startInstant });
     if (method) {
       await recordIncome(
         tx,

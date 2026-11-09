@@ -3,6 +3,7 @@
  * de clientes, gastos, ficha 360° y demás datos del negocio, siempre acotadas por `tenantId`. Es el archivo más grande
  * de `lib/` y está pendiente de dividirse por dominio.
  */
+import { canonicalPhone } from "@/lib/foundation/kernel/phone";
 import { bogotaDayKey, buildFinanceSeries, cumulativeByDay, lastBogotaDays, type FinanceSeries } from "@/lib/foundation/kernel/finance-series";
 import {
   and,
@@ -152,7 +153,7 @@ export type Customer360Note = {
  */
 export type CustomerTimelineEvent = {
   id: string;
-  type: "payment" | "membership" | "note";
+  type: "payment" | "membership" | "note" | "opportunity" | "quote" | "order" | "task" | "document" | "message";
   /** ISO (Temporal.Instant serializado); la UI formatea en America/Bogota. */
   date: string;
   title: string;
@@ -489,9 +490,14 @@ export function createTenantDb(tenantId: string) {
       get: (id: string) =>
         db.orm.public.Customer.where({ id, tenantId }).first(),
 
+      /** Varios clientes por id (siempre del negocio): la lista con búsqueda avanzada trae los de la página. */
+      listByIds: (ids: string[]) =>
+        db.orm.public.Customer.where({ tenantId }).where((customer) => customer.id.in([...new Set(ids)].slice(0, 500))).all(),
+
       create: (data: Omit<Parameters<typeof db.orm.public.Customer.create>[0], "tenantId">) =>
         db.orm.public.Customer.create({
           ...data,
+          phoneNorm: canonicalPhone((data as { phone?: string | null }).phone) || null,
           tenantId,
         }),
 
@@ -576,14 +582,38 @@ export function createTenantDb(tenantId: string) {
           .update({ active: true }),
 
       /**
-       * Borrado definitivo — SOLO de clientes ya archivados (la condición
-       * `active: false` se aplica aquí, no se confía en el cliente).
+       * Borrado definitivo de clientes, activos o archivados (siempre acotado
+       * al `tenantId`). Las notas y las membresías del cliente se borran en
+       * cascada; un cliente con proyectos de construcción lo impide la base
+       * (`Restrict`).
        * `Payment.customerId` usa `onDelete: SetNull`, así que los pagos
        * se conservan y quedan sin cliente vinculado.
        *
        * El `.delete()` del ORM borra UNA fila por llamada; para borrar en
        * lote se usa la SQL lane, cuyo `execute` resuelve `affectedRows`.
        */
+      deleteMany: async (ids: string[]) => {
+        const uniqueIds = [...new Set(ids)];
+
+        if (uniqueIds.length === 0) {
+          return 0;
+        }
+
+        const plan = db.sql.public.Customer
+          .delete()
+          .where((field, fns) =>
+            fns.and(
+              fns.eq(field.tenantId, tenantId),
+              fns.in(field.id, uniqueIds),
+            ),
+          )
+          .build();
+
+        const { affectedRows } = await db.runtime().execute(plan);
+        return affectedRows;
+      },
+
+      /** Borrado definitivo SOLO de clientes ya archivados (`active: false` se aplica aquí). */
       deleteManyArchived: async (ids: string[]) => {
         const uniqueIds = [...new Set(ids)];
 

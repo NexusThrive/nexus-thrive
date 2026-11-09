@@ -19,6 +19,7 @@ const T: readonly PucRow[] = [
   { code: "1120", name: "Cuentas de ahorro", postable: true },
   { code: "13", name: "Deudores", postable: false },
   { code: "1305", name: "Clientes", postable: true },
+  { code: "1340", name: "Pasarelas de pago por cobrar", postable: true },
   { code: "1355", name: "Anticipo de impuestos y saldos a favor", postable: true },
   { code: "1365", name: "Cuentas por cobrar a trabajadores", postable: true },
   { code: "14", name: "Inventarios", postable: false },
@@ -91,7 +92,7 @@ export function validateAccount(input: { code: string; name: string }, existingC
 
 /* ------------------------------- Reglas ------------------------------- */
 
-export type RuleAmount = "total" | "subtotal" | "tax" | "cost" | "payment" | "withholding" | "tip";
+export type RuleAmount = "total" | "subtotal" | "tax" | "cost" | "payment" | "withholding" | "tip" | "fee" | "net";
 export type RuleLine = { side: "D" | "C"; account: string; amount: RuleAmount; label: string };
 export type RuleTemplate = { event: string; name: string; lines: RuleLine[] };
 
@@ -101,6 +102,9 @@ export const DEFAULT_RULES: readonly RuleTemplate[] = [
   { event: "SALE_COST", name: "Costo de la venta", lines: [{ side: "D", account: "6135", amount: "cost", label: "Costo de ventas" }, { side: "C", account: "1435", amount: "cost", label: "Inventario" }] },
   { event: "SALE_COST_RETURN", name: "Costo de una devolución", lines: [{ side: "D", account: "1435", amount: "cost", label: "Inventario" }, { side: "C", account: "6135", amount: "cost", label: "Costo de ventas" }] },
   { event: "PAYMENT_RECEIVED", name: "Cobro de una venta o cuenta", lines: [{ side: "D", account: "1105", amount: "payment", label: "Caja o banco" }, { side: "C", account: "1305", amount: "payment", label: "Cliente" }] },
+  { event: "PAYMENT_RECEIVED_GATEWAY", name: "Cobro por pasarela (con comisión estimada)", lines: [{ side: "D", account: "1340", amount: "net", label: "Por cobrar a la pasarela" }, { side: "D", account: "5305", amount: "fee", label: "Comisión de la pasarela" }, { side: "C", account: "1305", amount: "payment", label: "Cliente" }] },
+  { event: "SETTLEMENT", name: "Liquidación de la pasarela (comisión real mayor)", lines: [{ side: "D", account: "1110", amount: "net", label: "Depósito en bancos" }, { side: "D", account: "5305", amount: "fee", label: "Ajuste de comisión de la pasarela" }, { side: "C", account: "1340", amount: "payment", label: "Por cobrar a la pasarela" }] },
+  { event: "SETTLEMENT_REFUND", name: "Liquidación de la pasarela (comisión real menor)", lines: [{ side: "D", account: "1110", amount: "net", label: "Depósito en bancos" }, { side: "C", account: "5305", amount: "fee", label: "Ajuste de comisión de la pasarela" }, { side: "C", account: "1340", amount: "payment", label: "Por cobrar a la pasarela" }] },
   { event: "CREDIT_NOTE", name: "Nota crédito", lines: [{ side: "D", account: "4175", amount: "subtotal", label: "Devolución o descuento en ventas" }, { side: "D", account: "2408", amount: "tax", label: "IVA devuelto" }, { side: "C", account: "1305", amount: "total", label: "Cliente" }] },
   { event: "DEBIT_NOTE", name: "Nota débito", lines: [{ side: "D", account: "1305", amount: "total", label: "Cliente" }, { side: "C", account: "4155", amount: "subtotal", label: "Ingreso por cargos" }, { side: "C", account: "2408", amount: "tax", label: "IVA generado" }] },
   { event: "PURCHASE_RECEIVED", name: "Compra recibida", lines: [{ side: "D", account: "1435", amount: "subtotal", label: "Inventario" }, { side: "D", account: "1355", amount: "tax", label: "IVA descontable" }, { side: "C", account: "2205", amount: "total", label: "Proveedor" }] },

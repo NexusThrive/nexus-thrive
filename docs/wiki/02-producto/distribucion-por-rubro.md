@@ -5,6 +5,13 @@ tags: [rubros, funciones, navegacion, arquitectura, planes]
 
 # Un solo sistema: núcleo, perfil y funciones
 
+> **Reemplazada.** Desde el 2026-11-06 rige el
+> [ADR 0007](../../decisions/arquitectura/0007-soluciones-sobre-plataforma.md)
+> (Aceptada): soluciones especializadas con entitlements. La regla nueva está en
+> la [guía de producto](../../product/nexus-platform/README.md). Esta página se
+> conserva como historia y describe el comportamiento del código hasta que la
+> transición (etapa 1) se implemente.
+
 > NEXUS es **un único sistema operativo para negocios**. No hay aplicaciones
 > separadas por rubro ni paquetes de funciones vendidos por sector. El rubro es
 > un **perfil**; las funciones son del mismo producto.

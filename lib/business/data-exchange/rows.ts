@@ -32,10 +32,15 @@ export type ProductRow = {
   taxCategory: (typeof TAX)[number];
   taxRatePct: number;
   active: boolean;
+  barcode: string | null;
+  /** Dónde se usa; vacío = como está hoy (los nuevos arrancan encendidos). */
+  posEnabled: boolean | null;
+  publishedOnline: boolean | null;
+  customizable: boolean | null;
 };
 
-export const PRODUCT_HEADERS = ["Nombre", "SKU", "Tipo", "Categoría", "Marca", "Descripción", "Precio", "Costo", "Controla existencias", "Stock mínimo", "Unidad", "Impuesto", "IVA %", "Activo"] as const;
-export const PRODUCT_EXAMPLE = ["Proteína whey 2 lb", "WHEY-2LB", "Producto", "Suplementos", "NexusFit", "Sabor vainilla", "129900", "78000", "Sí", "5", "Unidad", "Gravado", "19", "Sí"] as const;
+export const PRODUCT_HEADERS = ["Nombre", "SKU", "Tipo", "Categoría", "Marca", "Descripción", "Precio", "Costo", "Controla existencias", "Stock mínimo", "Unidad", "Impuesto", "IVA %", "Activo", "Código de barras", "Punto de venta", "Tienda en línea", "A medida"] as const;
+export const PRODUCT_EXAMPLE = ["Proteína whey 2 lb", "WHEY-2LB", "Producto", "Suplementos", "NexusFit", "Sabor vainilla", "129900", "78000", "Sí", "5", "Unidad", "Gravado", "19", "Sí", "7701234567890", "Sí", "No", "No"] as const;
 
 const PRODUCT_ALIASES = {
   name: ["nombre", "producto", "articulo", "item", "name", "descripcion del producto"],
@@ -52,6 +57,10 @@ const PRODUCT_ALIASES = {
   tax: ["impuesto", "tipo de impuesto", "categoria de impuesto", "tax"],
   taxRate: ["iva", "iva %", "tarifa iva", "tarifa", "porcentaje iva", "tax rate"],
   active: ["activo", "active", "estado"],
+  barcode: ["codigo de barras", "codigo barras", "barcode", "ean", "gtin", "upc"],
+  pos: ["punto de venta", "pos", "vende en pos"],
+  online: ["tienda en linea", "tienda", "publicado", "publicado en linea", "e-commerce"],
+  custom: ["a medida", "personalizable", "personalizado"],
 } as const;
 
 const cell = (r: string[], i: number) => (i >= 0 ? (r[i] ?? "").trim() : "");
@@ -110,6 +119,18 @@ export function parseProducts(table: Table): ParsedRows<ProductRow> {
     const active = activeRaw ? parseBool(activeRaw) : true;
     if (active === null) errs.push(`«Activo» debe ser Sí o No.`);
     const minStock = intOrError(cell(r, col.minStock), "El stock mínimo", errs);
+    const flag = (key: "pos" | "online" | "custom", label: string): boolean | null => {
+      const raw = cell(r, col[key]);
+      if (!raw) return null;
+      const v = parseBool(raw);
+      if (v === null) errs.push(`«${label}» debe ser Sí o No.`);
+      return v;
+    };
+    const posEnabled = flag("pos", "Punto de venta");
+    const publishedOnline = flag("online", "Tienda en línea");
+    const customizable = flag("custom", "A medida");
+    const barcode = cell(r, col.barcode).replace(/\s+/g, "").slice(0, 48) || null;
+    if (barcode && !/^[A-Za-z0-9._-]{3,48}$/.test(barcode)) errs.push(`Código de barras inválido: «${barcode}».`);
 
     const sku = cell(r, col.sku).slice(0, 60) || null;
     if (sku) {
@@ -140,6 +161,10 @@ export function parseProducts(table: Table): ParsedRows<ProductRow> {
         taxCategory,
         taxRatePct: taxCategory === "GRAVADO" ? taxRate : 0,
         active,
+        barcode,
+        posEnabled,
+        publishedOnline,
+        customizable,
       },
     });
   });

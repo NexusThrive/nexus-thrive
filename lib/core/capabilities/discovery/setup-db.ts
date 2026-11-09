@@ -19,10 +19,10 @@ export async function setupStates(tenantId: string): Promise<Partial<Record<Modu
     db.orm.public.GoogleListing.where({ tenantId }).select("id").first(),
   ]);
   return {
-    online_payments: { configured: !!payment, hint: "Conecta tu pasarela de pagos para cobrar en línea.", href: "/cobros" },
-    einvoicing: { configured: !!(tenant?.einvoiceEnabled && einvoice), hint: "Activa la factura electrónica y conecta tu proveedor autorizado.", href: "/factura-electronica" },
-    accounting: { configured: !!tenant?.accountingEnabled, hint: "Activa la contabilización para que tus ventas y gastos generen asientos.", href: "/contabilidad" },
-    website: { configured: !!site, hint: "Publica tu sitio para que tus clientes lo vean.", href: "/sitio" },
-    google: { configured: !!listing, hint: "Conecta tu ficha de Google para compararla con tus datos.", href: "/google" },
+    online_payments: { configured: !!payment, hint: "Conecta tu pasarela de pagos para cobrar en línea.", href: "/ventas/cobros" },
+    einvoicing: { configured: !!(tenant?.einvoiceEnabled && einvoice), hint: "Activa la factura electrónica y conecta tu proveedor autorizado.", href: "/finanzas/facturacion-electronica" },
+    accounting: { configured: !!tenant?.accountingEnabled, hint: "Activa la contabilización para que tus ventas y gastos generen asientos.", href: "/finanzas/contabilidad" },
+    website: { configured: !!site, hint: "Publica tu sitio para que tus clientes lo vean.", href: "/presencia/sitio" },
+    google: { configured: !!listing, hint: "Conecta tu ficha de Google para compararla con tus datos.", href: "/presencia/google" },
   };
 }

@@ -2,6 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { can } from "@/lib/core/auth/permissions";
+import { priceListFor, pricingFor, type ListPricing } from "@/lib/business/catalog/pricing-db";
+import { offeredPaymentMethods } from "@/lib/business/sales/payment-methods-db";
 import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
 import { findByBarcode } from "@/lib/business/catalog/catalog-db";
 import { returnSale, saleForReturn, type ReturnInput, type SaleToReturn } from "@/lib/business/pos/returns-db";
@@ -49,9 +51,23 @@ export async function closeTurnAction(slug: string, sessionId: string, counted: 
 export async function sellAction(slug: string, input: SaleInput): Promise<SaleResult> {
   const ctx = await cashier(slug);
   if (!ctx) return { ok: false, message: "Tu rol no puede vender en el punto de venta." };
-  if (input.payments.some((p) => !PAYMENT_METHODS.some((m) => m.value === p.method))) return { ok: false, message: "Elige un medio de pago válido." };
-  const r = await sellCart(ctx.tenantId, input, ctx.memberId, { canDiscountOver: can(ctx.role, "business.manage") });
-  if (r.ok) revalidatePath(`/${slug}/inventory`);
+  if (input.payments.some((p) => p.method !== "CREDIT" && !PAYMENT_METHODS.some((m) => m.value === p.method))) return { ok: false, message: "Elige un medio de pago válido." };
+  // El medio lo define el negocio: el nombre y el tipo salen de su configuración, no de lo que mande el navegador.
+  const offered = await offeredPaymentMethods(ctx.tenantId);
+  const payments: SaleInput["payments"] = [];
+  for (const p of input.payments) {
+    if (!p.methodId) {
+      // El crédito solo existe si el negocio lo ofrece como medio: no se acepta «a crédito» sin elegir ese medio.
+      if (p.method === "CREDIT") return { ok: false, message: "Elige el medio de pago a crédito." };
+      payments.push({ method: p.method, amount: p.amount });
+      continue;
+    }
+    const method = offered.find((m) => m.id === p.methodId);
+    if (!method) return { ok: false, message: "Ese medio de pago ya no está disponible." };
+    payments.push({ method: method.kind, amount: p.amount, methodId: method.id, label: method.kind === "CASH" && method.name === "Efectivo" ? undefined : method.name });
+  }
+  const r = await sellCart(ctx.tenantId, { ...input, payments }, ctx.memberId, { canDiscountOver: can(ctx.role, "business.manage") });
+  if (r.ok) revalidatePath(`/${slug}/inventario/productos`);
   return r;
 }
 
@@ -79,6 +95,14 @@ export async function returnSaleAction(slug: string, input: ReturnInput): Promis
   const r = await returnSale(ctx.tenantId, input, ctx.memberId);
   if (!r.ok) return r;
   await logTenantAction(ctx, "BIZ_POS_TURN", { action: "return", documentId: input.documentId, noteNumber: r.noteNumber, refund: r.refund });
-  revalidatePath(`/${slug}/inventory`);
+  revalidatePath(`/${slug}/inventario/productos`);
   return { ok: true, message: `Devolución registrada · nota crédito N.º ${r.noteNumber} · ${r.refund.toLocaleString("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 })}` };
+}
+
+/** Precios de la lista que le toca al cliente (o la predeterminada): precio de lista y escalones por cantidad por producto. */
+export async function posPricingAction(slug: string, customerId: string | null): Promise<{ ok: true; listId: string | null; pricing: Record<string, ListPricing> } | { ok: false; message: string }> {
+  const ctx = await cashier(slug);
+  if (!ctx) return { ok: false, message: "Tu rol no puede vender en el punto de venta." };
+  const listId = await priceListFor(ctx.tenantId, customerId);
+  return { ok: true, listId, pricing: await pricingFor(ctx.tenantId, listId) };
 }

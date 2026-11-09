@@ -121,7 +121,8 @@ export const VERTICAL_RECIPES: Record<VerticalValue, VerticalRecipe> = {
     },
   },
   retail: {
-    modules: ["dashboard", "crm", "orders", "inventory", "purchases", "payments", "finance"],
+    // Comercio: vende en mostrador (punto de venta) y por pedidos de canales (tienda, WhatsApp, API), con inventario, compras, cartera y facturación.
+    modules: ["dashboard", "crm", "pos", "orders", "inventory", "purchases", "payments", "finance", "whatsapp", "billing"],
     terms: {
       customer: "Cliente",
       customers: "Clientes",

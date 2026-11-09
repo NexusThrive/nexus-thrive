@@ -26,6 +26,15 @@ export type ProductRow = {
   active: boolean;
   /** IVA que se cobra (0 si no es gravado). */
   taxRatePct: number;
+  categoryId: string | null;
+  brand: string | null;
+  imageUrl: string | null;
+  favorite: boolean;
+  sellable: boolean;
+  purchasable: boolean;
+  posEnabled: boolean;
+  customizable: boolean;
+  publishedOnline: boolean;
 };
 
 const dec = (n: number) => n.toFixed(2);
@@ -49,6 +58,15 @@ function toRow(p: NonNullable<Awaited<ReturnType<typeof db.orm.public.Product.fi
     capacity: p.capacity,
     active: p.active,
     taxRatePct: p.taxCategory === "GRAVADO" ? toNumber(p.taxRatePct) : 0,
+    categoryId: p.categoryId,
+    brand: p.brand,
+    imageUrl: p.imageUrl,
+    favorite: p.favorite,
+    sellable: p.sellable,
+    purchasable: p.purchasable,
+    posEnabled: p.posEnabled,
+    customizable: p.customizable,
+    publishedOnline: p.publishedOnline,
   };
 }
 
@@ -66,7 +84,8 @@ export async function listProducts(tenantId: string, filter: { kind?: ProductKin
   }
   const ordered = q.orderBy((p) => p.name.asc());
   const rows = await (filter.limit ? ordered.limit(filter.limit) : ordered).all();
-  return rows.map(toRow);
+  // Los favoritos van primero; dentro de cada grupo, por nombre (el orden de la consulta se conserva).
+  return rows.map(toRow).sort((a, b) => Number(b.favorite) - Number(a.favorite));
 }
 
 /** Un producto por su id, o `null`. */
@@ -75,7 +94,7 @@ export async function getProduct(tenantId: string, id: string) {
   return p ? toRow(p) : null;
 }
 
-export type ProductInput = Omit<ProductRow, "id" | "stock" | "taxRatePct"> & { initialStock?: number };
+export type ProductInput = Pick<ProductRow, "kind" | "name" | "description" | "sku" | "category" | "price" | "cost" | "trackStock" | "minStock" | "unit" | "durationMinutes" | "durationDays" | "capacity" | "active"> & { initialStock?: number };
 
 /**
  * Crea (sin `id`) o actualiza un producto y devuelve su id. Al crear con existencias iniciales registra el movimiento «Inventario inicial».

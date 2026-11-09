@@ -14,7 +14,7 @@ export const MODULE_NAV = Object.fromEntries(CAPABILITIES.map((c) => [c.id, c.na
 
 /**
  * Módulos que dan acceso a cada ruta del negocio, derivados del menú (una sola
- * fuente). Una ruta puede venir de varios módulos: `/finance` la abren Finanzas
+ * fuente). Una ruta puede venir de varios módulos: `/finanzas` la abren Finanzas
  * y Pagos. El servidor la usa para no servir pantallas ni acciones de módulos
  * apagados (SEC-06): ocultarlas del menú no basta.
  */
@@ -31,7 +31,7 @@ const ROUTE_MODULES: ReadonlyMap<string, readonly ModuleValue[]> = (() => {
 })();
 
 /**
- * Módulos que habilitan `route` ("/crm", "/projects/9/budget"…), o `null` si
+ * Módulos que habilitan `route` ("/contactos", "/proyectos/9/budget"…), o `null` si
  * la ruta no depende de un módulo (inicio, configuración, presencia).
  */
 export function modulesForRoute(route: string): readonly ModuleValue[] | null {

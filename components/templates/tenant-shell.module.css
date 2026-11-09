@@ -4,22 +4,11 @@
 .root {
   --sw: 0px;
   min-height: 100vh;
+  min-height: 100dvh;
   background: var(--background);
   color: var(--foreground);
 }
-@media (min-width: 768px) {
-  .root {
-    --sw: 88px;
-  }
-}
-@media (min-width: 1024px) {
-  .root {
-    --sw: 248px;
-  }
-  :global(html[data-rail]) .root {
-    --sw: 76px;
-  }
-}
+/* Nexus Workspace: sin barra lateral fija. La navegación vive en la barra superior (launcher) y en la fila contextual. */
 
 .main {
   min-width: 0;
@@ -32,6 +21,8 @@
 .view {
   max-width: var(--content-max);
   min-height: calc(100vh - var(--topbar-height) - env(safe-area-inset-top, 0px));
+  /* Alto visible real en el celular (100vh incluye la barra del navegador y deja un scroll de sobra). */
+  min-height: calc(100dvh - var(--topbar-height) - env(safe-area-inset-top, 0px));
   margin: 0 auto;
   padding: 20px max(16px, env(safe-area-inset-right, 0px))
     calc(112px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
@@ -42,8 +33,34 @@
     padding: 24px 24px 64px;
   }
 }
+/* Listas a todo el ancho: si la página marca su contenido con data-bleed, la vista no limita el ancho ni el padding lateral. */
+.view:has([data-bleed]) {
+  max-width: none;
+  padding-inline: 0;
+  padding-top: 0;
+}
 @media (min-width: 1024px) {
   .view {
     padding-inline: 32px;
   }
+}
+
+/* Pantalla completa (punto de venta): mientras el POS está montado marca <html data-kiosk>; entonces se oculta la barra superior, las
+   migas, la barra inferior del celular y el botón de AURI, y el contenido ocupa todo el ancho con una separación mínima. Se usa la marca
+   del documento (que el POS quita al desmontarse u ocultarse) y no :has() sobre el contenido, porque Next conserva oculta la página anterior. */
+:global(html[data-kiosk]) :global([data-app-topbar]),
+:global(html[data-kiosk]) :global([data-mobile-tabbar]),
+:global(html[data-kiosk]) :global([data-tour="help"]) {
+  display: none;
+}
+:global(html[data-kiosk]) .main {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+:global(html[data-kiosk]) .view {
+  max-width: none;
+  min-height: 100dvh;
+  padding: 8px max(8px, env(safe-area-inset-right, 0px)) max(8px, env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px));
+}
+:global(html[data-kiosk]) .view > nav:first-child {
+  display: none;
 }

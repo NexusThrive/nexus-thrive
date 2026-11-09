@@ -17,6 +17,7 @@
 @import "../packages/brand/css/base.css" layer(base);
 @import "./styles/motion.css";
 @import "./styles/forms.css";
+@import "./styles/eye-tracker.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 

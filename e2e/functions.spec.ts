@@ -11,7 +11,7 @@ test.describe("Funciones", () => {
     await expect(page.getByText("Va bien con un negocio de gimnasio.")).toBeVisible();
     // Encendida pero sin configurar: no se presenta como operativa.
     await expect(page.getByText("Falta configurar")).toBeVisible();
-    await expect(page.getByRole("link", { name: "Configurar" })).toHaveAttribute("href", "/demo/factura-electronica");
+    await expect(page.getByRole("link", { name: "Configurar" })).toHaveAttribute("href", "/demo/finanzas/facturacion-electronica");
     // Lo que no existe se informa, sin interruptor.
     await expect(page.getByText("Próximamente")).toBeVisible();
     await expect(page.getByRole("switch", { name: /Pedidos/ })).toHaveCount(0);
@@ -22,7 +22,7 @@ test.describe("Funciones", () => {
     await openStory(page, "páginas-funciones-funciones--default");
     await page.getByLabel("Buscar una función").fill("contabilidad");
     await expect(page.getByText("Plan de cuentas, asientos y estados financieros")).toBeVisible();
-    await expect(page.getByText("Punto de venta")).toHaveCount(0);
+    await expect(page.getByRole("switch", { name: /Punto de venta/ })).toHaveCount(0);
     await page.getByLabel("Buscar una función").fill("zzzz");
     await expect(page.getByText("Ninguna función coincide")).toBeVisible();
     await page.getByLabel("Buscar una función").fill("");

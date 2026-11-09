@@ -35,3 +35,31 @@ describe("pago mixto", () => {
     expect(settlePayments(1000, [])).toEqual({ error: "Agrega al menos un pago." });
   });
 });
+
+describe("renglón a medida", () => {
+  it("anexa la nota a la descripción, la limpia y la recorta", async () => {
+    const { lineDescription, MAX_CUSTOM_NOTE } = await import("@/lib/business/pos/cart");
+    expect(lineDescription("Camiseta")).toBe("Camiseta");
+    expect(lineDescription("Camiseta", "   ")).toBe("Camiseta");
+    expect(lineDescription("Camiseta", "Texto:   Hola \n mundo")).toBe("Camiseta — Texto: Hola mundo");
+    expect(lineDescription("Taza", "x".repeat(500)).length).toBe("Taza — ".length + MAX_CUSTOM_NOTE);
+  });
+});
+
+describe("número de la venta impreso", () => {
+  it("lleva la serie de la resolución o V- si no hay", async () => {
+    const { saleCode } = await import("@/lib/business/pos/pos-db");
+    expect(saleCode(null, 42)).toBe("V-000042");
+    expect(saleCode("POS", 42)).toBe("POS-000042");
+    expect(saleCode("POS-", 7)).toBe("POS-000007");
+  });
+});
+
+describe("venta a crédito", () => {
+  it("el crédito cubre el valor sin cambio y no puede pasarse", () => {
+    const ok = settlePayments(100_000, [{ method: "CASH", amount: 40_000 }, { method: "CREDIT", amount: 60_000 }]);
+    expect("error" in ok).toBe(false);
+    if (!("error" in ok)) expect(ok.change).toBe(0);
+    expect("error" in settlePayments(100_000, [{ method: "CREDIT", amount: 120_000 }])).toBe(true);
+  });
+});

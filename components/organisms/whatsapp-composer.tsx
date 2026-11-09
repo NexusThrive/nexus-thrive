@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "reac
 import { ArrowLeft, Search, Send } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
+import { CustomerAvatar } from "@/components/atoms/customer-avatar";
 import { Chip, ChipRow } from "@/components/atoms/chip";
 import { inputClasses } from "@/components/atoms/input";
 import { EmptyState } from "@/components/molecules/empty-state";
@@ -21,7 +22,6 @@ const TEMPLATES: { label: string; text: (first: string, business: string) => str
 ];
 
 const time = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", day: "numeric", month: "short", hour: "numeric", minute: "2-digit" });
-const initials = (n: string) => n.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]?.toUpperCase()).join("");
 const waLink = (phone: string, text: string) => {
   const d = phone.replace(/\D/g, "");
   return `https://wa.me/${d.length === 10 ? `57${d}` : d}?text=${encodeURIComponent(text)}`;
@@ -115,7 +115,7 @@ export function WhatsAppComposer({
                   onClick={() => setCurrentId(c.id)}
                   className={cn("flex w-full items-center gap-3 border-b border-border px-4 py-3 text-left transition-colors hover:bg-surface-muted", c.id === currentId && "bg-surface-muted")}
                 >
-                  <span className="grid size-[34px] shrink-0 place-items-center rounded-md bg-primary font-display text-xs font-bold text-primary-foreground">{initials(c.name)}</span>
+                  <CustomerAvatar identity={c} className="size-[34px] rounded-md" />
                   <span className="min-w-0 flex-1">
                     <b className="block truncate font-medium">{c.name}</b>
                     <small className="block truncate text-xs text-muted-foreground">{last ? `Tú: ${last.text}` : c.phone}</small>
@@ -135,7 +135,7 @@ export function WhatsAppComposer({
               <button type="button" aria-label="Volver" onClick={() => setCurrentId(null)} className={cn(buttonVariants({ variant: "ghost", size: "icon-sm" }), "md:hidden")}>
                 <ArrowLeft aria-hidden="true" className="size-4" />
               </button>
-              <span className="grid size-[34px] place-items-center rounded-md bg-primary font-display text-xs font-bold text-primary-foreground">{initials(current.name)}</span>
+              <CustomerAvatar identity={current} className="size-[34px] rounded-md" />
               <div className="min-w-0 flex-1">
                 <b className="block truncate font-semibold">{current.name}</b>
                 <small className="font-mono text-xs text-muted-foreground">{current.phone}</small>

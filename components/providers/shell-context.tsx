@@ -6,7 +6,7 @@ import type { VerticalValue } from "@/lib/core/sectors/verticals";
 import type { ModuleValue } from "@/lib/core/capabilities/modules";
 import {
   buildTenantNav,
-  isNavActive,
+  activeNavItem,
   tenantRelativePath,
   type NavGroup,
   type NavItem,
@@ -95,9 +95,9 @@ export function ShellProvider({
   const modulesKey = activeModules.join(",");
 
   const groups = useMemo(
-    () => buildTenantNav(vertical, activeModules),
+    () => buildTenantNav(vertical, activeModules, role),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [vertical, modulesKey],
+    [vertical, modulesKey, role],
   );
   const quickActions = useMemo(
     () => quickCreateActions(vertical, activeModules, 4, role),
@@ -110,7 +110,7 @@ export function ShellProvider({
     [vertical, modulesKey, role],
   );
   const relativePath = tenantRelativePath(pathname, tenantSlug);
-  const active = groups.flatMap((g) => g.items).find((item) => isNavActive(item.href, relativePath));
+  const active = activeNavItem(groups, relativePath);
 
   const value = useMemo<ShellContextValue>(
     () => ({

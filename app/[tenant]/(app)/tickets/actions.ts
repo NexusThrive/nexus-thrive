@@ -15,7 +15,7 @@ const validMethod = (m: string) => PAYMENT_METHODS.some((x) => x.value === m);
 function refresh(slug: string) {
   revalidatePath(`/${slug}/tickets`);
   revalidatePath(`/${slug}/bookings`);
-  revalidatePath(`/${slug}/finance`);
+  revalidatePath(`/${slug}/finanzas`);
   revalidatePath(`/${slug}`);
 }
 
@@ -65,6 +65,6 @@ export async function seedTicketTypesAction(slug: string): Promise<TicketResult>
   if (!ctx || !canManage(ctx.role)) return DENIED;
   const created = await seedTicketTypes(ctx.tenantId);
   revalidatePath(`/${slug}/tickets`);
-  revalidatePath(`/${slug}/inventory`);
+  revalidatePath(`/${slug}/inventario/productos`);
   return created ? { ok: true, message: "Entradas creadas: ajusta los precios en Catálogo." } : { ok: false, message: "Ya tienes tipos de entrada." };
 }

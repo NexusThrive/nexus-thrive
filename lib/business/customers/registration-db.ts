@@ -1,4 +1,5 @@
 import { db } from "@/prisma/db";
+import { canonicalPhone } from "@/lib/foundation/kernel/phone";
 import { emitEvent } from "@/lib/core/events/outbox";
 
 /**
@@ -104,6 +105,9 @@ export async function registerPublicCustomer(tenantId: string, input: PublicCust
     name: input.name.trim(),
     email: email || null,
     phone: phone || null,
+    phoneNorm: canonicalPhone(phone) || null,
+    source: "REGISTRATION",
+    stage: "CUSTOMER",
     documentId: documentId || null,
     birthDate: input.birthDate ? Temporal.Instant.from(`${input.birthDate}T12:00:00Z`) : null,
     city: input.city.trim() || null,

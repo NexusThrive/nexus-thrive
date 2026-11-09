@@ -33,3 +33,21 @@ describe("tienda en línea", () => {
     expect(m).toContain("https://x.co/pay/abc");
   });
 });
+
+describe("pedidos por canal", () => {
+  it("limpia el identificador externo", async () => {
+    const { cleanExternalId } = await import("@/lib/business/store/cart");
+    expect(cleanExternalId("  SH-1001\n")).toBe("SH-1001");
+    expect(cleanExternalId("   ")).toBeNull();
+    expect(cleanExternalId(undefined)).toBeNull();
+    expect(cleanExternalId("x".repeat(200))?.length).toBe(80);
+  });
+});
+
+describe("existencias apartadas", () => {
+  it("lo disponible es lo que hay menos lo apartado, sin bajar de cero", async () => {
+    const { availableStock } = await import("@/lib/business/store/reservations");
+    expect(availableStock(10, 3)).toBe(7);
+    expect(availableStock(2, 5)).toBe(0);
+  });
+});

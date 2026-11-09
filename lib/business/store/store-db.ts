@@ -1,6 +1,11 @@
 import { emitEvent } from "@/lib/core/events/outbox";
 import { toNumber } from "@/lib/foundation/format";
+import { canTransitionOrder, resolveLimits, validateAmount } from "@/lib/foundation/kernel/integrity";
+import { availableStock, reservedByProduct } from "./reservations";
 import { paymentGatewayPort } from "./payment-gateway-port";
+import { findOrCreateContact } from "@/lib/business/customers/contacts-db";
+import { cancelFulfillment } from "./fulfillment-db";
+import { openObligation, voidObligations } from "@/lib/business/sales/obligations";
 import { db } from "@/prisma/db";
 import { sanitizeOrigin } from "@/lib/business/growth/growth";
 import { ABANDON_AFTER_MINUTES, isAbandoned, normalizeCart, orderCode, orderMessage, orderTotals, validateCustomer, type CartLine, type CustomerData } from "./cart";
@@ -26,27 +31,36 @@ export async function placeOrder(siteSlug: string, input: { customer: CustomerDa
 
   const products = await db.orm.public.Product.where({ tenantId, active: true, publishedOnline: true }).where((p) => p.id.in(cart.lines.map((l) => l.productId))).all();
   const byId = new Map(products.map((p) => [p.id, p]));
+  const reserved = await reservedByProduct(tenantId, cart.lines.map((l) => l.productId));
   const lines: { productId: string; name: string; quantity: number; unitPrice: number; taxRatePct: number }[] = [];
   for (const l of cart.lines) {
     const p = byId.get(l.productId);
     if (!p || !(p.kind === "PRODUCT" || p.kind === "SERVICE")) return { ok: false, message: "Un producto de tu carrito ya no está disponible. Actualiza la página." };
-    if (p.trackStock && l.quantity > p.stock) return { ok: false, message: `De «${p.name}» solo quedan ${p.stock}.` };
+    const free = availableStock(p.stock, reserved.get(p.id) ?? 0);
+    if (p.trackStock && l.quantity > free) return { ok: false, message: `De «${p.name}» solo quedan ${free}.` };
     lines.push({ productId: p.id, name: p.name, quantity: l.quantity, unitPrice: toNumber(p.price), taxRatePct: p.taxCategory === "GRAVADO" ? toNumber(p.taxRatePct) : 0 });
   }
   const total = orderTotals(lines.map((l) => ({ description: l.name, quantity: l.quantity, unitPrice: l.unitPrice, taxRatePct: l.taxRatePct }))).total;
 
+  const overLimit = validateAmount(total, resolveLimits(tenant.settings));
+  if (overLimit) return { ok: false, message: "El pedido supera el valor máximo permitido. Escríbenos por WhatsApp para coordinarlo." };
+
   const c = input.customer;
   for (let attempt = 0; ; attempt++) {
     try {
-      const gateway = (await paymentGatewayPort.use().connectedGateways(tenantId))[0]?.value ?? "sandbox";
       const order = await db.transaction(async (tx) => {
         const last = await tx.orm.public.StoreOrder.where({ tenantId }).orderBy((o) => o.number.desc()).first();
         const number = (last?.number ?? 0) + 1;
-        const created = await tx.orm.public.StoreOrder.create({ tenantId, number, customerName: c.name.trim().slice(0, 120), phone: c.phone.trim().slice(0, 30), email: c.email.trim().toLowerCase().slice(0, 120) || null, address: c.address.trim().slice(0, 200) || null, city: c.city.trim().slice(0, 80) || null, notes: c.notes.trim().slice(0, 300) || null, total: total.toFixed(2), origin: sanitizeOrigin(input.origin) as never });
+        // La persona que compra es UN contacto, venga de donde venga (mismo teléfono = misma ficha).
+        const contact = await findOrCreateContact(tx, tenantId, { name: c.name, phone: c.phone, email: c.email, source: "STORE", stage: "PROSPECT" });
+        const created = await tx.orm.public.StoreOrder.create({ tenantId, customerId: contact?.id ?? null, number, customerName: c.name.trim().slice(0, 120), phone: c.phone.trim().slice(0, 30), email: c.email.trim().toLowerCase().slice(0, 120) || null, address: c.address.trim().slice(0, 200) || null, city: c.city.trim().slice(0, 80) || null, notes: c.notes.trim().slice(0, 300) || null, total: total.toFixed(2), origin: sanitizeOrigin(input.origin) as never });
         await tx.orm.public.StoreOrderLine.createAll(lines.map((l) => ({ tenantId, orderId: created.id, productId: l.productId, name: l.name.slice(0, 160), quantity: l.quantity, unitPrice: l.unitPrice.toFixed(2), taxRatePct: l.taxRatePct.toFixed(2) }))).toArray();
+        // Lo que el cliente debe: aparece en cartera con su saldo y vence cuando vence el enlace de cobro (72 h).
+        await tx.orm.public.OrderStatusChange.create({ tenantId, orderId: created.id, fromStatus: null, toStatus: "RECEIVED", note: "Pedido recibido desde la tienda" });
+        await openObligation(tx, tenantId, { originType: "STORE_ORDER", originId: created.id, debtorName: c.name, description: `Pedido ${orderCode(number)}`, amount: total, dueDate: Temporal.Instant.fromEpochMilliseconds(Date.now() + 72 * 3_600_000) });
         return created;
       });
-      const intent = await paymentGatewayPort.use().createIntent(tenantId, { amount: total, description: `Pedido ${orderCode(order.number)} · ${tenant.name}`, expiresInHours: 72, provider: gateway }, "tienda");
+      const intent = await paymentGatewayPort.use().createIntent(tenantId, { amount: total, description: `Pedido ${orderCode(order.number)} · ${tenant.name}`, expiresInHours: 72, customerId: order.customerId ?? undefined }, "tienda");
       if (!intent.ok) {
         await db.orm.public.StoreOrder.where({ tenantId, id: order.id }).update({ status: "CANCELED", review: `No se pudo crear el cobro: ${intent.message}` });
         return { ok: false, message: "No pudimos generar el cobro de tu pedido. Escríbenos por WhatsApp." };
@@ -62,7 +76,13 @@ export async function placeOrder(siteSlug: string, input: { customer: CustomerDa
   }
 }
 
-export type OrderRow = { id: string; code: string; status: string; customerName: string; phone: string; email: string | null; address: string | null; city: string | null; notes: string | null; total: number; review: string | null; createdAt: string; reference: string | null; lines: { name: string; quantity: number; unitPrice: number }[] };
+export type OrderRow = { id: string; code: string; status: string; /** Canal por el que entró (WEB, API, WHATSAPP, SHOPIFY…). */ channel?: string; externalId?: string | null; customerName: string; phone: string; email: string | null; address: string | null; city: string | null; notes: string | null; total: number; review: string | null; createdAt: string; reference: string | null; /** Cumplimiento, separado del pago (`status`). */ fulfillment: string; fromQuote: boolean; /** Oportunidad del CRM de la que nació (al ganarla), si la hay. */ opportunityId: string | null; lines: { name: string; quantity: number; unitPrice: number }[] };
+
+/** Id de la oportunidad si el pedido nació al ganarla en el CRM (`origin.type = "opportunity"`). */
+const opportunityOf = (origin: unknown): string | null => {
+  const o = origin as { type?: unknown; opportunityId?: unknown } | null;
+  return o && o.type === "opportunity" && typeof o.opportunityId === "string" ? o.opportunityId : null;
+};
 
 /** Pedidos de la tienda, del más reciente al más antiguo (100 por defecto), con sus líneas y el estado del cobro. */
 export async function listOrders(tenantId: string, limit = 100): Promise<OrderRow[]> {
@@ -73,7 +93,7 @@ export async function listOrders(tenantId: string, limit = 100): Promise<OrderRo
     db.orm.public.PaymentIntent.where({ tenantId }).where((i) => i.id.in(orders.map((o) => o.intentId).filter((x): x is string => Boolean(x)))).select("id", "reference").all(),
   ]);
   const ref = new Map(intents.map((i) => [i.id, i.reference]));
-  return orders.map((o) => ({ id: o.id, code: orderCode(o.number), status: o.status, customerName: o.customerName, phone: o.phone, email: o.email, address: o.address, city: o.city, notes: o.notes, total: toNumber(o.total), review: o.review, createdAt: String(o.createdAt), reference: o.intentId ? (ref.get(o.intentId) ?? null) : null, lines: lines.filter((l) => l.orderId === o.id).map((l) => ({ name: l.name, quantity: l.quantity, unitPrice: toNumber(l.unitPrice) })) }));
+  return orders.map((o) => ({ id: o.id, code: orderCode(o.number), status: o.status, channel: o.channel, externalId: o.externalId, customerName: o.customerName, phone: o.phone, email: o.email, address: o.address, city: o.city, notes: o.notes, total: toNumber(o.total), review: o.review, createdAt: String(o.createdAt), reference: o.intentId ? (ref.get(o.intentId) ?? null) : null, fulfillment: o.fulfillment, fromQuote: Boolean(o.quoteId), opportunityId: opportunityOf(o.origin), lines: lines.filter((l) => l.orderId === o.id).map((l) => ({ name: l.name, quantity: l.quantity, unitPrice: toNumber(l.unitPrice) })) }));
 }
 
 /** Cancela un pedido que aún no se pagó (y su enlace de cobro). */
@@ -81,7 +101,13 @@ export async function cancelOrder(tenantId: string, id: string): Promise<{ ok: t
   const o = await db.orm.public.StoreOrder.where({ tenantId, id }).first();
   if (!o) return { ok: false, message: "No se encontró el pedido." };
   if (o.status === "PAID") return { ok: false, message: "Un pedido pagado no se cancela: se devuelve el dinero desde Cobros en línea." };
-  await db.orm.public.StoreOrder.where({ tenantId, id }).update({ status: "CANCELED" });
+  if (!canTransitionOrder(o.status, "CANCELED")) return { ok: false, message: "Este pedido ya no se puede cancelar." };
+  await db.transaction(async (tx) => {
+    await tx.orm.public.StoreOrder.where({ tenantId, id }).update({ status: "CANCELED" });
+    await voidObligations(tx, tenantId, "STORE_ORDER", id);
+    await cancelFulfillment(tx, tenantId, id, "Se canceló el pedido");
+    await emitEvent(tx, tenantId, { type: "order.canceled", resourceType: "store_order", resourceId: id, payload: { order_id: id, code: orderCode(o.number), total: toNumber(o.total), currency: "COP" } });
+  });
   if (o.intentId) {
     const plan = db.sql.public.PaymentIntent.update({ status: "CANCELED" }).where((f, fns) => fns.and(fns.eq(f.id, o.intentId!), fns.eq(f.tenantId, tenantId), fns.eq(f.status, "PENDING"))).returning("id").build();
     await db.transaction((tx) => tx.query(plan));
@@ -96,7 +122,7 @@ export async function cancelOrder(tenantId: string, id: string): Promise<{ ok: t
 export async function markAbandonedOrders(nowMs = Date.now(), tenantIds?: readonly string[]): Promise<number> {
   const cutoff = Temporal.Instant.fromEpochMilliseconds(nowMs - ABANDON_AFTER_MINUTES * 60_000);
   const only = tenantIds ? [...tenantIds] : null;
-  const candidates = await db.orm.public.StoreOrder.where({ status: "PENDING_PAYMENT" }).where((o) => o.abandonedNotifiedAt.isNull()).where((o) => o.createdAt.lte(cutoff)).where((o) => (only ? o.tenantId.in(only) : o.status.eq("PENDING_PAYMENT"))).limit(200).all();
+  const candidates = await db.orm.public.StoreOrder.where({ status: "PENDING_PAYMENT" }).where((o) => o.abandonedNotifiedAt.isNull()).where((o) => o.quoteId.isNull()).where((o) => o.createdAt.lte(cutoff)).where((o) => (only ? o.tenantId.in(only) : o.status.eq("PENDING_PAYMENT"))).limit(200).all();
   let n = 0;
   for (const o of candidates) {
     if (!isAbandoned(Date.parse(String(o.createdAt)), nowMs)) continue;
@@ -104,6 +130,8 @@ export async function markAbandonedOrders(nowMs = Date.now(), tenantIds?: readon
     const claim = db.sql.public.StoreOrder.update({ status: "ABANDONED", abandonedNotifiedAt: Temporal.Instant.fromEpochMilliseconds(nowMs) }).where((f, fns) => fns.and(fns.eq(f.id, o.id), fns.eq(f.status, "PENDING_PAYMENT"))).returning("id").build();
     const won = await db.transaction(async (tx) => {
       if ((await tx.query(claim)).length === 0) return false;
+      await voidObligations(tx, o.tenantId, "STORE_ORDER", o.id);
+      await cancelFulfillment(tx, o.tenantId, o.id, "El pedido quedó sin pagar");
       await emitEvent(tx, o.tenantId, { type: "cart.abandoned", resourceType: "store_order", resourceId: o.id, payload: { order_id: o.id, code: orderCode(o.number), total: toNumber(o.total), customer: { name: o.customerName, phone: o.phone, email: o.email } } });
       return true;
     });

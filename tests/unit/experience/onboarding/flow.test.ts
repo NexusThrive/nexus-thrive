@@ -6,10 +6,12 @@ describe("flujo del onboarding", () => {
     expect(nextStep("intro")).toBe("profile");
     expect(nextStep("confirm")).toBe("confirm");
     expect(previousStep("profile")).toBe("intro");
+    expect(nextStep("business")).toBe("operation");
+    expect(nextStep("operation")).toBe("plan");
     expect(previousStep("profile", "profile")).toBe("profile");
   });
   it("la presentación no cuenta en el progreso", () => {
     expect(progressIndex("intro")).toBe(0);
-    expect(progressIndex("confirm")).toBe(4);
+    expect(progressIndex("confirm")).toBe(5);
   });
 });

@@ -10,11 +10,11 @@ const meta = {
     docs: {
       description: {
         component:
-          "Cinemática al crear el negocio, con el tema activo. Mientras carga, la N está en el centro exacto; al terminar la cámara retrocede (la N se aleja en profundidad y sube) y entra el texto. **Recorrido** muestra el paso de creando a listo; en Listo, pulsa Continuar para la bienvenida.",
+          "Cinemática al crear el negocio, con el tema activo. AURI (los ojos) crea el negocio hablando en su burbuja y poniendo cara de alegría; mientras carga, está en el centro exacto; al terminar la cámara retrocede (la N se aleja en profundidad y sube) y entra el texto. **Recorrido** muestra el paso de creando a listo; en Listo, pulsa Continuar para la bienvenida.",
       },
     },
   },
-  args: { status: "creating", planName: "Elite", businessName: "Constructora Castellar", onEnter: () => {}, onBack: () => {} },
+  args: { status: "creating", planName: "Elite", businessName: "Constructora Castellar", firstName: "Santiago", onEnter: () => {}, onBack: () => {} },
 } satisfies Meta<typeof CreationCinematic>;
 export default meta;
 

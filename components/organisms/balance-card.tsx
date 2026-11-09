@@ -18,8 +18,11 @@ export function BalanceCard({
   income,
   expenses,
   actions,
+  from,
 }: {
   label: string;
+  /** Último balance que se vio (Inicio con su estado guardado): la cifra cuenta desde ahí y las barras no vuelven a crecer desde 0. */
+  from?: number;
   balance: number;
   income: number;
   expenses: number;
@@ -30,16 +33,19 @@ export function BalanceCard({
   const expenseRef = useRef<HTMLElement>(null);
   const incomePct = `${((income / total) * 100).toFixed(1)}%`;
   const expensePct = `${((expenses / total) * 100).toFixed(1)}%`;
+  // Las barras crecen desde 0 solo la primera vez que se ve la tarjeta; si la cifra cambia, se deslizan a su nuevo ancho.
+  const grown = useRef(from !== undefined);
 
   useEffect(() => {
     const bars: [HTMLElement | null, string][] = [
       [incomeRef.current, incomePct],
       [expenseRef.current, expensePct],
     ];
-    if (motionOff()) {
+    if (motionOff() || grown.current) {
       bars.forEach(([el, w]) => el && (el.style.width = w));
       return;
     }
+    grown.current = true;
     bars.forEach(([el]) => el && (el.style.width = "0"));
     const frame = requestAnimationFrame(() =>
       requestAnimationFrame(() => bars.forEach(([el, w]) => el && (el.style.width = w))),
@@ -57,7 +63,7 @@ export function BalanceCard({
       <i aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 rounded-lg ring-1 ring-inset ring-white/[0.06]" />
       <p className="text-xs text-doc-rule">{label}</p>
       <p className="mb-3.5 mt-1.5 font-display text-[clamp(28px,6vw,40px)] font-bold leading-[1.1] tracking-[-0.02em] tabular-nums">
-        <CountUp value={balance} format={cop} duration={1400} />
+        <CountUp value={balance} from={from} format={cop} duration={1400} />
       </p>
       <div className="flex h-1.5 gap-[3px]" aria-hidden="true">
         <i ref={incomeRef} className="block h-full bg-doc-gold transition-[width] duration-1000 ease-[var(--nx-ease-out)]" style={{ width: incomePct }} />

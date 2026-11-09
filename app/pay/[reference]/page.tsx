@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { STATUS_LABELS } from "@/lib/domains/finance/payments/intents";
 import { publicIntent } from "@/lib/domains/finance/payments/intents-db";
+import { ProofForm } from "./_components/proof-form";
 import { formatCurrency } from "@/lib/foundation/format";
 
 export const metadata: Metadata = { title: "Cobro · NEXUS THRIVE", robots: { index: false } };
@@ -14,7 +15,7 @@ export default async function PayPage({ params }: { params: Promise<{ reference:
   const { reference } = await params;
   const intent = await publicIntent(reference);
   if (!intent) notFound();
-  const tone = intent.status === "PAID" ? "text-success" : intent.status === "PENDING" ? "text-foreground" : "text-danger";
+  const tone = intent.status === "PAID" ? "text-success" : intent.status === "PENDING" || intent.status === "VERIFYING" ? "text-foreground" : "text-danger";
   return (
     <main className="mx-auto grid min-h-dvh max-w-md content-center gap-5 px-4 py-10">
       <section aria-labelledby="pay-title" className="grid gap-4 rounded-lg border border-border bg-surface p-6">
@@ -28,7 +29,13 @@ export default async function PayPage({ params }: { params: Promise<{ reference:
           </a>
         ) : null}
         {intent.status === "PENDING" ? (
-          <p className="text-ui text-muted-foreground">Este cobro está pendiente. El pago se confirma con el estado oficial de la pasarela o de la transferencia; no necesitas enviar comprobantes por aquí.</p>
+          <>
+            <p className="text-ui text-muted-foreground">Este cobro está pendiente. Se confirma con el estado oficial de la pasarela o cuando el negocio verifica tu transferencia.</p>
+            <ProofForm reference={reference} />
+          </>
+        ) : null}
+        {intent.status === "VERIFYING" ? (
+          <p className="text-ui text-muted-foreground">Recibimos el aviso de tu transferencia. El negocio la está verificando en su banco; cuando la confirme, este cobro quedará pagado.</p>
         ) : null}
       </section>
     </main>

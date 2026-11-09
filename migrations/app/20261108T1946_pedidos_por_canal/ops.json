@@ -1,0 +1,128 @@
+[
+  {
+    "id": "column.public.StoreOrder.channel",
+    "label": "Add column \"channel\" to \"StoreOrder\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "channel",
+        "table": "StoreOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"channel\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StoreOrder",
+          "channel"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"channel\"",
+        "sql": "ALTER TABLE \"public\".\"StoreOrder\" ADD COLUMN \"channel\" text DEFAULT 'WEB' NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"channel\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StoreOrder",
+          "channel"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.StoreOrder.externalId",
+    "label": "Add column \"externalId\" to \"StoreOrder\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "externalId",
+        "table": "StoreOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"externalId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StoreOrder",
+          "externalId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"externalId\"",
+        "sql": "ALTER TABLE \"public\".\"StoreOrder\" ADD COLUMN \"externalId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"externalId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StoreOrder",
+          "externalId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.StoreOrder.StoreOrder_tenantId_channel_externalId_key",
+    "label": "Add unique constraint on \"StoreOrder\" (tenantId, channel, externalId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "StoreOrder_tenantId_channel_externalId_key",
+        "table": "StoreOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"StoreOrder_tenantId_channel_externalId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StoreOrder_tenantId_channel_externalId_key",
+          "public",
+          "\"public\".\"StoreOrder\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"StoreOrder_tenantId_channel_externalId_key\"",
+        "sql": "ALTER TABLE \"public\".\"StoreOrder\" ADD CONSTRAINT \"StoreOrder_tenantId_channel_externalId_key\" UNIQUE (\"tenantId\", \"channel\", \"externalId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"StoreOrder_tenantId_channel_externalId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "StoreOrder_tenantId_channel_externalId_key",
+          "public",
+          "\"public\".\"StoreOrder\""
+        ]
+      }
+    ]
+  }
+]

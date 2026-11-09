@@ -1,5 +1,5 @@
 import { CAPABILITIES } from "@/lib/core/capabilities/registry";
-import { SIGNUP_VERTICALS, VERTICALS, VERTICAL_LABELS, type VerticalValue } from "@/lib/core/sectors/verticals";
+import { OFFERED_VERTICALS, SIGNUP_VERTICALS, VERTICALS, VERTICAL_LABELS, type VerticalValue } from "@/lib/core/sectors/verticals";
 import { VERTICAL_RECIPES } from "@/lib/core/sectors/catalog";
 import { MODULES, type ModuleValue } from "@/lib/core/capabilities/modules";
 import {
@@ -172,7 +172,8 @@ export function activePlans(config: PricingConfig): PlanConfig[] {
 
 /** Rubros que se ofrecen al registrarse, en el orden configurado. */
 export function signupVerticals(config: PricingConfig): VerticalConfig[] {
-  return byOrder(config.verticals.filter((v) => v.signupEnabled));
+  // Solo los rubros que Nexus ofrece hoy; el panel puede apagar uno, pero no encender otro.
+  return byOrder(config.verticals.filter((v) => v.signupEnabled && (OFFERED_VERTICALS as readonly string[]).includes(v.vertical)));
 }
 
 /**

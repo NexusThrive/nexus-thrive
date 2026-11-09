@@ -43,6 +43,6 @@ describe("metadata routes", () => {
       "https://app.nexusthrive.com.co/pricing",
     ]);
     // Ninguna ruta con token o de operación puede terminar en el sitemap.
-    expect(urls.some((url) => /\/(admin|api|r|c|pay|encuesta|invitacion)\//.test(url))).toBe(false);
+    expect(urls.some((url) => /\/(admin|api|r|c|pay|encuesta|entregable|invitacion)\//.test(url))).toBe(false);
   });
 });

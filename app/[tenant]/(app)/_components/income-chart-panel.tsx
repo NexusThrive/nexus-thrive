@@ -38,7 +38,7 @@ export function IncomeChartPanel({ tenantSlug, data, label }: { tenantSlug: stri
   return (
     <>
       <IncomeChart data={data} label={label} onSelect={show} />
-      <DayMovementsSheet open={open} onOpenChange={setOpen} title={title} state={state} fullHref={`/${tenantSlug}/finance`} />
+      <DayMovementsSheet open={open} onOpenChange={setOpen} title={title} state={state} fullHref={`/${tenantSlug}/finanzas`} />
     </>
   );
 }

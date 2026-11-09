@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { wompiChecksum, wompiCheckoutUrl, wompiIntegrity, wompiPayments } from "@/lib/integrations/providers/wompi";
+import { wompiChecksum, wompiCheckoutUrl, wompiIntegrity, wompiPayments, wompiSecretsProblem } from "@/lib/integrations/providers/wompi";
 
 const SECRET = "test_events_secret";
 const body = (status = "APPROVED", over: Record<string, unknown> = {}) => {
@@ -42,5 +42,15 @@ describe("adaptador Wompi", () => {
   });
   it("sin credenciales completas no pasa la comprobación", async () => {
     expect(await wompiPayments.check({ publicKey: "pub_test_x" })).toMatchObject({ ok: false });
+  });
+});
+
+describe("secretos de Wompi", () => {
+  it("acepta los prefijos del entorno y rechaza la llave privada o un entorno cruzado", () => {
+    expect(wompiSecretsProblem("sandbox", "test_integrity_abc", "test_events_abc")).toBeNull();
+    expect(wompiSecretsProblem("production", "prod_integrity_abc", "prod_events_abc")).toBeNull();
+    expect(wompiSecretsProblem("sandbox", "prv_test_abc", "test_events_abc")).toMatchObject({ field: "integritySecret" });
+    expect(wompiSecretsProblem("sandbox", "prod_integrity_abc", "test_events_abc")).toMatchObject({ field: "integritySecret" });
+    expect(wompiSecretsProblem("sandbox", "test_integrity_abc", "prod_events_abc")).toMatchObject({ field: "eventsSecret" });
   });
 });

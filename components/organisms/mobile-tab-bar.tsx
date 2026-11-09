@@ -29,7 +29,8 @@ export function MobileTabBar({ accountExtra }: { accountExtra?: React.ReactNode 
   const [createOpen, setCreateOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
 
-  const items = groups.flatMap((g) => g.items);
+  // Resumen ya no es un destino: su lugar en la barra es Inicio (la raíz del negocio, con el cajón de apps y las cifras del mes).
+  const items = groups.flatMap((g) => g.items).map((i) => (i.href === "/resumen" ? { ...i, href: "", label: "Inicio" } : i));
   const primary = items.filter((i) => i.key !== "settings").slice(0, PRIMARY_SLOTS);
   const rest = items.filter((i) => !primary.includes(i));
   const moreActive = !!activeKey && !primary.some((i) => i.key === activeKey);

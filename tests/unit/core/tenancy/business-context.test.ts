@@ -3,7 +3,13 @@ import { MAX_ACTIVITY, parseBusinessContext } from "@/lib/core/tenancy/business-
 
 describe("perfil del negocio como contexto", () => {
   test("acepta el perfil general, modelos combinados y una actividad libre", () => {
-    expect(parseBusinessContext({ vertical: "general", businessModels: ["B2B", "B2C"], activity: "  Agencia   de marketing  " })).toEqual({ ok: true, value: { vertical: "general", businessModels: ["B2B", "B2C"], activity: "Agencia de marketing" } });
+    expect(parseBusinessContext({ vertical: "general", businessModels: ["B2B", "B2C"], activity: "  Agencia   de marketing  " }, "general")).toEqual({ ok: true, value: { vertical: "general", businessModels: ["B2B", "B2C"], activity: "Agencia de marketing" } });
+  });
+  test("solo se puede elegir uno de los rubros que se ofrecen hoy, o conservar el actual", () => {
+    for (const ok of ["retail", "gym", "restaurant"]) expect(parseBusinessContext({ vertical: ok, businessModels: [], activity: "" })).toMatchObject({ ok: true });
+    expect(parseBusinessContext({ vertical: "general", businessModels: [], activity: "" })).toMatchObject({ ok: false, field: "vertical" });
+    expect(parseBusinessContext({ vertical: "construction", businessModels: [], activity: "" }, "gym")).toMatchObject({ ok: false, field: "vertical" });
+    expect(parseBusinessContext({ vertical: "construction", businessModels: [], activity: "" }, "construction")).toMatchObject({ ok: true });
   });
   test("el modelo comercial y la actividad son opcionales", () => {
     expect(parseBusinessContext({ vertical: "gym", businessModels: [], activity: "" })).toMatchObject({ ok: true, value: { businessModels: [], activity: "" } });

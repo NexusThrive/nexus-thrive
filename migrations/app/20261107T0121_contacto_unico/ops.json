@@ -1,0 +1,293 @@
+[
+  {
+    "id": "column.public.Customer.consentAt",
+    "label": "Add column \"consentAt\" to \"Customer\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "consentAt",
+        "table": "Customer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"consentAt\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "consentAt"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"consentAt\"",
+        "sql": "ALTER TABLE \"public\".\"Customer\" ADD COLUMN \"consentAt\" timestamptz"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"consentAt\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "consentAt"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Customer.ownerId",
+    "label": "Add column \"ownerId\" to \"Customer\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "ownerId",
+        "table": "Customer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"ownerId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "ownerId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"ownerId\"",
+        "sql": "ALTER TABLE \"public\".\"Customer\" ADD COLUMN \"ownerId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"ownerId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "ownerId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Customer.phoneNorm",
+    "label": "Add column \"phoneNorm\" to \"Customer\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "phoneNorm",
+        "table": "Customer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"phoneNorm\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "phoneNorm"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"phoneNorm\"",
+        "sql": "ALTER TABLE \"public\".\"Customer\" ADD COLUMN \"phoneNorm\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"phoneNorm\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "phoneNorm"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Customer.source",
+    "label": "Add column \"source\" to \"Customer\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "source",
+        "table": "Customer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"source\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "source"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"source\"",
+        "sql": "ALTER TABLE \"public\".\"Customer\" ADD COLUMN \"source\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"source\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "source"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Customer.stage",
+    "label": "Add column \"stage\" to \"Customer\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "stage",
+        "table": "Customer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"stage\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "stage"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"stage\"",
+        "sql": "ALTER TABLE \"public\".\"Customer\" ADD COLUMN \"stage\" text DEFAULT 'CUSTOMER' NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"stage\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Customer",
+          "stage"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.StoreOrder.customerId",
+    "label": "Add column \"customerId\" to \"StoreOrder\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "customerId",
+        "table": "StoreOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"customerId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StoreOrder",
+          "customerId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"customerId\"",
+        "sql": "ALTER TABLE \"public\".\"StoreOrder\" ADD COLUMN \"customerId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"customerId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StoreOrder",
+          "customerId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Customer.Customer_tenantId_phoneNorm_idx_8e50ed71",
+    "label": "Create index \"Customer_tenantId_phoneNorm_idx_8e50ed71\" on \"Customer\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Customer_tenantId_phoneNorm_idx_8e50ed71",
+        "table": "Customer"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Customer_tenantId_phoneNorm_idx_8e50ed71\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Customer_tenantId_phoneNorm_idx_8e50ed71\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Customer_tenantId_phoneNorm_idx_8e50ed71\"",
+        "sql": "CREATE INDEX \"Customer_tenantId_phoneNorm_idx_8e50ed71\" ON \"public\".\"Customer\" (\"tenantId\", \"phoneNorm\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Customer_tenantId_phoneNorm_idx_8e50ed71\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Customer_tenantId_phoneNorm_idx_8e50ed71\""
+        ]
+      }
+    ]
+  }
+]

@@ -1,18 +1,19 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { ViewTransition, useCallback, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Plus, Search } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { LayoutGrid, ChevronDown, ChevronLeft, Plus, Search } from "lucide-react";
 import { N_PATH, THRIVE_LETTERS } from "@nexus/brand/BrandLogo";
 import { Button } from "@/components/atoms/button";
-import { Kbd } from "@/components/atoms/kbd";
 import { ThemeToggle } from "@/components/atoms/theme-toggle";
+import { Kbd } from "@/components/atoms/kbd";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/molecules/dropdown-menu";
 import { MobileTopbarSearch } from "@/components/organisms/mobile-topbar-search";
@@ -20,6 +21,7 @@ import { AccountButton } from "@/components/molecules/account-button";
 import { RouteBar } from "@/components/molecules/route-bar";
 import { useQuickCreate } from "@/components/organisms/quick-create-host";
 import { useOptionalPalette, useShell } from "@/components/providers/shell-context";
+import type { NavGroup, NavMenu } from "@/lib/core/capabilities/nav-types";
 import { cn } from "@/lib/utils";
 import styles from "./app-topbar.module.css";
 
@@ -32,35 +34,48 @@ import styles from "./app-topbar.module.css";
  * el selector de negocio, tema y cuenta. En móvil se compacta: logo, negocio y sección, y la búsqueda; «Crear»
  * vive en la barra inferior. La barra de ruta corre por el borde al navegar.
  */
-export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; /** Selector de negocio (PC), a la derecha. */ switcher?: ReactNode; /** Buscador en línea de PC (`NavbarSearch`); sin él, el botón abre la paleta modal. */ search?: ReactNode }) {
-  const { title, brandName, hrefFor, openSearch, quickActions, createActions = quickActions } = useShell();
+export function AppTopbar({ actions, notifications, search, switcher }: { actions?: ReactNode; /** Notificaciones (las muestra la barra de módulo y la general). */ notifications?: ReactNode; /** Selector de negocio (PC), a la derecha. */ switcher?: ReactNode; /** Buscador en línea de PC (`NavbarSearch`); sin él, el botón abre la paleta modal. */ search?: ReactNode }) {
+  const { title, brandName, hrefFor, openSearch, quickActions, createActions = quickActions, groups, activeKey } = useShell();
   // El buscador móvil comparte la paleta del negocio; el Operations Center no la tiene y usa su botón de búsqueda.
   const hasPalette = useOptionalPalette() !== null;
   const router = useRouter();
   const quick = useQuickCreate();
+  const pathname = usePathname();
+  // En la raíz (pantalla de aplicaciones) la barra queda reducida y transparente: solo logo, cambio de empresa y cuenta.
+  const atHome = pathname.replace(/\/$/, "") === hrefFor("");
+  // Fuera de Inicio la barra es siempre la de módulo: «<», nombre, secciones y utilidades. Vale para los módulos, para Sistema (Configuración,
+  // Funciones, Datos, Integraciones) y para cualquier pantalla que no pertenezca a un módulo (se muestra con su título): la barra antigua
+  // con buscador y selector de negocio ya no sale en ninguna.
+  const moduleGroup = atHome ? undefined : (groups.find((g) => g.items.some((i) => i.key === activeKey)) ?? { label: title || brandName, icon: LayoutGrid, items: [] });
+  if (moduleGroup) return <ModuleBar group={moduleGroup} activeKey={activeKey} hrefFor={hrefFor} notifications={notifications} brandName={brandName} />;
 
   return (
     <header
       data-app-topbar=""
-      className="fixed inset-x-0 top-0 z-(--z-topbar) flex h-[calc(var(--topbar-height)+env(safe-area-inset-top,0px))] items-stretch pt-[env(safe-area-inset-top,0px)]"
+      data-home={atHome ? "" : undefined}
+      className={cn(
+        "fixed inset-x-0 top-0 z-(--z-topbar) flex items-stretch pt-[env(safe-area-inset-top,0px)]",
+        atHome ? "h-[calc(4rem+env(safe-area-inset-top,0px))] bg-transparent" : "h-[calc(var(--topbar-height)+env(safe-area-inset-top,0px))]",
+      )}
     >
       <Link
         href={hrefFor("")}
         aria-label={`${brandName}: inicio`}
-        className={cn(styles.brand, "pl-[max(16px,env(safe-area-inset-left,0px))] outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring md:pl-3")}
+        className={cn(styles.brand, "pl-[max(16px,env(safe-area-inset-left,0px))] outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring md:pl-3", atHome && "!w-auto !border-0 !bg-transparent !pl-6 !pr-0 text-foreground")}
       >
-        <span className={cn(styles.logo, styles.mark)}>
-          <svg role="img" aria-label="NEXUS THRIVE" viewBox="387.6 239.9 744.4 779.5" shapeRendering="geometricPrecision">
-            <path d={N_PATH} fill="currentColor" />
-            <g className={styles.letters}>
-              {THRIVE_LETTERS.map((l, i) => (
-                <path key={i} transform={`translate(${l.x} ${l.y})`} d={l.d} fill="currentColor" />
-              ))}
-            </g>
-          </svg>
-        </span>
-        <span className={cn(styles.ident, "flex min-w-0 flex-col leading-tight")}>
-          <b className="truncate font-display text-sm font-semibold">{brandName}</b>
+        <Shared name="logo">
+          <span className={cn(styles.logo, styles.mark)} style={atHome ? { ["--w" as string]: "40px" } : undefined}>
+            <svg role="img" aria-label="NEXUS THRIVE" viewBox="387.6 239.9 744.4 779.5" shapeRendering="geometricPrecision">
+              <path d={N_PATH} fill="currentColor" />
+              <g className={styles.letters}>
+                {THRIVE_LETTERS.map((l, i) => (
+                  <path key={i} transform={`translate(${l.x} ${l.y})`} d={l.d} fill="currentColor" />
+                ))}
+              </g>
+            </svg>
+          </span>
+        </Shared>
+        <span className={cn(styles.ident, atHome ? "!hidden" : "flex min-w-0 flex-col leading-tight")}>
           <small className="flex items-center gap-1.5 text-2xs text-muted-foreground">
             <i aria-hidden="true" className="inline-block size-1.5 -skew-x-[24deg] bg-accent" />
             {title}
@@ -68,6 +83,11 @@ export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; 
         </span>
       </Link>
 
+      {atHome ? (
+        <div className="relative flex flex-1 items-center justify-end gap-3 pe-3">
+          <TopbarEnd brandName={brandName} notifications={notifications} />
+        </div>
+      ) : (
       <div className="relative flex min-w-fit flex-1 items-center justify-end gap-2 md:min-w-0 lg:grid lg:grid-cols-[minmax(max-content,1fr)_minmax(0,440px)_minmax(max-content,1fr)] border-b border-[var(--sidebar-border)] bg-[var(--sidebar-bg)] px-3 text-[var(--sidebar-fg)] md:gap-4 md:px-6 xl:px-8">
         {/* Izquierda: contexto (negocio) y búsqueda. `suppressHydrationWarning`:
             Proton Pass marca con `data-protonpass-form` los contenedores con
@@ -136,19 +156,177 @@ export function AppTopbar({ actions, search, switcher }: { actions?: ReactNode; 
           {/* Móvil: lupa, lo que falta por completar y las notificaciones; el tema y la cuenta viven en «Más». */}
           <div className="flex items-center gap-1 md:gap-0.5">
             {actions}
-            <ThemeToggle className="max-md:hidden" />
           </div>
-          <span aria-hidden="true" className="mx-1 hidden h-6 w-px bg-[var(--sidebar-border)] md:block" />
-          {/* En móvil la cuenta vive en «Más» (barra inferior). */}
-          <span className="max-md:hidden"><AccountButton /></span>
+          <TopbarEnd brandName={brandName} notifications={notifications} />
         </div>
 
       </div>
+      )}
 
       {/* Debajo de la navbar, fuera de su fila y desde el borde de la barra lateral (`--sw`): no se mete en ella ni deforma la navbar. */}
-      {hasPalette ? <MobileTopbarSearch /> : null}
+      {hasPalette && !atHome ? <MobileTopbarSearch /> : null}
 
-      <RouteBar className="absolute inset-x-auto left-[var(--sw)] right-0 top-full" />
+      {atHome ? null : <RouteBar className="absolute inset-x-auto left-[var(--sw)] right-0 top-full" />}
     </header>
+  );
+}
+
+/**
+ * Barra de módulo (Nexus): una sola fila de 56 px. «<» vuelve siempre a Inicio; después el módulo con su ícono y sus secciones en
+ * texto (la activa resaltada); a la derecha, buscar (Ctrl K), notificaciones y cuenta. Sin logo, sin «Crear» y sin el aviso de prueba.
+ */
+function ModuleBar({
+  group,
+  activeKey,
+  hrefFor,
+  notifications,
+  brandName,
+}: {
+  brandName: string;
+  group: NavGroup;
+  activeKey: string | undefined;
+  hrefFor: (href: string) => string;
+  notifications?: ReactNode;
+}) {
+  const Icon = group.icon ?? group.items[0]!.icon;
+  const navRef = useRef<HTMLElement>(null);
+  const [bubble, setBubble] = useState<{ left: number; width: number } | null>(null);
+  const measure = useCallback((link: HTMLAnchorElement | null) => {
+    if (!link) return;
+    const next = { left: link.offsetLeft, width: link.offsetWidth };
+    setBubble((current) => (current && current.left === next.left && current.width === next.width ? current : next));
+  }, []);
+  return (
+    <header
+      data-app-topbar=""
+      data-module-bar=""
+      className="fixed inset-x-0 top-0 z-(--z-topbar) flex h-[calc(56px+env(safe-area-inset-top,0px))] items-center gap-3 bg-background px-3 pt-[env(safe-area-inset-top,0px)] md:px-4"
+    >
+      <Link
+        href={hrefFor("")}
+        aria-label="Volver al inicio"
+        className="group grid size-9 shrink-0 place-items-center rounded-lg text-foreground outline-none hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+      >
+        <Shared name="logo" className="group-hover:hidden group-focus-visible:hidden">
+          <svg aria-hidden="true" viewBox="387.6 239.9 744.4 779.5" className="size-5">
+            <path d={N_PATH} fill="currentColor" />
+          </svg>
+        </Shared>
+        <ChevronLeft aria-hidden="true" className="hidden size-5 group-hover:block group-focus-visible:block" />
+      </Link>
+      <ViewTransition enter="nx-appear" default="none">
+      <div className="flex min-w-0 shrink-0 items-center gap-2">
+        <Icon aria-hidden="true" className="size-5 text-accent-text" />
+        <span className="truncate text-base font-semibold text-foreground">{group.label === "General" ? group.items[0]!.label : group.label}</span>
+      </div>
+      <nav ref={navRef} aria-label={`Secciones de ${group.label}`} className="relative ms-2 flex min-w-0 flex-1 items-center gap-1 self-stretch overflow-x-auto">
+        {/* Burbuja de la pestaña activa: cuelga del borde superior y se desliza al cambiar (sin movimiento si se pide reducirlo). */}
+        {bubble ? (
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute top-0 h-11 rounded-b-xl bg-surface-muted transition-[left,width] duration-(--d3) ease-(--nx-ease-out) motion-reduce:transition-none"
+            style={{ left: bubble.left, width: bubble.width }}
+          />
+        ) : null}
+        {group.items.map((item) => {
+          const active = item.key === activeKey;
+          return (
+            <Link
+              key={item.key}
+              ref={active ? measure : undefined}
+              href={hrefFor(item.href)}
+              aria-current={active ? "page" : undefined}
+              className={cn(
+                "relative mt-3 shrink-0 self-start rounded-md px-3 py-1.5 text-sm outline-none transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+                active ? "font-medium text-foreground" : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {item.label}
+            </Link>
+          );
+        })}
+        {group.menus?.map((menu) => (
+          <AppMenu key={menu.key} menu={menu} hrefFor={hrefFor} />
+        ))}
+      </nav>
+      </ViewTransition>
+      <TopbarEnd brandName={brandName} notifications={notifications} />
+    </header>
+  );
+}
+
+/**
+ * Menú desplegable al final de la barra de una app («Informes», «Configuración»), como en Odoo. Las entradas sin pantalla todavía
+ * (`soon`) se ven apagadas con «Pronto»: el lugar queda a la vista sin enlaces rotos. Operable con teclado (Radix).
+ */
+function AppMenu({ menu, hrefFor }: { menu: NavMenu; hrefFor: (href: string) => string }) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        data-app-menu={menu.key}
+        className="group relative mt-3 inline-flex shrink-0 items-center gap-1 self-start rounded-md px-3 py-1.5 text-sm text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring data-[state=open]:text-foreground"
+      >
+        {menu.label}
+        <ChevronDown aria-hidden="true" className="size-3.5 transition-transform group-data-[state=open]:rotate-180" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" sideOffset={6} className="min-w-56">
+        {menu.sections.map((section, index) => (
+          <div key={section.title ?? index}>
+            {index > 0 ? <DropdownMenuSeparator /> : null}
+            {section.title ? <DropdownMenuLabel>{section.title}</DropdownMenuLabel> : null}
+            {section.items.map((item) =>
+              item.soon || !item.href ? (
+                <DropdownMenuItem key={item.key} disabled className="justify-between">
+                  {item.label}
+                  <span className="text-2xs text-muted-foreground">Pronto</span>
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem key={item.key} asChild>
+                  <Link href={hrefFor(item.href)}>{item.label}</Link>
+                </DropdownMenuItem>
+              ),
+            )}
+          </div>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+/**
+ * Pieza que está en todas las barras (logo, nombre del negocio, tema y cuenta). Al cambiar de barra (Inicio ↔ módulo ↔ Sistema) no se
+ * quita y vuelve a aparecer: React la lleva con una View Transition desde su lugar anterior al nuevo (dueño único de ese movimiento; el
+ * resto de la barra solo aparece). En cambios dentro de la misma barra no se anima (`default="none"`).
+ */
+/**
+ * Final de la barra, igual en todas (Inicio, módulo y Sistema) y en el mismo orden: avisos, tema, nombre del negocio y cuenta. Al
+ * cambiar de barra cada pieza se desliza a su lugar sin cruzarse con otra.
+ */
+function TopbarEnd({ brandName, notifications }: { brandName: string; notifications?: ReactNode }) {
+  return (
+    <div className="flex shrink-0 items-center gap-2">
+      {notifications ? (
+        <Shared name="notifications">
+          {notifications}
+        </Shared>
+      ) : null}
+      <Shared name="theme">
+        <ThemeToggle className="size-8 pointer-coarse:size-11 any-pointer-coarse:size-11 [&_svg]:size-4" />
+      </Shared>
+      <Shared name="brand" className="max-md:hidden">
+        <span className="truncate text-xs font-medium text-muted-foreground">{brandName}</span>
+      </Shared>
+      <Shared name="account">
+        <AccountButton compact />
+      </Shared>
+    </div>
+  );
+}
+
+function Shared({ name, className, children }: { name: string; className?: string; children: ReactNode }) {
+  return (
+    <ViewTransition name={`nx-topbar-${name}`} share="nx-morph" default="none">
+      <span className={cn("inline-flex min-w-0 items-center", className)}>{children}</span>
+    </ViewTransition>
   );
 }

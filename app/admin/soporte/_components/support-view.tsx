@@ -86,9 +86,7 @@ export default function SupportView({ tickets, tenants, staff, me, canReply }: {
       </div>
 
       {rows.length === 0 ? (
-        <div className="rounded-lg border border-border bg-surface">
-          <EmptyState title={view === "open" ? "Sin tickets abiertos" : "Nada por aquí"} description="Los casos que llegan por WhatsApp, correo o llamada se registran como ticket." />
-        </div>
+          <EmptyState mark="page" remember={view === "open"} title={view === "open" ? "Sin tickets abiertos" : "Nada por aquí"} description="Los casos que llegan por WhatsApp, correo o llamada se registran como ticket." />
       ) : (
         <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">
           {rows.map((t) => (

@@ -53,3 +53,15 @@ export function orderMessage(input: { code: string; business: string; lines: { n
   const where = [input.customer.address, input.customer.city].filter(Boolean).join(", ");
   return [`Hola ${input.business}, hice el pedido ${input.code}:`, items, `Total: ${peso(input.total)}`, `A nombre de: ${input.customer.name}`, where ? `Entrega: ${where}` : "", input.payUrl ? `Enlace de pago: ${input.payUrl}` : ""].filter(Boolean).join("\n");
 }
+
+/** Canales por los que puede entrar un pedido (WEB es la tienda en línea propia). */
+export const ORDER_CHANNELS = ["WEB", "API", "WHATSAPP", "SHOPIFY", "WOOCOMMERCE", "OTHER"] as const;
+export type OrderChannel = (typeof ORDER_CHANNELS)[number];
+export const CHANNEL_LABELS: Record<OrderChannel, string> = { WEB: "Tienda en línea", API: "API", WHATSAPP: "WhatsApp", SHOPIFY: "Shopify", WOOCOMMERCE: "WooCommerce", OTHER: "Otro canal" };
+
+/** Identificador del pedido en el canal de origen: sin espacios en los bordes ni controles, hasta 80 caracteres; vacío = sin identificador. */
+export function cleanExternalId(value: string | null | undefined): string | null {
+  // eslint-disable-next-line no-control-regex -- se descartan caracteres de control del identificador externo
+  const v = (value ?? "").replace(/[\u0000-\u001f]/g, "").trim().slice(0, 80);
+  return v || null;
+}

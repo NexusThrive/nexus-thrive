@@ -7,6 +7,12 @@
 /// - `profile`: Campos propios del rubro (gym: peso, talla, objetivo…; turismo: pasaporte…).
 /// - `photoId`: Foto (Attachment.id, kind CUSTOMER_PHOTO).
 /// - `accessCode`: Código de acceso (QR) y tarjeta NFC vinculada.
+/// - `stage`: Etapa del contacto: PROSPECT | CUSTOMER | RECURRING (HU-contacto-unico-01). Los clientes que ya existían son CUSTOMER.
+/// - `source`: De dónde llegó: MANUAL | WEB | STORE | REGISTRATION | IMPORT | WHATSAPP.
+/// - `ownerId`: Integrante del equipo responsable (TenantMember.id).
+/// - `phoneNorm`: Teléfono canónico (57 + 10 dígitos) para encontrar a la misma persona venga de donde venga.
+/// - `consentAt`: Cuándo aceptó que lo contacten (tratamiento de datos); vacío = sin registro.
+/// - `optOutAt`: Cuándo pidió no recibir más avisos por WhatsApp (BAJA); desde entonces ningún envío le sale.
 /// - `partyId`: Tercero único al que pertenece este cliente (la misma persona o empresa, con sus
 ///   roles).
 /// - `@@index([tenantId,`: Un código o una tarjeta identifica a UN socio del negocio (DATA-04).
@@ -18,6 +24,8 @@ model Customer {
   email     String?
   phone     String?
   active    Boolean  @default(true)
+  /// Lista de precios de este cliente (sin ella: la de su grupo y, si no, la predeterminada).
+  priceListId String?
   documentId String?
   birthDate  DateTime?
   tags       String[]?
@@ -26,18 +34,26 @@ model Customer {
   city       String?
   accessCode String?
   nfcUid     String?
+  stage      String   @default("CUSTOMER")
+  source     String?
+  ownerId    String?
+  phoneNorm  String?
+  consentAt  DateTime?
+  optOutAt   DateTime?
   createdAt DateTime @default(now())
   updatedAt temporal.updatedAt()
 
   payments Payment[]
   memberships Membership[]
   notes CustomerNote[]
+  groupMemberships CustomerGroupMember[]
   quotes Quote[]
   projects Project[]
   partyId  String?
   party    Party?   @relation(fields: [partyId], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
+  @@index([tenantId, phoneNorm])
   @@index([partyId])
   @@index([tenantId, accessCode], unique: true, where: "\"accessCode\" IS NOT NULL", name: "Customer_tenantId_accessCode_key")
   @@index([tenantId, nfcUid], unique: true, where: "\"nfcUid\" IS NOT NULL", name: "Customer_tenantId_nfcUid_key")
@@ -63,5 +79,274 @@ model CustomerNote {
 
   @@index([tenantId])
   @@index([customerId])
+  @@rls
+}
+
+/// Oportunidad (HU-leads-01): seguir a cada interesado hasta que compra o se pierde. Ligada a UN contacto (`Customer`) cuando se
+/// conoce (en la creación rápida del CRM solo el nombre es obligatorio, como en Odoo): ganar una oportunidad no duplica a la persona. No es el CRM comercial de Nexus (`platform/crm`): es el del negocio.
+///
+/// Campos:
+/// - `stage`: NEW | CONTACTED | QUOTED | NEGOTIATING (mientras está abierta).
+/// - `status`: OPEN | WON | LOST. Al ganar o perder se guarda `closedAt`; perder pide `lostReason`.
+/// - `leadId`: `ContactLead` de donde nació (los contactos del formulario que ya existían se migran con él).
+/// - `orderId`: Pedido de la tienda con el que se ganó, si lo hubo.
+/// - `nextAction`, `nextActionAt`: El siguiente paso y cuándo; la base de las tareas del seguimiento.
+/// - `stageId`: Etapa del pipeline (`CrmStage`); vacío en las anteriores al pipeline configurable (se ubican por `stage`).
+/// - `probability`: 0–100; al cambiar de etapa toma la de la etapa (editable después). `priority`: 0–3 estrellas.
+/// - `expectedClose`: Cierre previsto «AAAA-MM-DD». `tags`: etiquetas. `description`: notas del trato.
+/// - `stageSince`: Desde cuándo está en la etapa actual. `position`: orden manual dentro de la columna (menor = arriba).
+/// - `teamId`: Equipo de ventas (`CrmTeam`), opcional.
+model Opportunity {
+  id            String    @id @default(uuid())
+  tenantId      String
+  tenant        Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  customerId    String?
+  interest      String
+  estimatedValue Decimal?
+  stage         String    @default("NEW")
+  status        String    @default("OPEN")
+  nextAction    String?
+  nextActionAt  DateTime?
+  ownerId       String?
+  source        String?
+  leadId        String?
+  orderId       String?
+  lostReason    String?
+  closedAt      DateTime?
+  stageId       String?
+  probability   Int?
+  priority      Int       @default(0)
+  expectedClose String?
+  tags          String[]  @default([])
+  description   String?
+  stageSince    DateTime?
+  position      Float?
+  teamId        String?
+  createdAt     DateTime  @default(now())
+  updatedAt     temporal.updatedAt()
+
+  @@unique([tenantId, leadId])
+  @@index([tenantId, status, stage])
+  @@index([tenantId, customerId])
+  @@rls
+}
+
+/// Tarea (HU-actividades-01): un paso concreto con fecha y responsable, ligado a un contacto o a una oportunidad. Es el ÚNICO
+/// modelo de tareas de Business: los proyectos y entregables (etapa 4) lo reutilizan en vez de crear otro.
+///
+/// Campos:
+/// - `assigneeId`: Integrante del equipo responsable (`User.id` del negocio); vacío = sin asignar.
+/// - `dueDay`: Día de vencimiento «AAAA-MM-DD» en hora de Bogotá; vacío = sin fecha.
+/// - `status`: OPEN | DONE. Al completarla se guarda `doneAt` y quién (`doneById`).
+/// - `customerId`, `opportunityId`: A quién o a qué oportunidad se refiere (opcionales).
+/// - `projectId`: Proyecto al que pertenece (opcional); las tareas de un proyecto se ven por proyecto y por persona (HU-tareas-01).
+/// - `kind`: CALL | MEETING | PROPOSAL | OTHER (actividad del CRM); vacío = tarea general. `dueAt`: fecha y hora exactas.
+model Task {
+  id            String    @id @default(uuid())
+  tenantId      String
+  tenant        Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  title         String
+  notes         String?
+  dueDay        String?
+  assigneeId    String?
+  customerId    String?
+  opportunityId String?
+  projectId     String?
+  kind          String?
+  dueAt         DateTime?
+  status        String    @default("OPEN")
+  doneAt        DateTime?
+  doneById      String?
+  createdById   String?
+  createdAt     DateTime  @default(now())
+
+  @@index([tenantId, status, dueDay])
+  @@index([tenantId, assigneeId, status])
+  @@index([tenantId, customerId])
+  @@index([tenantId, projectId, status])
+  @@rls
+}
+
+/// Formulario de captura de interesados (HU-lead-capture-01): una clave PÚBLICA por formulario que una web externa (WordPress,
+/// Next.js, Shopify) usa para enviar interesados a Nexus. La clave puede verse en el navegador; no da acceso a nada más que a
+/// crear interesados desde los dominios permitidos. NO es una llave de API.
+///
+/// Campos:
+/// - `publicKey`: Clave pública del formulario (`lf_…`), única en toda la plataforma.
+/// - `allowedOrigins`: Orígenes web permitidos («https://mitienda.com»). Un envío desde otro origen se rechaza.
+/// - `campaign`: Campaña por omisión de lo que llegue por este formulario.
+model LeadForm {
+  id             String   @id @default(uuid())
+  tenantId       String
+  tenant         Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name           String
+  publicKey      String   @unique
+  allowedOrigins String[]
+  campaign       String?
+  enabled        Boolean  @default(true)
+  createdAt      DateTime @default(now())
+
+  @@index([tenantId])
+  @@rls
+}
+
+/// Entregable (HU-entregables-01): algo que el negocio entrega a un cliente y que el cliente aprueba o devuelve con cambios, sin
+/// iniciar sesión (enlace de un solo propósito). Los archivos son adjuntos (`Attachment` con `kind = DELIVERABLE`).
+///
+/// Campos:
+/// - `status`: DRAFT (en preparación) | IN_REVIEW (enviado al cliente) | APPROVED | CHANGES_REQUESTED.
+/// - `reviewTokenHash`: SHA-256 del enlace enviado al cliente (el enlace en claro nunca se guarda); `reviewTokenExpiresAt` lo caduca.
+/// - `decidedAt`, `decidedByName`, `clientComment`: la decisión del cliente, con fecha y el nombre que dejó.
+/// - `projectId`, `taskId`, `customerId`: a qué proyecto, tarea o contacto pertenece (opcionales).
+model Deliverable {
+  id                   String    @id @default(uuid())
+  tenantId             String
+  tenant               Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  title                String
+  description          String?
+  status               String    @default("DRAFT")
+  projectId            String?
+  taskId               String?
+  customerId           String?
+  reviewTokenHash      String?   @unique
+  reviewTokenExpiresAt DateTime?
+  sentAt               DateTime?
+  decidedAt            DateTime?
+  decidedByName        String?
+  clientComment        String?
+  createdById          String?
+  createdAt            DateTime  @default(now())
+
+  @@index([tenantId, status])
+  @@index([tenantId, projectId])
+  @@rls
+}
+
+/// Etapa del pipeline de oportunidades del negocio (CRM). Configurable: nombre, orden y probabilidad por defecto. `isWon` marca la
+/// etapa ganada (una por negocio). Las iniciales (Nuevo 20 %, Calificado 40 %, Propuesta 60 %, Ganado 100 %) se crean al abrir el CRM.
+model CrmStage {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name        String
+  position    Int
+  probability Int      @default(0)
+  isWon       Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([tenantId, position])
+  @@rls
+}
+
+/// Motivo de pérdida configurable del CRM (al perder se elige uno, más texto libre).
+model CrmLostReason {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name      String
+  position  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([tenantId])
+  @@rls
+}
+
+/// Etiqueta del CRM (las oportunidades guardan el nombre en `tags`; aquí se listan para elegirlas y renombrarlas).
+model CrmTag {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name      String
+  createdAt DateTime @default(now())
+
+  @@unique([tenantId, name])
+  @@rls
+}
+
+/// Equipo de ventas del CRM: nombre e integrantes (`User.id` del negocio).
+model CrmTeam {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name      String
+  memberIds String[] @default([])
+  createdAt DateTime @default(now())
+
+  @@index([tenantId])
+  @@rls
+}
+
+/// Historial de una oportunidad: CREATED | STAGE | NOTE | MESSAGE | ACTIVITY | WON | LOST | REOPENED | FIELD. `data` guarda el
+/// detalle legible (p. ej. `{from, to}` de un cambio de etapa); `authorId` es el `User.id` de quien lo hizo.
+model OpportunityEvent {
+  id            String   @id @default(uuid())
+  tenantId      String
+  tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  opportunityId String
+  kind          String
+  data          Json?
+  authorId      String?
+  createdAt     DateTime @default(now())
+
+  @@index([tenantId, opportunityId, createdAt])
+  @@rls
+}
+
+/// Grupo de clientes que el negocio arma a mano («Clientes VIP», «Rutas del norte»…). Los del sistema (ciudad, origen,
+/// etiqueta, responsable…) no se guardan: salen de los datos del cliente. Un cliente puede estar en varios grupos.
+///
+/// Campos:
+/// - `icon`: Nombre del icono del conjunto de la interfaz (`users`, `star`, `tag`…); se muestra junto al nombre en el buscador.
+model CustomerGroup {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name      String
+  icon      String   @default("users")
+  /// Lista de precios de todos los clientes del grupo.
+  priceListId String?
+  createdAt DateTime @default(now())
+
+  members CustomerGroupMember[]
+
+  @@unique([tenantId, name])
+  @@rls
+}
+
+/// Pertenencia de un cliente a un grupo propio. Se borra con el grupo o con el cliente.
+model CustomerGroupMember {
+  id         String        @id @default(uuid())
+  tenantId   String
+  tenant     Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  groupId    String
+  group      CustomerGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  customerId String
+  customer   Customer      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  createdAt  DateTime      @default(now())
+
+  @@unique([groupId, customerId])
+  @@index([tenantId, customerId])
+  @@rls
+}
+
+/// Búsqueda guardada (favorito) de una lista: los filtros, las agrupaciones y el texto que alguien dejó listos. Es por usuario
+/// y por sección; la que está marcada por defecto se aplica sola al entrar a la sección.
+///
+/// Campos:
+/// - `userId`: User.id de quien la guardó (no se comparte).
+/// - `section`: Lista a la que pertenece: `customers`, `crm`, `bookings`…
+/// - `params`: Estado de la búsqueda tal como va en la URL (`q`, `filtros`, `grupo`, `en`, `reglas`).
+model SavedSearch {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  userId    String
+  section   String
+  name      String
+  params    Json
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([tenantId, userId, section])
   @@rls
 }

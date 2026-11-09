@@ -11,7 +11,7 @@ const groups: FunctionGroups = {
     item("finance", "Finanzas", "Cobros, gastos y caja menor.", { active: true, category: "Finanzas y contabilidad" }),
     item("inventory", "Catálogo e inventario", "Productos, servicios, planes y stock.", { active: true }),
     item("payments", "Pagos", "Cobros y control de pagos.", { active: true, category: "Ventas y cobros" }),
-    item("einvoicing", "Factura electrónica", "Emite facturas electrónicas con tu proveedor autorizado.", { active: true, beta: true, needs: "billing", category: "Ventas y cobros", setup: { configured: false, hint: "Activa la factura electrónica y conecta tu proveedor autorizado.", href: "/factura-electronica" } }),
+    item("einvoicing", "Factura electrónica", "Emite facturas electrónicas con tu proveedor autorizado.", { active: true, beta: true, needs: "billing", category: "Ventas y cobros", setup: { configured: false, hint: "Activa la factura electrónica y conecta tu proveedor autorizado.", href: "/finanzas/facturacion-electronica" } }),
   ],
   suggested: [
     item("purchases", "Compras y proveedores", "Órdenes de compra, proveedores y recepción de mercancía.", { beta: true, needs: "inventory", category: "Compras y gastos", reason: "Controlas inventario de 3 productos: registra a quién le compras." }),
@@ -30,7 +30,7 @@ const groups: FunctionGroups = {
     item("whatsapp", "WhatsApp", "Plantillas y mensajes a tus clientes.", { category: "Canales" }),
     item("construction", "Obras y presupuestos", "Obras, presupuestos y catálogo APU.", { specialty: true, category: "Obras y proyectos" }),
   ],
-  planned: [item("orders", "Pedidos", "Pedidos y ventas.", { planned: true, category: "Productos y pedidos" })],
+  planned: [item("orders", "Pedidos", "Pedidos y ventas.", { planned: true, category: "Ventas y cobros" })],
 };
 
 const meta = {

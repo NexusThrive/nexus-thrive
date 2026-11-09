@@ -72,7 +72,7 @@ export function ThemeToggle({ className }: { className?: string }) {
       aria-label={isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
       aria-pressed={isDark}
       className={cn(
-        "grid size-10 pointer-coarse:size-11 shrink-0 place-items-center rounded-md text-foreground transition-colors duration-200",
+        "grid size-11 shrink-0 place-items-center rounded-md text-foreground transition-colors duration-200",
         "hover:bg-surface-muted",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
         className,

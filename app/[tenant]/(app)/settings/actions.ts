@@ -7,6 +7,7 @@ import { createTenantDb } from "@/lib/core/tenancy/db";
 import { isVertical } from "@/lib/core/sectors/verticals";
 import { isModule } from "@/lib/core/capabilities/modules";
 import { validateSlug } from "@/lib/core/tenancy/catalogs";
+import { solutionOfTenant } from "@/lib/core/tenancy/solution-db";
 import { checkModuleToggle } from "@/lib/core/entitlements/compat";
 import { loadPricingConfig } from "@/lib/core/entitlements/settings";
 import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
@@ -186,7 +187,7 @@ export async function toggleModuleAction(
   const tenant = await moduleRulesOf(tenantId);
   if (tenant && isVertical(tenant.vertical)) {
     const contracted = tenant.contractedModules ? [...tenant.contractedModules] : null;
-    const check = checkModuleToggle(await loadPricingConfig(), tenant.vertical, moduleName, active, contracted);
+    const check = checkModuleToggle(await loadPricingConfig(), tenant.vertical, moduleName, active, contracted, { solution: await solutionOfTenant(tenantId) });
     if (!check.ok) return { status: "error", errors: { moduleName: check.message } };
   }
 

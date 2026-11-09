@@ -1,0 +1,281 @@
+[
+  {
+    "id": "table.Deliverable",
+    "label": "Create table \"Deliverable\"",
+    "summary": "Creates table \"Deliverable\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Deliverable"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Deliverable\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Deliverable\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Deliverable\"",
+        "sql": "CREATE TABLE \"public\".\"Deliverable\" (\n  \"clientComment\" text,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"createdById\" text,\n  \"customerId\" text,\n  \"decidedAt\" timestamptz,\n  \"decidedByName\" text,\n  \"description\" text,\n  \"id\" text NOT NULL,\n  \"projectId\" text,\n  \"reviewTokenExpiresAt\" timestamptz,\n  \"reviewTokenHash\" text,\n  \"sentAt\" timestamptz,\n  \"status\" text DEFAULT 'DRAFT' NOT NULL,\n  \"taskId\" text,\n  \"tenantId\" text NOT NULL,\n  \"title\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Deliverable\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Deliverable\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.Deliverable.Deliverable_reviewTokenHash_key",
+    "label": "Add unique constraint on \"Deliverable\" (reviewTokenHash)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "Deliverable_reviewTokenHash_key",
+        "table": "Deliverable"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Deliverable_reviewTokenHash_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Deliverable_reviewTokenHash_key",
+          "public",
+          "\"public\".\"Deliverable\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"Deliverable_reviewTokenHash_key\"",
+        "sql": "ALTER TABLE \"public\".\"Deliverable\" ADD CONSTRAINT \"Deliverable_reviewTokenHash_key\" UNIQUE (\"reviewTokenHash\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Deliverable_reviewTokenHash_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Deliverable_reviewTokenHash_key",
+          "public",
+          "\"public\".\"Deliverable\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Deliverable.Deliverable_tenantId_idx_c93ed4f1",
+    "label": "Create index \"Deliverable_tenantId_idx_c93ed4f1\" on \"Deliverable\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Deliverable_tenantId_idx_c93ed4f1",
+        "table": "Deliverable"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Deliverable_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Deliverable_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Deliverable_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"Deliverable_tenantId_idx_c93ed4f1\" ON \"public\".\"Deliverable\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Deliverable_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Deliverable_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Deliverable.Deliverable_tenantId_projectId_idx_e88197e4",
+    "label": "Create index \"Deliverable_tenantId_projectId_idx_e88197e4\" on \"Deliverable\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Deliverable_tenantId_projectId_idx_e88197e4",
+        "table": "Deliverable"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Deliverable_tenantId_projectId_idx_e88197e4\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Deliverable_tenantId_projectId_idx_e88197e4\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Deliverable_tenantId_projectId_idx_e88197e4\"",
+        "sql": "CREATE INDEX \"Deliverable_tenantId_projectId_idx_e88197e4\" ON \"public\".\"Deliverable\" (\"tenantId\", \"projectId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Deliverable_tenantId_projectId_idx_e88197e4\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Deliverable_tenantId_projectId_idx_e88197e4\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Deliverable.Deliverable_tenantId_status_idx_d3d04256",
+    "label": "Create index \"Deliverable_tenantId_status_idx_d3d04256\" on \"Deliverable\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Deliverable_tenantId_status_idx_d3d04256",
+        "table": "Deliverable"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Deliverable_tenantId_status_idx_d3d04256\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Deliverable_tenantId_status_idx_d3d04256\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Deliverable_tenantId_status_idx_d3d04256\"",
+        "sql": "CREATE INDEX \"Deliverable_tenantId_status_idx_d3d04256\" ON \"public\".\"Deliverable\" (\"tenantId\", \"status\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Deliverable_tenantId_status_idx_d3d04256\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Deliverable_tenantId_status_idx_d3d04256\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Deliverable.Deliverable_tenantId_fkey",
+    "label": "Add foreign key \"Deliverable_tenantId_fkey\" on \"Deliverable\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Deliverable_tenantId_fkey",
+        "table": "Deliverable"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Deliverable_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Deliverable_tenantId_fkey",
+          "public",
+          "\"public\".\"Deliverable\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Deliverable_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Deliverable\"\nADD CONSTRAINT \"Deliverable_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Deliverable_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Deliverable_tenantId_fkey",
+          "public",
+          "\"public\".\"Deliverable\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.Deliverable",
+    "label": "Enable row-level security on \"Deliverable\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "Deliverable"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"Deliverable\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Deliverable"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"Deliverable\"",
+        "sql": "ALTER TABLE \"public\".\"Deliverable\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"Deliverable\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "Deliverable"
+        ]
+      }
+    ]
+  }
+]

@@ -1,19 +1,106 @@
 "use client";
 
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useState, useSyncExternalStore, type CSSProperties } from "react";
 import { ArrowRight } from "lucide-react";
-import { NMark } from "@/components/atoms/n-mark";
+import { EyeTracker, type EyeMood } from "@/components/atoms/eye-tracker";
 import { RevealText } from "@/components/atoms/reveal-text";
 import { Button } from "@/components/atoms/button";
 import styles from "./creation-cinematic.module.css";
 
 const MESSAGES = ["Creando tu negocio…", "Activando tus módulos…", "Preparando tu panel…", "Últimos detalles…"];
 
+/** Lo que AURI dice mientras crea el negocio (una frase cada pocos segundos; la última se repite). */
+const SPEECH = ["Estoy armando tu espacio.", "Activo lo que me contaste que usas.", "Preparo tu panel de inicio.", "Ya casi, un momento más."];
+
 export type CinematicStatus = "creating" | "ready" | "error";
 
 type Stage = "creating" | "ready" | "welcome" | "error";
 
 const delay = (ms: number) => ({ ["--delay" as string]: `${ms}ms` }) as CSSProperties;
+
+/** Pantalla angosta (celular): ahí la burbuja no cabe al lado de AURI y se escribe centrada, encima. */
+function useNarrow() {
+  return useSyncExternalStore(
+    (notify) => {
+      const query = window.matchMedia("(max-width: 640px)");
+      query.addEventListener("change", notify);
+      return () => query.removeEventListener("change", notify);
+    },
+    () => window.matchMedia("(max-width: 640px)").matches,
+    () => false,
+  );
+}
+
+/** El texto escrito letra a letra (como en la burbuja de AURI), para la versión angosta. */
+function useTyped(text: string | null) {
+  const [typed, setTyped] = useState("");
+  useEffect(() => {
+    if (!text) {
+      const clear = window.setTimeout(() => setTyped(""), 0);
+      return () => window.clearTimeout(clear);
+    }
+    let k = 0;
+    const id = window.setInterval(() => {
+      k += 1;
+      setTyped(text.slice(0, k));
+      if (k >= text.length) window.clearInterval(id);
+    }, 32);
+    return () => window.clearInterval(id);
+  }, [text]);
+  return typed;
+}
+
+/**
+ * AURI en la pantalla final: mira al frente, parpadea, pone cara de alegría y habla en su burbuja (escrita letra a letra) mientras
+ * crea el negocio, al terminar y al dar la bienvenida. Los textos son decoración: el estado real lo dice el mensaje de abajo.
+ */
+function useAuriScript(stage: Stage, name: string | undefined, planName: string) {
+  const [index, setIndex] = useState(0);
+  const [joy, setJoy] = useState(false);
+
+  // Mientras crea: frase nueva cada 2,6 s, con una sonrisa al empezar cada una.
+  useEffect(() => {
+    if (stage !== "creating") return;
+    const id = window.setInterval(() => setIndex((i) => Math.min(SPEECH.length - 1, i + 1)), 2600);
+    return () => window.clearInterval(id);
+  }, [stage]);
+  useEffect(() => {
+    if (stage !== "creating") return;
+    const on = window.setTimeout(() => setJoy(true), 0);
+    const off = window.setTimeout(() => setJoy(false), 1300);
+    return () => {
+      window.clearTimeout(on);
+      window.clearTimeout(off);
+    };
+  }, [stage, index]);
+
+  // Al terminar y en la bienvenida: alegría un rato y la frase se queda; luego solo la frase.
+  useEffect(() => {
+    if (stage !== "ready" && stage !== "welcome") return;
+    const on = window.setTimeout(() => setJoy(true), 0);
+    const off = window.setTimeout(() => setJoy(false), 2200);
+    return () => {
+      window.clearTimeout(on);
+      window.clearTimeout(off);
+    };
+  }, [stage]);
+
+  const first = name ? `Hola ${name}! Soy AURI.` : "Hola! Soy AURI.";
+  const say =
+    stage === "creating"
+      ? index === 0
+        ? first
+        : SPEECH[index]!
+      : stage === "ready"
+        ? `¡Listo! ${name ? `${name}, tu` : "Tu"} negocio ya existe.`
+        : stage === "welcome"
+          ? `Bienvenido a Thrive ${planName}. Aquí estaré para ayudarte.`
+          : null;
+  // Una cara distinta en cada momento: alegría al saludar, pensativa y curiosa mientras trabaja, guiño al terminar, triste si falla.
+  const mood: EyeMood =
+    stage === "error" ? "sad" : joy ? "joy" : stage === "creating" ? ((index % 2 ? "think" : "curious") as EyeMood) : stage === "ready" ? "wink" : "surprise";
+  return { say, joy: stage === "error" ? false : joy, mood };
+}
 
 /**
  * Cinemática al terminar el onboarding, a pantalla completa y con el tema
@@ -34,6 +121,7 @@ export function CreationCinematic({
   status,
   planName,
   businessName,
+  firstName,
   error,
   onEnter,
   onBack,
@@ -41,6 +129,8 @@ export function CreationCinematic({
   status: CinematicStatus;
   planName: string;
   businessName: string;
+  /** Nombre de quien crea el negocio (AURI lo saluda). */
+  firstName?: string;
   error?: string;
   onEnter: () => void;
   onBack: () => void;
@@ -55,6 +145,9 @@ export function CreationCinematic({
   }, [status]);
 
   const stage: Stage = status === "ready" ? (welcome ? "welcome" : "ready") : status;
+  const auri = useAuriScript(stage, firstName, planName);
+  const narrow = useNarrow();
+  const typedNarrow = useTyped(narrow ? auri.say : null);
   const label = {
     creating: "Creando tu negocio",
     ready: "Tu negocio está listo",
@@ -66,7 +159,12 @@ export function CreationCinematic({
     <div role="dialog" aria-modal="true" aria-label={label} data-stage={stage} className={styles.root}>
       <div className={styles.scene} aria-hidden="true">
         <div className={styles.mark}>
-          <NMark size={144} state={status === "creating" ? "loop" : "done"} />
+          <EyeTracker fit decorative front poke={false} size={132} shape="Ball" eyeScale={1.2} joy={auri.joy} mood={auri.mood} speaking={narrow && typedNarrow.length < (auri.say?.length ?? 0)} say={narrow ? null : auri.say} sayAt="br" />
+          {narrow && typedNarrow ? (
+            <p aria-hidden="true" className={styles.bubble}>
+              {typedNarrow}
+            </p>
+          ) : null}
         </div>
       </div>
 

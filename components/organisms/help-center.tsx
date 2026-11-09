@@ -29,14 +29,24 @@ export function HelpCenter({
   businessName,
   activeModules,
   showFunctions = true,
+  open: controlledOpen,
+  onOpenChange,
+  hideTrigger = false,
 }: {
   tenantSlug: string;
   businessName: string;
   activeModules: readonly string[];
   /** El menú del negocio incluye «Funciones» (no en los rubros con menú reducido). */
   showFunctions?: boolean;
+  /** Controlado desde fuera (AURI AI lo abre desde su chat). Sin esto, el botón «?» propio lo abre y lo cierra. */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  /** Sin el botón «?» de la esquina: otro control lo abre. */
+  hideTrigger?: boolean;
 }) {
-  const [open, setOpen] = useState(false);
+  const [innerOpen, setInnerOpen] = useState(false);
+  const open = controlledOpen ?? innerOpen;
+  const setOpen = onOpenChange ?? setInnerOpen;
   const [tab, setTab] = useState<Tab>("search");
   const [query, setQuery] = useState("");
   const { toast } = useToast();
@@ -72,6 +82,7 @@ export function HelpCenter({
       unsavedGuard={false}
       title="Centro de ayuda"
       trigger={
+        hideTrigger ? undefined : (
         <button
           type="button"
           data-tour="help"
@@ -81,6 +92,7 @@ export function HelpCenter({
         >
           <HelpCircle aria-hidden="true" className="size-6" strokeWidth={1.8} />
         </button>
+        )
       }
     >
       <div role="tablist" aria-label="Secciones del centro de ayuda" className="mb-4 flex gap-1 border-b border-border">

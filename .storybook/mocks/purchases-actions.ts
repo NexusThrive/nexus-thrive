@@ -65,3 +65,4 @@ export async function createSupplierAction(_slug: string, input: { legalName: st
   await wait();
   return { ok: true as const, id: "s-new", message: "Proveedor creado", duplicates: input.legalName.toLowerCase().includes("andina") ? [{ partyId: "s1", legalName: "Distribuidora Andina SAS", reason: "name" as const }] : [] };
 }
+export async function updateSupplierContactAction(_s: string, _id: string, c: { email: string }) { await new Promise((r) => setTimeout(r, 200)); return c.email === "malo" ? { ok: false as const, message: "Ese correo no parece válido." } : { ok: true as const, message: "Contacto guardado" }; }

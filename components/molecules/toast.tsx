@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { AlertTriangle, Bell, Check, WifiOff, X } from "lucide-react";
+import { AlertTriangle, Bell, Check, ReceiptText, WifiOff, X } from "lucide-react";
 import { IconTile } from "@/components/atoms/icon-tile";
 import { requestNotificationsRefresh } from "@/lib/experience/dashboard/notifications-client";
 import { EASE_IN, motionOff, spring } from "@/lib/experience/motion/index";
@@ -15,8 +15,14 @@ export type ToastOptions = {
   variant?: ToastVariant;
   /** Muestra "Deshacer"; se llama si el usuario lo pulsa. */
   undo?: () => void;
-  /** ms antes de cerrarse solo (por defecto 4200). */
+  /** ms antes de cerrarse solo (por defecto 4200; con `receipt`, 8000). */
   duration?: number;
+  /**
+   * Comprobante recién generado (un cobro): el aviso es un recibo pequeño que sube desde abajo a la derecha y, al ocultarse, baja
+   * por el mismo camino. `actions` lo acompañan (p. ej. «Compartir» y «Ver»).
+   */
+  receipt?: { total: string; concept: string; client: string; reference: string };
+  actions?: { label: string; onClick: () => void | Promise<void>; icon?: React.ComponentType<{ className?: string }> }[];
 };
 
 type ToastItem = Required<Pick<ToastOptions, "title" | "variant" | "duration">> &
@@ -31,6 +37,7 @@ const ToastContext = React.createContext<ToastContextValue | null>(null);
 
 const MAX_VISIBLE = 3;
 const DEFAULT_DURATION = 4200;
+const RECEIPT_DURATION = 8000;
 
 const ICONS = {
   success: { icon: Check, tone: "success" },
@@ -66,8 +73,10 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         title: options.title,
         description: options.description,
         undo: options.undo,
-        variant: options.variant ?? "info",
-        duration: options.duration ?? DEFAULT_DURATION,
+        receipt: options.receipt,
+        actions: options.actions,
+        variant: options.variant ?? (options.receipt ? "success" : "info"),
+        duration: options.duration ?? (options.receipt ? RECEIPT_DURATION : DEFAULT_DURATION),
       },
     ]);
   }, []);
@@ -102,21 +111,24 @@ function Toast({ item, onGone }: { item: ToastItem; onGone: (id: number) => void
       if (!el || gone.current) return;
       gone.current = true;
       const mobile = window.innerWidth < 768;
+      // El comprobante se va por donde vino (baja); los demás, hacia el borde.
       const exit = dx
         ? `translateX(${dx > 0 ? 120 : -120}%)`
         : mobile
           ? "translateY(-16px) scale(.96)"
-          : "translateX(24px)";
+          : item.receipt
+            ? "translateY(48px) scale(.98)"
+            : "translateX(24px)";
       const animation = el.animate(
         [
           { opacity: 1, transform: el.style.transform || "none" },
           { opacity: 0, transform: exit },
         ],
-        { duration: motionOff() ? 1 : 240, easing: EASE_IN, fill: "forwards" },
+        { duration: motionOff() ? 1 : item.receipt ? 320 : 240, easing: EASE_IN, fill: "forwards" },
       );
       animation.onfinish = () => onGone(item.id);
     },
-    [item.id, onGone],
+    [item.id, item.receipt, onGone],
   );
 
   React.useEffect(() => {
@@ -124,7 +136,9 @@ function Toast({ item, onGone }: { item: ToastItem; onGone: (id: number) => void
     const bar = barRef.current;
     if (!el || !bar) return;
     const mobile = window.innerWidth < 768;
-    spring(el, mobile ? "y" : "x", mobile ? -28 : 48, 0, { stiffness: 360, damping: 22 });
+    // El comprobante sube desde abajo (sale de la «impresora»); los demás entran desde el borde.
+    if (item.receipt && !mobile) spring(el, "y", 56, 0, { stiffness: 260, damping: 24 });
+    else spring(el, mobile ? "y" : "x", mobile ? -28 : 48, 0, { stiffness: 360, damping: 22 });
 
     let remaining = item.duration;
     let startedAt = Date.now();
@@ -178,6 +192,13 @@ function Toast({ item, onGone }: { item: ToastItem; onGone: (id: number) => void
 
     el.addEventListener("pointerenter", pause);
     el.addEventListener("pointerleave", resume);
+    // Con teclado también se pausa mientras el foco está dentro (tiempo ajustable, WCAG 2.2.1).
+    const focusIn = () => pause();
+    const focusOut = (e: FocusEvent) => {
+      if (!el.contains(e.relatedTarget as Node | null)) resume();
+    };
+    el.addEventListener("focusin", focusIn);
+    el.addEventListener("focusout", focusOut);
     el.addEventListener("pointerdown", down);
     el.addEventListener("pointermove", move);
     el.addEventListener("pointerup", up);
@@ -185,6 +206,8 @@ function Toast({ item, onGone }: { item: ToastItem; onGone: (id: number) => void
     return () => {
       window.clearTimeout(timer);
       progress?.cancel();
+      el.removeEventListener("focusin", focusIn);
+      el.removeEventListener("focusout", focusOut);
       el.removeEventListener("pointerenter", pause);
       el.removeEventListener("pointerleave", resume);
       el.removeEventListener("pointerdown", down);
@@ -192,7 +215,56 @@ function Toast({ item, onGone }: { item: ToastItem; onGone: (id: number) => void
       el.removeEventListener("pointerup", up);
       el.removeEventListener("pointercancel", up);
     };
-  }, [item.duration, dismiss]);
+  }, [item.duration, item.receipt, dismiss]);
+
+  if (item.receipt) {
+    const r = item.receipt;
+    return (
+      <div ref={ref} className="pointer-events-auto relative touch-pan-y overflow-hidden rounded-lg border border-border bg-surface text-ui shadow-[var(--nx-shadow-overlay)]">
+        <div className="flex items-center gap-2.5 px-3.5 pb-2.5 pt-3">
+          <IconTile tone="success" className="size-[26px] [&_svg]:size-4">
+            <ReceiptText />
+          </IconTile>
+          <p className="min-w-0 flex-1 font-semibold text-foreground">{item.title}</p>
+          <button
+            type="button"
+            aria-label="Cerrar comprobante"
+            onClick={() => dismiss()}
+            className="-m-1 shrink-0 rounded p-1 text-muted-foreground transition-colors hover:bg-surface-muted hover:text-foreground"
+          >
+            <X aria-hidden="true" className="size-3.5" />
+          </button>
+        </div>
+        {/* El recibo: corte punteado, total grande, concepto y cliente, número. */}
+        <div className="mx-3.5 grid gap-1 border-t border-dashed border-border pb-3 pt-2.5">
+          <p className="text-2xl font-semibold tracking-tight text-foreground tabular-nums">{r.total}</p>
+          <p className="truncate text-xs text-muted-foreground">
+            {r.concept} · {r.client}
+          </p>
+          <p className="text-2xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Recibo {r.reference}</p>
+        </div>
+        {item.actions?.length ? (
+          <div className="flex justify-end gap-1 border-t border-border px-2.5 py-1.5">
+            {item.actions.map(({ label, onClick, icon: ActionIcon }) => (
+              <button
+                key={label}
+                type="button"
+                onClick={async () => {
+                  await onClick();
+                  dismiss();
+                }}
+                className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-ui font-semibold text-accent-text outline-none hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-ring"
+              >
+                {ActionIcon ? <ActionIcon aria-hidden="true" className="size-3.5" /> : null}
+                {label}
+              </button>
+            ))}
+          </div>
+        ) : null}
+        <i ref={barRef} aria-hidden="true" className="absolute inset-x-0 bottom-0 h-0.5 origin-left bg-accent" />
+      </div>
+    );
+  }
 
   return (
     <div

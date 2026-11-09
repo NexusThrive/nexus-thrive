@@ -23,9 +23,10 @@ const PLATFORM_DIRS = ["lib/platform/admin/", "lib/platform/team/", "lib/platfor
  * Procesos de plataforma que por diseño cruzan negocios: el despachador del
  * outbox lee eventos y entregas de todos y luego opera por id de filas ya leídas.
  */
-const PLATFORM_FILES = ["lib/core/events/dispatcher.ts", "lib/integrations/providers/inbound.ts"];
+const PLATFORM_FILES = ["lib/core/events/dispatcher.ts", "lib/integrations/providers/inbound.ts", "lib/integrations/channels/webhook-handler.ts"];
 
 const SCOPED_ELSEWHERE: { file: string; model: string; why: string }[] = [
+  { file: "lib/business/customers/deliverables-db.ts", model: "Deliverable", why: "Enlace público de revisión: se busca por la huella SHA-256 del token (único y de 256 bits); después se usa el tenantId del entregable." },
   { file: "lib/core/files/stored-files.ts", model: "Attachment", why: "Se pide por id desde una URL; después se exige membresía del negocio del archivo." },
   { file: "lib/core/files/stored-files.ts", model: "ApuImage", why: "Igual que Attachment." },
   { file: "lib/business/sales/finance-db.ts", model: "Payment", why: "Recibo público por token firmado y referencia del proveedor, única en toda la plataforma (solo sí/no)." },
@@ -36,6 +37,7 @@ const SCOPED_ELSEWHERE: { file: string; model: string; why: string }[] = [
   { file: "lib/domains/finance/payments/intents-db.ts", model: "PaymentIntent", why: "Enlace público de cobro: se busca por su código aleatorio (único en la plataforma) y solo devuelve negocio, valor, descripción y estado." },
   { file: "lib/business/presence/pillars-db.ts", model: "Tenant", why: "Cron semanal: recorre los negocios activos y trabaja cada uno con su propio tenantId." },
   { file: "lib/business/growth/growth-db.ts", model: "TrackedLink", why: "Enlace corto público: se resuelve por su código aleatorio (único en la plataforma) y solo da la dirección del sitio y los UTM." },
+  { file: "lib/business/growth/lead-forms-db.ts", model: "LeadForm", why: "Captura pública desde otra web: el formulario se resuelve por su clave pública aleatoria (única en la plataforma); de ahí sale el negocio y solo se crean interesados en él." },
   { file: "lib/business/growth/growth-db.ts", model: "SiteConfig", why: "Formularios públicos: el negocio se resuelve por la dirección del sitio (única en la plataforma)." },
   { file: "lib/business/store/store-db.ts", model: "SiteConfig", why: "Tienda pública: se resuelve el negocio por la dirección del sitio (única en la plataforma); todo lo demás va por su tenantId." },
   { file: "lib/business/store/store-db.ts", model: "StoreOrder", why: "Cron de carritos abandonados: recorre los pedidos sin pagar de todos los negocios y opera por id de filas ya leídas." },

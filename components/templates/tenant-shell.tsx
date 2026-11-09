@@ -2,7 +2,8 @@ import type { ReactNode } from "react";
 import type { VerticalValue } from "@/lib/core/sectors/verticals";
 import type { ModuleValue } from "@/lib/core/capabilities/modules";
 import { ToastProvider } from "@/components/molecules/toast";
-import { AppSidebar } from "@/components/organisms/app-sidebar";
+import { WorkspaceLauncher } from "@/components/organisms/workspace-launcher";
+import { AppStage } from "@/components/organisms/app-stage";
 import { AppTopbar } from "@/components/organisms/app-topbar";
 import { CommandPalette } from "@/components/organisms/command-palette";
 import { BusinessSwitcher } from "@/components/organisms/business-switcher";
@@ -32,6 +33,7 @@ export function TenantShell({
   businesses,
   onSwitchBusiness,
   topbarActions,
+  topbarNotifications,
   accountExtra,
   children,
 }: {
@@ -48,6 +50,8 @@ export function TenantShell({
   onSwitchBusiness?: (slug: string) => void | Promise<void>;
   /** Botones extra de la barra superior (p. ej. la campana de notificaciones). */
   topbarActions?: ReactNode;
+  /** Notificaciones (la barra de módulo las muestra; la barra general las pone con sus acciones). */
+  topbarNotifications?: ReactNode;
   /** Fila extra en la tarjeta de la cuenta de «Más» (móvil), p. ej. los días de prueba. */
   accountExtra?: ReactNode;
   children: ReactNode;
@@ -63,17 +67,22 @@ export function TenantShell({
       <ToastProvider>
         <QuickCreateProvider>
         <div className={styles.root}>
-          <AppSidebar />
           <div className={styles.main}>
             <AppTopbar
-              actions={topbarActions}
+              notifications={topbarNotifications}
+              actions={
+                <>
+                  <WorkspaceLauncher />
+                  {topbarActions}
+                </>
+              }
               search={<NavbarSearch />}
               switcher={<BusinessSwitcher currentSlug={tenantSlug} currentName={tenantName} businesses={businesses ?? []} onSwitch={onSwitchBusiness} />}
             />
             <NavTransitions />
             <main id="contenido" tabIndex={-1} className={styles.view}>
               <RouteBreadcrumbs />
-              {children}
+              <AppStage>{children}</AppStage>
             </main>
           </div>
           <MobileTabBar accountExtra={accountExtra} />

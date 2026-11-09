@@ -3,6 +3,10 @@ import { emitEvent } from "@/lib/core/events/outbox";
 import { toNumber } from "@/lib/foundation/format";
 import { applyStockMovement, StockError } from "@/lib/business/inventory/stock-service";
 import type { MoneyTx } from "@/lib/business/sales/money-service";
+import { winOpenOpportunitiesOf } from "@/lib/business/growth/opportunities-db";
+import { refreshStageFromPaidOrders } from "@/lib/business/customers/contacts-db";
+import { allocatePayment } from "@/lib/business/sales/allocations";
+import { applyToObligation } from "@/lib/business/sales/obligations";
 import { orderCode } from "./cart";
 
 /**
@@ -20,7 +24,7 @@ export async function storeOrderLines(tx: MoneyTx, tenantId: string, intentId: s
 /**
  * Marca un pedido de la tienda como pagado dentro de la transacción del cobro: descuenta el inventario de lo que lleva control (si falta, deja una revisión), lo vincula al documento y emite el evento `order.paid`. No hace nada si ya está pagado o cancelado.
  */
-export async function settleStoreOrder(tx: MoneyTx, tenantId: string, orderId: string, documentId: string | null, userId: string | null): Promise<void> {
+export async function settleStoreOrder(tx: MoneyTx, tenantId: string, orderId: string, documentId: string | null, userId: string | null, payment?: { id: string; amount: number }): Promise<void> {
   const order = await tx.orm.public.StoreOrder.where({ tenantId, id: orderId }).first();
   if (!order || order.status === "PAID" || order.status === "CANCELED") return;
   const lines = await tx.orm.public.StoreOrderLine.where({ tenantId, orderId }).all();
@@ -35,6 +39,14 @@ export async function settleStoreOrder(tx: MoneyTx, tenantId: string, orderId: s
       review = `Sin existencias suficientes de «${p.name}»: revisa el pedido y coordina con el cliente.`;
     }
   }
+  const parts = await applyToObligation(tx, tenantId, "STORE_ORDER", orderId, toNumber(order.total));
+  if (payment) for (const part of parts) await allocatePayment(tx, tenantId, { paymentId: payment.id, paymentAmount: payment.amount, targetType: "OBLIGATION", targetId: part.obligationId, amount: part.amount });
   await tx.orm.public.StoreOrder.where({ tenantId, id: orderId }).update({ status: "PAID", paidAt: Temporal.Instant.fromEpochMilliseconds(Date.now()), documentId, review });
+  // Pagar la vuelve cliente (y recurrente desde la tercera compra pagada).
+  if (order.customerId) {
+    await refreshStageFromPaidOrders(tx, tenantId, order.customerId);
+    // Comprar gana su oportunidad abierta: es la misma persona, no se duplica.
+    await winOpenOpportunitiesOf(tx, tenantId, order.customerId, orderId);
+  }
   await emitEvent(tx, tenantId, { type: "order.paid", resourceType: "store_order", resourceId: orderId, payload: { order_id: orderId, code: orderCode(order.number), total: toNumber(order.total), currency: "COP", needs_review: review !== null, document_id: documentId } });
 }

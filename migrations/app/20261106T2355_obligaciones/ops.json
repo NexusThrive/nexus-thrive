@@ -1,0 +1,242 @@
+[
+  {
+    "id": "table.Obligation",
+    "label": "Create table \"Obligation\"",
+    "summary": "Creates table \"Obligation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Obligation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Obligation\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Obligation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Obligation\"",
+        "sql": "CREATE TABLE \"public\".\"Obligation\" (\n  \"amount\" numeric NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"customerId\" text,\n  \"debtorName\" text NOT NULL,\n  \"description\" text NOT NULL,\n  \"dueDate\" timestamptz NOT NULL,\n  \"id\" text NOT NULL,\n  \"originId\" text NOT NULL,\n  \"originType\" text NOT NULL,\n  \"paidTotal\" numeric DEFAULT '0'::numeric NOT NULL,\n  \"status\" text DEFAULT 'OPEN' NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Obligation\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Obligation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.Obligation.Obligation_tenantId_originType_originId_key",
+    "label": "Add unique constraint on \"Obligation\" (tenantId, originType, originId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "Obligation_tenantId_originType_originId_key",
+        "table": "Obligation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Obligation_tenantId_originType_originId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Obligation_tenantId_originType_originId_key",
+          "public",
+          "\"public\".\"Obligation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"Obligation_tenantId_originType_originId_key\"",
+        "sql": "ALTER TABLE \"public\".\"Obligation\" ADD CONSTRAINT \"Obligation_tenantId_originType_originId_key\" UNIQUE (\"tenantId\", \"originType\", \"originId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Obligation_tenantId_originType_originId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Obligation_tenantId_originType_originId_key",
+          "public",
+          "\"public\".\"Obligation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Obligation.Obligation_tenantId_idx_c93ed4f1",
+    "label": "Create index \"Obligation_tenantId_idx_c93ed4f1\" on \"Obligation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Obligation_tenantId_idx_c93ed4f1",
+        "table": "Obligation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Obligation_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Obligation_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Obligation_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"Obligation_tenantId_idx_c93ed4f1\" ON \"public\".\"Obligation\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Obligation_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Obligation_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Obligation.Obligation_tenantId_status_dueDate_idx_8121dcd9",
+    "label": "Create index \"Obligation_tenantId_status_dueDate_idx_8121dcd9\" on \"Obligation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Obligation_tenantId_status_dueDate_idx_8121dcd9",
+        "table": "Obligation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Obligation_tenantId_status_dueDate_idx_8121dcd9\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Obligation_tenantId_status_dueDate_idx_8121dcd9\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Obligation_tenantId_status_dueDate_idx_8121dcd9\"",
+        "sql": "CREATE INDEX \"Obligation_tenantId_status_dueDate_idx_8121dcd9\" ON \"public\".\"Obligation\" (\"tenantId\", \"status\", \"dueDate\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Obligation_tenantId_status_dueDate_idx_8121dcd9\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Obligation_tenantId_status_dueDate_idx_8121dcd9\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Obligation.Obligation_tenantId_fkey",
+    "label": "Add foreign key \"Obligation_tenantId_fkey\" on \"Obligation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Obligation_tenantId_fkey",
+        "table": "Obligation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Obligation_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Obligation_tenantId_fkey",
+          "public",
+          "\"public\".\"Obligation\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Obligation_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Obligation\"\nADD CONSTRAINT \"Obligation_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Obligation_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Obligation_tenantId_fkey",
+          "public",
+          "\"public\".\"Obligation\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.Obligation",
+    "label": "Enable row-level security on \"Obligation\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "Obligation"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"Obligation\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Obligation"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"Obligation\"",
+        "sql": "ALTER TABLE \"public\".\"Obligation\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"Obligation\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "Obligation"
+        ]
+      }
+    ]
+  }
+]

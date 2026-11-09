@@ -1,0 +1,284 @@
+[
+  {
+    "id": "table.ProviderSettlement",
+    "label": "Create table \"ProviderSettlement\"",
+    "summary": "Creates table \"ProviderSettlement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "ProviderSettlement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"ProviderSettlement\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProviderSettlement\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"ProviderSettlement\"",
+        "sql": "CREATE TABLE \"public\".\"ProviderSettlement\" (\n  \"accounted\" bool DEFAULT false NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"createdById\" text,\n  \"day\" text NOT NULL,\n  \"difference\" numeric NOT NULL,\n  \"externalRef\" text NOT NULL,\n  \"feeEstimated\" numeric NOT NULL,\n  \"feeReal\" numeric NOT NULL,\n  \"gross\" numeric NOT NULL,\n  \"id\" text NOT NULL,\n  \"itemCount\" int4 NOT NULL,\n  \"netReceived\" numeric NOT NULL,\n  \"provider\" text NOT NULL,\n  \"tenantId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"ProviderSettlement\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProviderSettlement\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.PaymentIntent.settlementId",
+    "label": "Add column \"settlementId\" to \"PaymentIntent\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "settlementId",
+        "table": "PaymentIntent"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"settlementId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentIntent",
+          "settlementId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"settlementId\"",
+        "sql": "ALTER TABLE \"public\".\"PaymentIntent\" ADD COLUMN \"settlementId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"settlementId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "PaymentIntent",
+          "settlementId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.ProviderSettlement.ProviderSettlement_tenantId_provider_externalRef_key",
+    "label": "Add unique constraint on \"ProviderSettlement\" (tenantId, provider, externalRef)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "ProviderSettlement_tenantId_provider_externalRef_key",
+        "table": "ProviderSettlement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"ProviderSettlement_tenantId_provider_externalRef_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProviderSettlement_tenantId_provider_externalRef_key",
+          "public",
+          "\"public\".\"ProviderSettlement\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"ProviderSettlement_tenantId_provider_externalRef_key\"",
+        "sql": "ALTER TABLE \"public\".\"ProviderSettlement\" ADD CONSTRAINT \"ProviderSettlement_tenantId_provider_externalRef_key\" UNIQUE (\"tenantId\", \"provider\", \"externalRef\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"ProviderSettlement_tenantId_provider_externalRef_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProviderSettlement_tenantId_provider_externalRef_key",
+          "public",
+          "\"public\".\"ProviderSettlement\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ProviderSettlement.ProviderSettlement_tenantId_createdAt_idx_88162366",
+    "label": "Create index \"ProviderSettlement_tenantId_createdAt_idx_88162366\" on \"ProviderSettlement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ProviderSettlement_tenantId_createdAt_idx_88162366",
+        "table": "ProviderSettlement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ProviderSettlement_tenantId_createdAt_idx_88162366\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProviderSettlement_tenantId_createdAt_idx_88162366\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ProviderSettlement_tenantId_createdAt_idx_88162366\"",
+        "sql": "CREATE INDEX \"ProviderSettlement_tenantId_createdAt_idx_88162366\" ON \"public\".\"ProviderSettlement\" (\"tenantId\", \"createdAt\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ProviderSettlement_tenantId_createdAt_idx_88162366\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProviderSettlement_tenantId_createdAt_idx_88162366\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.ProviderSettlement.ProviderSettlement_tenantId_idx_c93ed4f1",
+    "label": "Create index \"ProviderSettlement_tenantId_idx_c93ed4f1\" on \"ProviderSettlement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "ProviderSettlement_tenantId_idx_c93ed4f1",
+        "table": "ProviderSettlement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"ProviderSettlement_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProviderSettlement_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"ProviderSettlement_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"ProviderSettlement_tenantId_idx_c93ed4f1\" ON \"public\".\"ProviderSettlement\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"ProviderSettlement_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"ProviderSettlement_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.ProviderSettlement.ProviderSettlement_tenantId_fkey",
+    "label": "Add foreign key \"ProviderSettlement_tenantId_fkey\" on \"ProviderSettlement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "ProviderSettlement_tenantId_fkey",
+        "table": "ProviderSettlement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"ProviderSettlement_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProviderSettlement_tenantId_fkey",
+          "public",
+          "\"public\".\"ProviderSettlement\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"ProviderSettlement_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"ProviderSettlement\"\nADD CONSTRAINT \"ProviderSettlement_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"ProviderSettlement_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "ProviderSettlement_tenantId_fkey",
+          "public",
+          "\"public\".\"ProviderSettlement\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.ProviderSettlement",
+    "label": "Enable row-level security on \"ProviderSettlement\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "ProviderSettlement"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"ProviderSettlement\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "ProviderSettlement"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"ProviderSettlement\"",
+        "sql": "ALTER TABLE \"public\".\"ProviderSettlement\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"ProviderSettlement\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "ProviderSettlement"
+        ]
+      }
+    ]
+  }
+]

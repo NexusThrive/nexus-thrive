@@ -27,16 +27,19 @@ export function CountUp({
   value,
   format: formatProp = "number",
   duration = 1200,
+  from,
   className,
 }: {
   value: number;
+  /** Cifra desde la que cuenta la primera vez (p. ej. la última que se vio); sin ella, desde 0. */
+  from?: number;
   format?: CountFormat | ((n: number) => string);
   duration?: number;
   className?: string;
 }) {
   const format = typeof formatProp === "string" ? NAMED_FORMATS[formatProp] : formatProp;
   const ref = useRef<HTMLSpanElement>(null);
-  const previous = useRef<number | null>(null);
+  const previous = useRef<number | null>(from ?? null);
   const formatRef = useRef(format);
   useLayoutEffect(() => {
     formatRef.current = format;

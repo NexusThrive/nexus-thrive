@@ -77,6 +77,7 @@ describe("validación de la ubicación en el onboarding", () => {
       name: "Barbería El Caballero",
       slug: "barberia-el-caballero",
       vertical: "gym",
+      teamSize: "SOLO",
       address: "Cra 7 # 72-41",
       latitude: 4.6533,
       longitude: -74.0836,
@@ -88,5 +89,30 @@ describe("validación de la ubicación en el onboarding", () => {
     if (!result.ok) return;
     expect(result.values.latitude).toBeCloseTo(4.6533);
     expect(result.values.placeId).toBe("ChIJabc123");
+  });
+});
+
+describe("etapa del negocio: sin exigir papeles", () => {
+  const minimal = { name: "Mi tienda", slug: "mi-tienda", vertical: "retail", teamSize: "SOLO", selectedModules: [] };
+  it("emprendiendo y en funcionamiento piden solo nombre, enlace, rubro y equipo (NIT, razón social y dirección son opcionales)", () => {
+    for (const tenantType of ["INDIVIDUAL", "COMPANY"]) {
+      const r = validateAdaptiveOnboarding({ ...minimal, tenantType });
+      expect(r.ok, tenantType).toBe(true);
+    }
+  });
+  it("el tamaño del equipo se pide a todos", () => {
+    const r = validateAdaptiveOnboarding({ ...minimal, tenantType: "INDIVIDUAL", teamSize: undefined });
+    expect(r).toMatchObject({ ok: false, errors: { teamSize: expect.stringContaining("equipo") } });
+  });
+  it("un NIT escrito sí debe ser válido", () => {
+    expect(validateAdaptiveOnboarding({ ...minimal, tenantType: "COMPANY", taxId: "abc" })).toMatchObject({ ok: false, errors: { taxId: expect.any(String) } });
+  });
+  it("lo que cuenta de su operación prepara capacidades y se guarda limpio", () => {
+    const r = validateAdaptiveOnboarding({ ...minimal, tenantType: "INDIVIDUAL", operation: { offers: ["PRODUCTS"], channels: ["COUNTER", "ZZZ"], controls: ["INVENTORY"], tools: ["NOTEBOOK"] } });
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.values.operation).toEqual({ offers: ["PRODUCTS"], channels: ["COUNTER"], controls: ["INVENTORY"], tools: ["NOTEBOOK"] });
+    expect(r.values.selectedModules).toContain("pos");
+    expect(r.values.selectedModules).toContain("inventory");
   });
 });

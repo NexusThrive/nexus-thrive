@@ -2,6 +2,7 @@ import { toNumber } from "@/lib/foundation/format";
 import { cashAccountFor, postByRule } from "@/lib/domains/finance/accounting/ledger-db";
 import { MoneyError, moneyTransaction } from "@/lib/business/sales/money-service";
 import { todayCO } from "@/lib/domains/finance/tax/tax";
+import { listOpenObligations } from "@/lib/business/sales/obligations";
 import { db } from "@/prisma/db";
 import { ageItems, balanceOf, bucketOf, daysOverdue, validatePayment, type Aging, type Bucket } from "@/lib/foundation/kernel/aging";
 
@@ -21,6 +22,8 @@ export type CarteraRow = {
   balance: number;
   daysOverdue: number;
   bucket: Bucket;
+  /** De dónde viene la deuda: una cuenta de cobro (se abona desde la cartera) o un pedido o membresía (se cobra en su pantalla). */
+  origin: "INVOICE" | "STORE_ORDER" | "MEMBERSHIP" | "SUPPLIER_INVOICE";
 };
 export type Cartera = { rows: CarteraRow[]; aging: Aging };
 
@@ -36,9 +39,12 @@ function build(rows: Omit<CarteraRow, "balance" | "daysOverdue" | "bucket">[], t
 
 /** Cartera por cobrar: cuentas de cobro emitidas con su saldo y antigüedad a la fecha. */
 export async function receivables(tenantId: string, today = todayCO()): Promise<Cartera> {
-  const docs = await db.orm.public.Invoice.where({ tenantId, kind: "BILL", status: "ISSUED" }).all();
+  const [docs, obligations] = await Promise.all([db.orm.public.Invoice.where({ tenantId, kind: "BILL", status: "ISSUED" }).all(), listOpenObligations(tenantId)]);
   return build(
-    docs.map((d) => ({ id: d.id, party: d.customerName, number: `CC-${String(d.number).padStart(6, "0")}`, dueDate: day(d.dueDate), total: toNumber(d.total), paid: toNumber(d.paidTotal) })),
+    [
+      ...docs.map((d) => ({ id: d.id, party: d.customerName, number: `CC-${String(d.number).padStart(6, "0")}`, dueDate: day(d.dueDate), total: toNumber(d.total), paid: toNumber(d.paidTotal), origin: "INVOICE" as const })),
+      ...obligations.map((o) => ({ id: o.id, party: o.debtorName, number: o.description, dueDate: day(o.dueDate), total: o.amount, paid: o.paidTotal, origin: o.originType })),
+    ],
     today,
   );
 }
@@ -50,7 +56,7 @@ export async function payables(tenantId: string, today = todayCO()): Promise<Car
   const parties = ids.length ? await db.orm.public.Party.where({ tenantId }).where((p) => p.id.in(ids)).select("id", "legalName").all() : [];
   const names = new Map(parties.map((p) => [p.id, p.legalName]));
   return build(
-    docs.map((d) => ({ id: d.id, party: names.get(d.supplierPartyId) ?? "Proveedor", number: d.number, dueDate: day(d.dueDate), total: toNumber(d.total), paid: toNumber(d.paidTotal) })),
+    docs.map((d) => ({ id: d.id, party: names.get(d.supplierPartyId) ?? "Proveedor", number: d.number, dueDate: day(d.dueDate), total: toNumber(d.total), paid: toNumber(d.paidTotal), origin: "SUPPLIER_INVOICE" as const })),
     today,
   );
 }

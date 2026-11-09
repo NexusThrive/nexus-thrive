@@ -35,9 +35,9 @@ const activity = [
   { id: "4", type: "payment" as const, title: "Pedido de la tienda #118", description: "Pagado con Wompi", amount: "$ 92.000", time: "ayer" },
 ];
 const quick = [
-  { key: "c", label: "Nuevo socio", hint: "Registra a tu cliente", href: "/crm", icon: UserRoundPlus },
-  { key: "p", label: "Registrar pago", hint: "Cobra y genera el comprobante", href: "/finance", icon: HandCoins },
-  { key: "g", label: "Registrar gasto", hint: "Mantén tu balance al día", href: "/finance", icon: Receipt },
+  { key: "c", label: "Nuevo socio", hint: "Registra a tu cliente", href: "/contactos", icon: UserRoundPlus },
+  { key: "p", label: "Registrar pago", hint: "Cobra y genera el comprobante", href: "/finanzas", icon: HandCoins },
+  { key: "g", label: "Registrar gasto", hint: "Mantén tu balance al día", href: "/finanzas", icon: Receipt },
   { key: "r", label: "Nueva reserva", hint: "Agenda una clase", href: "/bookings", icon: CalendarPlus },
 ];
 

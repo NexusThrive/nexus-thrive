@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 
 import type { ModuleValue } from "@/lib/core/capabilities/modules";
 import ProfileTab from "./profile-tab";
@@ -76,17 +76,20 @@ export default function SettingsShell({
     ? params.tenant[0]
     : (params?.tenant ?? initialTenantSlug);
 
-  const [tab, setTab] = useState<Tab>("profile");
+  // `?seccion=team` (desde Inicio, el círculo del equipo) abre directo esa sección.
+  const seccion = useSearchParams()?.get("seccion");
+  const [tab, setTab] = useState<Tab>(TABS.some((t) => t.id === seccion) ? (seccion as Tab) : "profile");
 
   return (
-    <div className="w-full">
+    // `data-bleed`: ocupa todo el ancho de la pantalla (sin el tope de lectura de las páginas de contenido), con su propio margen.
+    <div data-bleed="" className="w-full px-4 pb-16 pt-5 sm:px-6 lg:px-10">
         <PageHeader
           eyebrow="Sistema"
           title="Configuración"
           description="Los datos de tu negocio, las personas que lo usan y tus preferencias."
         />
 
-        <div className="lg:grid lg:grid-cols-[248px_minmax(0,1fr)] lg:gap-8">
+        <div className="lg:grid lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-10">
         <SectionNav ariaLabel="Secciones de configuración" items={TABS} value={tab} onChange={setTab} />
         <div key={tab} className="nx-rise min-w-0">
         {tab === "profile" && (

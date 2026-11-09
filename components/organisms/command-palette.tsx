@@ -3,15 +3,18 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { Command } from "cmdk";
-import { Blocks, Download, HandCoins, Moon, Package, Receipt, Search, User } from "lucide-react";
+import { Command, useCommandState } from "cmdk";
+import { Blocks, Download, HandCoins, Moon, Package, Receipt, Search, Target, User } from "lucide-react";
 import { searchEntitiesAction, type SearchHit } from "@/app/[tenant]/(app)/_actions/search";
+import { EyeTracker } from "@/components/atoms/eye-tracker";
+import { useAuriGreeting } from "@/components/molecules/use-auri-greeting";
 import { Kbd } from "@/components/atoms/kbd";
 import { setTheme } from "@/components/atoms/theme-toggle";
 import { usePwa } from "@/components/providers/pwa";
 import { useQuickCreate } from "@/components/organisms/quick-create-host";
 import { usePalette, useShell } from "@/components/providers/shell-context";
 import { CAPABILITIES } from "@/lib/core/capabilities/registry";
+import { askAuri } from "@/lib/experience/assistant/ask-auri";
 import { cn } from "@/lib/utils";
 
 const DESKTOP_QUERY = "(min-width: 768px)";
@@ -78,6 +81,49 @@ const groupClass =
   "[&_[cmdk-group-heading]]:px-2.5 [&_[cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:pt-2 [&_[cmdk-group-heading]]:text-2xs [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-[0.08em] [&_[cmdk-group-heading]]:text-muted-foreground";
 
 /**
+ * AURI AI al final del campo de búsqueda, en su círculo y mirando al frente (sin seguir el puntero): un clic le pasa lo escrito y
+ * abre su chat. Cuando nada coincide con lo escrito se destaca con un anillo dorado y Enter también la envía. Va dentro de un
+ * `<Command>`: lee de cmdk cuántos elementos pasaron el filtro. Mientras llegan los resultados del servidor no se destaca.
+ */
+export function AuriAskButton({ query, status, run, className }: { query: string; status: "idle" | "loading" | "error"; run: (action: () => void) => void; className?: string }) {
+  const matches = useCommandState((state) => state.filtered.count);
+  const nothing = matches === 0 && status !== "loading" && query.trim() !== "";
+  const hello = useAuriGreeting();
+  useEffect(() => {
+    if (!nothing) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Enter" || event.isComposing) return;
+      event.preventDefault();
+      run(() => askAuri(query));
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [nothing, query, run]);
+  return (
+    <span className={cn("absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-2", className)}>
+      {nothing ? <span aria-hidden="true" className="hidden text-xs text-muted-foreground sm:inline">Pregúntale a AURI · Enter</span> : null}
+      <button
+        type="button"
+        aria-label={query.trim() ? `Preguntarle a AURI: ${query.trim()}` : "Abrir el chat con AURI"}
+        onMouseDown={(event) => event.preventDefault()}
+        {...hello.bind}
+        onClick={(event) => {
+          hello.bind.onClick(event);
+          if (!event.defaultPrevented) run(() => askAuri(query));
+        }}
+        data-press=""
+        className={cn(
+          "grid size-8 shrink-0 select-none place-items-center rounded-full outline-none transition-shadow focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring pointer-coarse:size-11",
+          nothing && "ring-2 ring-accent",
+        )}
+      >
+        <EyeTracker fit decorative poke={false} front size={28} shape="Ball" eyeScale={1.2} joy={hello.joy} say={hello.say} sayAt="l" />
+      </button>
+    </span>
+  );
+}
+
+/**
  * Lista de la paleta (va dentro de un `<Command>`): resultados, secciones y
  * acciones. `run` cierra la superficie que la contiene y ejecuta la acción.
  */
@@ -132,7 +178,23 @@ export function PaletteList({
       {idle ? (
         <>
         {/* La lista sigue en el documento (el campo la referencia con aria-controls) aunque no haya nada que mostrar. */}
-        <Command.List hidden />
+        {/* Primeras sugerencias: las acciones rápidas (antes en Resumen). La lista sigue en el documento: el campo la referencia. */}
+        <Command.List className={cn("shrink-0 p-1.5", NO_SCROLLBAR)} hidden={actions.length === 0}>
+          <Command.Group heading="Crear" className={groupClass}>
+            {actions.map((action) => (
+              <Command.Item
+                key={action.key}
+                value={`sugerencia crear ${action.label}`}
+                onSelect={() => run(() => { if (!quick.open(action.key)) router.push(hrefFor(action.href)); })}
+                className={itemClass}
+              >
+                <action.icon aria-hidden="true" />
+                <span>{action.label}</span>
+                <small className="ml-auto text-xs text-muted-foreground">{action.hint}</small>
+              </Command.Item>
+            ))}
+          </Command.Group>
+        </Command.List>
         <div className="grid flex-1 content-center justify-items-center gap-3 px-6 py-10 text-center">
           <span aria-hidden="true" className="grid size-14 place-items-center rounded-full bg-surface-muted ring-1 ring-border">
             <Search className="size-6 text-muted-foreground" strokeWidth={1.6} />
@@ -162,7 +224,7 @@ export function PaletteList({
                 style={leaving ? undefined : { animationDelay: `${Math.min(index, 5) * 25}ms` }}
                 className={cn(itemClass, leaving ? "nx-hit-out" : "nx-hit-in")}
               >
-                {hit.kind === "customer" ? <User aria-hidden="true" /> : hit.kind === "payment" ? <HandCoins aria-hidden="true" /> : hit.kind === "expense" ? <Receipt aria-hidden="true" /> : <Package aria-hidden="true" />}
+                {hit.kind === "customer" ? <User aria-hidden="true" /> : hit.kind === "opportunity" ? <Target aria-hidden="true" /> : hit.kind === "payment" ? <HandCoins aria-hidden="true" /> : hit.kind === "expense" ? <Receipt aria-hidden="true" /> : <Package aria-hidden="true" />}
                 <span className="truncate">{hit.title}</span>
                 <small className="ml-auto truncate text-xs text-muted-foreground">{hit.subtitle}</small>
               </Command.Item>
@@ -170,7 +232,8 @@ export function PaletteList({
           </Command.Group>
         ) : null}
         <Command.Group heading="Ir a" className={groupClass}>
-          {groups.flatMap((g) => g.items).map((item) => (
+          {/* Resumen ya no es un destino del sistema (su ruta se conserva, sin enlaces). */}
+          {groups.flatMap((g) => g.items).filter((item) => item.href !== "/resumen").map((item) => (
             <Command.Item
               key={item.key}
               value={`ir ${item.label}`}
@@ -302,8 +365,9 @@ export function CommandPalette({ inlineOnDesktop = false, inline = false }: { in
                 value={search.query}
                 onValueChange={search.setQuery}
                 placeholder="Busca clientes, pagos, gastos, catálogo o acciones"
-                className="h-[54px] w-full bg-transparent pl-[46px] pr-4 text-[15px] outline-none placeholder:text-muted-foreground"
+                className="h-[54px] w-full bg-transparent pl-[46px] pr-14 text-[15px] outline-none placeholder:text-muted-foreground"
               />
+              <AuriAskButton query={search.query} status={search.status} run={run} />
             </div>
             <PaletteList query={search.query} hits={search.hits} status={search.status} run={run} className="max-h-[min(380px,56vh)]" />
           </Command>

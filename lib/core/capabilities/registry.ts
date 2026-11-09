@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   BadgeCheck,
+  BadgePercent,
   Banknote,
   BookOpen,
   Building2,
@@ -17,7 +18,9 @@ import {
   FileCheck2,
   Globe,
   HandCoins,
+  CheckSquare,
   MapPin,
+  Target,
   Megaphone,
   PackageCheck,
   Link2,
@@ -32,6 +35,11 @@ import {
   UserRoundPlus,
   Users,
   Wallet,
+  BarChart3,
+  Settings2,
+  SlidersHorizontal,
+  Store,
+  Tags,
 } from "lucide-react";
 import type { VerticalValue } from "@/lib/core/sectors/verticals";
 import type { VerticalTerms } from "@/lib/core/sectors/lexicon";
@@ -68,12 +76,16 @@ export type CapabilityNav = {
   label: (terms: VerticalTerms, vertical: VerticalValue) => string;
   /** Solo para estos rubros (pantallas propias del rubro). */
   verticals?: readonly VerticalValue[];
+  /** Grupo de la barra lateral si no es el de la función (una función puede repartirse entre grupos). */
+  category?: CapabilityCategory;
+  /** `false`: la ruta existe y da acceso con la función (permiso y módulo), pero no sale en la barra (se llega desde otra pantalla). */
+  menu?: false;
 };
 
 /** Categoría de la función: la misma en la barra lateral y en la página Funciones. */
-export type CapabilityCategory = "Clientes y agenda" | "Productos y pedidos" | "Obras y proyectos" | "Ventas y cobros" | "Compras y gastos" | "Finanzas y contabilidad" | "Presencia en línea" | "Canales";
+export type CapabilityCategory = "Clientes y agenda" | "CRM" | "Ventas y cobros" | "Punto de venta" | "Inventario" | "Facturación" | "Obras y proyectos" | "Compras y gastos" | "Finanzas y contabilidad" | "Presencia en línea" | "Canales";
 /** Orden de la barra lateral y de «Funciones»: del trato con el cliente, a vender y cobrar, a gastar y contabilizar, a darse a conocer. */
-export const CAPABILITY_CATEGORIES: readonly CapabilityCategory[] = ["Clientes y agenda", "Productos y pedidos", "Obras y proyectos", "Ventas y cobros", "Compras y gastos", "Finanzas y contabilidad", "Presencia en línea", "Canales"];
+export const CAPABILITY_CATEGORIES: readonly CapabilityCategory[] = ["Clientes y agenda", "CRM", "Ventas y cobros", "Punto de venta", "Inventario", "Facturación", "Obras y proyectos", "Compras y gastos", "Finanzas y contabilidad", "Presencia en línea", "Canales"];
 
 export type CapabilityDefinition = {
   id: string;
@@ -117,7 +129,17 @@ export const CAPABILITIES = [
     status: "READY",
     priceUsd: 0,
     included: true,
-    nav: [{ href: "/crm", icon: Users, label: (terms) => terms.customers }],
+    nav: [
+      { href: "/contactos", icon: Users, label: (terms) => terms.customers },
+      // La app CRM: Pipeline, Informes y Configuración («Ventas» se confundía con la app Ventas y cobros). Tareas, Entregables y Formularios web siguen con su ruta y su
+      // acceso, y se abren desde Configuración del CRM (y las actividades del pipeline también son tareas).
+      { href: "/crm", icon: Target, label: () => "Pipeline", category: "CRM" },
+      { href: "/crm/informes", icon: BarChart3, label: () => "Informes", category: "CRM" },
+      { href: "/crm/configuracion", icon: Settings2, label: () => "Configuración", category: "CRM" },
+      { href: "/crm/tareas", icon: CheckSquare, label: () => "Tareas", category: "CRM", menu: false },
+      { href: "/proyectos/entregables", icon: FileCheck2, label: () => "Entregables", category: "CRM", menu: false },
+      { href: "/crm/formularios", icon: Link2, label: () => "Formularios web", category: "CRM", menu: false },
+    ],
   },
   {
     id: "bookings",
@@ -149,12 +171,12 @@ export const CAPABILITIES = [
     priceUsd: 0,
     general: true,
     nav: [
-      { href: "/finance?tab=cobros", icon: Banknote, label: () => "Cobros" },
+      { href: "/finanzas?tab=cobros", icon: Banknote, label: () => "Cobros" },
     ],
   },
   {
     id: "billing",
-    category: "Ventas y cobros",
+    category: "Facturación",
     kind: "base",
     label: "Facturación",
     name: "Facturación",
@@ -165,12 +187,12 @@ export const CAPABILITIES = [
     priceUsd: 0,
     general: true,
     nav: [
-      { href: "/billing", icon: Receipt, label: () => "Facturación" },
+      { href: "/finanzas/facturacion", icon: Receipt, label: () => "Facturación" },
     ],
   },
   {
     id: "inventory",
-    category: "Productos y pedidos",
+    category: "Inventario",
     kind: "base",
     label: "Inventario",
     name: "Catálogo e inventario",
@@ -181,8 +203,12 @@ export const CAPABILITIES = [
     priceUsd: 0,
     general: true,
     nav: [
-      { href: "/inventory", icon: Package, label: () => "Catálogo" },
-      { href: "/stock", icon: Warehouse, label: () => "Existencias" },
+      { href: "/inventario/productos", icon: Package, label: () => "Catálogo" },
+      { href: "/inventario/existencias", icon: Warehouse, label: () => "Existencias" },
+      // Pantallas de apoyo: se llega desde el menú Configuración de la app, no desde la barra.
+      { href: "/inventario/categorias", icon: Tags, label: () => "Categorías", menu: false },
+      { href: "/inventario/atributos", icon: SlidersHorizontal, label: () => "Atributos", menu: false },
+      { href: "/ventas/listas-precios", icon: BadgePercent, label: () => "Listas de precios", menu: false },
     ],
   },
   {
@@ -198,7 +224,8 @@ export const CAPABILITIES = [
     priceUsd: 0,
     included: true,
     nav: [
-      { href: "/finance", icon: Wallet, label: () => "Finanzas" },
+      { href: "/finanzas", icon: Wallet, label: () => "Finanzas" },
+      { href: "/finanzas/dinero", icon: Banknote, label: () => "¿Dónde está mi dinero?" },
     ],
   },
   {
@@ -213,7 +240,7 @@ export const CAPABILITIES = [
     status: "READY",
     priceUsd: 0,
     included: true,
-    nav: [{ href: "", icon: LayoutDashboard, label: () => "Inicio" }],
+    nav: [{ href: "/resumen", icon: LayoutDashboard, label: () => "Resumen" }],
   },
   {
     id: "whatsapp",
@@ -227,7 +254,11 @@ export const CAPABILITIES = [
     status: "READY",
     priceUsd: 0,
     general: true,
-    nav: [{ href: "/whatsapp", icon: MessageCircle, label: () => "WhatsApp" }],
+    nav: [
+      { href: "/canales/whatsapp", icon: MessageCircle, label: () => "WhatsApp" },
+      { href: "/canales/conversaciones", icon: MessageCircle, label: () => "Conversaciones" },
+      { href: "/canales/avisos", icon: MessageCircle, label: () => "Plantillas y avisos" },
+    ],
   },
   {
     id: "memberships",
@@ -260,11 +291,11 @@ export const CAPABILITIES = [
     priceUsd: 0,
     general: true,
     // El restaurante compra insumos; el resto, mercancía.
-    nav: [{ href: "/purchases", icon: Truck, label: (terms) => terms.purchases ?? "Compras" }],
+    nav: [{ href: "/compras", icon: Truck, label: (terms) => terms.purchases ?? "Compras" }],
   },
   {
     id: "orders",
-    category: "Productos y pedidos",
+    category: "Ventas y cobros",
     kind: "specialized",
     label: "Pedidos",
     name: "Pedidos",
@@ -273,22 +304,22 @@ export const CAPABILITIES = [
     icon: ShoppingCart,
     status: "PLANNED",
     priceUsd: 0,
-    nav: [{ href: "/orders", icon: ShoppingCart, label: () => "Pedidos" }],
+    nav: [{ href: "/ventas/pedidos", icon: ShoppingCart, label: () => "Pedidos" }],
   },
   {
     // Cotización comercial genérica: llega con el documento comercial
     // unificado (Bloque B, paso 2). Hasta entonces no tiene pantallas.
     id: "quotes",
-    category: "Obras y proyectos",
+    category: "Ventas y cobros",
     kind: "specialized",
     label: "Cotizaciones",
     name: "Cotizaciones",
-    description: "Cotizaciones comerciales con tu catálogo (próximamente).",
+    description: "Cotizaciones comerciales con tu catálogo: al aprobarlas nace el pedido con su anticipo.",
     pitch: "Cotizaciones para tus clientes.",
     icon: BadgeCheck,
-    status: "PLANNED",
+    status: "READY",
     priceUsd: 0,
-    nav: [],
+    nav: [{ href: "/ventas/cotizaciones", icon: BadgeCheck, label: () => "Cotizaciones" }],
   },
   {
     // Suite de construcción (ARCH-01): obras, presupuestos APU, Lean,
@@ -305,17 +336,17 @@ export const CAPABILITIES = [
     priceUsd: 0,
     nav: [
       {
-        href: "/projects",
+        href: "/proyectos",
         icon: Building2,
         label: (terms) => terms.projects ?? "Proyectos",
       },
-      { href: "/quotes", icon: FolderOpen, label: () => "Cotizaciones" },
-      { href: "/catalog", icon: BookOpen, label: () => "Catálogo APU" },
+      { href: "/ventas/cotizaciones/anteriores", icon: FolderOpen, label: () => "Cotizaciones" },
+      { href: "/proyectos/catalogo-apu", icon: BookOpen, label: () => "Catálogo APU" },
     ],
   },
   {
     id: "pos",
-    category: "Ventas y cobros",
+    category: "Punto de venta",
     parent: "payments",
     kind: "base",
     label: "Punto de venta",
@@ -326,7 +357,7 @@ export const CAPABILITIES = [
     status: "READY",
     priceUsd: 0,
     general: true,
-    nav: [{ href: "/pos", icon: ShoppingCart, label: () => "Punto de venta" }],
+    nav: [{ href: "/pos", icon: Store, label: () => "Punto de venta" }],
   },
   {
     id: "online_payments",
@@ -341,11 +372,11 @@ export const CAPABILITIES = [
     status: "READY",
     priceUsd: 0,
     general: true,
-    nav: [{ href: "/cobros", icon: Link2, label: () => "Cobros en línea" }],
+    nav: [{ href: "/ventas/cobros", icon: Link2, label: () => "Cobros en línea" }],
   },
   {
     id: "einvoicing",
-    category: "Ventas y cobros",
+    category: "Facturación",
     parent: "billing",
     kind: "base",
     label: "Factura electrónica",
@@ -356,7 +387,7 @@ export const CAPABILITIES = [
     status: "BETA",
     priceUsd: 0,
     general: true,
-    nav: [{ href: "/factura-electronica", icon: FileCheck2, label: () => "Factura electrónica" }],
+    nav: [{ href: "/finanzas/facturacion-electronica", icon: FileCheck2, label: () => "Factura electrónica" }],
   },
   {
     id: "receivables",
@@ -371,7 +402,7 @@ export const CAPABILITIES = [
     status: "READY",
     priceUsd: 0,
     general: true,
-    nav: [{ href: "/cartera", icon: HandCoins, label: () => "Cartera" }],
+    nav: [{ href: "/finanzas/cartera", icon: HandCoins, label: () => "Cartera" }],
   },
   {
     id: "accounting",
@@ -386,7 +417,7 @@ export const CAPABILITIES = [
     status: "BETA",
     priceUsd: 0,
     general: true,
-    nav: [{ href: "/contabilidad", icon: BookOpenCheck, label: () => "Contabilidad" }],
+    nav: [{ href: "/finanzas/contabilidad", icon: BookOpenCheck, label: () => "Contabilidad" }],
   },
   {
     id: "taxes",
@@ -401,7 +432,7 @@ export const CAPABILITIES = [
     status: "READY",
     priceUsd: 0,
     general: true,
-    nav: [{ href: "/taxes", icon: Percent, label: () => "Impuestos y numeración" }],
+    nav: [{ href: "/finanzas/impuestos", icon: Percent, label: () => "Impuestos y numeración" }],
   },
   {
     id: "website",
@@ -417,8 +448,8 @@ export const CAPABILITIES = [
     priceUsd: 0,
     general: true,
     nav: [
-      { href: "/sitio", icon: Globe, label: (terms) => terms.siteLabel ?? "Mi sitio web" },
-      { href: "/pedidos-tienda", icon: PackageCheck, label: () => "Pedidos de la tienda" },
+      { href: "/presencia/sitio", icon: Globe, label: (terms) => terms.siteLabel ?? "Mi sitio web" },
+      { href: "/ventas/pedidos", icon: PackageCheck, label: () => "Pedidos" },
     ],
   },
   {
@@ -434,7 +465,7 @@ export const CAPABILITIES = [
     status: "BETA",
     priceUsd: 0,
     general: true,
-    nav: [{ href: "/google", icon: MapPin, label: () => "Ficha de Google" }],
+    nav: [{ href: "/presencia/google", icon: MapPin, label: () => "Ficha de Google" }],
   },
   {
     id: "growth",
@@ -449,7 +480,7 @@ export const CAPABILITIES = [
     status: "READY",
     priceUsd: 0,
     general: true,
-    nav: [{ href: "/crecimiento", icon: Megaphone, label: () => "Campañas y reseñas" }],
+    nav: [{ href: "/presencia/crecimiento", icon: Megaphone, label: () => "Campañas y reseñas" }],
   },
 ] as const satisfies readonly CapabilityDefinition[];
 
@@ -466,3 +497,8 @@ export const CHILDREN_OF: Readonly<Record<string, readonly string[]>> = CAPABILI
   if (parent) (acc[parent] ??= []).push(c.id);
   return acc;
 }, {});
+
+/** Grupo de la barra lateral de cada ruta que lo cambia respecto de su función. */
+export const NAV_CATEGORY: ReadonlyMap<string, CapabilityCategory> = new Map(
+  CAPABILITIES.flatMap((c) => (c.nav as readonly CapabilityNav[]).filter((n) => n.category).map((n) => [n.href.split("?")[0]!, n.category!] as const)),
+);

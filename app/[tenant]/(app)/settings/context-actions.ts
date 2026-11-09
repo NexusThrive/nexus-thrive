@@ -16,7 +16,7 @@ export async function updateBusinessContextAction(slug: string, input: { vertica
   const ctx = await requireTenantContext(slug);
   if (!ctx) return { ok: false, message: "No tienes acceso a este negocio." };
   if (ctx.role !== "OWNER" && ctx.role !== "SUPERADMIN") return { ok: false, message: "Solo el dueño del negocio cambia su perfil." };
-  const parsed = parseBusinessContext(input);
+  const parsed = parseBusinessContext(input, ctx.tenant.vertical);
   if (!parsed.ok) return { ok: false, message: parsed.message };
   const value: BusinessContext = parsed.value;
   await updateBusinessContext(ctx.tenantId, value);

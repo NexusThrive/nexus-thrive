@@ -1,0 +1,104 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { canManage } from "@/lib/core/auth/roles";
+import { createWarehouse } from "@/lib/business/inventory/kardex";
+import { cancelCount, createCount, createTransfer, finalizeCount, getCount, registerMovement, saveCountLines, setReorderLevels, type CountDetail, type ManualMovementInput, type TransferInput } from "@/lib/business/inventory/stock-docs-db";
+import { logTenantAction } from "@/lib/core/tenancy/audit";
+import { requireTenantContext } from "@/lib/core/tenancy/context";
+
+export type StockResult = { ok: true; message: string; id?: string } | { ok: false; message: string };
+const DENIED = { ok: false as const, message: "Solo el dueño o administración maneja el inventario." };
+
+async function manager(slug: string) {
+  const ctx = await requireTenantContext(slug, "/inventario/existencias");
+  return ctx && canManage(ctx.role) ? ctx : null;
+}
+const refresh = (slug: string) => {
+  revalidatePath(`/${slug}/inventario/existencias`);
+  revalidatePath(`/${slug}/inventario/productos`);
+};
+
+export async function createTransferAction(slug: string, input: TransferInput): Promise<StockResult> {
+  const ctx = await manager(slug);
+  if (!ctx) return DENIED;
+  const r = await createTransfer(ctx.tenantId, input, ctx.memberId);
+  if (!r.ok) return { ok: false, message: r.message };
+  await logTenantAction(ctx, "BIZ_STOCK_TRANSFER", { transferId: r.id, code: r.code, lines: input.lines.length });
+  refresh(slug);
+  return { ok: true, id: r.id, message: `Traslado ${r.code} hecho` };
+}
+
+export async function createCountAction(slug: string, warehouseId: string): Promise<StockResult> {
+  const ctx = await manager(slug);
+  if (!ctx) return DENIED;
+  const r = await createCount(ctx.tenantId, warehouseId, ctx.memberId);
+  if (!r.ok) return { ok: false, message: r.message };
+  refresh(slug);
+  return { ok: true, id: r.id, message: `Conteo ${r.code} abierto con ${r.lines} productos` };
+}
+
+export async function countDetailAction(slug: string, id: string): Promise<{ ok: true; count: CountDetail } | { ok: false; message: string }> {
+  const ctx = await manager(slug);
+  if (!ctx) return { ok: false, message: DENIED.message };
+  const count = await getCount(ctx.tenantId, id);
+  return count ? { ok: true, count } : { ok: false, message: "No se encontró el conteo." };
+}
+
+export async function saveCountAction(slug: string, id: string, items: { lineId: string; counted: number | null }[]): Promise<StockResult> {
+  const ctx = await manager(slug);
+  if (!ctx) return DENIED;
+  const r = await saveCountLines(ctx.tenantId, id, items);
+  if (!r.ok) return { ok: false, message: r.message };
+  refresh(slug);
+  return { ok: true, message: "Avance guardado" };
+}
+
+export async function finalizeCountAction(slug: string, id: string, note: string): Promise<StockResult> {
+  const ctx = await manager(slug);
+  if (!ctx) return DENIED;
+  const r = await finalizeCount(ctx.tenantId, id, note, ctx.memberId);
+  if (!r.ok) return { ok: false, message: r.message };
+  await logTenantAction(ctx, "BIZ_STOCK_COUNT", { countId: id, adjusted: r.adjusted, units: r.units, reason: note.trim().slice(0, 100) });
+  refresh(slug);
+  return { ok: true, message: r.adjusted ? `Conteo cerrado: ${r.adjusted} ${r.adjusted === 1 ? "ajuste" : "ajustes"} (${r.units} unidades) en el kardex` : "Conteo cerrado sin diferencias" };
+}
+
+export async function cancelCountAction(slug: string, id: string): Promise<StockResult> {
+  const ctx = await manager(slug);
+  if (!ctx) return DENIED;
+  const r = await cancelCount(ctx.tenantId, id);
+  if (!r.ok) return { ok: false, message: r.message };
+  refresh(slug);
+  return { ok: true, message: "Conteo cancelado" };
+}
+
+export async function setLevelsAction(slug: string, productId: string, levels: { minStock: number; maxStock: number | null; reorderPoint: number | null }): Promise<StockResult> {
+  const ctx = await manager(slug);
+  if (!ctx) return DENIED;
+  const r = await setReorderLevels(ctx.tenantId, productId, levels);
+  if (!r.ok) return { ok: false, message: r.message };
+  refresh(slug);
+  return { ok: true, message: "Niveles guardados" };
+}
+
+export async function createWarehouseAction(slug: string, input: { name: string; code: string }): Promise<StockResult> {
+  const ctx = await manager(slug);
+  if (!ctx) return DENIED;
+  const r = await createWarehouse(ctx.tenantId, { name: input.name, code: input.code || null });
+  if (!r.ok) return { ok: false, message: r.message };
+  await logTenantAction(ctx, "BIZ_WAREHOUSE_CREATE", { warehouseId: r.id, name: input.name.slice(0, 80) });
+  refresh(slug);
+  return { ok: true, id: r.id, message: "Bodega creada" };
+}
+
+/** Entrada, salida o ajuste de un producto en una bodega (con motivo en salidas y ajustes). */
+export async function registerMovementAction(slug: string, input: ManualMovementInput): Promise<StockResult> {
+  const ctx = await manager(slug);
+  if (!ctx) return DENIED;
+  const r = await registerMovement(ctx.tenantId, input, ctx.memberId);
+  if (!r.ok) return { ok: false, message: r.message };
+  await logTenantAction(ctx, "BIZ_STOCK_MOVEMENT", { productId: input.productId, kind: input.kind, quantity: input.quantity, warehouseId: input.warehouseId ?? null });
+  refresh(slug);
+  return { ok: true, message: `Movimiento registrado · quedan ${r.balance}` };
+}

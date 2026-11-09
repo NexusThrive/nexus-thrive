@@ -1,17 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Banknote, Check, Send } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ExternalLink, Send } from "lucide-react";
 import { AmountDisplay } from "@/components/atoms/amount-display";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { Chip, ChipRow } from "@/components/atoms/chip";
 import { inputClasses } from "@/components/atoms/input";
-import { NMark } from "@/components/atoms/n-mark";
 import { Alert } from "@/components/molecules/alert";
 import { Field } from "@/components/molecules/field";
-import { FullPanelLink } from "@/components/molecules/full-panel-link";
 import { Keypad, applyKey, type KeypadKey } from "@/components/molecules/keypad";
-import { ReceiptPrinter, type ReceiptData } from "@/components/organisms/receipt-printer";
+import { SlideToConfirm } from "@/components/molecules/slide-to-confirm";
+import type { ReceiptData } from "@/components/organisms/receipt-printer";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { drawReceiptPng, shareReceiptOnWhatsapp } from "@/lib/business/sales/receipt-share";
 import { receiptQrDataUrl, receiptQrPayload } from "@/lib/business/sales/receipt-qr";
@@ -36,7 +35,8 @@ const cop = (n: number) => `$ ${n.toLocaleString("es-CO")}`;
  * Cobro completo del artefacto (FLU·04): cifra que salta con cada tecla,
  * teclado numérico (también el del computador), cliente, medio de pago en
  * chips y concepto. "Cobrar" gira la N mientras el servidor guarda y, al
- * confirmar, la hoja muestra la impresora de recibos con el comprobante.
+ * confirmar, la hoja se cierra y el comprobante sale abajo a la derecha
+ * (aviso tipo recibo de `useToast`) con «Compartir» y «Ver»; luego se oculta.
  * Genérico: la escritura real la hace `onCharge`.
  */
 export function PaymentSheet({
@@ -46,7 +46,6 @@ export function PaymentSheet({
   methods,
   business,
   defaultCustomerId = "",
-  fullHref,
   onCharge,
 }: {
   open: boolean;
@@ -55,18 +54,16 @@ export function PaymentSheet({
   methods: readonly { value: string; label: string }[];
   business: { name: string; subtitle?: string };
   defaultCustomerId?: string;
-  /** Mini-modal de «Crear»: enlace «Abrir en el panel completo» a la sección del módulo. */
-  fullHref?: string;
   onCharge: (input: PaymentChargeInput) => Promise<PaymentChargeResult>;
 }) {
   const [amount, setAmount] = useState(0);
   const [customerId, setCustomerId] = useState(defaultCustomerId);
   const [method, setMethod] = useState(methods[0]?.value ?? "");
   const [description, setDescription] = useState("");
+  const [showConcept, setShowConcept] = useState(false);
+  const conceptRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [receipt, setReceipt] = useState<ReceiptData | null>(null);
-  const [printed, setPrinted] = useState(false);
 
   const customer = customers.find((c) => c.id === customerId);
   const methodLabel = methods.find((m) => m.value === method)?.label ?? method;
@@ -75,7 +72,7 @@ export function PaymentSheet({
 
   // Teclado del computador: dígitos y borrar, salvo escribiendo en un campo.
   useEffect(() => {
-    if (!open || receipt) return;
+    if (!open) return;
     const onKey = (event: KeyboardEvent) => {
       const tag = (event.target as HTMLElement | null)?.tagName;
       if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA") return;
@@ -84,16 +81,15 @@ export function PaymentSheet({
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [open, receipt]);
+  }, [open]);
 
   const reset = () => {
     setAmount(0);
     setCustomerId(defaultCustomerId);
     setMethod(methods[0]?.value ?? "");
     setDescription("");
+    setShowConcept(false);
     setError(null);
-    setReceipt(null);
-    setPrinted(false);
   };
 
   const close = (next: boolean) => {
@@ -102,8 +98,9 @@ export function PaymentSheet({
     if (!next) window.setTimeout(reset, 300);
   };
 
-  const charge = async () => {
-    if (!amount || busy) return;
+  /** Devuelve si se cobró: el deslizador vuelve al inicio si no. */
+  const charge = async (): Promise<boolean> => {
+    if (!amount || busy) return false;
     setBusy(true);
     setError(null);
     const concept = description.trim() || "Pago de servicio";
@@ -111,9 +108,10 @@ export function PaymentSheet({
     setBusy(false);
     if (!result.ok) {
       setError(result.message);
-      return;
+      toast({ title: "No se registró el cobro", description: result.message, variant: "error" });
+      return false;
     }
-    setLink(result.link ?? null);
+    const link = result.link ?? null;
     const date = new Intl.DateTimeFormat("es-CO", {
       timeZone: "America/Bogota",
       day: "2-digit",
@@ -125,7 +123,7 @@ export function PaymentSheet({
     const qr = await receiptQrDataUrl(
       receiptQrPayload({ link: result.link, reference: result.reference, total: cop(amount), business: business.name }),
     ).catch(() => undefined);
-    setReceipt({
+    const receipt: ReceiptData = {
       business: business.name,
       subtitle: business.subtitle,
       client: customer?.name ?? "Mostrador",
@@ -138,17 +136,26 @@ export function PaymentSheet({
         { label: "Medio", value: methodLabel },
         { label: "Fecha", value: date },
       ],
+    };
+    const phone = customer?.phone;
+    const firstName = customer?.name.split(" ")[0];
+    // El modal se cierra y el comprobante sale abajo a la derecha (sube y, al rato, baja y se oculta).
+    close(false);
+    toast({
+      title: "Comprobante generado",
+      receipt: { total: receipt.total, concept, client: receipt.client, reference: result.reference },
+      actions: [
+        { label: "Compartir", icon: Send, onClick: () => shareReceipt(receipt, link, phone, firstName) },
+        ...(link ? [{ label: "Ver", icon: ExternalLink, onClick: () => void window.open(link, "_blank", "noopener") }] : []),
+      ],
     });
+    return true;
   };
 
-  const [link, setLink] = useState<string | null>(null);
-  const [sharing, setSharing] = useState(false);
   const { toast } = useToast();
 
-  /** Imagen del recibo + texto + enlace: hoja de compartir en celular, portapapeles + chat en computador. */
-  const sendWhatsapp = async () => {
-    if (!receipt || sharing) return;
-    setSharing(true);
+  /** Imagen del recibo + texto + enlace: hoja de compartir en celular, portapapeles + chat en computador. Sirve con la hoja cerrada. */
+  const shareReceipt = async (receipt: ReceiptData, link: string | null, phone: string | null | undefined, firstName: string | undefined) => {
     try {
       const image = await drawReceiptPng({
         business: receipt.business,
@@ -159,51 +166,33 @@ export function PaymentSheet({
         qr: receipt.qr,
         footer: link ? "Recibo verificable en el enlace" : undefined,
       });
-      const first = customer ? ` ${customer.name.split(" ")[0]}` : "";
+      const first = firstName ? ` ${firstName}` : "";
       const text = `Hola${first}, este es tu comprobante de ${business.name}: ${receipt.total} por ${receipt.concept} (${receipt.meta[0].value}).${link ? `\nVer recibo: ${link}` : ""}\n¡Gracias por tu pago!`;
-      const r = await shareReceiptOnWhatsapp({ image, fileName: `recibo-${receipt.meta[0].value}.png`, text, phone: customer?.phone });
+      const r = await shareReceiptOnWhatsapp({ image, fileName: `recibo-${receipt.meta[0].value}.png`, text, phone });
       if (r === "copied") toast({ title: "Imagen del recibo copiada", description: "En el chat de WhatsApp pégala con Ctrl+V (o Cmd+V) y envía.", variant: "success" });
       if (r === "text-only") toast({ title: "Abrimos WhatsApp con el texto", description: "Tu navegador no permite copiar la imagen; el enlace del recibo va en el mensaje.", variant: "info" });
-      if (r !== "cancelled") close(false);
     } catch {
       toast({ title: "No se pudo preparar el recibo", variant: "error" });
-    } finally {
-      setSharing(false);
     }
   };
 
-  const footer = receipt ? (
-    <>
-      <button
-        type="button"
-        onClick={sendWhatsapp}
-        disabled={!printed || sharing}
-        className={cn(buttonVariants({ variant: "outline" }), "flex-1 sm:flex-none")}
-      >
-        <Send aria-hidden="true" className="size-4" />
-        {sharing ? "Preparando…" : "Enviar por WhatsApp"}
-      </button>
-      <button type="button" onClick={() => close(false)} className={cn(buttonVariants(), "flex-1 sm:flex-none")}>
-        <Check aria-hidden="true" className="size-4" />
-        Listo
-      </button>
-    </>
-  ) : (
-    <>
-      <button type="button" onClick={() => close(false)} disabled={busy} className={cn(buttonVariants({ variant: "outline" }), "flex-1 sm:flex-none")}>
+  // Cobrar es deslizar hasta el final (o Enter en el asa): un toque suelto no cobra. Cancelar queda al lado.
+  const footer = (
+    <div className="flex w-full items-center gap-2.5">
+      <button type="button" onClick={() => close(false)} disabled={busy} className={cn(buttonVariants({ variant: "outline" }), "h-[52px] shrink-0 rounded-full px-4 sm:px-5")}>
         Cancelar
       </button>
-      <button
-        type="button"
-        onClick={charge}
-        disabled={!amount || busy}
-        aria-busy={busy || undefined}
-        className={cn(buttonVariants(), "min-w-44 flex-1 sm:flex-none")}
-      >
-        {busy ? <NMark size={16} state="loop" className="text-current" /> : <Banknote aria-hidden="true" className="size-4" />}
-        {busy ? "Procesando…" : `Cobrar ${cop(amount)}`}
-      </button>
-    </>
+      <SlideToConfirm
+        key={open ? "abierto" : "cerrado"}
+        className="min-w-0 flex-1"
+        label={amount ? `Cobrar ${cop(amount)}` : "Escribe el valor"}
+        busy={busy}
+        busyLabel="Procesando…"
+        doneLabel="Cobrado"
+        disabled={!amount}
+        onConfirm={charge}
+      />
+    </div>
   );
 
   return (
@@ -211,30 +200,26 @@ export function PaymentSheet({
       open={open}
       onOpenChange={close}
       title="Registrar pago"
-      description={
-        <>
-          {receipt ? "Comprobante listo para entregar." : "Cobra y genera el comprobante."}
-          {fullHref && !receipt ? <> <FullPanelLink href={fullHref} /></> : null}
-        </>
-      }
+      description="Cobra y genera el comprobante."
+      size="lg"
       footer={footer}
+      initialFocus="panel"
     >
-      {receipt ? (
-        <ReceiptPrinter data={receipt} onPrinted={() => setPrinted(true)} className="py-2" />
-      ) : (
-        <div className="grid grid-cols-1 gap-4">
+      {/* PC: la cifra y el teclado a la izquierda, los datos del cobro a la derecha. Celular: una columna compacta. Sin scroll. */}
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-2.5 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-6">
+        <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2 md:gap-3">
+          {error ? <Alert tone="danger">{error}</Alert> : null}
           <div>
-            <AmountDisplay value={amount} />
-            <p className="mt-0.5 text-center text-xs text-muted-foreground">Escribe el valor con el teclado</p>
+            <AmountDisplay value={amount} className="[@media(max-height:700px)]:text-3xl" />
+            {/* En el celular se usa el teclado de la pantalla: la nota del teclado del computador sobra. */}
+            <p className="hidden text-center text-xs text-muted-foreground md:block">Escribe el valor con el teclado</p>
           </div>
           <Keypad onKey={press} />
+        </div>
+        <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2.5 md:gap-4">
           <Field label="Cliente">
             {(control) => (
-              <Select
-                {...control}
-                value={customerId}
-                onChange={(event) => setCustomerId(event.target.value)}
-              >
+              <Select {...control} value={customerId} onChange={(event) => setCustomerId(event.target.value)}>
                 <option value="">Venta sin cliente</option>
                 {customers.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -245,8 +230,9 @@ export function PaymentSheet({
               </Select>
             )}
           </Field>
-          <div>
-            <p className="mb-2 text-ui font-medium">Medio de pago</p>
+          {/* Medio de pago al lado de su etiqueta (en el celular ahorra una fila; en PC queda igual de claro). */}
+          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+            <p className="text-ui font-medium">Medio de pago</p>
             <ChipRow role="group" aria-label="Medio de pago">
               {methods.map((m) => (
                 <Chip key={m.value} selected={m.value === method} onClick={() => setMethod(m.value)}>
@@ -255,21 +241,34 @@ export function PaymentSheet({
               ))}
             </ChipRow>
           </div>
-          <Field label="Concepto" hint="Opcional. Sale en el comprobante.">
+          {/* En el celular el concepto (opcional) se abre con un toque: así el cobro cabe sin scroll. En PC siempre está. */}
+          {!showConcept ? (
+            <button
+              type="button"
+              onClick={() => {
+                setShowConcept(true);
+                // El botón desaparece: el foco pasa al campo que abre (ya está montado, solo oculto).
+                requestAnimationFrame(() => conceptRef.current?.focus());
+              }}
+              className="justify-self-start text-ui font-medium text-accent-text underline-offset-2 outline-none hover:underline focus-visible:outline-2 focus-visible:outline-ring md:hidden">
+              + Agregar concepto
+            </button>
+          ) : null}
+          <Field label="Concepto" className={cn(!showConcept && "max-md:hidden")}>
             {(control) => (
               <input
                 {...control}
                 value={description}
                 onChange={(event) => setDescription(event.target.value)}
                 maxLength={300}
-                placeholder="Concepto"
+                ref={conceptRef}
+                placeholder="Opcional · sale en el comprobante"
                 className={inputClasses}
               />
             )}
           </Field>
-          {error ? <Alert tone="danger">{error}</Alert> : null}
         </div>
-      )}
+      </div>
     </ResponsiveSheet>
   );
 }

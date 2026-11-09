@@ -4,7 +4,7 @@
  * reúne los datos y aquí se arma la lista que pinta la campana.
  */
 
-export type NotificationKind = "payment" | "expense" | "booking" | "membership" | "customer";
+export type NotificationKind = "payment" | "expense" | "booking" | "membership" | "customer" | "task" | "order";
 
 /**
  * Qué se espera de la persona (DR-40): `info` solo informa; `action` pide atención (algo por resolver pronto);
@@ -37,6 +37,10 @@ export function buildNotifications(input: {
   bookings: { id: string; at: string; service: string; customer: string }[];
   /** Altas del registro público (gimnasio), de la más reciente a la más antigua. */
   registrations?: { id: string; customerId: string; name: string; at: string }[];
+  /** Tareas abiertas ya vencidas de quien mira la campana (HU-actividades-01). */
+  overdueTasks?: number;
+  /** Pedidos que pasaron a «listo» y aún esperan entrega o envío (HU-avisos-01). */
+  readyOrders?: { id: string; code: string; customer: string; at: string }[];
   expiring: number;
   expired: number;
   /** ISO del inicio de hoy (Bogotá): las alertas de membresía se fechan ahí. */
@@ -52,7 +56,7 @@ export function buildNotifications(input: {
         title: m.type === "in" ? `Cobro registrado · ${cop(m.amount)}` : `Gasto · ${cop(m.amount)}`,
         detail: m.type === "in" ? `${m.title} · ${m.subtitle}` : m.title,
         at: m.at,
-        href: "/finance",
+        href: "/finanzas",
       });
     }
   }
@@ -70,9 +74,16 @@ export function buildNotifications(input: {
         title: `Nuevo cliente registrado · ${r.name}`,
         detail: "Entró por el registro público. Asígnale su membresía.",
         at: r.at,
-        href: r.customerId ? `/crm/${r.customerId}` : "/crm",
+        href: r.customerId ? `/contactos/${r.customerId}` : "/contactos",
       });
     }
+  }
+  for (const o of input.readyOrders ?? []) {
+    out.push({ id: `order-ready-${o.id}`, kind: "order", severity: "action", title: `Pedido ${o.code} listo para entregar`, detail: o.customer, at: o.at, href: "/ventas/pedidos" });
+  }
+  if ((input.overdueTasks ?? 0) > 0) {
+    const n = input.overdueTasks!;
+    out.push({ id: `tasks-overdue-${input.todayStart.slice(0, 10)}-${n}`, kind: "task", severity: "urgent", title: n === 1 ? "1 tarea vencida" : `${n} tareas vencidas`, detail: "Hazlas hoy o cámbiales la fecha", at: input.todayStart, href: "/crm/tareas" });
   }
   if (input.modules.memberships) {
     if (input.expiring > 0) {

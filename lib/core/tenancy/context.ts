@@ -47,8 +47,8 @@ export function loadActiveTenant(slug: string) {
 export async function requireTenantContext(
   tenantSlug: string,
   /**
-   * Ruta del módulo al que pertenece la acción o página ("/crm",
-   * "/projects"…). Si se pasa, el negocio debe tener activo un módulo que la
+   * Ruta del módulo al que pertenece la acción o página ("/contactos",
+   * "/proyectos"…). Si se pasa, el negocio debe tener activo un módulo que la
    * habilite (SEC-06): un módulo apagado no se usa ni por petición directa.
    */
   route?: string,

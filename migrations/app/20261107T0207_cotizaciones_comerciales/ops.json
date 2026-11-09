@@ -1,0 +1,563 @@
+[
+  {
+    "id": "table.SalesQuote",
+    "label": "Create table \"SalesQuote\"",
+    "summary": "Creates table \"SalesQuote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "SalesQuote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"SalesQuote\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SalesQuote\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"SalesQuote\"",
+        "sql": "CREATE TABLE \"public\".\"SalesQuote\" (\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"createdById\" text,\n  \"customerId\" text NOT NULL,\n  \"decidedAt\" timestamptz,\n  \"decidedByName\" text,\n  \"decisionNote\" text,\n  \"depositPct\" numeric DEFAULT '50'::numeric NOT NULL,\n  \"id\" text NOT NULL,\n  \"notes\" text,\n  \"number\" int4 NOT NULL,\n  \"orderId\" text,\n  \"sentAt\" timestamptz,\n  \"status\" text DEFAULT 'DRAFT' NOT NULL,\n  \"subtotal\" numeric NOT NULL,\n  \"taxTotal\" numeric NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"title\" text NOT NULL,\n  \"total\" numeric NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"validUntil\" text,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"SalesQuote\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SalesQuote\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.SalesQuoteLine",
+    "label": "Create table \"SalesQuoteLine\"",
+    "summary": "Creates table \"SalesQuoteLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "SalesQuoteLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"SalesQuoteLine\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SalesQuoteLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"SalesQuoteLine\"",
+        "sql": "CREATE TABLE \"public\".\"SalesQuoteLine\" (\n  \"id\" text NOT NULL,\n  \"name\" text NOT NULL,\n  \"productId\" text NOT NULL,\n  \"quantity\" int4 NOT NULL,\n  \"quoteId\" text NOT NULL,\n  \"taxRatePct\" numeric DEFAULT '0'::numeric NOT NULL,\n  \"tenantId\" text NOT NULL,\n  \"unitPrice\" numeric NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"SalesQuoteLine\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SalesQuoteLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.StoreOrder.quoteId",
+    "label": "Add column \"quoteId\" to \"StoreOrder\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "quoteId",
+        "table": "StoreOrder"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"quoteId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StoreOrder",
+          "quoteId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"quoteId\"",
+        "sql": "ALTER TABLE \"public\".\"StoreOrder\" ADD COLUMN \"quoteId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"quoteId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "StoreOrder",
+          "quoteId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.SalesQuote.SalesQuote_tenantId_number_key",
+    "label": "Add unique constraint on \"SalesQuote\" (tenantId, number)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "SalesQuote_tenantId_number_key",
+        "table": "SalesQuote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"SalesQuote_tenantId_number_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SalesQuote_tenantId_number_key",
+          "public",
+          "\"public\".\"SalesQuote\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"SalesQuote_tenantId_number_key\"",
+        "sql": "ALTER TABLE \"public\".\"SalesQuote\" ADD CONSTRAINT \"SalesQuote_tenantId_number_key\" UNIQUE (\"tenantId\", \"number\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"SalesQuote_tenantId_number_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SalesQuote_tenantId_number_key",
+          "public",
+          "\"public\".\"SalesQuote\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.SalesQuote.SalesQuote_tenantId_customerId_idx_302ad259",
+    "label": "Create index \"SalesQuote_tenantId_customerId_idx_302ad259\" on \"SalesQuote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "SalesQuote_tenantId_customerId_idx_302ad259",
+        "table": "SalesQuote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"SalesQuote_tenantId_customerId_idx_302ad259\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SalesQuote_tenantId_customerId_idx_302ad259\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"SalesQuote_tenantId_customerId_idx_302ad259\"",
+        "sql": "CREATE INDEX \"SalesQuote_tenantId_customerId_idx_302ad259\" ON \"public\".\"SalesQuote\" (\"tenantId\", \"customerId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"SalesQuote_tenantId_customerId_idx_302ad259\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SalesQuote_tenantId_customerId_idx_302ad259\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.SalesQuote.SalesQuote_tenantId_idx_c93ed4f1",
+    "label": "Create index \"SalesQuote_tenantId_idx_c93ed4f1\" on \"SalesQuote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "SalesQuote_tenantId_idx_c93ed4f1",
+        "table": "SalesQuote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"SalesQuote_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SalesQuote_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"SalesQuote_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"SalesQuote_tenantId_idx_c93ed4f1\" ON \"public\".\"SalesQuote\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"SalesQuote_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SalesQuote_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.SalesQuote.SalesQuote_tenantId_status_idx_d3d04256",
+    "label": "Create index \"SalesQuote_tenantId_status_idx_d3d04256\" on \"SalesQuote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "SalesQuote_tenantId_status_idx_d3d04256",
+        "table": "SalesQuote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"SalesQuote_tenantId_status_idx_d3d04256\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SalesQuote_tenantId_status_idx_d3d04256\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"SalesQuote_tenantId_status_idx_d3d04256\"",
+        "sql": "CREATE INDEX \"SalesQuote_tenantId_status_idx_d3d04256\" ON \"public\".\"SalesQuote\" (\"tenantId\", \"status\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"SalesQuote_tenantId_status_idx_d3d04256\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SalesQuote_tenantId_status_idx_d3d04256\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.SalesQuoteLine.SalesQuoteLine_quoteId_idx_a7628ce5",
+    "label": "Create index \"SalesQuoteLine_quoteId_idx_a7628ce5\" on \"SalesQuoteLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "SalesQuoteLine_quoteId_idx_a7628ce5",
+        "table": "SalesQuoteLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"SalesQuoteLine_quoteId_idx_a7628ce5\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SalesQuoteLine_quoteId_idx_a7628ce5\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"SalesQuoteLine_quoteId_idx_a7628ce5\"",
+        "sql": "CREATE INDEX \"SalesQuoteLine_quoteId_idx_a7628ce5\" ON \"public\".\"SalesQuoteLine\" (\"quoteId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"SalesQuoteLine_quoteId_idx_a7628ce5\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SalesQuoteLine_quoteId_idx_a7628ce5\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.SalesQuoteLine.SalesQuoteLine_tenantId_idx_c93ed4f1",
+    "label": "Create index \"SalesQuoteLine_tenantId_idx_c93ed4f1\" on \"SalesQuoteLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "SalesQuoteLine_tenantId_idx_c93ed4f1",
+        "table": "SalesQuoteLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"SalesQuoteLine_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SalesQuoteLine_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"SalesQuoteLine_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"SalesQuoteLine_tenantId_idx_c93ed4f1\" ON \"public\".\"SalesQuoteLine\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"SalesQuoteLine_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"SalesQuoteLine_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.SalesQuote.SalesQuote_tenantId_fkey",
+    "label": "Add foreign key \"SalesQuote_tenantId_fkey\" on \"SalesQuote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "SalesQuote_tenantId_fkey",
+        "table": "SalesQuote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"SalesQuote_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SalesQuote_tenantId_fkey",
+          "public",
+          "\"public\".\"SalesQuote\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"SalesQuote_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"SalesQuote\"\nADD CONSTRAINT \"SalesQuote_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"SalesQuote_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SalesQuote_tenantId_fkey",
+          "public",
+          "\"public\".\"SalesQuote\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.SalesQuoteLine.SalesQuoteLine_tenantId_fkey",
+    "label": "Add foreign key \"SalesQuoteLine_tenantId_fkey\" on \"SalesQuoteLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "SalesQuoteLine_tenantId_fkey",
+        "table": "SalesQuoteLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"SalesQuoteLine_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SalesQuoteLine_tenantId_fkey",
+          "public",
+          "\"public\".\"SalesQuoteLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"SalesQuoteLine_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"SalesQuoteLine\"\nADD CONSTRAINT \"SalesQuoteLine_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"SalesQuoteLine_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SalesQuoteLine_tenantId_fkey",
+          "public",
+          "\"public\".\"SalesQuoteLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.SalesQuoteLine.SalesQuoteLine_quoteId_fkey",
+    "label": "Add foreign key \"SalesQuoteLine_quoteId_fkey\" on \"SalesQuoteLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "SalesQuoteLine_quoteId_fkey",
+        "table": "SalesQuoteLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"SalesQuoteLine_quoteId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SalesQuoteLine_quoteId_fkey",
+          "public",
+          "\"public\".\"SalesQuoteLine\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"SalesQuoteLine_quoteId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"SalesQuoteLine\"\nADD CONSTRAINT \"SalesQuoteLine_quoteId_fkey\"\nFOREIGN KEY (\"quoteId\")\nREFERENCES \"public\".\"SalesQuote\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"SalesQuoteLine_quoteId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "SalesQuoteLine_quoteId_fkey",
+          "public",
+          "\"public\".\"SalesQuoteLine\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.SalesQuote",
+    "label": "Enable row-level security on \"SalesQuote\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "SalesQuote"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"SalesQuote\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "SalesQuote"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"SalesQuote\"",
+        "sql": "ALTER TABLE \"public\".\"SalesQuote\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"SalesQuote\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "SalesQuote"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.SalesQuoteLine",
+    "label": "Enable row-level security on \"SalesQuoteLine\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "SalesQuoteLine"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"SalesQuoteLine\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "SalesQuoteLine"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"SalesQuoteLine\"",
+        "sql": "ALTER TABLE \"public\".\"SalesQuoteLine\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"SalesQuoteLine\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "SalesQuoteLine"
+        ]
+      }
+    ]
+  }
+]

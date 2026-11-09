@@ -129,7 +129,7 @@ export async function insertDocument(tx: Writer, tenantId: string, doc: NewDocum
     );
   }
   await fiscalQueuePort.use().enqueue(tx, tenantId, { id: created.id, kind: doc.kind, number, prefix: allocation?.prefix || null, issueDate: bogotaDay(issueDate), customerName: doc.customerName, customerDoc: doc.customerDoc ?? null, lines: createdLines, totals, relatedCode, notes: doc.notes ?? null });
-  return { id: created.id, number, total: totals.total };
+  return { id: created.id, number, total: totals.total, prefix: allocation?.prefix || null };
 }
 
 const isNumberCollision = (e: unknown) => /Invoice_tenantId_kind_number|JournalEntry_tenantId_number|unique|duplicate/i.test(String((e as Error)?.message ?? e));

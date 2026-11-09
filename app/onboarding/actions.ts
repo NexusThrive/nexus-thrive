@@ -6,6 +6,8 @@ import { completeExistingTenant, createTenantWithOwner, onboardingMembership, on
 import { validateAdaptiveOnboarding } from "@/lib/core/tenancy/onboarding/validation";
 import { normalizeAndValidateSlug, suggestSlug } from "@/lib/core/tenancy/onboarding/slug";
 import { quote as quotePlan } from "@/lib/core/entitlements/pricing";
+import { saveOnboardingOperation } from "@/lib/core/tenancy/settings-db";
+import { hasOperation } from "@/lib/core/tenancy/onboarding/operation";
 import { loadPricingConfig } from "@/lib/core/entitlements/settings";
 import {
   applyBenefitCookie,
@@ -260,6 +262,7 @@ export async function completeAdaptiveOnboardingAction(
       };
     }
 
+    if (values.operation && hasOperation(values.operation)) await saveOnboardingOperation(tenantId, values.operation).catch(() => undefined);
     const benefit = await benefitPatch({
       tenantId,
       tenantName: values.name,
@@ -326,6 +329,7 @@ export async function completeAdaptiveOnboardingAction(
     };
   }
 
+  if (values.operation && hasOperation(values.operation)) await saveOnboardingOperation(createdTenantId, values.operation).catch(() => undefined);
   const benefit = await benefitPatch({
     tenantId: createdTenantId,
     tenantName: values.name,

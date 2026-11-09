@@ -8,6 +8,7 @@ import { MotionProvider } from "@/components/providers/motion-provider";
 import { PreferencesProvider } from "@/components/providers/preferences";
 import { PwaProvider } from "@/components/providers/pwa";
 import { KeyboardInset } from "@/components/providers/keyboard-inset";
+import { ForgetEmptyOnNavigate } from "@/components/molecules/empty-page-frame";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -53,6 +54,7 @@ export default function RootLayout({
           <PreferencesProvider>
             <MotionProvider />
             <KeyboardInset />
+            <ForgetEmptyOnNavigate />
             <PwaProvider>{children}</PwaProvider>
           </PreferencesProvider>
         </ClerkProvider>

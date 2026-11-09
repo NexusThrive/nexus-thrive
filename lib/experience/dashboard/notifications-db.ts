@@ -4,6 +4,8 @@ import { bogotaDayKey } from "@/lib/foundation/kernel/finance-series";
 import { buildNotifications, type AppNotification } from "@/lib/experience/dashboard/notifications";
 import { can } from "@/lib/core/auth/permissions";
 import { createTenantDb } from "@/lib/core/tenancy/db";
+import { overdueCountFor } from "@/lib/business/customers/tasks-db";
+import { orderCode } from "@/lib/business/store/cart";
 import { activeModuleNames } from "@/lib/core/tenancy/settings-db";
 
 import { createMembershipsDb } from "@/lib/industry/gym/memberships-repo";
@@ -31,7 +33,7 @@ export async function loadNotifications(tenantId: string, memberId: string, role
   const start = Temporal.Instant.fromEpochMilliseconds(startMs);
   const end = Temporal.Instant.fromEpochMilliseconds(startMs + 86_400_000);
 
-  const [movements, bookings, membership, registrations] = await Promise.all([
+  const [movements, bookings, membership, registrations, overdueTasks, readyOrders] = await Promise.all([
     modules.finance ? tenantDb.finance.getMovements(20) : Promise.resolve([]),
     modules.bookings
       ? db.orm.public.Booking.where({ tenantId })
@@ -48,6 +50,11 @@ export async function loadNotifications(tenantId: string, memberId: string, role
           .limit(20)
           .select("id", "createdAt", "payload")
           .all()
+      : Promise.resolve([]),
+    active.has("crm") ? overdueCountFor(tenantId, memberId) : Promise.resolve(0),
+    // Pedidos listos que siguen esperando entrega: solo para quien maneja pedidos y con la tienda o los pedidos activos.
+    (active.has("orders") || active.has("website")) && (role == null || can(role, "money.handle"))
+      ? db.orm.public.StoreOrder.where({ tenantId, fulfillment: "READY" }).orderBy((o) => o.createdAt.desc()).limit(10).select("id", "number", "customerName", "createdAt").all()
       : Promise.resolve([]),
   ]);
 
@@ -74,6 +81,8 @@ export async function loadNotifications(tenantId: string, memberId: string, role
         at: String(event.createdAt),
       };
     }),
+    overdueTasks,
+    readyOrders: readyOrders.map((o) => ({ id: o.id, code: orderCode(o.number), customer: o.customerName, at: String(o.createdAt) })),
     todayStart: new Date(startMs).toISOString(),
     modules: { ...modules, registrations: active.has("crm") },
   });

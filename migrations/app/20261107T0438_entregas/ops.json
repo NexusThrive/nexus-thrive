@@ -1,0 +1,284 @@
+[
+  {
+    "id": "table.Delivery",
+    "label": "Create table \"Delivery\"",
+    "summary": "Creates table \"Delivery\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Delivery"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Delivery\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Delivery\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Delivery\"",
+        "sql": "CREATE TABLE \"public\".\"Delivery\" (\n  \"carrier\" text,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"deliveredAt\" timestamptz,\n  \"id\" text NOT NULL,\n  \"method\" text NOT NULL,\n  \"note\" text,\n  \"orderId\" text NOT NULL,\n  \"receivedBy\" text,\n  \"scheduledFor\" timestamptz,\n  \"tenantId\" text NOT NULL,\n  \"trackingCode\" text,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Delivery\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Delivery\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.Delivery.Delivery_orderId_key",
+    "label": "Add unique constraint on \"Delivery\" (orderId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "Delivery_orderId_key",
+        "table": "Delivery"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Delivery_orderId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Delivery_orderId_key",
+          "public",
+          "\"public\".\"Delivery\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"Delivery_orderId_key\"",
+        "sql": "ALTER TABLE \"public\".\"Delivery\" ADD CONSTRAINT \"Delivery_orderId_key\" UNIQUE (\"orderId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Delivery_orderId_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Delivery_orderId_key",
+          "public",
+          "\"public\".\"Delivery\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Delivery.Delivery_tenantId_idx_c93ed4f1",
+    "label": "Create index \"Delivery_tenantId_idx_c93ed4f1\" on \"Delivery\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Delivery_tenantId_idx_c93ed4f1",
+        "table": "Delivery"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Delivery_tenantId_idx_c93ed4f1\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Delivery_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Delivery_tenantId_idx_c93ed4f1\"",
+        "sql": "CREATE INDEX \"Delivery_tenantId_idx_c93ed4f1\" ON \"public\".\"Delivery\" (\"tenantId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Delivery_tenantId_idx_c93ed4f1\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Delivery_tenantId_idx_c93ed4f1\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.Delivery.Delivery_tenantId_scheduledFor_idx_c01a0bda",
+    "label": "Create index \"Delivery_tenantId_scheduledFor_idx_c01a0bda\" on \"Delivery\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "Delivery_tenantId_scheduledFor_idx_c01a0bda",
+        "table": "Delivery"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"Delivery_tenantId_scheduledFor_idx_c01a0bda\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Delivery_tenantId_scheduledFor_idx_c01a0bda\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"Delivery_tenantId_scheduledFor_idx_c01a0bda\"",
+        "sql": "CREATE INDEX \"Delivery_tenantId_scheduledFor_idx_c01a0bda\" ON \"public\".\"Delivery\" (\"tenantId\", \"scheduledFor\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"Delivery_tenantId_scheduledFor_idx_c01a0bda\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Delivery_tenantId_scheduledFor_idx_c01a0bda\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Delivery.Delivery_tenantId_fkey",
+    "label": "Add foreign key \"Delivery_tenantId_fkey\" on \"Delivery\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Delivery_tenantId_fkey",
+        "table": "Delivery"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Delivery_tenantId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Delivery_tenantId_fkey",
+          "public",
+          "\"public\".\"Delivery\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Delivery_tenantId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Delivery\"\nADD CONSTRAINT \"Delivery_tenantId_fkey\"\nFOREIGN KEY (\"tenantId\")\nREFERENCES \"public\".\"Tenant\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Delivery_tenantId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Delivery_tenantId_fkey",
+          "public",
+          "\"public\".\"Delivery\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.Delivery.Delivery_orderId_fkey",
+    "label": "Add foreign key \"Delivery_orderId_fkey\" on \"Delivery\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "Delivery_orderId_fkey",
+        "table": "Delivery"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"Delivery_orderId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Delivery_orderId_fkey",
+          "public",
+          "\"public\".\"Delivery\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"Delivery_orderId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"Delivery\"\nADD CONSTRAINT \"Delivery_orderId_fkey\"\nFOREIGN KEY (\"orderId\")\nREFERENCES \"public\".\"StoreOrder\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"Delivery_orderId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Delivery_orderId_fkey",
+          "public",
+          "\"public\".\"Delivery\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rowLevelSecurity.public.Delivery",
+    "label": "Enable row-level security on \"Delivery\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "rowLevelSecurity",
+        "name": "Delivery"
+      }
+    },
+    "precheck": [
+      {
+        "description": "check RLS is not already enabled on \"Delivery\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND NOT (\"c\".\"relrowsecurity\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Delivery"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "enable row-level security on \"Delivery\"",
+        "sql": "ALTER TABLE \"public\".\"Delivery\" ENABLE ROW LEVEL SECURITY"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify row-level security is enabled on \"Delivery\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"c\".\"relrowsecurity\")) AS \"result\"",
+        "params": [
+          "public",
+          "Delivery"
+        ]
+      }
+    ]
+  }
+]

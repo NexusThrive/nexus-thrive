@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Command } from "cmdk";
 import { ArrowLeft, X } from "lucide-react";
 import { usePalette } from "@/components/providers/shell-context";
-import { PaletteList, useIsDesktop, usePaletteSearch } from "@/components/organisms/command-palette";
+import { AuriAskButton, PaletteList, useIsDesktop, usePaletteSearch } from "@/components/organisms/command-palette";
 
 /**
  * Búsqueda del móvil dentro de la barra superior: al pulsar la lupa, toda la barra se vuelve un campo (flecha para
@@ -75,6 +75,7 @@ export function MobileTopbarSearch() {
           enterKeyHint="search"
           className="h-11 min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-muted-foreground"
         />
+        <AuriAskButton query={search.query} status={search.status} run={run} className="static right-auto top-auto translate-y-0" />
         {search.query ? (
           <button type="button" onClick={() => { setQuery(""); inputRef.current?.focus(); }} aria-label="Borrar lo escrito" className="grid size-11 shrink-0 place-items-center rounded-md text-muted-foreground hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
             <X aria-hidden="true" className="size-5" />

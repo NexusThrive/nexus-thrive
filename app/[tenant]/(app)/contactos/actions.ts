@@ -1,0 +1,153 @@
+"use server";
+
+import { requireTenantContext } from "@/lib/core/tenancy/context";
+import { revalidatePath } from "next/cache";
+import { createTenantDb } from "@/lib/core/tenancy/db";
+import { getVerticalTerms, type VerticalTerms } from "@/lib/core/sectors/terms";
+import { can } from "@/lib/core/auth/permissions";
+import { logTenantAction } from "@/lib/core/tenancy/audit";
+import { withinLimit } from "@/lib/foundation/limits";
+import { customerLimit } from "@/lib/core/tenancy/customer-limit";
+
+/** Resultado de las acciones de fila / acciones masivas. */
+export type CustomerActionResult = {
+  ok: boolean;
+  message?: string;
+  deleted?: number;
+};
+
+
+type TenantDb = ReturnType<typeof createTenantDb>;
+
+/** DB del tenant + vocabulario de su vertical (mensajes adaptativos). */
+type TenantContext = {
+  tenantDb: TenantDb;
+  terms: VerticalTerms;
+  role: string;
+  /** Contexto completo, para la bitácora del negocio. */
+  shared: NonNullable<Awaited<ReturnType<typeof requireTenantContext>>>;
+};
+
+/**
+ * Verifica sesión de Clerk + tenant activo + membresía del usuario.
+ * Devuelve `null` cuando algo falla (el caller responde con mensaje genérico).
+ */
+async function actionContext(
+  tenantSlug: string,
+): Promise<TenantContext | null> {
+  const context = await requireTenantContext(tenantSlug, "/contactos");
+  if (!context) {
+    return null;
+  }
+  return { tenantDb: context.tenantDb, terms: getVerticalTerms(context.vertical), role: context.role, shared: context };
+}
+
+/** Archivar, restaurar y borrar clientes es de administración (SEC-05). */
+function cannotRemoveCustomers(context: TenantContext): CustomerActionResult | null {
+  if (can(context.role, "customers.delete")) return null;
+  return {
+    ok: false,
+    message: `Tu rol no puede archivar ni eliminar ${context.terms.customers.toLowerCase()}. Pídeselo a administración.`,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Formulario (create / update) — firma compatible con useActionState
+// ---------------------------------------------------------------------------
+
+
+
+// ---------------------------------------------------------------------------
+// Acciones de fila / masivas
+// ---------------------------------------------------------------------------
+
+export async function archiveCustomerAction(
+  tenantSlug: string,
+  customerId: string,
+): Promise<CustomerActionResult> {
+  const context = await actionContext(tenantSlug);
+  if (!context) {
+    return { ok: false, message: "No tienes acceso a este negocio." };
+  }
+  const denied = cannotRemoveCustomers(context);
+  if (denied) return denied;
+  const { tenantDb, terms } = context;
+
+  const result = await tenantDb.customers.archive(customerId);
+  if (!result) {
+    return {
+      ok: false,
+      message: `No se encontró el ${terms.customer.toLowerCase()}.`,
+    };
+  }
+  await logTenantAction(context.shared, "BIZ_CUSTOMER_ARCHIVE", { customerId });
+
+  revalidatePath(`/${tenantSlug}/contactos`);
+  return { ok: true };
+}
+
+export async function restoreCustomerAction(
+  tenantSlug: string,
+  customerId: string,
+): Promise<CustomerActionResult> {
+  const context = await actionContext(tenantSlug);
+  if (!context) {
+    return { ok: false, message: "No tienes acceso a este negocio." };
+  }
+  const denied = cannotRemoveCustomers(context);
+  if (denied) return denied;
+  const { tenantDb, terms } = context;
+
+  // Restaurar suma un cliente activo: respeta el límite acordado (código a medida).
+  const { limit, used } = await customerLimit(context.shared.tenantId);
+  if (!withinLimit(limit, used)) {
+    return { ok: false, message: `Tu acuerdo incluye ${limit} ${terms.customers.toLowerCase()} activos. Archiva alguno o escríbenos para ampliarlo.` };
+  }
+  const result = await tenantDb.customers.restore(customerId);
+  if (!result) {
+    return {
+      ok: false,
+      message: `No se encontró el ${terms.customer.toLowerCase()}.`,
+    };
+  }
+  await logTenantAction(context.shared, "BIZ_CUSTOMER_RESTORE", { customerId });
+
+  revalidatePath(`/${tenantSlug}/contactos`);
+  return { ok: true };
+}
+
+/**
+ * Borrado definitivo de clientes activos o archivados. Los pagos se conservan
+ * (FK `SetNull`); las notas y membresías se borran con el cliente.
+ */
+export async function deleteCustomersAction(
+  tenantSlug: string,
+  customerIds: string[],
+): Promise<CustomerActionResult> {
+  const context = await actionContext(tenantSlug);
+  if (!context) {
+    return { ok: false, message: "No tienes acceso a este negocio." };
+  }
+  const denied = cannotRemoveCustomers(context);
+  if (denied) return denied;
+  const { tenantDb, terms } = context;
+
+  if (!Array.isArray(customerIds) || customerIds.length === 0) {
+    return {
+      ok: false,
+      message: `Selecciona al menos un ${terms.customer.toLowerCase()}.`,
+    };
+  }
+
+  const deleted = await tenantDb.customers.deleteMany(customerIds);
+  if (deleted === 0) {
+    return {
+      ok: false,
+      message: `No se pudo eliminar (recarga la página). Si tiene proyectos de obra, archívalo en su lugar.`,
+    };
+  }
+
+  await logTenantAction(context.shared, "BIZ_CUSTOMERS_DELETE", { customerIds, deleted });
+  revalidatePath(`/${tenantSlug}/contactos`);
+  return { ok: true, deleted };
+}

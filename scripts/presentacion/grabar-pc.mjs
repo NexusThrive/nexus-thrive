@@ -14,7 +14,7 @@ const browser = await chromium.launch();
 {
   const warm = await browser.newContext({ viewport: SIZE, locale: "es-CO", storageState: `${stateDir}/estado.json` });
   const p = await warm.newPage();
-  for (const path of ["", "/crm", "/finance", "/functions"]) await p.goto(`${BASE}/${SLUG}${path}`, { waitUntil: "networkidle", timeout: 120000 }).catch(() => {});
+  for (const path of ["", "/contactos", "/finanzas", "/functions"]) await p.goto(`${BASE}/${SLUG}${path}`, { waitUntil: "networkidle", timeout: 120000 }).catch(() => {});
   await warm.close();
 }
 

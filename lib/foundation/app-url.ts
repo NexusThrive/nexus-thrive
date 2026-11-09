@@ -34,5 +34,5 @@ export async function getQuotePublicUrl(tenantSlug: string, quoteId: string): Pr
   const base = await getAppBaseUrl();
   const slug = tenantSlug.replace(/[/?#]/g, "");
   const id = quoteId.replace(/[/?#\s]/g, "");
-  return `${base}/${slug}/quotes/${id}`;
+  return `${base}/${slug}/ventas/cotizaciones/anteriores/${id}`;
 }

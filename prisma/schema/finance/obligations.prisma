@@ -1,0 +1,168 @@
+// use prisma-8
+
+/// Obligación: lo que un cliente le debe al negocio por un pedido de la tienda o una membresía, con monto, saldo y
+/// vencimiento. Las facturas y cuentas de cobro ya son su propia obligación (`Invoice.total` y `Invoice.paidTotal`), por
+/// eso no se duplican aquí. La cartera junta ambas (HU-obligaciones-01, ADR 0008).
+///
+/// Campos:
+/// - `originType`: STORE_ORDER | MEMBERSHIP. Con `originId` es único por negocio: un origen tiene una sola obligación.
+/// - `status`: OPEN | PAID | VOID. Se paga cuando `paidTotal` alcanza `amount`; se anula si el origen se cancela.
+/// - `debtorName`: Nombre de quien debe, tal como estaba al crearla (no cambia si luego se edita el cliente).
+model Obligation {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  originType  String
+  originId    String
+  customerId  String?
+  debtorName  String
+  description String
+  amount      Decimal
+  paidTotal   Decimal  @default(0)
+  dueDate     DateTime
+  status      String   @default("OPEN")
+  createdAt   DateTime @default(now())
+  updatedAt   temporal.updatedAt()
+
+  @@unique([tenantId, originType, originId])
+  @@index([tenantId, status, dueDate])
+  @@rls
+}
+
+/// Aplicación de un pago a lo que cubre (HU-aplicacion-01, D-8): un pago puede cubrir varias obligaciones y una
+/// obligación puede recibir varios pagos (anticipos, parciales, abonos). El dinero se mueve una sola vez en `Payment`;
+/// aquí solo se reparte. La suma aplicada de un pago nunca supera su monto.
+///
+/// Campos:
+/// - `targetType`: INVOICE (cuenta de cobro o factura) | OBLIGATION (pedido de la tienda o membresía).
+/// - `targetId`: Id de la factura o de la obligación.
+/// - `amount`: Parte del pago aplicada a ese destino.
+model PaymentAllocation {
+  id         String   @id @default(uuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  paymentId  String
+  targetType String
+  targetId   String
+  amount     Decimal
+  createdAt  DateTime @default(now())
+
+  @@index([tenantId, paymentId])
+  @@index([tenantId, targetType, targetId])
+  @@rls
+}
+
+/// Intento de pago de un cobro (HU-intentos-01): lo que la pasarela reportó cada vez que el cliente intentó pagar. Un
+/// intento fallido NO crea un pago y el cobro sigue abierto para reintentar; un intento aprobado es el pago confirmado.
+///
+/// Campos:
+/// - `result`: DECLINED | ERROR | VOIDED (los aprobados se registran como pago, no aquí).
+/// - `externalId`: Id del intento en el proveedor (único por cobro: el mismo aviso repetido no duplica).
+model PaymentAttempt {
+  id         String   @id @default(uuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  intentId   String
+  provider   String
+  externalId String
+  result     String
+  amount     Decimal?
+  createdAt  DateTime @default(now())
+
+  @@unique([tenantId, intentId, externalId])
+  @@index([tenantId, intentId])
+  @@rls
+}
+
+/// Cuenta financiera (HU-tesoreria-01, D-9): dónde está el dinero del negocio. Una caja, un banco o una pasarela de pagos.
+/// `CashBox` sigue siendo la caja física con sus turnos; esta tabla es la vista de tesorería y lleva la tarifa de la pasarela.
+///
+/// Campos:
+/// - `kind`: CASH | BANK | GATEWAY.
+/// - `provider`: Solo para pasarelas (p. ej. `wompi`). Una pasarela por proveedor y negocio.
+/// - `feePct`, `feeFixed`, `feeVatPct`: Tarifa de la pasarela para estimar la comisión de cada cobro: porcentaje sobre el valor,
+///   valor fijo por transacción e IVA sobre la comisión. En 0 no se estima comisión. La tarifa real la confirma la liquidación.
+/// - `ledgerAccount`: Código del plan de cuentas donde vive su saldo (1105 caja, 1110 bancos, 1340 pasarelas).
+model FinancialAccount {
+  id            String   @id @default(uuid())
+  tenantId      String
+  tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  kind          String
+  name          String
+  provider      String?
+  feePct        Decimal  @default(0)
+  feeFixed      Decimal  @default(0)
+  feeVatPct     Decimal  @default(0)
+  ledgerAccount String
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     temporal.updatedAt()
+
+  @@unique([tenantId, kind, name])
+  @@index([tenantId, kind])
+  @@rls
+}
+
+/// Liquidación del proveedor (HU-liquidaciones-01): lo que la pasarela depositó al negocio por un grupo de cobros, con su
+/// comisión REAL. La diferencia contra la comisión estimada genera un ajuste contable. Los cobros liquidados quedan ligados
+/// por `PaymentIntent.settlementId`.
+///
+/// Campos:
+/// - `externalRef`: Referencia de la liquidación en el proveedor (única por negocio y proveedor: no se registra dos veces).
+/// - `gross`: Suma de los cobros liquidados. `feeEstimated` es la que se calculó al confirmar cada uno; `feeReal`, la que cobró el proveedor.
+/// - `netReceived`: Lo que llegó al banco (bruto menos comisión real). `difference` = comisión real − estimada.
+/// - Una liquidación se registra completa o no se registra: si el reporte trae una transacción que NEXUS no tiene como cobrada
+///   por esa pasarela, se rechaza con la lista para resolverla en la conciliación.
+model ProviderSettlement {
+  id           String   @id @default(uuid())
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  provider     String
+  externalRef  String
+  day          String
+  gross        Decimal
+  feeEstimated Decimal
+  feeReal      Decimal
+  netReceived  Decimal
+  difference   Decimal
+  itemCount    Int
+  accounted    Boolean  @default(false)
+  createdById  String?
+  createdAt    DateTime @default(now())
+
+  @@unique([tenantId, provider, externalRef])
+  @@index([tenantId, createdAt])
+  @@rls
+}
+
+/// Movimiento del extracto bancario (HU-conciliacion-01): lo que el banco registró. NEXUS propone con qué pago o liquidación
+/// cruza cada depósito y una persona autorizada lo confirma; nada se concilia solo.
+///
+/// Campos:
+/// - `amount`: Con signo: positivo es un depósito (entra dinero), negativo un retiro.
+/// - `fingerprint`: Huella del movimiento (día, valor, descripción, referencia): importar dos veces el mismo extracto no duplica.
+/// - `status`: UNMATCHED (pendiente) | PROPOSED (hay una propuesta) | MATCHED (conciliado por una persona) | REVIEWED (una
+///   persona lo revisó y no cruza con nada: no se vuelve a proponer).
+/// - `matchType`, `matchId`, `matchConfidence`: Con qué cruza (SETTLEMENT | PAYMENT), su id y si el cruce es EXACT o APPROX.
+model BankStatementLine {
+  id              String    @id @default(uuid())
+  tenantId        String
+  tenant          Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  day             String
+  description     String
+  reference       String?
+  amount          Decimal
+  fingerprint     String
+  status          String    @default("UNMATCHED")
+  matchType       String?
+  matchId         String?
+  matchConfidence String?
+  batch           String
+  confirmedById   String?
+  confirmedAt     DateTime?
+  createdAt       DateTime  @default(now())
+
+  @@unique([tenantId, fingerprint])
+  @@index([tenantId, status, day])
+  @@rls
+}

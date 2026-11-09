@@ -72,7 +72,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "Documento A4 de una versión de cotización: muestra la foto congelada al emitirla (`Quote.snapshot`) y nunca recalcula. Se imprime desde `/quotes/[id]/print`.",
+          "Documento A4 de una versión de cotización: muestra la foto congelada al emitirla (`Quote.snapshot`) y nunca recalcula. Se imprime desde `/ventas/cotizaciones/anteriores/[id]/print`.",
       },
     },
   },

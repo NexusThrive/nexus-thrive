@@ -27,7 +27,19 @@ export function tipFor(input: { pct?: number; fixed?: number }, totals: CartTota
   return Math.max(0, round2(((totals.subtotal - totals.discountTotal) * (input.pct ?? 0)) / 100));
 }
 
-export type PaymentInput = { method: string; amount: number };
+/**
+ * Renglón a medida (merchandising): el renglón de un producto marcado como personalizable lleva una nota con lo pedido («Texto: Hola»)
+ * y, si se acordó, un precio propio. La nota se anexa a la descripción del documento.
+ */
+export const MAX_CUSTOM_NOTE = 200;
+
+export function lineDescription(name: string, note?: string | null): string {
+  const clean = (note ?? "").replace(/\s+/g, " ").trim().slice(0, MAX_CUSTOM_NOTE);
+  return clean ? `${name} — ${clean}` : name;
+}
+
+/** `methodId` es el medio del negocio que eligió el cajero; el servidor lo resuelve y pone `label` (su nombre). */
+export type PaymentInput = { method: string; amount: number; methodId?: string; label?: string };
 export type Settlement = { applied: PaymentInput[]; change: number; paid: number };
 
 /**

@@ -94,7 +94,8 @@ permiso, módulo, esquema y riesgo.
 | Autenticación | **Llave por negocio** (`nx_live_…` / `nx_test_…`): solo se guarda su hash; se muestra una vez; tiene alcances, vencimiento, último uso y autor. Después, **OAuth 2.0** (cliente por integración, para el directorio y el marketplace) |
 | Alcances | Los permisos de `BUSINESS_PERMISSIONS` como `recurso:acción` (`customers:read`, `payments:create`). Mínimo privilegio por defecto; el rol de la llave nunca supera el de quien la creó |
 | Negocio | Lo fija la llave; **no hay** `tenantId` en la ruta ni en el cuerpo |
-| Idempotencia | Cabecera `Idempotency-Key` obligatoria en operaciones `write`/`money`; se guarda 24 h la respuesta; la misma llave con otro cuerpo da `422` |
+| Idempotencia | Cabecera `Idempotency-Key` (8–128 caracteres) obligatoria en las operaciones con `idempotent`: sin ella, `422 idempotency_key_required`. Se guarda 24 h la respuesta (`IdempotencyRecord`) y repetirla la devuelve con `Idempotent-Replayed: true`; la misma llave con otro cuerpo da `422 idempotency_conflict`; si la primera sigue en curso, `409 idempotency_in_progress`. Si la operación falla, la llave se libera |
+| Escritura | `customers.upsert`, `orders.create` (pedido de un canal: `channel`, `external_id` idempotente y líneas por `product_id` o `sku`), `orders.update_status`, `payments.create_intent` (riesgo `write`, alcance `*`, `recurso.*` o el id) y `payments.confirm` (riesgo `money`: solo con el alcance exacto `payments.confirm`, nunca por `*` ni `payments.*`). El MCP sigue siendo de solo lectura hasta que exista la bandeja de aprobación humana (§4.3) |
 | Paginación | Por cursor (`?cursor=&limit=`, máx. 100), orden estable; sin `offset` en listas grandes |
 | Filtros | `?updated_since=` en todos los listados (clave para n8n y sincronizaciones) |
 | Errores | RFC 9457 (`application/problem+json`): `type`, `title`, `status`, `detail`, `code` estable, `request_id` |

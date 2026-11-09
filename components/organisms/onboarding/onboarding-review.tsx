@@ -16,6 +16,8 @@ export type ReviewData = {
   vertical: VerticalValue | null;
   teamSize?: string;
   address?: string;
+  /** Resumen de «Tu operación» (qué vende, cómo vende y qué controla). */
+  operation?: string;
   city: string;
   plan: PlanKey;
   planName: string;
@@ -70,7 +72,7 @@ export function OnboardingReview({
   benefit?: { planName: string; durationDays: number; kind: "PROMO" | "PAID" };
   /** Piloto: oculta los precios y muestra el plan como gratuito. */
   showPricing?: boolean;
-  onEdit: (step: "profile" | "business" | "plan") => void;
+  onEdit: (step: "profile" | "business" | "operation" | "plan") => void;
 }) {
   const visual = data.vertical ? getVerticalIcon(data.vertical) : null;
   return (
@@ -79,8 +81,8 @@ export function OnboardingReview({
         <dl className="divide-y divide-border">
           <Row
             icon={data.tenantType === "COMPANY" ? Building2 : User}
-            label="Perfil"
-            value={data.tenantType === "COMPANY" ? "Empresa" : "Emprendedor / persona natural"}
+            label="Etapa"
+            value={data.tenantType === "COMPANY" ? "Negocio en funcionamiento" : "Emprendiendo"}
           />
           <Row icon={Store} label="Nombre" value={data.name} />
           {data.legalName ? <Row icon={Building2} label="Razón social" value={data.legalName} /> : null}
@@ -91,6 +93,10 @@ export function OnboardingReview({
           {data.address ? <Row icon={MapPinned} label="Dirección" value={data.address === "REMOTE" ? "Sin local físico" : data.address} /> : null}
           <Row icon={MapPin} label="Ciudad" value={data.city} />
         </dl>
+      </Card>
+
+      <Card title="Tu operación" onEdit={() => onEdit("operation")}>
+        <p className="py-3 text-ui text-muted-foreground">{data.operation ?? "Sin respuestas: prepararemos lo esencial de tu rubro. Puedes contarnos más cuando quieras."}</p>
       </Card>
 
       <Card title="Tu plan">

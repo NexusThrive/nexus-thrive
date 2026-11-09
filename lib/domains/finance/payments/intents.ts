@@ -12,8 +12,27 @@ export function newReference(): string {
   return [...bytes].map((b) => ALPHABET[b % ALPHABET.length]).join("");
 }
 
-export type IntentStatus = "PENDING" | "PAID" | "EXPIRED" | "FAILED" | "CANCELED";
-export const STATUS_LABELS: Record<IntentStatus, string> = { PENDING: "Pendiente", PAID: "Pagado", EXPIRED: "Vencido", FAILED: "Fallido", CANCELED: "Cancelado" };
+export type IntentStatus = "PENDING" | "VERIFYING" | "PAID" | "EXPIRED" | "FAILED" | "CANCELED";
+export const STATUS_LABELS: Record<IntentStatus, string> = { PENDING: "Pendiente", VERIFYING: "En verificación", PAID: "Pagado", EXPIRED: "Vencido", FAILED: "Fallido", CANCELED: "Cancelado" };
+
+/** Estados desde los que un cobro todavía puede confirmarse: pendiente, o con comprobante esperando verificación. */
+export const CONFIRMABLE_STATUSES = ["PENDING", "VERIFYING"] as const;
+
+/** Comprobante que escribe el cliente (número de transferencia, banco…): 4 a 200 caracteres. Un comprobante NO confirma el pago. */
+export function validateProof(note: string): string | null {
+  const t = note.trim();
+  if (t.length < 4) return "Escribe el número o referencia de tu transferencia.";
+  if (t.length > 200) return "El comprobante es muy largo (máximo 200 caracteres).";
+  return null;
+}
+
+/** Motivo de rechazo de un comprobante: 3 a 200 caracteres. */
+export function validateRejection(reason: string): string | null {
+  const t = reason.trim();
+  if (t.length < 3) return "Escribe por qué rechazas el comprobante.";
+  if (t.length > 200) return "El motivo es muy largo (máximo 200 caracteres).";
+  return null;
+}
 
 /** Un enlace pendiente cuyo plazo pasó se ve como vencido. */
 export function effectiveStatus(status: string, expiresAt: string | number, now: number = Date.now()): IntentStatus {
@@ -31,6 +50,79 @@ export function validateIntent(input: { amount: number; description: string; exp
   if (input.description.trim().length < 3) return "Escribe qué se está cobrando.";
   if (!(input.expiresInHours >= 1 && input.expiresInHours <= 24 * 30)) return "La vigencia va de 1 hora a 30 días.";
   return null;
+}
+
+/** Cobro sin pasarela: transferencia o efectivo, que se confirma a mano con evidencia. */
+export const MANUAL_PROVIDER = "manual";
+
+/**
+ * Con qué se crea un cobro: la pasarela pedida si el negocio la tiene conectada, si no la primera
+ * conectada y, sin ninguna, el cobro manual. Nunca cae en la pasarela de prueba por omisión.
+ */
+export function pickGateway(connected: readonly string[], wanted?: string | null): string {
+  if (wanted && connected.includes(wanted)) return wanted;
+  return connected[0] ?? MANUAL_PROVIDER;
+}
+
+/** Entorno de Wompi según su llave pública (`pub_prod_…` o `pub_test_…`); `null` si la llave no es de Wompi. */
+export function wompiEnvironment(publicKey: string): "production" | "sandbox" | null {
+  const key = publicKey.trim();
+  if (/^pub_prod_[A-Za-z0-9]+$/.test(key)) return "production";
+  if (/^pub_test_[A-Za-z0-9]+$/.test(key)) return "sandbox";
+  return null;
+}
+
+export type FeeTariff = { feePct: number; feeFixed: number; feeVatPct: number };
+
+/**
+ * Comisión estimada de la pasarela por un cobro: porcentaje sobre el valor más un fijo por transacción, más el IVA de la
+ * comisión. Es una ESTIMACIÓN con la tarifa que configuró el negocio; la liquidación del proveedor confirma la real.
+ * Sin tarifa (todo en cero) no hay comisión estimada. El neto nunca es negativo.
+ */
+export function estimateFee(gross: number, tariff: FeeTariff): { fee: number; net: number } {
+  if (!(gross > 0)) return { fee: 0, net: 0 };
+  const base = (gross * Math.max(0, tariff.feePct)) / 100 + Math.max(0, tariff.feeFixed);
+  const withVat = base * (1 + Math.max(0, tariff.feeVatPct) / 100);
+  const fee = Math.min(gross, Math.round(withVat * 100) / 100);
+  return { fee, net: Math.round((gross - fee) * 100) / 100 };
+}
+
+/** Valida una tarifa: porcentajes entre 0 y 30, fijo entre 0 y 50.000. */
+export function validateTariff(t: FeeTariff): string | null {
+  if (![t.feePct, t.feeFixed, t.feeVatPct].every((n) => Number.isFinite(n) && n >= 0)) return "La tarifa no es válida.";
+  if (t.feePct > 30 || t.feeVatPct > 30) return "Los porcentajes no pueden pasar de 30 %.";
+  if (t.feeFixed > 50_000) return "El valor fijo por transacción no puede pasar de $ 50.000.";
+  return null;
+}
+
+export type SettlementCandidate = { id: string; providerRefId: string; amount: number; /** `null` = el cobro se asentó sin comisión estimada (no había tarifa). */ feeEstimated: number | null };
+export type SettlementPlan =
+  | { ok: true; ids: string[]; gross: number; feeEstimated: number; feeReal: number; netReceived: number; difference: number }
+  | { ok: false; message: string; missing?: string[] };
+
+const r2 = (n: number) => Math.round(n * 100) / 100;
+
+/**
+ * Arma una liquidación del proveedor (HU-liquidaciones-01): cruza las transacciones del reporte con los cobros que NEXUS
+ * confirmó por esa pasarela y valida que el depósito cuadre (bruto − comisión real = neto recibido). Se registra completa o no se
+ * registra: una transacción del reporte que NEXUS no tiene (o con otro valor) se devuelve para resolverla en la conciliación.
+ * `difference` = comisión real − estimada: positiva es un gasto adicional; negativa, un menor gasto.
+ */
+export function planSettlement(candidates: readonly SettlementCandidate[], rows: readonly ReportRow[], feeReal: number, netReceived: number): SettlementPlan {
+  if (!rows.length) return { ok: false, message: "Pega las transacciones de la liquidación: una por línea («id, valor»)." };
+  if (!(feeReal >= 0) || !(netReceived > 0)) return { ok: false, message: "Escribe la comisión real y lo que se depositó." };
+  const ids = rows.map((r) => r.externalId);
+  if (new Set(ids).size !== ids.length) return { ok: false, message: "Hay transacciones repetidas en el reporte." };
+  const byRef = new Map(candidates.map((c) => [c.providerRefId, c]));
+  const missing = rows.filter((r) => { const c = byRef.get(r.externalId); return !c || r2(c.amount) !== r2(r.amount); }).map((r) => r.externalId);
+  if (missing.length) return { ok: false, message: `${missing.length === 1 ? "1 transacción del reporte no está" : `${missing.length} transacciones del reporte no están`} cobradas en NEXUS por esta pasarela, o su valor no coincide. Resuélvelas en la conciliación antes de liquidar.`, missing };
+  const matched = rows.map((r) => byRef.get(r.externalId)!);
+  const noFee = matched.filter((c) => c.feeEstimated == null);
+  if (noFee.length) return { ok: false, message: `${noFee.length === 1 ? "1 cobro se asentó" : `${noFee.length} cobros se asentaron`} sin comisión estimada porque la pasarela no tenía tarifa. Configura la tarifa; los cobros nuevos la usarán, y estos se conciliarán aparte.`, missing: noFee.map((c) => c.providerRefId) };
+  const gross = r2(matched.reduce((s, c) => s + c.amount, 0));
+  const feeEstimated = r2(matched.reduce((s, c) => s + (c.feeEstimated ?? 0), 0));
+  if (Math.abs(r2(gross - feeReal) - r2(netReceived)) > 1) return { ok: false, message: `El depósito no cuadra: ${gross.toLocaleString("es-CO")} de bruto menos ${feeReal.toLocaleString("es-CO")} de comisión da ${r2(gross - feeReal).toLocaleString("es-CO")}, no ${netReceived.toLocaleString("es-CO")}.` };
+  return { ok: true, ids: matched.map((c) => c.id), gross, feeEstimated, feeReal: r2(feeReal), netReceived: r2(netReceived), difference: r2(feeReal - feeEstimated) };
 }
 
 export type ReportRow = { externalId: string; amount: number };

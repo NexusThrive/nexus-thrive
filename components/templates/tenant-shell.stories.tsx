@@ -46,6 +46,8 @@ type Story = StoryObj<typeof meta>;
 
 export const Desktop: Story = {};
 export const Mobile: Story = { globals: { viewport: { value: "mobile1" } } };
+/** En Sistema (Configuración): la barra general, con «Crear». Inicio no lo tiene (ahí están las acciones rápidas) ni la barra de módulo. */
+export const DesktopSistema: Story = { parameters: { nextjs: { navigation: { pathname: "/constructora/settings" } } } };
 
 /** Página larga (hay barra de scroll) con un modal: abrirlo no debe mover la navbar ni el contenido. */
 export const WithModal: Story = {

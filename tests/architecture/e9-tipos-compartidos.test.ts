@@ -36,7 +36,7 @@ describe("tipos y reglas que dejaron de ser de experiencia", () => {
 
   test("tenant-nav reexporta la misma regla de rutas: una sola fuente", () => {
     expect(fromNav).toBe(fromCore);
-    expect(fromCore("/crm/123")).toEqual(["crm"]);
+    expect(fromCore("/contactos/123")).toEqual(["crm"]);
     expect(fromCore("/settings")).toBeNull();
   });
 

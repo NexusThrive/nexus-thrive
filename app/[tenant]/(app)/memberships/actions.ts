@@ -4,6 +4,7 @@ import { requireTenantContext } from "@/lib/core/tenancy/context";
 import { revalidatePath } from "next/cache";
 import { createTenantDb } from "@/lib/core/tenancy/db";
 import { formatDateShort } from "@/lib/foundation/format";
+import { moneyOutcome } from "@/lib/business/sales/money-error";
 import { createMembershipWithCharge, renewMembershipWithCharge } from "@/lib/industry/gym/memberships-db";
 import { getProduct, saveProduct } from "@/lib/business/catalog/products-db";
 import { can } from "@/lib/core/auth/permissions";
@@ -74,7 +75,7 @@ async function actionContext(
 /** Revalida el módulo de membresías, Finanzas y el dashboard juntos. */
 function revalidateMembershipViews(tenantSlug: string): void {
   revalidatePath(`/${tenantSlug}/memberships`);
-  revalidatePath(`/${tenantSlug}/finance`);
+  revalidatePath(`/${tenantSlug}/finanzas`);
   revalidatePath(`/${tenantSlug}`);
 }
 
@@ -137,15 +138,18 @@ export async function createMembershipAction(
   const priceAmount = String(Number(price.replace(",", ".")));
   // La membresía y su cobro inicial (recibo consecutivo; en efectivo entra a
   // la caja abierta) pasan juntos o no pasan: lib/business/sales/money-service.ts.
-  await createMembershipWithCharge(tenantDb.tenantId, tenantDb.memberId, {
-    customerId,
-    type,
-    startDate: startInstant,
-    endDate: endInstant,
-    status,
-    price: priceAmount,
-    charge: registerInitialPayment ? { method: provider, description: `Membresía ${typeLabel(type)} — cobro inicial` } : null,
-  });
+  const created = await moneyOutcome(() =>
+    createMembershipWithCharge(tenantDb.tenantId, tenantDb.memberId, {
+      customerId,
+      type,
+      startDate: startInstant,
+      endDate: endInstant,
+      status,
+      price: priceAmount,
+      charge: registerInitialPayment ? { method: provider, description: `Membresía ${typeLabel(type)} — cobro inicial` } : null,
+    }),
+  );
+  if (!created.ok) return { status: "error", message: created.message, values: validation.values };
 
   revalidateMembershipViews(tenantSlug);
   return { status: "ok" };
@@ -204,14 +208,17 @@ export async function renewMembershipAction(
   const priceAmount = String(membership.price);
 
   // Renovación y cobro, juntos o nada.
-  await renewMembershipWithCharge(tenantDb.tenantId, tenantDb.memberId, {
-    membershipId,
-    customerId: membership.customerId,
-    endDate: newEndInstant,
-    status: newStatus,
-    price: priceAmount,
-    charge: registerPayment ? { method: provider, description: `Membresía ${typeLabel(membership.type)} — renovación` } : null,
-  });
+  const renewed = await moneyOutcome(() =>
+    renewMembershipWithCharge(tenantDb.tenantId, tenantDb.memberId, {
+      membershipId,
+      customerId: membership.customerId,
+      endDate: newEndInstant,
+      status: newStatus,
+      price: priceAmount,
+      charge: registerPayment ? { method: provider, description: `Membresía ${typeLabel(membership.type)} — renovación` } : null,
+    }),
+  );
+  if (!renewed.ok) return { status: "error", message: renewed.message };
 
   revalidateMembershipViews(tenantSlug);
   return {
@@ -291,8 +298,8 @@ export async function saveMembershipTypeAction(
   );
 
   revalidatePath(`/${tenantSlug}/memberships`);
-  revalidatePath(`/${tenantSlug}/crm`);
-  revalidatePath(`/${tenantSlug}/inventory`);
+  revalidatePath(`/${tenantSlug}/contactos`);
+  revalidatePath(`/${tenantSlug}/inventario/productos`);
   revalidatePath(`/${tenantSlug}`);
   return { ok: true, message: id ? "Tipo de membresía guardado" : "Tipo de membresía creado" };
 }

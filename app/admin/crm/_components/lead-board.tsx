@@ -283,6 +283,7 @@ export default function LeadBoard({
 
   return (
     <DndContext
+      id="admin-crm-leads"
       sensors={sensors}
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}

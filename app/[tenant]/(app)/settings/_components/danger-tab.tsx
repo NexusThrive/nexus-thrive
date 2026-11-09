@@ -6,7 +6,7 @@ import { Trash2 } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { useToast } from "@/components/molecules/toast";
 import { DeleteBusinessDialog } from "@/components/organisms/delete-business-dialog";
-import { deleteOwnBusinessAction } from "../actions";
+import { deleteOwnBusinessAction } from "@/app/[tenant]/(app)/settings/actions";
 
 /**
  * Zona de peligro del negocio: eliminar el negocio y todos sus datos.

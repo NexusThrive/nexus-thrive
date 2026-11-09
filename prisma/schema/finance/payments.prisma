@@ -62,9 +62,15 @@ model Payment {
 /// Campos:
 /// - `reference`: Código público del enlace (`/pay/<reference>`): imposible de adivinar, único en
 ///   toda la plataforma.
-/// - `status`: PENDING | PAID | EXPIRED | FAILED | CANCELED
+/// - `status`: PENDING | VERIFYING | PAID | EXPIRED | FAILED | CANCELED. VERIFYING = el cliente avisó que pagó por
+///   transferencia y una persona autorizada debe verificarlo; un comprobante nunca marca el pago como recibido.
 /// - `channel`: LINK | QR
 /// - `invoiceId`: Cuenta de cobro que paga (el cobro baja su saldo).
+/// - `proofNote`: Referencia o comprobante que el cliente escribió al avisar su pago (queda como historia).
+/// - `feeEstimated`, `netExpected`: Comisión estimada de la pasarela al confirmar el cobro y el neto que se espera recibir
+///   (la liquidación del proveedor confirma la real). `financialAccountId` es la pasarela que lo cobró;
+///   `settlementId`, la liquidación en la que el proveedor lo depositó.
+/// - `rejectionReason`: Por qué una persona rechazó el comprobante; el cobro vuelve a PENDING.
 /// - `confirmedBy`: Cómo se confirmó: PROVIDER (webhook) | MANUAL (transferencia con evidencia).
 model PaymentIntent {
   id            String   @id @default(uuid())
@@ -82,6 +88,13 @@ model PaymentIntent {
   paidAt        DateTime?
   confirmedBy   String?
   evidence      String?
+  proofNote     String?
+  proofAt       DateTime?
+  rejectionReason String?
+  feeEstimated  Decimal?
+  netExpected   Decimal?
+  financialAccountId String?
+  settlementId  String?
   providerRefId String?
   paymentId     String?
   refundedTotal Decimal  @default(0)
@@ -129,5 +142,30 @@ model ReconciliationRun {
   createdAt   DateTime @default(now())
 
   @@index([tenantId, day])
+  @@rls
+}
+
+/// Medio de pago que el negocio ofrece al cobrar (punto de venta y, después, pedidos y canales). Cada uno es de un tipo base
+/// que decide cómo se registra el dinero; el nombre y las instrucciones son del negocio («Nequi 300 123 4567», «Bancolombia
+/// ahorros 123…»). El pago guarda el tipo base como `provider` y el nombre elegido en sus notas.
+///
+/// Campos:
+/// - `kind`: CASH (entra a la caja del turno) | TRANSFER (transferencia o billetera: Nequi, Daviplata, QR del banco…).
+/// - `instructions`: Dónde pagar (cuenta, número, QR); se muestra a quien cobra.
+/// - `position`: Orden en el que se ofrecen.
+model PaymentMethodSetting {
+  id           String   @id @default(uuid())
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  kind         String   @default("TRANSFER")
+  name         String
+  instructions String?
+  active       Boolean  @default(true)
+  position     Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    temporal.updatedAt()
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
   @@rls
 }

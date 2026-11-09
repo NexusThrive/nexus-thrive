@@ -160,16 +160,24 @@ Storybook con sus estados.
 | Necesito… | Componente | Archivo |
 |---|---|---|
 | Diálogo o panel lateral genérico | `ResponsiveSheet` (`drawer`, `size`, `busy`) | `components/organisms/responsive-sheet.tsx` |
+| Lista con controles (migas, búsqueda, filtros, vistas, paginador) | `ListControlPanel` (base de Odoo, modernizada) | `components/organisms/list-control-panel.tsx` |
+| Búsqueda avanzada de una lista (Buscar en · Filtros · Agrupar por · Favoritos) | `AdvancedSearch` (barra con chips + panel; recibe un `SearchSchema`, favoritos y sus acciones; estado en la URL) y el motor `lib/foundation/list-search.ts`. Una sección nueva solo define sus filtros, agrupaciones y campos (ver `lib/business/customers/customer-search.ts`) | `components/organisms/advanced-search/advanced-search.tsx` |
+| Migas de un registro («← Atrás» · «Clientes › Nombre») | `RecordBreadcrumbs` | `components/organisms/record-breadcrumbs.tsx` |
+| Crear algo: alta rápida y ficha completa aparte | Un modal por tipo de alta: alta rápida con lo esencial (`size="sm"`, 3 campos) que abre la ficha; la ficha completa se edita en su propia pantalla. Nunca un solo modal para todo | `app/[tenant]/(app)/crm/_components/customer-quick-create.tsx` |
 | Formulario en diálogo | `FormDialog` | `components/organisms/form-sheet.tsx` |
 | Formulario en panel lateral | `FormDrawer` | `components/organisms/form-sheet.tsx` |
 | Confirmar (anular, eliminar) | `ConfirmDialog` o `useConfirm()` | `components/organisms/confirm-dialog.tsx` |
 | Ventana flotante compacta | `Popover` | `components/molecules/popover.tsx` |
+| Asistente del negocio (chat), en la esquina | `AuriAssistant` (botón con la cara de AURI AI y ventana flotante de chat; abre el Centro de ayuda desde su pie). Hoy es solo interfaz: no inventa respuestas. La cara es `EyeTracker` (de Bencho, MIT; colores de la marca en `app/styles/eye-tracker.css`) | `components/organisms/auri-assistant.tsx` · `components/atoms/eye-tracker.tsx` |
 | Ayuda "?" | `ContextHelp` | `components/molecules/context-help.tsx` |
 | Nombre de un botón de icono | `Tooltip` (además del `aria-label`) | `components/molecules/tooltip.tsx` |
 | Campo con etiqueta, descripción y error | `Field` (+ `FieldError`, `FieldDescription`, `focusFirstInvalid`) | `components/molecules/field.tsx` |
-| Resultado de una acción | `useToast()` | `components/molecules/toast.tsx` |
+| Resultado de una acción | `useToast()`. Con `receipt` (un cobro) es un comprobante pequeño que sube desde abajo a la derecha, con `actions` («Compartir», «Ver»), 8 s pausables con cursor o foco, y al irse baja por el mismo camino; el modal del cobro ya se cerró | `components/molecules/toast.tsx` |
+| Confirmar algo que mueve dinero sin que un toque suelto lo dispare (cobrar) | `SlideToConfirm`: deslizar el asa hasta el final (Enter o Espacio con teclado); al confirmar el asa llena la pista y muestra «Procesando…» y luego el estado; si falla, vuelve. Sin librerías (idea de Bencho, MIT) | `components/molecules/slide-to-confirm.tsx` |
+| Varias personas de un vistazo (clientes nuevos, equipo) | `AvatarStack`: círculos superpuestos con foto o blobatar; se alzan al pasar el cursor o enfocar, y un círculo final opcional de resumen («+3») | `components/molecules/avatar-stack.tsx` |
+| Cajón de aplicaciones de Inicio | `AppGrid`: nombre en una línea con «…», transición al pasar el cursor, favoritos y orden propio (mantener presionado para alzar y soltar, asa «Mover» con teclado: al soltar queda en su lugar, sin animación; orden y favoritos en este navegador) | `components/organisms/app-grid.tsx` |
 | Error o aviso dentro del formulario | `Alert` | `components/molecules/alert.tsx` |
-| Nada que mostrar | `EmptyState` (texto a la izquierda, N en contorno recortada en la esquina inferior derecha; en una tabla o lista vacía, `action` lleva el botón de crear el primero) | `components/molecules/empty-state.tsx` |
+| Nada que mostrar | `EmptyState` ([formato completo](../04-patrones/estados-vacios.md)). Vista entera vacía (una lista o un tablero sin nada): `mark="page"`, centrado y sin dejar scroll: icono del área en un recuadro, título, para qué sirve, la acción principal (con destello `nx-flash`, apagado con movimiento reducido) y `secondaryAction` (p. ej. importar), y `highlights` con tres primeros pasos; detrás, `preview` con datos de ejemplo (no un esqueleto de carga). La precarga siguiente muestra este estado en esqueleto (`remember`; apágalo con búsqueda o filtros). Vacíos pequeños (tarjeta, panel, Actividad reciente): `corner`, texto a la izquierda y N en la esquina inferior derecha. En una lista vacía, `action` lleva el botón de crear el primero | `components/molecules/empty-state.tsx` |
 | Una pantalla o un bloque no se pudo cargar (`error.tsx`) | `ErrorState` (`page` o `block`; reintentar + salida + referencia) | `components/molecules/error-state.tsx` |
 | El rol no puede usar una función | `PermissionNotice` (texto derivado de la matriz de permisos, DR-34) | `components/molecules/permission-notice.tsx` |
 | Listado de registros (tabla en ancho, lista en angosto, DR-08) | `AdaptiveTable` (columnas con rol `primary` · `secondary` · `detail` · `figure` · `status` · `action`; `footer` de totales; una sola representación en el DOM; componente de cliente) | `components/organisms/adaptive-table.tsx` |
@@ -178,7 +186,7 @@ Storybook con sus estados.
 | Esperando una sección (sin forma conocida / en línea) | `LoadingState` (la N) | `components/molecules/loading-state.tsx` |
 | Esperando contenido dentro de un panel, ficha o lista | `SkeletonRows` (esqueleto con la forma de lo que viene) | `components/molecules/skeleton-rows.tsx` |
 | Esperando la página | `PageSkeleton` (en `loading.tsx`) | `components/organisms/page-skeleton.tsx` |
-| Elegir una opción de una lista | `Select` propio (mismos props que `<select>`; **no** usar `<select>` nativo) | `components/atoms/select.tsx` |
+| Elegir una opción de una lista | `Select` propio (mismos props que `<select>`; **no** usar `<select>` nativo). Siempre trae un buscador arriba de la lista (`searchable={false}` lo quita) | `components/atoms/select.tsx` |
 | Elegir una fecha | `DateInput` (calendario propio; **no** usar `<input type="date">`) | `components/molecules/date-input.tsx` |
 | Menú de acciones | `DropdownMenu` (el panel viaja desde su botón y vuelve a él; ver `packages/brand/docs/04-patrones/movimiento.md`) | `components/molecules/dropdown-menu.tsx` |
 | Inicio que cada persona ordena | `CustomizableDashboard` (12 columnas; se edita manteniendo presionado un bloque, sin botón «Personalizar»; arrastrar, ancho y alto por las esquinas, ocultar y «Agregar» gráficos del catálogo `lib/dashboard/chart-catalog.ts`; cada tarjeta es su propio bloque `widgets` con `id`, `label`, `span` y `half`; preferencia versionada en `localStorage`) | `components/organisms/customizable-dashboard.tsx`, lógica en `lib/dashboard/layout.ts` |
@@ -263,14 +271,25 @@ Reglas:
    | Menús, popovers, ayuda, buscador | CSS (`tw-animate-css` de Radix / `nx-drop`) |
    | Cifras, barras, gráficos | Web Animations (`lib/motion`) |
 
-   **View Transitions: no se usan.** La documentación de Next 16 las ofrece
-   con `<ViewTransition>` de React, pero hoy (React 19.2 estable) esa pieza
-   solo existe en canary, la entrada de vistas ya tiene dueño (CSS) y dos
-   dueños sobre la misma navegación se pisan. Se reevalúa cuando sea estable y
-   haya un caso real de elemento compartido (p. ej. tarjeta → ficha de una
-   obra), con `prefers-reduced-motion` y fallback sin la API.
+   | Barra superior al cambiar de barra (Inicio ↔ módulo ↔ Sistema) | View Transitions: `<ViewTransition>` de React en `app-topbar.tsx` |
+   | Abrir una app desde Inicio y volver (≥ 768 px) | View Transitions: icono del cajón (`app-grid.tsx`) y vista de la app (`AppStage`), mismo nombre `appTransitionName`, clase `nx-app` |
+
+   **View Transitions: solo la barra superior.** Next 16.3 trae `<ViewTransition>` en el React del App Router. Caso real: la barra de
+   Inicio y la de módulo son componentes distintos, así que el logo, los avisos, el tema, el nombre del negocio y la cuenta se quitaban
+   y volvían a aparecer. Ahora cada pieza lleva un nombre compartido (`nx-topbar-*`, clase `nx-morph`, `--d3`) y viaja a su lugar; el
+   módulo y sus pestañas solo aparecen (`nx-appear`, `--d2`). El final de la barra es el mismo en todas y en el mismo orden (avisos,
+   tema, negocio, cuenta) para que nada se cruce. `default="none"`: nada más anima con esta API, y la entrada de vistas sigue siendo de
+   CSS. No se agregan otros nombres sin un caso de elemento compartido y su justificación en el PR.
+
+   **Segundo caso: abrir una app.** El icono del cajón y la vista de la app son el mismo objeto (la app), en páginas distintas: una
+   ventana redondeada crece del icono hasta la vista (`--d4`) y al volver, con el enlace o con «atrás» del navegador, se encoge hasta
+   él. Las capturas no se estiran (`object-fit: none`): la vista se revela nítida y el icono no se pixela. Sin pareja (Inicio aún
+   cargando su esqueleto) la vista se encoge y se apaga en su sitio (`nx-app-exit`). En el celular no anima: ahí manda
+   `NavTransitions`.
+
+   Los formularios completos (p. ej. `…/nuevo`) **no** se animan desde su botón: entran como cualquier vista.
 7. **Movimiento reducido:** `prefers-reduced-motion` o Ajustes → Reducir
-   movimiento (`<html data-motion="off">`) llevan toda animación a 1 ms.
+   movimiento (`<html data-motion="off">`) llevan toda animación a 1 ms (también las de View Transitions: el cambio es inmediato).
    El cambio de estado se sigue entendiendo (texto, color, icono).
 
 ---
@@ -286,6 +305,20 @@ Reglas:
 - **Móvil:** diálogos y paneles son hojas inferiores; tablas pasan a lista (`AdaptiveTable`); todo control táctil mide 44 px (DR-15);
   nada de scroll horizontal accidental (`overflow-x: clip` en `html`).
 - **Impresión:** recibos y cuentas de cobro imprimen solo el documento.
+- **Vista de registro (alta y ficha)** (`contactos/nuevo`, `contactos/[id]`, `crm/oportunidades/[id]`): página a todo el ancho
+  (`data-bleed`) con panel de control sin caja (volver 34 px, ruta 18 px, acciones a la derecha) y debajo, con el mismo margen de
+  20 px, el contenido a la izquierda (`flex-1`) y una columna de 400–440 px a la derecha separada por una línea (la actividad sin
+  fondo, o la vista previa en el alta); bajo `lg` se apilan. Sin relleno de más abajo: si no hay contenido, no hay scroll. Tarjetas `bg-card`, borde, radio 12, padding 22. El
+  alta y la edición son el mismo formulario (`?editar=1`; `?campo=` enfoca un dato); la ficha es su modo lectura: los datos que
+  faltan muestran «Sin registrar» y un enlace «Añadir» a ese campo. Los botones de resumen abren su pestaña del historial; el
+  paginador recorre la lista de origen (`q`, `status`, `sort` viajan en la URL). Estados con `Badge` + `StatusDot`.
+- **Tablero de etapas (pipeline del CRM)** (`crm/_components/pipeline`): panel de control de 3 zonas como las listas; columnas de
+  300 px con scroll horizontal, encabezado (nombre, cantidad, total corto «$9,6 M», «+» de 28 px) y barra de 3 px por estado de la
+  actividad; tarjetas `bg-card` radio 12, padding 14, gap 10, con estrellas, chip de actividad y responsable. Creación rápida como
+  tarjeta con borde y halo dorados al inicio de la columna, con un combobox de contacto que busca o crea. Arrastrar y soltar según
+  `movimiento.md` §6 (asa para teclado, «Mover a», Subir/Bajar, optimista). La etapa ganada lleva borde izquierdo verde. «+ Etapa» abre una columna de 300 px a la derecha con el formulario (nombre con ✓ y ✕, probabilidad por defecto, «Colocar
+  después de»; Enter crea, Esc cancela; Ganado siempre al final) y tres tarjetas fantasma; el nombre de una etapa se renombra con
+  doble clic (o Enter) y el encabezado se arrastra para reordenar (alternativa con teclado: Configuración › Etapas).
 
 ---
 
