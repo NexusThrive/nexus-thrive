@@ -187,7 +187,12 @@ function Column({
   onShift,
   canConfig,
   onRename,
+  sample = false,
+  sampleIndex = 0,
 }: {
+  /** Tablero vacío: muestra tarjetas de ejemplo desenfocadas bajo el título. */
+  sample?: boolean;
+  sampleIndex?: number;
   canConfig: boolean;
   onRename: (stage: PipelineStage, name: string) => void;
   slug: string;
@@ -279,6 +284,7 @@ function Column({
         <i className="block h-full bg-border-strong" style={{ width: `${bar.none}%` }} />
       </div>
       {quick ? <QuickCreate slug={slug} stageId={stage.id} preset={preset} onClose={onCloseQuick} /> : null}
+      {sample ? <SampleCards index={sampleIndex} /> : null}
       <ul className="flex min-h-16 flex-col gap-3">
         {cards.map((c, i) => (
           <Card key={c.id} slug={slug} card={c} stages={stages} now={now} saving={savingIds.has(c.id)} index={i} count={cards.length} onMove={onMove} onShift={onShift} />
@@ -388,6 +394,66 @@ function NewStageColumn({ stages, onCreate, onCancel }: { stages: PipelineStage[
       ))}
       <p className="text-center text-xs text-muted-foreground">Aquí aparecerán las oportunidades de esta etapa</p>
     </section>
+  );
+}
+
+/** Tarjetas de ejemplo para el tablero vacío: lo que verá cuando haya oportunidades (por etapa). */
+const SAMPLE_CARDS: { name: string; customer: string; value: string; probability: number; tag?: string }[][] = [
+  [
+    { name: "Dotación para el colegio", customer: "Colegio San José", value: "$ 4,8 M", probability: 20, tag: "Mayorista" },
+    { name: "Uniformes deportivos", customer: "Liga de Natación", value: "$ 2,1 M", probability: 20 },
+    { name: "Pedido de temporada", customer: "Tienda Moda Centro", value: "$ 950 mil", probability: 10 },
+    { name: "Camisetas para el torneo", customer: "Club Deportivo Norte", value: "$ 1,6 M", probability: 15 },
+    { name: "Catálogo corporativo", customer: "Andrés Torres", value: "$ 3,2 M", probability: 10 },
+  ],
+  [
+    { name: "Eventos de fin de año", customer: "Banco Gran Caribe", value: "$ 12 M", probability: 45, tag: "Empresa" },
+    { name: "Dotación hotelera", customer: "Hotel Marbella", value: "$ 6,3 M", probability: 40 },
+    { name: "Uniformes de planta", customer: "Panadería La Esquina", value: "$ 2,7 M", probability: 50 },
+    { name: "Material para feria", customer: "Cámara de Comercio", value: "$ 7,5 M", probability: 35, tag: "Evento" },
+  ],
+  [
+    { name: "Renovación de contrato", customer: "Fundación Cartagena", value: "$ 3,4 M", probability: 70 },
+    { name: "Cotización de equipos", customer: "Clínica del Prado", value: "$ 8,9 M", probability: 65, tag: "Urgente" },
+    { name: "Pedido recurrente", customer: "Valentina Ruiz", value: "$ 1,2 M", probability: 75 },
+  ],
+  [
+    { name: "Alianza con proveedor", customer: "Distribuidora Andina", value: "$ 5,6 M", probability: 100 },
+    { name: "Dotación del gimnasio", customer: "Gym Center", value: "$ 3,9 M", probability: 100 },
+  ],
+  [
+    { name: "Compra por mayor", customer: "Ferretería El Tornillo", value: "$ 2,3 M", probability: 0 },
+    { name: "Cotización de vallas", customer: "Inmobiliaria del Sur", value: "$ 4,1 M", probability: 0 },
+  ],
+];
+
+/**
+ * Tarjetas de ejemplo bajo el título de una columna del tablero vacío (como la tabla de ejemplo de Contactos): la columna se ve como
+ * quedará con oportunidades, a lo largo, desenfocada y desvaneciéndose hacia abajo. Decorativa: sin foco, clics ni lector.
+ */
+function SampleCards({ index }: { index: number }) {
+  const mask = "linear-gradient(to bottom, #000 0%, rgba(0,0,0,.55) 55%, transparent 100%)";
+  return (
+    <ul
+      aria-hidden="true"
+      inert
+      className="pointer-events-none flex select-none flex-col gap-3"
+      style={{ maskImage: mask, WebkitMaskImage: mask, filter: "blur(1.5px)", opacity: 0.55 }}
+    >
+      {(SAMPLE_CARDS[index] ?? []).map((c) => (
+        <li key={c.name} className="flex flex-col gap-2 rounded-xl border border-border bg-card p-3.5">
+          <span className="text-sm font-medium leading-snug text-foreground">{c.name}</span>
+          <span className="text-ui text-muted-foreground">
+            <b className="font-semibold text-foreground">{c.value}</b> · {c.probability} %
+          </span>
+          <span className="flex min-w-0 items-center gap-2 text-xs text-muted-foreground">
+            <CustomerAvatar identity={{ name: c.customer }} className="size-5 rounded-md" />
+            <span className="truncate">{c.customer}</span>
+          </span>
+          {c.tag ? <span className="w-fit rounded-full border border-border-strong px-2 py-0.5 text-2xs text-foreground">{c.tag}</span> : null}
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -552,9 +618,11 @@ export function Board({
               onShift={shift}
               canConfig={canConfig}
               onRename={(stage, name) => onRenameStage?.(stage, name)}
+              sample={empty}
+              sampleIndex={i < 4 ? i : i % 3}
             />
           ))}
-          <section aria-label="Perdidos y nueva etapa" className="flex w-[150px] shrink-0 flex-col gap-3">
+          <section aria-label="Perdidos y nueva etapa" className={cn("flex shrink-0 flex-col gap-3", empty ? "w-[300px]" : "w-[150px]")}>
             <header className="flex items-center gap-2 px-0.5">
               <h2 className="text-base font-semibold text-muted-foreground">Perdidos</h2>
               <span className="rounded-full bg-surface-muted px-2 py-px text-xs text-muted-foreground">{lost.count}</span>
@@ -563,6 +631,7 @@ export function Board({
               <span className="text-ui text-muted-foreground">Ver oportunidades perdidas</span>
               <span className="text-xs text-muted-foreground tabular-nums">{shortMoney(lost.total)}</span>
             </button>
+            {empty ? <SampleCards index={SAMPLE_CARDS.length - 1} /> : null}
             {canConfig ? (
               <button type="button" aria-expanded={addingStage} onClick={() => setAddingStage(true)} className="grid h-9 place-items-center rounded-[10px] border border-dashed border-border-strong text-ui text-muted-foreground outline-none hover:border-accent hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
                 + Etapa
