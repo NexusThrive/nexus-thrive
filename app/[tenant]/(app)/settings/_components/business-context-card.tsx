@@ -7,7 +7,7 @@ import { inputClasses } from "@/components/atoms/input";
 import { Select } from "@/components/atoms/select";
 import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
-import { VERTICAL_LABELS, VERTICALS, type VerticalValue } from "@/lib/core/sectors/verticals";
+import { OFFERED_VERTICALS, VERTICAL_LABELS, type VerticalValue } from "@/lib/core/sectors/verticals";
 import { BUSINESS_MODELS, MAX_ACTIVITY, type BusinessModel } from "@/lib/core/tenancy/business-context";
 import { updateBusinessContextAction } from "@/app/[tenant]/(app)/settings/context-actions";
 
@@ -41,10 +41,11 @@ export default function BusinessContextCard({ slug, canManage, initial }: { slug
       <p className="mt-0.5 text-sm text-muted-foreground">Sirve para ponerle nombre a las cosas y sugerirte funciones. No limita nada: puedes usar cualquier función, sea cual sea tu perfil.</p>
 
       <div className="mt-4 grid gap-4 md:grid-cols-2">
-        <Field label="Perfil de partida" hint="Define el vocabulario (Socios, Pacientes, Obras…) y qué funciones te sugerimos. «General / Otro» sirve para agencias, consultoras, empresas B2B o negocios mixtos.">
+        <Field label="Perfil de partida" hint="Define el vocabulario (Socios, Clientes, Comensales…) y qué funciones te sugerimos.">
           {(c) => (
             <Select {...c} value={vertical} disabled={!canManage || pending} onChange={(e) => setVertical(e.target.value as VerticalValue)}>
-              {VERTICALS.map((v) => (
+              {/* Solo los rubros que se ofrecen hoy; si el negocio ya tiene otro, ese se conserva en la lista para no perderlo. */}
+              {[...new Set<VerticalValue>([...OFFERED_VERTICALS, initial.vertical])].map((v) => (
                 <option key={v} value={v}>
                   {VERTICAL_LABELS[v]}
                 </option>

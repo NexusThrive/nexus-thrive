@@ -365,3 +365,10 @@ Cada punto se confirma leyendo el código al abrir su historia; nada de esto se 
 | 8 | Informes | **Hecho:** ventas, **turnos de caja**, kardex y valorización. |
 | 9 | Ficha del cliente comprador | **Hecho.** |
 | R | Roles por negocio | **Auditado:** todas las acciones de servidor de un negocio comprueban sesión y rol (las únicas sin sesión son las públicas por token). **Falta** decidir permisos más finos (hoy: `business.manage`, `money.handle`, etc.). |
+
+## 13. Foco de producto (2026-11-09)
+
+- **Rubros que se ofrecen:** comercio, gimnasio y restaurante (`OFFERED_VERTICALS`). El registro y Configuración solo muestran esos tres; «General / Otro» y el resto quedan como valores internos para los negocios que ya existen, que conservan el suyo. El Operations Center puede apagar uno, pero no encender otro.
+- **Primer comercio de referencia:** un negocio de personalización y estampados para marcas (vende en tienda física y recibe pedidos y preguntas por canales en línea). Encaja con el POS, los productos «a medida», los pedidos por canal (`orders.create`) y las listas de precios por cantidad.
+- **Receta de Comercio:** Inicio, CRM, Punto de venta, Pedidos, Inventario, Compras, Cobros, Finanzas, WhatsApp y Facturación.
+
