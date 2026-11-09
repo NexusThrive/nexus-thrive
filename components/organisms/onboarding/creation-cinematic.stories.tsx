@@ -34,4 +34,10 @@ function Walkthrough(props: React.ComponentProps<typeof CreationCinematic>) {
 }
 
 /** Creando (3 s) → listo: el retroceso de cámara. */
-export const Recorrido: Story = { render: (args) => <Walkthrough {...args} /> };
+export const Recorrido: Story = {
+  args: {
+    businessName: "NeoMarket"
+  },
+
+  render: (args) => <Walkthrough {...args} />
+};

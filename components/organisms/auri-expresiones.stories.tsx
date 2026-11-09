@@ -97,10 +97,56 @@ function Demo() {
 }
 
 /** Demostración: recorre todas las caras hablando, una cada 2,8 s. */
-export const Demostracion: Story = { render: () => <Demo /> };
+export const Demostracion: Story = {
+  args: {
+    size: 96
+  },
+
+  render: () => <Demo />
+};
 
 /** Pruébala: cambia la cara, el tamaño, si habla y lo que dice desde los controles. */
 export const Probar: Story = {
   args: { say: "Hola, soy AURI." },
   decorators: [(Story) => <div className="grid min-h-[420px] place-items-center p-8"><Story /></div>],
+};
+
+/** Gorro de Navidad dibujado en SVG (rojo con borde y pompón blancos). Decorativo. */
+function GorroDeNavidad({ className }: { className?: string }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 120 100" className={className}>
+      {/* cuerpo del gorro, con su pliegue caído hacia el pompón */}
+      <path d="M10 80 C22 40 52 14 88 20 C97 22 103 27 105 34 C99 48 106 64 111 80 Z" fill="#d32f2f" />
+      <path d="M52 80 C54 52 70 30 88 22 C97 24 102 28 105 34 C99 48 106 64 111 80 Z" fill="#b71c1c" opacity="0.55" />
+      {/* borde de piel */}
+      <rect x="3" y="72" width="114" height="22" rx="11" fill="#fafafa" />
+      <rect x="3" y="84" width="114" height="10" rx="5" fill="#e0e0e0" opacity="0.6" />
+      {/* pompón */}
+      <circle cx="105" cy="30" r="11" fill="#fafafa" />
+      <circle cx="108" cy="33" r="6" fill="#e0e0e0" opacity="0.55" />
+    </svg>
+  );
+}
+
+/**
+ * AURI con un gorro de Navidad que sigue el borde redondeado de arriba (lado izquierdo), mirando al frente y guiñando: el ojo
+ * izquierdo bien abierto y el derecho cerrado. El gorro se apoya sobre la curva de la cabeza: su borde queda tangente al círculo.
+ */
+export const ConGorroDeNavidad: Story = {
+  args: {
+    mood: "surprise",
+    speaking: false,
+    size: 180,
+    say: ""
+  },
+
+  render: () => (
+    <div className="grid min-h-[480px] place-items-center p-8">
+      <div className="relative inline-block">
+        <EyeTracker fit decorative front poke={false} size={180} shape="Ball" eyeScale={1.2} mood="wink" />
+        {/* El centro del borde del gorro cae sobre el círculo a 130° (arriba a la izquierda), 46 % del radio hacia afuera, y se inclina 40° para ir con la curva. */}
+        <GorroDeNavidad className="pointer-events-none absolute -left-[5.6%] -top-[22%] w-[52%] -rotate-[40deg] origin-[50%_85%]" />
+      </div>
+    </div>
+  )
 };

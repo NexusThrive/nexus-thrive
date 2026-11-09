@@ -407,10 +407,10 @@ export function EyeTracker({
         const right = i === 1;
         /* hablar: los ojos laten al ritmo de las sílabas */
         const beat = 1 - 0.2 * t.talk * Math.abs(Math.sin(now / 95 + i * 0.6));
-        const w = e0.w * sx * (1 + 0.32 * happy) * (1 + 0.14 * t.surp) * (right ? 1 + 0.24 * t.cur : 1);
+        const w = e0.w * sx * (1 + 0.32 * happy) * (1 + 0.14 * t.surp) * (right ? 1 + 0.24 * t.cur : 1 + 0.12 * t.wink);
         const h = Math.max(
           0.6,
-          e0.h * k * lid * (1 - 0.5 * happy) * (1 + 0.4 * t.surp) * (right ? 1 + 0.24 * t.cur : 1 - 0.45 * t.think) * (1 - 0.28 * t.sad) * (right ? 1 - 0.93 * t.wink : 1) * beat,
+          e0.h * k * lid * (1 - 0.5 * happy) * (1 + 0.4 * t.surp) * (right ? 1 + 0.24 * t.cur : 1 - 0.45 * t.think) * (1 - 0.28 * t.sad) * (right ? 1 - 0.93 * t.wink : 1 + 0.3 * t.wink) * beat,
         );
         const rect = g.firstElementChild as SVGRectElement | null;
         if (rect) {
@@ -438,7 +438,7 @@ export function EyeTracker({
       prev = now;
       /* con alegría la cara mira un poco hacia arriba y no sigue al puntero */
       const m = knobs.current.mood;
-      const glad = knobs.current.joy || m === "joy" || m === "wink";
+      const glad = knobs.current.joy || m === "joy";
       const ease = (v: number, on: boolean) => v + ((on ? 1 : 0) - v) * Math.min(1, 0.2 * dt);
       t.joy = ease(t.joy, glad);
       t.wink = ease(t.wink, m === "wink");
@@ -449,8 +449,9 @@ export function EyeTracker({
       t.talk = ease(t.talk, knobs.current.speaking || typing.current);
       /* adónde mira: lo que se le pide (señalar algo) manda; si no, pensando mira arriba a un lado y triste mira abajo */
       const g = knobs.current.gaze;
-      const gx = g ? clamp(g.x, -0.85, 0.85) : m === "think" ? -0.42 : m === "sad" ? 0 : glad ? 0 : t.tx;
-      const gy = g ? clamp(g.y, -0.85, 0.85) : m === "think" ? -0.48 : m === "sad" ? 0.32 : glad ? -0.2 : t.ty;
+      // El guiño mira de frente (ni arriba ni al puntero): un ojo abierto y el otro cerrado.
+      const gx = g ? clamp(g.x, -0.85, 0.85) : m === "think" ? -0.42 : m === "sad" ? 0 : m === "wink" ? 0 : glad ? 0 : t.tx;
+      const gy = g ? clamp(g.y, -0.85, 0.85) : m === "think" ? -0.48 : m === "sad" ? 0.32 : m === "wink" ? 0 : glad ? -0.2 : t.ty;
       if (still) {
         t.x = gx;
         t.y = gy;
