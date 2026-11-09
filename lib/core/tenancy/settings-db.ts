@@ -28,6 +28,16 @@ export async function updateBusinessContext(tenantId: string, value: { vertical:
   await db.orm.public.Tenant.where({ id: tenantId }).update({ vertical: value.vertical as never, businessModels: value.businessModels, activity: value.activity || null });
 }
 
+/**
+ * Guarda lo que el dueño contó de su operación en el alta (qué vende, cómo vende, qué controla y qué usa hoy), dentro de
+ * `settings.operation`: sirve para sugerirle capacidades y entender a quién le estamos sirviendo. No toca el resto de los ajustes.
+ */
+export async function saveOnboardingOperation(tenantId: string, operation: unknown) {
+  const row = await db.orm.public.Tenant.where({ id: tenantId }).select("settings").first();
+  const current = row?.settings && typeof row.settings === "object" && !Array.isArray(row.settings) ? (row.settings as Record<string, unknown>) : {};
+  await db.orm.public.Tenant.where({ id: tenantId }).update({ settings: { ...current, operation } as never });
+}
+
 /** Rubro y módulos contratados: lo que decide qué módulos se pueden prender. */
 export async function moduleRulesOf(tenantId: string) {
   return db.orm.public.Tenant.select("vertical", "contractedModules").where({ id: tenantId }).first();

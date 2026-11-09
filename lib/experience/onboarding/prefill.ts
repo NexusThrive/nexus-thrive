@@ -7,6 +7,7 @@
  * NO importable desde componentes cliente.
  */
 
+import { EMPTY_OPERATION } from "@/lib/core/tenancy/onboarding/operation";
 import { db } from "@/prisma/db";
 import { isModule, sortModules } from "@/lib/core/capabilities/modules";
 import {
@@ -63,6 +64,7 @@ function tenantToDraft(tenant: TenantForDraft): OnboardingDraft {
     plan: tenant.plan ?? "ESSENTIAL",
     billing: tenant.billingCycle ?? "MONTHLY",
     customerTierId: tenant.customerTierId ?? null,
+    operation: EMPTY_OPERATION,
   };
 }
 

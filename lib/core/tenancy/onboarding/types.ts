@@ -9,6 +9,7 @@ import type { Billing, PlanKey } from "@/lib/core/entitlements/catalog";
  */
 
 import type { VerticalValue } from "@/lib/core/sectors/verticals";
+import { EMPTY_OPERATION, type OperationAnswers } from "./operation";
 import type { ModuleValue } from "@/lib/core/capabilities/modules";
 
 export type { ModuleValue, VerticalValue };
@@ -67,6 +68,8 @@ export type OnboardingDraft = {
   billing: Billing;
   /** Tramo de clientes elegido (precio por cantidad de clientes). */
   customerTierId: string | null;
+  /** «Tu operación»: cómo funciona el negocio (opcional). */
+  operation: OperationAnswers;
 };
 
 export const EMPTY_DRAFT: OnboardingDraft = {
@@ -86,6 +89,7 @@ export const EMPTY_DRAFT: OnboardingDraft = {
   plan: "ESSENTIAL",
   billing: "MONTHLY",
   customerTierId: null,
+  operation: EMPTY_OPERATION,
 };
 
 /**
@@ -113,6 +117,8 @@ export type AdaptiveOnboardingInput = {
   plan?: PlanKey;
   billing?: Billing;
   customerTierId?: string | null;
+  /** Respuestas de «Tu operación»; deciden qué capacidades se preparan. */
+  operation?: OperationAnswers;
 };
 
 export type OnboardingFieldName =

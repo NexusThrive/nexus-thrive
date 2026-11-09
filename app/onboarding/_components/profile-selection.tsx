@@ -10,21 +10,21 @@ const PROFILES: {
 }[] = [
   {
     value: "INDIVIDUAL",
-    title: "Emprendedor / Persona Natural",
+    title: "Estoy emprendiendo",
     description:
-      "Trabajas solo o con un equipo pequeño. Configuración liviana, sin NIT obligatorio.",
+      "Estoy comenzando, desarrollando una idea o preparando mi negocio para operar.",
     icon: User,
   },
   {
     value: "COMPANY",
-    title: "Empresa / Negocio Establecido",
+    title: "Mi negocio está en funcionamiento",
     description:
-      "Negocio formalizado con NIT, equipo y operación. Perfil completo de empresa.",
+      "Ya tengo clientes, vendo productos o presto servicios y quiero organizar mi operación.",
     icon: Building2,
   },
 ];
 
-/** Paso 1 — selección de perfil (persona natural vs empresa). */
+/** Paso 1 — etapa del negocio: emprendiendo o en funcionamiento (no exige papeles: contextualiza lo que se pregunta después). */
 export default function ProfileSelection({
   value,
   onChange,
@@ -34,7 +34,7 @@ export default function ProfileSelection({
 }) {
   return (
     <fieldset className="flex min-w-0 flex-1 flex-col justify-center">
-      <legend className="sr-only">Elige tu perfil de negocio</legend>
+      <legend className="sr-only">¿En qué etapa está tu negocio?</legend>
       <div className="grid flex-1 auto-rows-fr gap-4 sm:flex-none sm:auto-rows-auto sm:grid-cols-2">
         {PROFILES.map((profile) => {
           const Icon = profile.icon;

@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Check, Link2, Loader2, MapPin, Receipt } from "lucide-react";
-import { checkSlugAvailabilityAction, type SlugAvailability } from "../actions";
+import { checkSlugAvailabilityAction, type SlugAvailability } from "@/app/onboarding/actions";
 import type { VerticalValue } from "@/lib/core/sectors/verticals";
-import { getVerticalIcon } from "@/lib/experience/vertical-icons";
 import { normalizeSlug, normalizeAndValidateSlug } from "@/lib/core/tenancy/onboarding/slug";
 import {
   TEAM_SIZES,
@@ -13,6 +12,7 @@ import {
   type OnboardingFieldErrors,
 } from "@/lib/core/tenancy/onboarding/types";
 import { inputClasses } from "@/components/atoms/input";
+import { Select } from "@/components/atoms/select";
 import { Field } from "@/components/molecules/field";
 import { cn } from "@/lib/utils";
 import { AddressAutocomplete } from "./address-autocomplete";
@@ -43,13 +43,12 @@ function IconInput({ icon: Icon, className, ...props }: React.ComponentProps<"in
 }
 
 /**
- * Paso "Tu negocio": formulario adaptativo (persona natural vs empresa). El
+ * Paso "Tu negocio": nombre, enlace, rubro y equipo; razón social, NIT y dirección son opcionales en cualquier etapa. El
  * enlace se arma solo desde el nombre hasta que el usuario lo edita, y la
  * vista previa del panel de marca refleja cada cambio en vivo.
  */
 export default function AdaptiveBusinessForm({ verticals, draft, onPatch: patch, errors, showErrors, tenantId, onSlugTaken }: FieldProps) {
   const [slugTouched, setSlugTouched] = useState(() => draft.slugRaw.length > 0);
-  const isCompany = draft.tenantType === "COMPANY";
   const slugCheck = normalizeAndValidateSlug(draft.slugRaw);
   // Disponibilidad en vivo: se consulta 400 ms después de la última tecla y solo si el enlace ya es válido.
   const [availability, setAvailability] = useState<(SlugAvailability & { slug: string }) | null>(null);
@@ -79,7 +78,7 @@ export default function AdaptiveBusinessForm({ verticals, draft, onPatch: patch,
   return (
     <div className="grid grid-cols-1 gap-5">
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-        <Field label="Nombre comercial" required error={err("name") ?? (taken && !slugTouched ? "Ya existe un negocio con ese nombre. Cambia el nombre o elige otro enlace." : undefined)} className={isCompany ? undefined : "sm:col-span-2"}>
+        <Field label="Nombre comercial" required error={err("name") ?? (taken && !slugTouched ? "Ya existe un negocio con ese nombre. Cambia el nombre o elige otro enlace." : undefined)}>
           {(control) => (
             <input
               {...control}
@@ -96,7 +95,7 @@ export default function AdaptiveBusinessForm({ verticals, draft, onPatch: patch,
             />
           )}
         </Field>
-        {isCompany ? (
+        {(
           <Field label="Razón social" hint="Opcional" error={err("legalName")}>
             {(control) => (
               <input
@@ -109,7 +108,7 @@ export default function AdaptiveBusinessForm({ verticals, draft, onPatch: patch,
               />
             )}
           </Field>
-        ) : null}
+        )}
       </div>
 
       <Field
@@ -149,38 +148,20 @@ export default function AdaptiveBusinessForm({ verticals, draft, onPatch: patch,
         </button>
       ) : null}
 
-      <fieldset className="min-w-0">
-        <legend className="mb-2 text-[13px] font-medium">
-          Rubro del negocio <span className="text-muted-foreground">*</span>
-        </legend>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-          {verticals.map(({ value: vertical, label }) => {
-            const { icon: Icon } = getVerticalIcon(vertical);
-            const selected = draft.vertical === vertical;
-            return (
-              <button
-                key={vertical}
-                type="button"
-                aria-pressed={selected}
-                data-press=""
-                onClick={() => patch({ vertical })}
-                className={cn(
-                  "flex items-center gap-2 rounded-md border px-2.5 py-2 text-left transition-[border-color,background-color,box-shadow] duration-200",
-                  selected
-                    ? "border-accent bg-accent-subtle/60 shadow-[0_0_0_3px_rgba(212,175,55,.18)]"
-                    : "border-border-input bg-surface hover:border-border-input-hover",
-                )}
-              >
-                <Icon aria-hidden="true" className={cn("size-4 shrink-0", selected ? "text-accent-text" : "text-muted-foreground")} />
-                <span className="min-w-0 text-[12.5px] font-medium leading-tight">{label}</span>
-              </button>
-            );
-          })}
-        </div>
-        {err("vertical") ? <p className="mt-2 text-xs text-danger">{err("vertical")}</p> : null}
-      </fieldset>
+      <Field label="Rubro principal" required error={err("vertical")}>
+        {(control) => (
+          <Select {...control} value={draft.vertical ?? ""} onChange={(event) => patch({ vertical: (event.target.value || null) as VerticalValue | null })}>
+            <option value="">Elige tu rubro</option>
+            {verticals.map(({ value, label }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </Select>
+        )}
+      </Field>
 
-      {isCompany ? (
+      {(
         <div>
           <p className="mb-2 text-[13px] font-medium">
             Tamaño del equipo <span className="text-muted-foreground">*</span>
@@ -209,10 +190,10 @@ export default function AdaptiveBusinessForm({ verticals, draft, onPatch: patch,
           </div>
           {err("teamSize") ? <p className="mt-2 text-xs text-danger">{err("teamSize")}</p> : null}
         </div>
-      ) : null}
+      )}
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-        <Field label="NIT / RUT" required={isCompany} hint={isCompany ? undefined : "Opcional"} error={err("taxId")}>
+        <Field label="NIT / RUT" hint="Opcional: puedes agregarlo cuando factures." error={err("taxId")} className="sm:col-span-2">
           {(control) => (
             <IconInput
               {...control}
@@ -227,9 +208,8 @@ export default function AdaptiveBusinessForm({ verticals, draft, onPatch: patch,
           )}
         </Field>
         <Field
-          label={isCompany ? "Dirección del local" : "Ubicación"}
-          required={isCompany}
-          hint={isCompany ? "Escribe REMOTE si no tienes un local físico." : "Opcional"}
+          label="Dirección o ubicación"
+          hint="Opcional. Escribe REMOTE si trabajas sin local físico."
           error={err("address")}
           className="sm:col-span-2"
         >

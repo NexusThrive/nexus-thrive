@@ -20,6 +20,7 @@ import {
   type TeamSizeValue,
 } from "./types";
 import { normalizeAndValidateSlug } from "./slug";
+import { recommendedModules, sanitizeOperation } from "./operation";
 
 export type AdaptiveValidationResult =
   | { ok: true; values: AdaptiveOnboardingInput }
@@ -57,7 +58,8 @@ function checkTaxId(raw: string): TaxIdCheck {
 }
 
 /**
- * Valida el formulario completo según el tipo de perfil.
+ * Valida el formulario completo. La etapa (emprendiendo o en funcionamiento) contextualiza, pero no exige papeles: NIT, razón
+ * social y dirección son opcionales en ambas (un negocio puede estar funcionando sin estar constituido); el tamaño del equipo sí se pide.
  * Devuelve valores normalizados (`ok`) o errores por campo (`errors`).
  */
 export function validateAdaptiveOnboarding(raw: {
@@ -78,6 +80,7 @@ export function validateAdaptiveOnboarding(raw: {
   plan?: unknown;
   billing?: unknown;
   customerTierId?: unknown;
+  operation?: unknown;
 }, config: PricingConfig = defaultPricingConfig()): AdaptiveValidationResult {
   const errors: OnboardingFieldErrors = {};
 
@@ -98,13 +101,9 @@ export function validateAdaptiveOnboarding(raw: {
     errors.name = "Escribe el nombre comercial (2 a 80 caracteres).";
   }
 
-  // --- razón social (solo COMPANY; opcional) -----------------------------
+  // --- razón social (opcional) -------------------------------------------
   const legalName = clean(raw.legalName);
-  if (
-    tenantType === "COMPANY" &&
-    legalName.length > 0 &&
-    legalName.length > LEGAL_NAME_MAX
-  ) {
+  if (legalName.length > LEGAL_NAME_MAX) {
     errors.legalName = `Máximo ${LEGAL_NAME_MAX} caracteres.`;
   }
 
@@ -127,46 +126,27 @@ export function validateAdaptiveOnboarding(raw: {
   }
 
   // --- campos adaptativos --------------------------------------------------
-  // INDIVIDUAL: NIT opcional; sin teamSize ni dirección requeridos.
-  // COMPANY: NIT, tamaño de equipo y dirección obligatorios.
+  // NIT/RUT: opcional en ambas etapas; si lo escribe, debe ser válido.
   let taxId: string | undefined;
-  if (tenantType === "COMPANY") {
+  if (clean(raw.taxId)) {
     const check = checkTaxId(clean(raw.taxId));
-    if (!check.ok && check.error) {
-      errors.taxId = check.error;
-    } else if (!check.ok) {
-      errors.taxId = "El NIT/RUT es obligatorio para empresas.";
-    } else {
-      taxId = check.value;
-    }
-  } else if (raw.taxId !== undefined && clean(raw.taxId)) {
-    const check = checkTaxId(clean(raw.taxId));
-    if (!check.ok && check.error) {
-      errors.taxId = check.error;
-    } else if (check.ok) {
-      taxId = check.value;
-    }
+    if (!check.ok && check.error) errors.taxId = check.error;
+    else if (check.ok) taxId = check.value;
   }
 
+  // Tamaño del equipo: se pide a todos.
   let teamSize: TeamSizeValue | undefined;
   if (typeof raw.teamSize === "string" && isTeamSize(raw.teamSize)) {
     teamSize = raw.teamSize;
-  } else if (tenantType === "COMPANY") {
+  } else {
     errors.teamSize = "Indica el tamaño de tu equipo.";
   }
 
+  // Dirección: opcional («REMOTE» si trabaja sin local).
   let address: string | undefined;
   const addressClean = clean(raw.address);
-  if (tenantType === "COMPANY") {
-    const normalizedAddress =
-      addressClean.toLowerCase() === "remote" ? "REMOTE" : addressClean;
-    if (!normalizedAddress || normalizedAddress.length > ADDRESS_MAX) {
-      errors.address = "Indica la dirección o escribe REMOTE si no tienes local.";
-    } else {
-      address = normalizedAddress;
-    }
-  } else if (addressClean) {
-    address = addressClean.slice(0, ADDRESS_MAX);
+  if (addressClean) {
+    address = addressClean.toLowerCase() === "remote" ? "REMOTE" : addressClean.slice(0, ADDRESS_MAX);
   }
 
   // Ubicación confirmada con Google Places (opcional): se guarda solo si hay
@@ -212,6 +192,9 @@ export function validateAdaptiveOnboarding(raw: {
   // Signature todo el rubro, Elite lo elegido que pertenece al rubro.
   // `dashboard` es la landing de `(app)` y siempre queda activo.
   selectedModules.add("dashboard");
+  // Lo que contó de su operación prepara capacidades; el plan y el rubro deciden cuáles se pueden activar.
+  const operation = sanitizeOperation(raw.operation);
+  for (const m of recommendedModules(operation)) selectedModules.add(m);
   const modules = vertical
     ? resolveModules(config, plan, vertical, [...selectedModules])
     : sortModules([...selectedModules]);
@@ -257,12 +240,11 @@ export function validateAdaptiveOnboarding(raw: {
       tenantType,
       name,
       // Los campos vacíos se envían como undefined (no contaminan la fila).
-      legalName:
-        tenantType === "COMPANY" && legalName ? legalName : undefined,
+      legalName: legalName || undefined,
       taxId,
       slug,
       vertical,
-      teamSize: tenantType === "COMPANY" ? teamSize : undefined,
+      teamSize,
       address,
       latitude,
       longitude,
@@ -272,6 +254,7 @@ export function validateAdaptiveOnboarding(raw: {
       plan,
       billing,
       customerTierId,
+      operation,
     },
   };
 }

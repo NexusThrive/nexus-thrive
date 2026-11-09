@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { ArrowRight } from "lucide-react";
-import { completeAdaptiveOnboardingAction } from "../actions";
+import { completeAdaptiveOnboardingAction } from "@/app/onboarding/actions";
 import { validateAdaptiveOnboarding } from "@/lib/core/tenancy/onboarding/validation";
 import { FLOW_META, PROGRESS_STEPS, nextStep, previousStep, progressIndex, type FlowStep } from "@/lib/experience/onboarding/flow";
 import {
@@ -19,6 +19,8 @@ import { modulePriceCents, planOf, quote as quotePlan, signupVerticals, type Pri
 import type { PlanKey } from "@/lib/core/entitlements/catalog";
 import ProfileSelection from "./profile-selection";
 import AdaptiveBusinessForm from "./adaptive-business-form";
+import OperationStep from "./operation-step";
+import { hasOperation, operationSummary, recommendedModules } from "@/lib/core/tenancy/onboarding/operation";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { Odometer } from "@/components/atoms/odometer";
 import { Alert } from "@/components/molecules/alert";
@@ -109,6 +111,7 @@ export default function OnboardingWizard({
         plan: draft.plan,
         billing: draft.billing,
         customerTierId: draft.customerTierId,
+        operation: draft.operation,
       }, config),
     [draft, prefill.tenantId, config],
   );
@@ -173,6 +176,8 @@ export default function OnboardingWizard({
       if (!validation.ok || slugTaken) return;
       setShowErrors(false);
     }
+    // Lo que cuenta de su operación prepara capacidades: se suman a lo elegido (el servidor vuelve a calcularlo).
+    if (step === "operation") patch({ selectedModules: [...new Set([...draft.selectedModules, ...recommendedModules(draft.operation)])] });
     go(nextStep(step));
   };
 
@@ -223,12 +228,7 @@ export default function OnboardingWizard({
   const introMeta = INTRO_SLIDES[slide];
   const greeting = firstName ? `Hola, ${firstName}` : undefined;
 
-  const title =
-    step === "intro"
-      ? introMeta.title
-      : step === "business" && draft.tenantType === "COMPANY"
-        ? "Cuéntanos de tu empresa"
-        : meta.title;
+  const title = step === "intro" ? introMeta.title : meta.title;
 
   const scene = (
     <OnboardingScene
@@ -347,6 +347,8 @@ export default function OnboardingWizard({
           />
         ) : null}
 
+        {step === "operation" ? <OperationStep value={draft.operation} onChange={(operation) => patch({ operation })} running={draft.tenantType === "COMPANY"} /> : null}
+
         {step === "plan" && draft.vertical ? (
           SHOW_PRICING ? (
             pendingBenefit ? (
@@ -382,11 +384,12 @@ export default function OnboardingWizard({
               data={{
                 tenantType: draft.tenantType,
                 name: draft.name,
-                legalName: draft.tenantType === "COMPANY" ? draft.legalName : undefined,
+                legalName: draft.legalName || undefined,
                 taxId: draft.taxId,
                 slug: validation.ok ? validation.values.slug : draft.slugRaw,
                 vertical: draft.vertical,
-                address: draft.tenantType === "COMPANY" ? draft.address : undefined,
+                address: draft.address || undefined,
+                operation: hasOperation(draft.operation) ? operationSummary(draft.operation) : undefined,
                 city: draft.city,
                 plan: draft.plan,
                 planName,
@@ -394,7 +397,7 @@ export default function OnboardingWizard({
                 tierLabel: config.tiers.find((t) => t.id === quote.tierId)?.label,
                 quote,
               }}
-              teamSizeLabel={draft.tenantType === "COMPANY" && draft.teamSize ? TEAM_SIZE_LABELS[draft.teamSize] : undefined}
+              teamSizeLabel={draft.teamSize ? TEAM_SIZE_LABELS[draft.teamSize] : undefined}
               benefit={benefit ? { planName, durationDays: benefit.durationDays, kind: benefit.kind } : undefined}
               showPricing={SHOW_PRICING}
               onEdit={go}
@@ -412,6 +415,7 @@ export default function OnboardingWizard({
           status={cinematic}
           planName={planName}
           businessName={draft.name.trim()}
+          firstName={firstName}
           error={error ?? undefined}
           onBack={() => setCinematic(null)}
           onEnter={() => {
