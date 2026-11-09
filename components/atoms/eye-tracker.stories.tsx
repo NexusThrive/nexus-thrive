@@ -32,3 +32,29 @@ export const ComoBoton: Story = { args: { size: 56, fit: true, poke: false, deco
 export const Alegre: Story = { args: { joy: true, front: true } };
 /** Dice un texto en su burbuja, escrito letra a letra; se queda hasta que `say` vuelve a ser null. */
 export const Saluda: Story = { args: { joy: true, front: true, poke: false, say: "Hola Santiago!", sayAt: "br" }, decorators: [(Story) => <div className="p-16"><Story /></div>] };
+
+/** Las caras de AURI: cada una con su nombre. «Hablando» late y se mece; «Mira arriba a la izquierda» señala una parte de la pantalla. */
+export const Expresiones: StoryObj = {
+  render: () => (
+    <div className="grid grid-cols-2 gap-8 p-8 sm:grid-cols-4">
+      {(
+        [
+          ["Neutral", { mood: "neutral" }],
+          ["Alegría", { mood: "joy" }],
+          ["Guiño", { mood: "wink" }],
+          ["Sorpresa", { mood: "surprise" }],
+          ["Pensando", { mood: "think" }],
+          ["Curiosa", { mood: "curious" }],
+          ["Triste", { mood: "sad" }],
+          ["Hablando", { speaking: true }],
+          ["Mira arriba a la izquierda", { gaze: { x: -0.6, y: -0.6 } }],
+        ] as const
+      ).map(([label, props]) => (
+        <figure key={label} className="grid justify-items-center gap-2">
+          <EyeTracker fit decorative front poke={false} size={96} shape="Ball" eyeScale={1.2} {...props} />
+          <figcaption className="text-ui text-muted-foreground">{label}</figcaption>
+        </figure>
+      ))}
+    </div>
+  ),
+};

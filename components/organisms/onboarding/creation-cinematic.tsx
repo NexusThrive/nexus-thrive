@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useSyncExternalStore, type CSSProperties } from "react";
 import { ArrowRight } from "lucide-react";
-import { EyeTracker } from "@/components/atoms/eye-tracker";
+import { EyeTracker, type EyeMood } from "@/components/atoms/eye-tracker";
 import { RevealText } from "@/components/atoms/reveal-text";
 import { Button } from "@/components/atoms/button";
 import styles from "./creation-cinematic.module.css";
@@ -96,7 +96,10 @@ function useAuriScript(stage: Stage, name: string | undefined, planName: string)
         : stage === "welcome"
           ? `Bienvenido a Thrive ${planName}. Aquí estaré para ayudarte.`
           : null;
-  return { say, joy: stage === "error" ? false : joy };
+  // Una cara distinta en cada momento: alegría al saludar, pensativa y curiosa mientras trabaja, guiño al terminar, triste si falla.
+  const mood: EyeMood =
+    stage === "error" ? "sad" : joy ? "joy" : stage === "creating" ? ((index % 2 ? "think" : "curious") as EyeMood) : stage === "ready" ? "wink" : "surprise";
+  return { say, joy: stage === "error" ? false : joy, mood };
 }
 
 /**
@@ -156,7 +159,7 @@ export function CreationCinematic({
     <div role="dialog" aria-modal="true" aria-label={label} data-stage={stage} className={styles.root}>
       <div className={styles.scene} aria-hidden="true">
         <div className={styles.mark}>
-          <EyeTracker fit decorative front poke={false} size={132} shape="Ball" eyeScale={1.2} joy={auri.joy} say={narrow ? null : auri.say} sayAt="br" />
+          <EyeTracker fit decorative front poke={false} size={132} shape="Ball" eyeScale={1.2} joy={auri.joy} mood={auri.mood} speaking={narrow && typedNarrow.length < (auri.say?.length ?? 0)} say={narrow ? null : auri.say} sayAt="br" />
           {narrow && typedNarrow ? (
             <p aria-hidden="true" className={styles.bubble}>
               {typedNarrow}

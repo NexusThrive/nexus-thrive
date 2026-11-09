@@ -67,7 +67,18 @@ export function AuriAssistant({
       setIntro(null);
     }
   }, [atHome, intro, tenantSlug]);
-  const introJoy = intro !== null && Boolean(steps[intro]?.joy);
+  const introStep = intro !== null ? steps[intro] : undefined;
+  // Habla mientras se escribe la frase (unos 26 ms por letra): la cara late y se mece.
+  const [introSpeaking, setIntroSpeaking] = useState(false);
+  useEffect(() => {
+    if (!introStep) return;
+    const on = window.setTimeout(() => setIntroSpeaking(true), 0);
+    const off = window.setTimeout(() => setIntroSpeaking(false), introStep.text.length * 26 + 250);
+    return () => {
+      window.clearTimeout(on);
+      window.clearTimeout(off);
+    };
+  }, [introStep]);
   const [open, setOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -182,7 +193,20 @@ export function AuriAssistant({
             {...hello.bind}
             className={cn("fixed bottom-[calc(76px+env(safe-area-inset-bottom,0px))] right-4 z-(--z-sticky) grid select-none place-items-center rounded-full shadow-(--shadow-popover) outline-none transition-[transform,width,height] duration-500 ease-out hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none md:bottom-6 md:right-6", intro !== null ? "size-24" : "size-14 pointer-coarse:size-16")}
           >
-            <EyeTracker fit decorative poke={false} size={intro !== null ? 92 : 56} shape="Ball" eyeScale={1.2} joy={hello.joy || introJoy} say={intro !== null ? null : hello.say} sayAt="tl" />
+            <EyeTracker
+              fit
+              decorative
+              poke={false}
+              size={intro !== null ? 92 : 56}
+              shape="Ball"
+              eyeScale={1.2}
+              joy={hello.joy}
+              mood={introStep?.mood ?? (thinking ? "think" : "neutral")}
+              gaze={introStep?.gaze ?? null}
+              speaking={introSpeaking}
+              say={intro !== null ? null : hello.say}
+              sayAt="tl"
+            />
             {/* punto de «en línea»: la asistente está disponible */}
             <span aria-hidden="true" className="absolute right-0.5 top-0.5 size-3 rounded-full border-2 border-background bg-success" />
           </button>

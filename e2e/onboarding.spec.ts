@@ -38,3 +38,9 @@ test.describe("AURI en el Inicio", () => {
     await expect(tarjeta).toBeHidden();
   });
 });
+
+test("AURI: la historia muestra todas sus caras", async ({ page }) => {
+  await openStory(page, "organismos-auri-·-expresiones--todas-las-caras");
+  for (const cara of ["Neutral", "Alegría", "Guiño", "Sorpresa", "Pensando", "Curiosa", "Triste", "Hablando"]) await expect(page.getByText(cara, { exact: true })).toBeVisible();
+  await expectNoAxeViolations(page);
+});

@@ -182,6 +182,13 @@ function outline(r: number[]): string {
   return d + "Z";
 }
 
+/**
+ * Expresiones de la cara. `joy` alegría (ojos entrecerrados que suben), `wink` guiño (un ojo se cierra y el otro sonríe),
+ * `surprise` sorpresa (ojos más altos y redondos), `think` pensando (mira arriba a un lado y entrecierra un ojo), `curious`
+ * curiosa (un ojo más grande y la cara ladeada) y `sad` triste (ojos más bajos y caídos hacia afuera).
+ */
+export type EyeMood = "neutral" | "joy" | "wink" | "surprise" | "think" | "curious" | "sad";
+
 export function EyeTracker({
   /* how far the ball turns toward the pointer, 0..100 */
   follow = 60,
@@ -216,6 +223,12 @@ export function EyeTracker({
   /* una expresión de alegría: los ojos se entrecierran y se ensanchan, suben
      un poco y la cara mira hacia arriba, ignorando al puntero mientras dura */
   joy = false,
+  /* una expresión (ver `EyeMood`); `joy` sigue funcionando y equivale a `mood="joy"` */
+  mood = "neutral",
+  /* hacia dónde mira, en fracciones del radio (-0.85 a 0.85): para señalar una parte de la pantalla. Manda sobre el puntero */
+  gaze = null,
+  /* está hablando: los ojos laten y la cara se mece un poco (también mientras escribe lo que `say` le manda decir) */
+  speaking = false,
   /* un texto que dice en su burbuja, escrito letra a letra, y se queda
      hasta que vuelve a ser null. Es independiente del toque (`poke`) */
   say = null,
@@ -244,6 +257,9 @@ export function EyeTracker({
   poke?: boolean;
   front?: boolean;
   joy?: boolean;
+  mood?: EyeMood;
+  gaze?: { x: number; y: number } | null;
+  speaking?: boolean;
   say?: string | null;
   sayAt?: "br" | "tl" | "l";
   decorative?: boolean;
@@ -258,6 +274,8 @@ export function EyeTracker({
   const turn = useRef(0);
   const lastLine = useRef(-1);
   const talks = pokeable && !idle;
+  /* escribe ahora mismo (en la burbuja): mientras tanto la cara «habla» */
+  const typing = useRef(false);
   useEffect(() => () => { turn.current++; }, []);
   const poke = async () => {
     if (!talks) return;
@@ -270,11 +288,13 @@ export function EyeTracker({
     setTint(TINTS[Math.floor(Math.random() * TINTS.length)]);
     setTyped("");
     setTalking(true);
+    typing.current = true;
     for (let k = 1; k <= line.length; k++) {
       await wait(KEY_MS + Math.random() * 30);
       if (mine !== turn.current) return;
       setTyped(line.slice(0, k));
     }
+    typing.current = false;
     await wait(HOLD_MS);
     if (mine !== turn.current) return;
     setTalking(false);
@@ -299,16 +319,18 @@ export function EyeTracker({
       setTint(TINTS[0]);
       setTyped("");
       setTalking(true);
+      typing.current = true;
       for (let k = 1; k <= say.length; k++) {
         await new Promise((r) => setTimeout(r, KEY_MS + Math.random() * 30));
         if (mine !== turn.current) return;
         setTyped(say.slice(0, k));
       }
+      typing.current = false;
     };
     void run();
   }, [say]);
   const eyes = useRef<(SVGGElement | null)[]>([]);
-  const knobs = useRef({ follow, bounce, eyeScale, joy });
+  const knobs = useRef({ follow, bounce, eyeScale, joy, mood, gaze, speaking });
   const base = STYLES[look] ?? STYLES.Slant;
   const eye = {
     w: base.w * eyeScale * eyeWidth,
@@ -318,7 +340,7 @@ export function EyeTracker({
   const eyeNow = useRef(eye);
   /* los valores vivos se dejan en refs después de cada render (nunca durante él): el bucle los lee en cada cuadro */
   useEffect(() => {
-    knobs.current = { follow, bounce, eyeScale, joy };
+    knobs.current = { follow, bounce, eyeScale, joy, mood, gaze, speaking };
     eyeNow.current = eye;
   });
 
@@ -328,7 +350,7 @@ export function EyeTracker({
     /* where the face is on the ball (fractions of the radius),
        its speed, and where it is heading — one spring on a point,
        read as a turn when the eyes are drawn */
-    const t = { x: 0, y: 0, vx: 0, vy: 0, tx: 0, ty: 0, joy: 0 };
+    const t = { x: 0, y: 0, vx: 0, vy: 0, tx: 0, ty: 0, joy: 0, wink: 0, surp: 0, think: 0, cur: 0, sad: 0, talk: 0 };
     let raf = 0;
     let prev = 0;
     let blink = 0;
@@ -354,7 +376,7 @@ export function EyeTracker({
       /* the pair leans with a diagonal look and stands level on
          the axes: up-right and down-left lean one way, the other
          two the other, nothing straight on */
-      const tilt = TILT * t.x * t.y;
+      const tilt = TILT * t.x * t.y + 9 * t.cur;
       /* la alegría: eyes más anchos y más bajos (entrecerrados), y un poco arriba */
       const happy = t.joy;
       /* bigger eyes stand a little further apart */
@@ -382,19 +404,25 @@ export function EyeTracker({
            width and height directly keeps every corner the same
            radius, clamped so it never exceeds half a side. */
         const e0 = eyeNow.current;
-        const w = e0.w * sx * (1 + 0.32 * happy);
-        const h = Math.max(0.6, e0.h * k * lid * (1 - 0.5 * happy));
+        const right = i === 1;
+        /* hablar: los ojos laten al ritmo de las sílabas */
+        const beat = 1 - 0.2 * t.talk * Math.abs(Math.sin(now / 95 + i * 0.6));
+        const w = e0.w * sx * (1 + 0.32 * happy) * (1 + 0.14 * t.surp) * (right ? 1 + 0.24 * t.cur : 1);
+        const h = Math.max(
+          0.6,
+          e0.h * k * lid * (1 - 0.5 * happy) * (1 + 0.4 * t.surp) * (right ? 1 + 0.24 * t.cur : 1 - 0.45 * t.think) * (1 - 0.28 * t.sad) * (right ? 1 - 0.93 * t.wink : 1) * beat,
+        );
         const rect = g.firstElementChild as SVGRectElement | null;
         if (rect) {
           rect.setAttribute("x", (-w / 2).toFixed(2));
           rect.setAttribute("y", (-h / 2).toFixed(2));
           rect.setAttribute("width", w.toFixed(2));
           rect.setAttribute("height", h.toFixed(2));
-          rect.setAttribute("rx", Math.min(e0.r, w / 2, h / 2).toFixed(2));
+          rect.setAttribute("rx", Math.min(Math.max(e0.r, (w / 2) * t.surp), w / 2, h / 2).toFixed(2));
         }
         g.setAttribute(
           "transform",
-          `translate(${(50 + x1 * R).toFixed(2)} ${(50 + y2 * R - 3 * happy).toFixed(2)}) rotate(${tilt.toFixed(2)})`,
+          `translate(${(50 + x1 * R).toFixed(2)} ${(50 + y2 * R - 3 * happy + 3 * t.sad + Math.sin(now / 130) * 1.4 * t.talk).toFixed(2)}) rotate(${(tilt + (i === 0 ? -12 : 12) * t.sad).toFixed(2)})`,
         );
         g.style.opacity = z2 < 0.05 ? "0" : "1";
       });
@@ -409,10 +437,20 @@ export function EyeTracker({
       const dt = prev ? Math.min(2.5, (now - prev) / 16.67) : 1;
       prev = now;
       /* con alegría la cara mira un poco hacia arriba y no sigue al puntero */
-      const glad = knobs.current.joy;
-      t.joy += ((glad ? 1 : 0) - t.joy) * Math.min(1, 0.2 * dt);
-      const gx = glad ? 0 : t.tx;
-      const gy = glad ? -0.2 : t.ty;
+      const m = knobs.current.mood;
+      const glad = knobs.current.joy || m === "joy" || m === "wink";
+      const ease = (v: number, on: boolean) => v + ((on ? 1 : 0) - v) * Math.min(1, 0.2 * dt);
+      t.joy = ease(t.joy, glad);
+      t.wink = ease(t.wink, m === "wink");
+      t.surp = ease(t.surp, m === "surprise");
+      t.think = ease(t.think, m === "think");
+      t.cur = ease(t.cur, m === "curious");
+      t.sad = ease(t.sad, m === "sad");
+      t.talk = ease(t.talk, knobs.current.speaking || typing.current);
+      /* adónde mira: lo que se le pide (señalar algo) manda; si no, pensando mira arriba a un lado y triste mira abajo */
+      const g = knobs.current.gaze;
+      const gx = g ? clamp(g.x, -0.85, 0.85) : m === "think" ? -0.42 : m === "sad" ? 0 : glad ? 0 : t.tx;
+      const gy = g ? clamp(g.y, -0.85, 0.85) : m === "think" ? -0.48 : m === "sad" ? 0.32 : glad ? -0.2 : t.ty;
       if (still) {
         t.x = gx;
         t.y = gy;
@@ -562,7 +600,7 @@ export function EyeTracker({
         className="eyt-ball"
         viewBox="0 0 100 100"
         data-poke={talks ? true : undefined}
-        data-joy={joy ? true : undefined}
+        data-joy={joy || mood === "joy" || mood === "wink" ? true : undefined}
         onClick={talks ? poke : undefined}
       >
         <defs>
