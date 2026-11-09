@@ -105,8 +105,8 @@ function TileBody({ area, badge, shared = false }: { area: AppArea; badge: numbe
       ) : (
         square
       )}
-      {/* Una sola línea: si el nombre es largo, termina en «…» (el nombre completo queda para el lector y el título). */}
-      <span className="block w-full truncate text-ui font-medium leading-tight text-foreground">{area.label}</span>
+      {/* Hasta dos líneas: «Finanzas y contabilidad» se lee completo; solo un nombre larguísimo termina en «…». */}
+      <span className="block min-h-[2.25rem] w-full text-balance break-words text-center text-ui font-medium leading-tight text-foreground [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] overflow-hidden">{area.label}</span>
     </>
   );
 }

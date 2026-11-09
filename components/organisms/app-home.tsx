@@ -1,5 +1,6 @@
 "use client";
 
+import { buttonVariants } from "@/components/atoms/button-variants";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -29,7 +30,8 @@ function dateLine(now: Date): string {
 const compactMoney = new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", notation: "compact", maximumFractionDigits: 1 });
 
 /** Etiqueta pequeña de sección y de fecha: 11 px, mayúsculas, espaciado amplio. */
-const eyebrow = "text-2xs font-semibold uppercase tracking-[0.09em] text-muted-foreground";
+// Títulos de sección: 12 px (antes 11) y un poco menos espaciados; los grises ya cumplen contraste (9:1), lo que fallaba era el tamaño.
+const eyebrow = "text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground";
 
 export type AppHomeTrial = { daysLeft: number; level: "ok" | "soon" | "ended"; planHref: string };
 
@@ -174,7 +176,7 @@ export function AppHome({ trial = null, summary: input, userName = null, busines
             <p className="inline-flex flex-wrap items-center gap-2 rounded-[10px] border border-border bg-card px-3.5 py-2.5 text-ui text-foreground">
               <span aria-hidden="true" className="size-2 shrink-0 rounded-full bg-accent" />
               {trial.level === "ended" ? "Tu prueba gratuita terminó" : `Tu prueba gratuita termina en ${trial.daysLeft} ${trial.daysLeft === 1 ? "día" : "días"}`}
-              <a href={trial.planHref} className="font-medium text-accent-text underline-offset-2 outline-none hover:underline focus-visible:outline-2 focus-visible:outline-ring">
+              <a href={trial.planHref} className={buttonVariants({ variant: "accent", size: "sm" })}>
                 Elige un plan
               </a>
             </p>
@@ -364,14 +366,14 @@ export function AppHome({ trial = null, summary: input, userName = null, busines
 function Figure({ label, value, href, aside, children }: { label: string; value: string; href: string; aside?: ReactNode; children: ReactNode }) {
   return (
     <div className="grid gap-1 py-4">
-      <dt className="text-xs text-muted-foreground">{label}</dt>
+      <dt className="text-ui text-muted-foreground">{label}</dt>
       <dd className="flex items-center justify-between gap-3">
         <Link href={href} className="text-2xl font-semibold tracking-tight text-foreground tabular-nums outline-none hover:text-accent-text focus-visible:outline-2 focus-visible:outline-ring">
           {value}
         </Link>
         {aside}
       </dd>
-      <dd className="text-xs">{children}</dd>
+      <dd className="text-ui">{children}</dd>
     </div>
   );
 }
@@ -408,8 +410,8 @@ function Sparkline({ values }: { values: number[] }) {
   const span = max - min || 1;
   const points = values.map((v, i) => `${((i / (values.length - 1)) * 82 + 1).toFixed(1)},${(29 - ((v - min) / span) * 28).toFixed(1)}`).join(" ");
   return (
-    <svg aria-hidden="true" viewBox="0 0 84 30" className="h-[30px] w-[84px] shrink-0 text-success">
-      <polyline points={points} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+    <svg aria-hidden="true" viewBox="0 0 84 30" className="h-[44px] w-[120px] shrink-0 text-success" preserveAspectRatio="none">
+      <polyline points={points} fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
     </svg>
   );
 }
