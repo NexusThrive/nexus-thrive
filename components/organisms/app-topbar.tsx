@@ -3,7 +3,7 @@
 import { ViewTransition, useCallback, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ChevronDown, ChevronLeft, Plus, Search } from "lucide-react";
+import { LayoutGrid, ChevronDown, ChevronLeft, Plus, Search } from "lucide-react";
 import { N_PATH, THRIVE_LETTERS } from "@nexus/brand/BrandLogo";
 import { Button } from "@/components/atoms/button";
 import { ThemeToggle } from "@/components/atoms/theme-toggle";
@@ -43,8 +43,10 @@ export function AppTopbar({ actions, notifications, search, switcher }: { action
   const pathname = usePathname();
   // En la raíz (pantalla de aplicaciones) la barra queda reducida y transparente: solo logo, cambio de empresa y cuenta.
   const atHome = pathname.replace(/\/$/, "") === hrefFor("");
-  // Dentro de un módulo (no en Inicio ni en Sistema) la barra cambia a la barra de módulo: «<», módulo, secciones y utilidades.
-  const moduleGroup = atHome ? undefined : groups.find((g) => g.label !== "Sistema" && g.items.some((i) => i.key === activeKey));
+  // Fuera de Inicio la barra es siempre la de módulo: «<», nombre, secciones y utilidades. Vale para los módulos, para Sistema (Configuración,
+  // Funciones, Datos, Integraciones) y para cualquier pantalla que no pertenezca a un módulo (se muestra con su título): la barra antigua
+  // con buscador y selector de negocio ya no sale en ninguna.
+  const moduleGroup = atHome ? undefined : (groups.find((g) => g.items.some((i) => i.key === activeKey)) ?? { label: title || brandName, icon: LayoutGrid, items: [] });
   if (moduleGroup) return <ModuleBar group={moduleGroup} activeKey={activeKey} hrefFor={hrefFor} notifications={notifications} brandName={brandName} />;
 
   return (
