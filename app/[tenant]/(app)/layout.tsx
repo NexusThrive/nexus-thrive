@@ -13,11 +13,9 @@ import { FirstStepsIndicator } from "@/components/organisms/first-steps-indicato
 import ThemeSync from "./_components/theme-sync";
 import { AuriAssistant } from "@/components/organisms/auri-assistant";
 import { CurrentUserProvider } from "@/components/providers/current-user";
-import { cookies } from "next/headers";
 import { auth } from "@clerk/nextjs/server";
 import { createTenantDb } from "@/lib/core/tenancy/db";
 import { SessionScope } from "@/components/providers/session-scope";
-import { AppEntrySplash, SPLASH_COOKIE } from "@/components/organisms/app-entry-splash";
 
 /**
  * Ruta `(app)`: shell del negocio + gate de onboarding.
@@ -68,24 +66,19 @@ export default async function AppLayout({
     if (!userId) return [null, [], null] satisfies [null, never[], null];
     return await Promise.all([memberTheme(tenantRecord.id, userId), businessesOfMember(userId), createTenantDb(tenantRecord.id).users.findByClerkUserId(userId)]);
   });
-  const [{ userId }, [savedTheme, businesses, me], trial, firstSteps, cookieStore] = await Promise.all([
+  const [{ userId }, [savedTheme, businesses, me], trial, firstSteps] = await Promise.all([
     authP,
     memberP,
     // Prueba de autoservicio o acceso temporal: sus días restantes van en la barra superior.
     loadTrialIndicator(tenantRecord.id),
     // Primeros pasos: el círculo de la barra superior (desaparece cuando están todos hechos).
     loadFirstSteps({ tenantId: tenantRecord.id, slug: tenantRecord.slug, activeModules, customerWord: terms.customer.toLowerCase() }),
-    cookies(),
   ]);
-
-  // La intro de la N solo sale al entrar a la app tras iniciar sesión (una vez por sesión).
-  const showSplash = !cookieStore.has(SPLASH_COOKIE);
 
   return (
     <VerticalTermsProvider terms={terms}>
       {userId ? <SessionScope userId={userId} tenantId={tenantRecord.id} /> : null}
       <CurrentUserProvider firstName={me?.name?.trim().split(/\s+/)[0] || null}>
-      <AppEntrySplash show={showSplash} />
       <TenantShell
         tenantSlug={tenantRecord.slug}
         tenantName={tenantRecord.name}

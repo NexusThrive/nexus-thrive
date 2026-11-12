@@ -1,0 +1,131 @@
+/* Esqueleto del shell del negocio: las mismas medidas que `AppSidebar` y `AppTopbar` (variante workspace), el panel de `tenant-shell.module.css`
+   y `MobileTabBar`, para que al llegar lo real nada salte. Sobre el marco gris los bloques van en blanco translúcido: el gris del
+   Skeleton normal se fundiría con el marco. */
+
+/* Barra superior: en móvil, una fila de 60 px; desde 768 px, las tres columnas de la real (título · buscador · acciones). */
+.top {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: var(--z-topbar);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: calc(var(--topbar-height) + env(safe-area-inset-top, 0px));
+  padding: env(safe-area-inset-top, 0px) 16px 0;
+  background: var(--background);
+}
+.topActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.topTitle,
+.topSearch {
+  display: none;
+}
+/* Solo en celular: la marca a la izquierda, como la barra real. */
+.topMark {
+  display: block;
+}
+
+.side {
+  display: none;
+}
+
+/* Barra inferior del celular: cinco huecos, como la real. */
+.tabs {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: var(--z-tabbar);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  place-items: center;
+  height: calc(66px + env(safe-area-inset-bottom, 0px));
+  padding: 6px 8px env(safe-area-inset-bottom, 0px);
+  border-top: 1px solid var(--border);
+  background: var(--glass);
+}
+
+@media (min-width: 768px) {
+  .tabs {
+    display: none;
+  }
+  .top {
+    left: var(--sw);
+    display: grid;
+    grid-template-columns: minmax(max-content, 1fr) minmax(0, 440px) minmax(max-content, 1fr);
+    padding: env(safe-area-inset-top, 0px) 16px 0;
+    background: var(--surface-muted);
+  }
+  .topTitle,
+  .topSearch {
+    display: block;
+  }
+  .topMark {
+    display: none;
+  }
+  .topActions {
+    justify-self: end;
+  }
+
+  /* Barra lateral: bloque del negocio, ítems de 48 px y pie, con el aire que deja la curva del panel (`--corner` = su radio). */
+  .side {
+    --corner: var(--radius-sheet);
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: calc(var(--z-topbar) + 1);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: var(--sw);
+    padding: calc(12px + env(safe-area-inset-top, 0px)) 12px calc(var(--corner) + 12px + env(safe-area-inset-bottom, 0px));
+    background: var(--surface-muted);
+  }
+  .biz {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 52px;
+    margin-bottom: calc(var(--corner) + 8px);
+    padding: 0 8px;
+    border-radius: var(--radius-xl);
+    background: var(--card);
+  }
+  .item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 48px;
+    padding: 0 13px;
+  }
+  .foot {
+    display: grid;
+    gap: 4px;
+    margin-top: auto;
+  }
+}
+
+@media (min-width: 1024px) {
+  .top {
+    padding-inline: 24px;
+  }
+}
+
+/* Riel de iconos (tableta, o la barra contraída por la persona): solo el icono, sin textos. */
+@media (max-width: 1023.98px) {
+  .label {
+    display: none;
+  }
+  .biz {
+    justify-content: center;
+    padding: 0;
+  }
+  .item {
+    justify-content: center;
+    padding: 0;
+  }
+}
+:global(html[data-rail]) .label {
+  display: none;
+}
