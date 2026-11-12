@@ -45,3 +45,8 @@ export function SignUp() {
 export function useUser() {
   return { isLoaded: true, isSignedIn: true, user: { id: "user_storybook", firstName: "Sofía", fullName: "Sofía Nexus", imageUrl: "" } };
 }
+
+/** Cerrar sesión en Storybook: deja pasar el botón hijo tal cual (no hay sesión que cerrar). */
+export function SignOutButton({ children }: { children?: React.ReactNode }) {
+  return <>{children}</>;
+}

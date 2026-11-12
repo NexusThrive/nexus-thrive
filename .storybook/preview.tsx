@@ -42,6 +42,7 @@ const preview: Preview = {
           ["Colores", "Tipografía", "Espacio y forma", "Capas y elevación", "Movimiento"],
           "Átomos",
           "Moléculas",
+          "Widgets",
           "Organismos",
           "Plantillas",
           "Páginas",
