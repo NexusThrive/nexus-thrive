@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { CalendarPlus, HandCoins, Receipt, UserRoundPlus } from "lucide-react";
 import { Delta } from "@/components/atoms/delta";
-import { KpiCard } from "@/components/molecules/kpi-card";
+import { KpiCard } from "@/components/widgets/kpi-card";
 import { PageHeader } from "@/components/molecules/page-header";
 import { MinusCircle, TrendingUp, Users, Wallet } from "lucide-react";
 import { AppSidebar } from "@/components/organisms/app-sidebar";

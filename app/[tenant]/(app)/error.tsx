@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { useEffect } from "react";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { ErrorState } from "@/components/molecules/error-state";
+import { cn } from "@/lib/utils";
 
 /**
  * Error de cualquier pantalla del negocio (DR-09). Vive dentro del `layout` de
@@ -24,7 +25,7 @@ export default function TenantError({ error, reset }: { error: Error & { digest?
       reference={error.digest}
       action={
         tenant ? (
-          <Link href={`/${tenant}`} className={buttonVariants({ variant: "outline" })}>
+          <Link href={`/${tenant}`} className={cn(buttonVariants({ variant: "secondary", size: "lg" }), "rounded-full px-7")}>
             Ir al inicio
           </Link>
         ) : null

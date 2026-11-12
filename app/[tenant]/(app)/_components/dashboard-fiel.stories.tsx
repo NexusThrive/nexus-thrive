@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { HandCoins, MinusCircle, TrendingUp, Users, Wallet } from "lucide-react";
 import { Delta } from "@/components/atoms/delta";
 import { RevealText } from "@/components/atoms/reveal-text";
-import { KpiCard } from "@/components/molecules/kpi-card";
+import { KpiCard } from "@/components/widgets/kpi-card";
 import { PageHeader } from "@/components/molecules/page-header";
 import { PullToRefresh } from "@/components/molecules/pull-to-refresh";
 import { StatTile } from "@/components/molecules/stat-tile";
