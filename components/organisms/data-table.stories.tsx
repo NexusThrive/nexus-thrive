@@ -9,7 +9,8 @@ const rows = [
 ];
 
 const meta = {
-  title: "Organismos/DataTable",
+  title: "Organismos/Datos/DataTable",
+  id: "organismos-datatable",
   component: DataTable,
   args: { minWidth: 720, children: null },
 } satisfies Meta<typeof DataTable>;

@@ -4,7 +4,8 @@ import { Button } from "./button";
 import { FocusText } from "./focus-text";
 
 const meta = {
-  title: "Átomos/FocusText",
+  title: "Átomos/Movimiento/FocusText",
+  id: "átomos-focustext",
   component: FocusText,
   args: { text: "Calculando el presupuesto…", className: "text-sm" },
   parameters: {

@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { UpdateNotice } from "./pwa";
 
 const meta = {
-  title: "Moléculas/UpdateNotice",
+  title: "Moléculas/Avisos y estados/UpdateNotice",
+  id: "moléculas-updatenotice",
   component: UpdateNotice,
   args: { onUpdate: () => {}, onDismiss: () => {} },
   parameters: {

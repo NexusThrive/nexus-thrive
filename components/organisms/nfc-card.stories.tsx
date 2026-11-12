@@ -16,7 +16,8 @@ function Demo({ finish = "negro" }: { finish?: NfcFinish }) {
 }
 
 const meta = {
-  title: "Organismos/NfcCard",
+  title: "Organismos/Finanzas/NfcCard",
+  id: "organismos-nfccard",
   component: Demo,
   parameters: { docs: { description: { component: "MAR·01 — inclinación hasta 14° y 18° siguiendo al puntero, giro al tocar, flotación sola y lectura con ondas aceleradas y borde oro." } } },
 } satisfies Meta<typeof Demo>;

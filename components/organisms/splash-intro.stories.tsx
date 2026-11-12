@@ -3,7 +3,8 @@ import { fn } from "storybook/test";
 import { SplashIntro } from "./splash-intro";
 
 const meta = {
-  title: "Organismos/SplashIntro",
+  title: "Organismos/Inicio/SplashIntro",
+  id: "organismos-splashintro",
   component: SplashIntro,
   args: { onDone: fn() },
   argTypes: { progress: { control: { type: "range", min: 0, max: 1, step: 0.01 } } },

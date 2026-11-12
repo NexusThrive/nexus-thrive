@@ -26,7 +26,8 @@ function Demo() {
 }
 
 const meta = {
-  title: "Organismos/QuickActionLink",
+  title: "Organismos/Inicio/QuickActionLink",
+  id: "organismos-quickactionlink",
   component: Demo,
   parameters: { docs: { description: { component: "Enlace de una acción de «Crear»: con mini-modal, el clic normal lo abre sin navegar; sin él, o con Ctrl/⌘/Mayús, es un enlace de siempre a su sección." } } },
 } satisfies Meta<typeof Demo>;

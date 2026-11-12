@@ -4,7 +4,8 @@ import { Button } from "@/components/atoms/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 
 const meta = {
-  title: "Moléculas/Tooltip",
+  title: "Moléculas/Superposiciones/Tooltip",
+  id: "moléculas-tooltip",
   component: Tooltip,
   parameters: { layout: "centered" },
 } satisfies Meta<typeof Tooltip>;

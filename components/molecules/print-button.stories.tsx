@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { PrintButton } from "./print-button";
 
-const meta = { title: "Moléculas/PrintButton", component: PrintButton } satisfies Meta<typeof PrintButton>;
+const meta = { title: "Moléculas/Contenido/PrintButton", id: "moléculas-printbutton", component: PrintButton } satisfies Meta<typeof PrintButton>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

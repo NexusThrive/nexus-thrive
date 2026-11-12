@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { AuthMountFallback } from "./auth-mount-fallback";
 
 const meta = {
-  title: "Moléculas/AuthMountFallback",
+  title: "Moléculas/Avisos y estados/AuthMountFallback",
+  id: "moléculas-authmountfallback",
   component: AuthMountFallback,
   parameters: { layout: "centered" },
   decorators: [

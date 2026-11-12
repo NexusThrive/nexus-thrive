@@ -10,7 +10,8 @@ const options = [
 ] as const;
 
 const meta = {
-  title: "Moléculas/SegmentedControl",
+  title: "Moléculas/Formularios/SegmentedControl",
+  id: "moléculas-segmentedcontrol",
   component: SegmentedControl,
   args: { options, value: "all", onChange: fn(), ariaLabel: "Filtrar actividad" },
 } satisfies Meta<typeof SegmentedControl<string>>;

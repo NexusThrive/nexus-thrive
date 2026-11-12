@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { CustomerAvatar } from "./customer-avatar";
 
 const meta = {
-  title: "Átomos/CustomerAvatar",
+  title: "Átomos/Presentación/CustomerAvatar",
+  id: "átomos-customeravatar",
   component: CustomerAvatar,
 } satisfies Meta<typeof CustomerAvatar>;
 

@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Textarea } from "./textarea";
 
 const meta = {
-  title: "Átomos/Textarea",
+  title: "Átomos/Formularios/Textarea",
+  id: "átomos-textarea",
   component: Textarea,
   args: { placeholder: "Observaciones de la visita…" },
   decorators: [(Story) => <div className="max-w-md"><Story /></div>],

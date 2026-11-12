@@ -49,7 +49,8 @@ const widgets: DashboardWidget[] = [
 ];
 
 const meta = {
-  title: "Organismos/CustomizableDashboard",
+  title: "Organismos/Inicio/CustomizableDashboard",
+  id: "organismos-customizabledashboard",
   component: CustomizableDashboard,
   args: {
     scope: "storybook",

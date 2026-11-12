@@ -4,7 +4,8 @@ import { Field } from "./field";
 import { DateInput } from "./date-input";
 
 const meta = {
-  title: "Moléculas/DateInput",
+  title: "Moléculas/Formularios/DateInput",
+  id: "moléculas-dateinput",
   component: DateInput,
   parameters: {
     docs: {

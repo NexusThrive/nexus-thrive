@@ -24,7 +24,8 @@ const acciones = { guardar: ok, renombrar: ok, eliminar: ok, fijar: ok };
  * El estado vive en la URL; aquí las acciones son de muestra.
  */
 const meta = {
-  title: "Organismos/Buscador avanzado",
+  title: "Organismos/Datos/Buscador avanzado",
+  id: "organismos-buscador-avanzado",
   component: AdvancedSearch,
   decorators: [
     (Story) => (

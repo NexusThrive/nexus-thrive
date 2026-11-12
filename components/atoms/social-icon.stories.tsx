@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { SocialIcon, type SocialName } from "./social-icon";
 
 const meta = {
-  title: "Átomos/SocialIcon",
+  title: "Átomos/Marca/SocialIcon",
+  id: "átomos-socialicon",
   component: SocialIcon,
   args: { name: "instagram", className: "size-6" },
 } satisfies Meta<typeof SocialIcon>;

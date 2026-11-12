@@ -6,7 +6,8 @@ import { RevealText } from "@/components/atoms/reveal-text";
 import { PageHeader, SectionTitle } from "./page-header";
 
 const meta = {
-  title: "Moléculas/PageHeader",
+  title: "Moléculas/Contenido/PageHeader",
+  id: "moléculas-pageheader",
   component: PageHeader,
   args: {
     eyebrow: "Gestión",

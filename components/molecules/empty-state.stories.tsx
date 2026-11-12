@@ -4,7 +4,8 @@ import { Button } from "@/components/atoms/button";
 import { EmptyState } from "./empty-state";
 
 const meta = {
-  title: "Moléculas/EmptyState",
+  title: "Moléculas/Avisos y estados/EmptyState",
+  id: "moléculas-emptystate",
   component: EmptyState,
   args: {
     title: "Todavía no hay obras",

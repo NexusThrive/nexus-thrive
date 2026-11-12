@@ -3,7 +3,8 @@ import { quickCreateActions } from "@/lib/experience/navigation/quick-create";
 import QuickActions from "./quick-actions";
 
 const meta = {
-  title: "Organismos/QuickActions",
+  title: "Organismos/Inicio/QuickActions",
+  id: "organismos-quickactions",
   component: QuickActions,
   args: { tenantSlug: "gym-norte", actions: quickCreateActions("gym", ["crm", "finance", "bookings"]) },
   argTypes: { actions: { control: false } },

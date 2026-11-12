@@ -17,7 +17,8 @@ const FACES: { mood: EyeMood; name: string; when: string }[] = [
 ];
 
 const meta = {
-  title: "Organismos/AURI · Expresiones",
+  title: "Organismos/AURI/Expresiones",
+  id: "organismos-auri-·-expresiones",
   component: EyeTracker,
   parameters: { layout: "fullscreen", docs: { description: { component: "Las caras de AURI AI: neutral, alegría, guiño, sorpresa, pensando, curiosa y triste; además puede hablar (los ojos laten y se mece) y mirar hacia una parte de la pantalla. Una demostración las recorre todas y un panel permite probarlas." } } },
   args: { mood: "neutral", speaking: false, size: 140, shape: "Ball", eyeScale: 1.2, front: true, poke: false, fit: true },

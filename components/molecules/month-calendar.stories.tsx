@@ -8,7 +8,8 @@ function Demo(args: React.ComponentProps<typeof MonthCalendar>) {
 }
 
 const meta = {
-  title: "Moléculas/MonthCalendar",
+  title: "Moléculas/Calendario/MonthCalendar",
+  id: "moléculas-monthcalendar",
   component: MonthCalendar,
   args: { value: "2026-10-23", today: "2026-10-23", marked: new Set(["2026-10-05", "2026-10-14", "2026-10-23", "2026-10-28"]), onChange: () => {} },
   decorators: [(Story) => <div className="max-w-xs"><Story /></div>],

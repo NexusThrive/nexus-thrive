@@ -6,7 +6,8 @@ import { Button } from "./button";
 import { RollingNumber } from "./rolling-number";
 
 const meta = {
-  title: "Átomos/RollingNumber",
+  title: "Átomos/Datos/RollingNumber",
+  id: "átomos-rollingnumber",
   component: RollingNumber,
   args: { value: 4860000, format: "cop" },
   argTypes: { format: { control: "inline-radio", options: ["number", "cop"] }, className: { control: false } },

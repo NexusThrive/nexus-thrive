@@ -4,7 +4,8 @@ import { fn } from "storybook/test";
 import { Button } from "./button";
 
 const meta = {
-  title: "Átomos/Button",
+  title: "Átomos/Acciones/Button",
+  id: "átomos-button",
   component: Button,
   args: { children: "Guardar cambios", onClick: fn() },
   argTypes: {

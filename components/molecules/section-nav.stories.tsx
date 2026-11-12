@@ -21,7 +21,7 @@ function Demo() {
   );
 }
 
-const meta = { title: "Moléculas/SectionNav", component: Demo } satisfies Meta<typeof Demo>;
+const meta = { title: "Moléculas/Navegación/SectionNav", id: "moléculas-sectionnav", component: Demo } satisfies Meta<typeof Demo>;
 export default meta;
 
 export const Ajustes: StoryObj<typeof meta> = {};

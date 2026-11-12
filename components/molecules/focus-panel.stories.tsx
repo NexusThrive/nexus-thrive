@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { FocusPanel } from "./focus-panel";
 
 const meta = {
-  title: "Moléculas/FocusPanel",
+  title: "Moléculas/Contenido/FocusPanel",
+  id: "moléculas-focuspanel",
   component: FocusPanel,
   args: {
     loading: true,

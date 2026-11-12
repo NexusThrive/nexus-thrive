@@ -3,7 +3,8 @@ import { Switch } from "@/components/atoms/switch";
 import { SettingsRow } from "./settings-row";
 
 const meta = {
-  title: "Moléculas/SettingsRow",
+  title: "Moléculas/Contenido/SettingsRow",
+  id: "moléculas-settingsrow",
   component: SettingsRow,
   args: {
     title: "Actividad en vivo",

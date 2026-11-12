@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { RevealRow } from "./reveal-row";
 
 const meta = {
-  title: "Átomos/RevealRow",
+  title: "Átomos/Movimiento/RevealRow",
+  id: "átomos-revealrow",
   component: RevealRow,
   args: { index: 0, children: "Fila" },
   parameters: {

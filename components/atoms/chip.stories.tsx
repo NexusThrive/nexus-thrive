@@ -3,7 +3,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Chip, ChipRow } from "./chip";
 
 const meta = {
-  title: "Átomos/Chip",
+  title: "Átomos/Formularios/Chip",
+  id: "átomos-chip",
   component: Chip,
   args: { children: "Nequi", selected: false },
 } satisfies Meta<typeof Chip>;

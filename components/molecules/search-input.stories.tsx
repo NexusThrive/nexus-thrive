@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import SearchInput from "./search-input";
 
 const meta = {
-  title: "Moléculas/SearchInput",
+  title: "Moléculas/Formularios/SearchInput",
+  id: "moléculas-searchinput",
   component: SearchInput,
   args: {
     paramKey: "q",

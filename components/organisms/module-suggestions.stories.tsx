@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { ModuleSuggestions } from "./module-suggestions";
 
 const meta = {
-  title: "Organismos/ModuleSuggestions",
+  title: "Organismos/Inicio/ModuleSuggestions",
+  id: "organismos-modulesuggestions",
   component: ModuleSuggestions,
   args: { suggestedIds: ["crm", "bookings", "finance", "memberships", "inventory"], activeModules: ["crm"], functionsHref: "/gym-norte/functions" },
   decorators: [(Story) => <div className="max-w-xl p-6"><Story /></div>],

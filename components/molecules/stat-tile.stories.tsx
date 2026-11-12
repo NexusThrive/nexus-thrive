@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { StatTile } from "./stat-tile";
 
 const meta = {
-  title: "Moléculas/StatTile",
+  title: "Moléculas/Contenido/StatTile",
+  id: "moléculas-stattile",
   component: StatTile,
   args: { label: "Activas", value: 42, tone: "success", note: "Con más de 3 días de vigencia" },
   decorators: [(Story) => <div className="max-w-xs"><Story /></div>],

@@ -3,7 +3,8 @@ import { AlertTriangle, Banknote, Check, MinusCircle, UserPlus } from "lucide-re
 import { IconTile } from "./icon-tile";
 
 const meta = {
-  title: "Átomos/IconTile",
+  title: "Átomos/Presentación/IconTile",
+  id: "átomos-icontile",
   component: IconTile,
   args: { tone: "neutral", size: "md", children: <Banknote /> },
   argTypes: {

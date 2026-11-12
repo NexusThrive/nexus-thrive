@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { GridBackdrop } from "./grid-backdrop";
 
 const meta = {
-  title: "Moléculas/GridBackdrop",
+  title: "Moléculas/Contenido/GridBackdrop",
+  id: "moléculas-gridbackdrop",
   component: GridBackdrop,
   args: { variant: "default" },
   argTypes: { variant: { control: "inline-radio", options: ["default", "home"] }, className: { control: false } },

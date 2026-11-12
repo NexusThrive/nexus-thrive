@@ -13,7 +13,8 @@ function Demo() {
 }
 
 const meta = {
-  title: "Moléculas/UsdInput",
+  title: "Moléculas/Formularios/UsdInput",
+  id: "moléculas-usdinput",
   component: UsdInput,
   args: { value: 0, onChange: () => {} },
   parameters: { docs: { description: { component: "Dólares con entrada en centavos: evita errores de punto flotante." } } },

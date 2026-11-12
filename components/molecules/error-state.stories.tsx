@@ -3,7 +3,8 @@ import { buttonVariants } from "@/components/atoms/button-variants";
 import { ErrorState } from "./error-state";
 
 const meta = {
-  title: "Moléculas/ErrorState",
+  title: "Moléculas/Avisos y estados/ErrorState",
+  id: "moléculas-errorstate",
   component: ErrorState,
   parameters: { layout: "fullscreen" },
   args: { onRetry: () => undefined },

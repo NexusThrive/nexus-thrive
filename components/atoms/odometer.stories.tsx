@@ -4,7 +4,8 @@ import { Button } from "./button";
 import { Odometer } from "./odometer";
 
 const meta = {
-  title: "Átomos/Odometer",
+  title: "Átomos/Datos/Odometer",
+  id: "átomos-odometer",
   component: Odometer,
   args: { value: "84.40", prefix: "$", className: "font-display text-6xl font-bold tracking-[-0.03em]" },
 } satisfies Meta<typeof Odometer>;

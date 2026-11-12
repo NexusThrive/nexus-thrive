@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { GROUP_ICON_NAMES, GroupIcon, groupIconLabel } from "./group-icon";
 
 const meta = {
-  title: "Átomos/GroupIcon",
+  title: "Átomos/Presentación/GroupIcon",
+  id: "átomos-groupicon",
   component: GroupIcon,
   args: { name: "star" },
   argTypes: { name: { control: "select", options: [...GROUP_ICON_NAMES, "no-existe"] } },

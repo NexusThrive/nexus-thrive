@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { RevealText } from "./reveal-text";
 
 const meta = {
-  title: "Átomos/RevealText",
+  title: "Átomos/Movimiento/RevealText",
+  id: "átomos-revealtext",
   component: RevealText,
   args: {
     as: "h1",

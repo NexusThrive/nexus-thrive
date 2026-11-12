@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { AmountDisplay } from "./amount-display";
 
 const meta = {
-  title: "Átomos/AmountDisplay",
+  title: "Átomos/Datos/AmountDisplay",
+  id: "átomos-amountdisplay",
   component: AmountDisplay,
   args: { value: 1250000 },
   parameters: { docs: { description: { component: "Cifra de dinero con el símbolo atenuado. Para cifras que cuentan hasta su valor, `CountUp`." } } },

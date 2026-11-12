@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { AuthBrandPanel } from "./auth-brand-panel";
 
 const meta = {
-  title: "Organismos/AuthBrandPanel",
+  title: "Organismos/Acceso/AuthBrandPanel",
+  id: "organismos-authbrandpanel",
   component: AuthBrandPanel,
   args: { mode: "sign-in" },
   argTypes: { mode: { control: "inline-radio", options: ["sign-in", "sign-up"] } },

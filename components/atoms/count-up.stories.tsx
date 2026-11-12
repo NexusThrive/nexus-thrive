@@ -6,7 +6,8 @@ import { CountUp } from "./count-up";
 const cop = (n: number) => `$ ${Math.round(n).toLocaleString("es-CO")}`;
 
 const meta = {
-  title: "Átomos/CountUp",
+  title: "Átomos/Datos/CountUp",
+  id: "átomos-countup",
   component: CountUp,
   args: { value: 4820000, format: cop, className: "font-display text-3xl font-semibold tabular-nums" },
   argTypes: { format: { control: false } },

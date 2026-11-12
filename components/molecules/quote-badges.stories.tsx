@@ -3,7 +3,8 @@ import { APU_ITEM_CATEGORIES, QUOTE_STATUSES } from "@/lib/industry/construction
 import { ApuCategoryBadge, QuoteStatusBadge } from "./quote-badges";
 
 const meta = {
-  title: "Moléculas/QuoteBadges",
+  title: "Moléculas/Contenido/QuoteBadges",
+  id: "moléculas-quotebadges",
   component: QuoteStatusBadge,
   args: { status: "APPROVED" },
   argTypes: { status: { control: "select", options: QUOTE_STATUSES.map((s) => s.value) } },

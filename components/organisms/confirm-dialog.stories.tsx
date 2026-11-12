@@ -85,7 +85,8 @@ function InsideSheetDemo() {
 }
 
 const meta = {
-  title: "Organismos/ConfirmDialog",
+  title: "Organismos/Superposiciones/ConfirmDialog",
+  id: "organismos-confirmdialog",
   component: ConfirmDialog,
   parameters: {
     docs: {

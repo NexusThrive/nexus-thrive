@@ -45,7 +45,8 @@ function Demo() {
 }
 
 const meta = {
-  title: "Organismos/AppStage",
+  title: "Organismos/Shell/AppStage",
+  id: "organismos-appstage",
   component: Demo,
   parameters: { layout: "fullscreen", docs: { description: { component: "Abrir una app: el icono crece hasta la vista y, al volver, la vista se encoge a su icono (sin estirar las capturas)." } } },
 } satisfies Meta<typeof Demo>;
