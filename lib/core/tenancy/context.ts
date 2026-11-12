@@ -24,6 +24,8 @@ export type TenantContext = {
   userId: string;
   /** Id del `User` local (miembro del tenant), distinto del id de Clerk. */
   memberId: string;
+  /** Nombre del miembro en el equipo (ya leído al verificar la membresía: evita pedirlo otra vez para un saludo). */
+  memberName: string | null;
   role: TenantRole;
   tenantDb: ReturnType<typeof createTenantDb>;
   /** Registro del negocio, ya comprobado activo. */
@@ -78,6 +80,7 @@ export async function requireTenantContext(
     vertical: tenantRecord.vertical,
     userId,
     memberId: member.id,
+    memberName: member.name ?? null,
     role: member.role as TenantRole,
     tenantDb,
     tenant: tenantRecord,

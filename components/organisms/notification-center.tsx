@@ -26,8 +26,11 @@ function when(iso: string): string {
   return rel.format(Math.round(min / 60), "hour");
 }
 
-// En vivo: una alta nueva (p. ej. del registro público) llega a la campana en pocos segundos.
-const POLL_MS = 10_000;
+// En vivo: una alta nueva (p. ej. del registro público) llega a la campana en menos de un minuto. Cada consulta arma los avisos con
+// una docena de lecturas, así que no se hace más seguido; lo que genera una acción de la propia persona llega por su evento, sin esperar.
+const POLL_MS = 30_000;
+/** Entre dos consultas pasivas (temporizador, volver a la pestaña, dar foco) pasa al menos esto: cambiar de pestaña dispara las dos señales. */
+const PASSIVE_GAP_MS = 8_000;
 /** Tras la acción que la genera, la notificación sale pasados unos segundos (no de inmediato). */
 const ARRIVAL_DELAY_MS = 5000;
 const SEEN_EVENT = "nx:notifications-seen";
@@ -200,13 +203,18 @@ export function NotificationCenter({
   }, [incoming, hovering, hideIncoming]);
 
   useEffect(() => {
-    const first = window.setTimeout(refresh, 0);
-    const id = window.setInterval(() => {
-      if (document.visibilityState === "visible") void refresh();
-    }, POLL_MS);
-    const onVisible = () => {
-      if (document.visibilityState === "visible") void refresh();
+    let lastPassive = 0;
+    const passive = () => {
+      if (document.visibilityState !== "visible" || Date.now() - lastPassive < PASSIVE_GAP_MS) return;
+      lastPassive = Date.now();
+      void refresh();
     };
+    const first = window.setTimeout(() => {
+      lastPassive = Date.now();
+      void refresh();
+    }, 0);
+    const id = window.setInterval(passive, POLL_MS);
+    const onVisible = passive;
     document.addEventListener("visibilitychange", onVisible);
     window.addEventListener("focus", onVisible);
     return () => {
