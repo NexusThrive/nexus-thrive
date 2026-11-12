@@ -46,6 +46,8 @@ export function buildNotifications(input: {
   /** ISO del inicio de hoy (Bogotá): las alertas de membresía se fechan ahí. */
   todayStart: string;
   modules: { finance: boolean; bookings: boolean; memberships: boolean; registrations?: boolean };
+  /** Cuántas devuelve (la campana muestra 12; el buzón, más). */
+  limit?: number;
 }): AppNotification[] {
   const out: AppNotification[] = [];
   if (input.modules.finance) {
@@ -109,7 +111,7 @@ export function buildNotifications(input: {
       });
     }
   }
-  return out.sort((a, b) => (a.at < b.at ? 1 : a.at > b.at ? -1 : 0)).slice(0, 12);
+  return out.sort((a, b) => (a.at < b.at ? 1 : a.at > b.at ? -1 : 0)).slice(0, input.limit ?? 12);
 }
 
 /** Cuántas son posteriores a la última vez que se abrió la campana. */

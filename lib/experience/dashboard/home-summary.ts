@@ -25,6 +25,8 @@ export type HomeSummary = {
     salesChange: number | null;
     /** Ingresos por día de los últimos 7 días (línea de tendencia). */
     weekTrend: number[];
+    /** Ingresos por día de los últimos 30 días (calendario de puntos); sale de la misma serie del balance. */
+    monthTrend?: number[];
     /** Por cobrar vencido (cartera con días de mora); `null` sin el módulo de Cartera. */
     overdue: { total: number; count: number } | null;
     /** Ingresos − gastos del mes (el «Balance neto» de Resumen para el mes). */
@@ -52,7 +54,24 @@ export type HomeSummary = {
 const BOOKING_STATUS: Record<string, string> = { PENDING: "Pendiente", CONFIRMED: "Confirmada", COMPLETED: "Atendida", CANCELLED: "Cancelada" };
 const hourFmt = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", hour: "numeric", minute: "2-digit" });
 
-export async function loadHomeSummary(tenantId: string, modules: readonly ModuleValue[], role: string | null | undefined): Promise<HomeSummary> {
+/**
+ * Los bloques de Inicio por separado: cada uno es su propia promesa, con sus consultas, y llega cuando termina — lo que ya está se
+ * pinta sin esperar a lo demás. Las consultas que dos bloques comparten (la cartera) se piden una sola vez. Un bloque que falla
+ * llega como `null` (Inicio conserva lo último que vio de ese bloque).
+ */
+export type HomeSummaryParts = {
+  /** Cifras del mes, tendencias y balance de 30 días. */
+  money: Promise<Pick<HomeSummary, "month" | "balance30"> | null>;
+  /** Lo de hoy: citas, factura electrónica, CRM y lo que pide atención. */
+  today: Promise<Pick<HomeSummary, "today" | "fiscal" | "attention" | "crm"> | null>;
+  /** Clientes nuevos, equipo y actividad reciente. */
+  people: Promise<Pick<HomeSummary, "customers" | "team" | "recent"> | null>;
+  /** Insignias del cajón. */
+  badges: Promise<Pick<HomeSummary, "badges"> | null>;
+  updatedAt: string;
+};
+
+export function loadHomeSummaryParts(tenantId: string, modules: readonly ModuleValue[], role: string | null | undefined): HomeSummaryParts {
   const has = (m: ModuleValue) => modules.includes(m);
   const seesMoney = role == null || can(role as Parameters<typeof can>[0], "money.handle");
   const tenantDb = createTenantDb(tenantId);
@@ -60,97 +79,122 @@ export async function loadHomeSummary(tenantId: string, modules: readonly Module
   const { day } = bogotaParts(now.getTime());
   const [y, m] = day.split("-").map(Number) as [number, number];
   const prev = m === 1 ? { month: 12, year: y - 1 } : { month: m - 1, year: y };
-
   const startOfToday = Temporal.Instant.from(`${day}T05:00:00Z`);
-  const [metrics, prevMetrics, week, month30, cartera, membership, bookings, unread, toVerify, crm, latestCustomers, customersToday, customersTotal, team, activity, fiscalDocs] = await Promise.all([
-    seesMoney && has("finance") ? tenantDb.finance.getMetrics() : null,
-    seesMoney && has("finance") ? tenantDb.finance.getMetrics(prev) : null,
-    seesMoney && has("finance") ? tenantDb.finance.getSeries(7, false) : null,
-    seesMoney && has("finance") ? tenantDb.finance.getSeries(30, false) : null,
-    has("receivables") ? receivables(tenantId) : null,
-    has("memberships") ? createMembershipsDb(tenantId).getMetrics() : null,
-    has("bookings") ? bookingsBetween(tenantId, bogotaToMs(day, "00:00"), bogotaToMs(addDaysKey(day, 1), "00:00")) : null,
-    has("whatsapp") ? unreadConversationsCount(tenantId) : 0,
-    has("payments") || has("online_payments") ? intentsToVerify(tenantId) : 0,
-    has("crm") ? crmHomeSignals(tenantId) : null,
-    has("crm") ? db.orm.public.Customer.where({ tenantId, active: true }).orderBy((c) => c.createdAt.desc()).limit(5).select("id", "name", "photoId", "createdAt").all() : [],
-    has("crm") ? db.orm.public.Customer.where({ tenantId }).where((c) => c.createdAt.gte(startOfToday)).aggregate((a) => ({ n: a.count() })) : { n: 0 },
-    has("crm") ? db.orm.public.Customer.where({ tenantId, active: true }).aggregate((a) => ({ n: a.count() })) : { n: 0 },
-    db.orm.public.User.where({ tenantId, active: true }).orderBy((u) => u.createdAt.asc()).limit(50).select("id", "name", "email").all(),
-    seesMoney && has("finance") ? tenantDb.finance.getRecentActivity(6) : [],
-    seesMoney && has("einvoicing") ? db.orm.public.FiscalDocument.where({ tenantId }).select("status", "createdAt").orderBy((d) => d.createdAt.desc()).limit(2000).all() : null,
-  ]);
-  const ago = new Intl.RelativeTimeFormat("es-CO", { numeric: "auto" });
-  const relative = (iso: string) => {
-    const min = Math.round((new Date(iso).getTime() - now.getTime()) / 60_000);
-    if (Math.abs(min) < 60) return ago.format(min, "minute");
-    if (Math.abs(min) < 1440) return ago.format(Math.round(min / 60), "hour");
-    return ago.format(Math.round(min / 1440), "day");
+  const money$ = seesMoney && has("finance");
+
+  // Todas las consultas arrancan a la vez; cada bloque espera solo las suyas.
+  const metricsP = Promise.resolve(money$ ? tenantDb.finance.getMetrics() : null);
+  const prevMetricsP = Promise.resolve(money$ ? tenantDb.finance.getMetrics(prev) : null);
+  const weekP = Promise.resolve(money$ ? tenantDb.finance.getSeries(7, false) : null);
+  const month30P = Promise.resolve(money$ ? tenantDb.finance.getSeries(30, false) : null);
+  const carteraP = Promise.resolve(has("receivables") ? receivables(tenantId) : null);
+  const membershipP = Promise.resolve(has("memberships") ? createMembershipsDb(tenantId).getMetrics() : null);
+  const bookingsP = Promise.resolve(has("bookings") ? bookingsBetween(tenantId, bogotaToMs(day, "00:00"), bogotaToMs(addDaysKey(day, 1), "00:00")) : null);
+  const unreadP = Promise.resolve(has("whatsapp") ? unreadConversationsCount(tenantId) : 0);
+  const toVerifyP = Promise.resolve(has("payments") || has("online_payments") ? intentsToVerify(tenantId) : 0);
+  const crmP = Promise.resolve(has("crm") ? crmHomeSignals(tenantId) : null);
+  const latestCustomersP = Promise.resolve(has("crm") ? db.orm.public.Customer.where({ tenantId, active: true }).orderBy((c) => c.createdAt.desc()).limit(5).select("id", "name", "photoId", "createdAt").all() : []);
+  const customersTodayP = Promise.resolve(has("crm") ? db.orm.public.Customer.where({ tenantId }).where((c) => c.createdAt.gte(startOfToday)).aggregate((a) => ({ n: a.count() })) : { n: 0 });
+  const customersTotalP = Promise.resolve(has("crm") ? db.orm.public.Customer.where({ tenantId, active: true }).aggregate((a) => ({ n: a.count() })) : { n: 0 });
+  const teamP = Promise.resolve(db.orm.public.User.where({ tenantId, active: true }).orderBy((u) => u.createdAt.asc()).limit(50).select("id", "name", "email").all());
+  const activityP = Promise.resolve(money$ ? tenantDb.finance.getRecentActivity(6) : []);
+  const fiscalDocsP = Promise.resolve(seesMoney && has("einvoicing") ? db.orm.public.FiscalDocument.where({ tenantId }).select("status", "createdAt").orderBy((d) => d.createdAt.desc()).limit(2000).all() : null);
+
+  const overdueOf = (cartera: Awaited<typeof carteraP>) => {
+    const rows = cartera?.rows.filter((r) => r.daysOverdue > 0) ?? [];
+    return cartera ? { total: Math.round(rows.reduce((sum, r) => sum + r.balance, 0) * 100) / 100, count: rows.length } : null;
   };
-  const fmtMoney = (n: number) => new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(Math.abs(n));
-  const recent = [
-    ...activity.map((a) => ({ id: `m-${a.id}`, kind: a.type, title: a.title, note: `${a.type === "expense" ? "Gasto" : "Cobro"} · ${fmtMoney(a.amount)}`, at: String(a.date), href: "/finanzas" })),
-    ...latestCustomers.map((c) => ({ id: `c-${c.id}`, kind: "customer" as const, title: c.name, note: "Cliente nuevo", at: String(c.createdAt), href: `/contactos/${c.id}` })),
-  ]
-    .sort((x, y) => y.at.localeCompare(x.at))
-    .slice(0, 5)
-    .map((r) => ({ ...r, note: `${r.note} · ${relative(r.at)}` }));
 
-  const overdueRows = cartera?.rows.filter((r) => r.daysOverdue > 0) ?? [];
-  const overdue = cartera ? { total: Math.round(overdueRows.reduce((s, r) => s + r.balance, 0) * 100) / 100, count: overdueRows.length } : null;
-
-  // Hoy: la próxima cita que aún no pasa (o la primera del día) y cuántas más hay programadas.
-  let today: HomeSummary["today"] = null;
-  if (bookings) {
-    const live = bookings.filter((b) => String(b.status) !== "CANCELLED");
-    const upcoming = live.filter((b) => new Date(String(b.endDate)).getTime() >= now.getTime());
-    const next = upcoming[0] ?? null;
-    const names = next ? await customersByIds(tenantId, [next.customerId]) : [];
-    today = {
-      next: next
-        ? { title: next.serviceName, customer: names[0]?.name ?? "", time: hourFmt.format(new Date(String(next.startDate))), status: BOOKING_STATUS[String(next.status)] ?? "" }
-        : null,
-      more: Math.max(0, upcoming.length - 1),
-    };
-  }
-
-  return {
+  const money = Promise.all([metricsP, prevMetricsP, weekP, month30P, carteraP]).then(([metrics, prevMetrics, week, month30, cartera]) => ({
     month: metrics
       ? {
           sales: metrics.income,
           salesChange: prevMetrics ? percentChange(metrics.income, prevMetrics.income) : null,
           weekTrend: week?.days.map((d) => d.income) ?? [],
-          overdue: seesMoney ? overdue : null,
+          monthTrend: month30?.days.map((d) => d.income),
+          overdue: seesMoney ? overdueOf(cartera) : null,
           balance: metrics.balance,
         }
       : null,
     balance30: month30 ? { balance: month30.current.balance, income: month30.current.income, expenses: month30.current.expenses } : null,
-    today,
-    fiscal: fiscalDocs
-      ? {
-          queued: fiscalDocs.filter((d) => d.status === "PENDING_PROVIDER" || d.status === "SUBMITTED").length,
-          rejected: fiscalDocs.filter((d) => d.status === "REJECTED").length,
-          today: fiscalDocs.filter((d) => (msOf(d.createdAt) ?? 0) >= startOfToday.epochMilliseconds).length,
-        }
-      : null,
-    attention: {
-      overdueCount: overdue?.count ?? 0,
-      overdueTotal: seesMoney && overdue ? overdue.total : null,
-      expiringCount: membership ? membership.expiringCount : null,
-      expiringDays: EXPIRING_WINDOW_DAYS,
-    },
-    crm: crm ? { today: crm.today.slice(0, 3).map((t) => ({ id: t.id, label: t.label, time: hourFmt.format(new Date(t.at)), opportunityId: t.opportunityId })), overdue: crm.overdue, withoutActivity: crm.withoutActivity } : null,
-    customers: has("crm") ? { latest: latestCustomers.map((c) => ({ id: c.id, name: c.name, photoId: c.photoId ?? null })), today: Number(customersToday.n ?? 0), total: Number(customersTotal.n ?? 0) } : null,
-    team: { members: team.slice(0, 5).map((u) => ({ id: u.id, name: u.name?.trim() || u.email?.split("@")[0] || "Integrante", email: u.email })), total: team.length },
-    recent,
+  }));
+
+  const today = Promise.all([bookingsP, carteraP, membershipP, crmP, fiscalDocsP]).then(async ([bookings, cartera, membership, crm, fiscalDocs]) => {
+    // Hoy: la próxima cita que aún no pasa (o la primera del día) y cuántas más hay programadas.
+    let todayBlock: HomeSummary["today"] = null;
+    if (bookings) {
+      const live = bookings.filter((b) => String(b.status) !== "CANCELLED");
+      const upcoming = live.filter((b) => new Date(String(b.endDate)).getTime() >= now.getTime());
+      const next = upcoming[0] ?? null;
+      const names = next ? await customersByIds(tenantId, [next.customerId]) : [];
+      todayBlock = {
+        next: next ? { title: next.serviceName, customer: names[0]?.name ?? "", time: hourFmt.format(new Date(String(next.startDate))), status: BOOKING_STATUS[String(next.status)] ?? "" } : null,
+        more: Math.max(0, upcoming.length - 1),
+      };
+    }
+    const overdue = overdueOf(cartera);
+    return {
+      today: todayBlock,
+      fiscal: fiscalDocs
+        ? {
+            queued: fiscalDocs.filter((d) => d.status === "PENDING_PROVIDER" || d.status === "SUBMITTED").length,
+            rejected: fiscalDocs.filter((d) => d.status === "REJECTED").length,
+            today: fiscalDocs.filter((d) => (msOf(d.createdAt) ?? 0) >= startOfToday.epochMilliseconds).length,
+          }
+        : null,
+      attention: {
+        overdueCount: overdue?.count ?? 0,
+        overdueTotal: seesMoney && overdue ? overdue.total : null,
+        expiringCount: membership ? membership.expiringCount : null,
+        expiringDays: EXPIRING_WINDOW_DAYS,
+      },
+      crm: crm ? { today: crm.today.slice(0, 3).map((t) => ({ id: t.id, label: t.label, time: hourFmt.format(new Date(t.at)), opportunityId: t.opportunityId })), overdue: crm.overdue, withoutActivity: crm.withoutActivity } : null,
+    };
+  });
+
+  const people = Promise.all([latestCustomersP, customersTodayP, customersTotalP, teamP, activityP]).then(([latestCustomers, customersToday, customersTotal, team, activity]) => {
+    const ago = new Intl.RelativeTimeFormat("es-CO", { numeric: "auto" });
+    const relative = (iso: string) => {
+      const min = Math.round((new Date(iso).getTime() - now.getTime()) / 60_000);
+      if (Math.abs(min) < 60) return ago.format(min, "minute");
+      if (Math.abs(min) < 1440) return ago.format(Math.round(min / 60), "hour");
+      return ago.format(Math.round(min / 1440), "day");
+    };
+    const fmtMoney = (n: number) => new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(Math.abs(n));
+    const recent = [
+      ...activity.map((a) => ({ id: `m-${a.id}`, kind: a.type, title: a.title, note: `${a.type === "expense" ? "Gasto" : "Cobro"} · ${fmtMoney(a.amount)}`, at: String(a.date), href: "/finanzas" })),
+      ...latestCustomers.map((c) => ({ id: `c-${c.id}`, kind: "customer" as const, title: c.name, note: "Cliente nuevo", at: String(c.createdAt), href: `/contactos/${c.id}` })),
+    ]
+      .sort((x, y) => y.at.localeCompare(x.at))
+      .slice(0, 5)
+      .map((r) => ({ ...r, note: `${r.note} · ${relative(r.at)}` }));
+    return {
+      customers: has("crm") ? { latest: latestCustomers.map((c) => ({ id: c.id, name: c.name, photoId: c.photoId ?? null })), today: Number(customersToday.n ?? 0), total: Number(customersTotal.n ?? 0) } : null,
+      team: { members: team.slice(0, 5).map((u) => ({ id: u.id, name: u.name?.trim() || u.email?.split("@")[0] || "Integrante", email: u.email })), total: team.length },
+      recent,
+    };
+  });
+
+  const badges = Promise.all([unreadP, toVerifyP]).then(([unread, toVerify]) => ({
     badges: Object.fromEntries(
       [
         ["Ventas y cobros", toVerify],
         ["Canales", unread],
       ].filter(([, n]) => Number(n) > 0),
     ) as Record<string, number>,
-    updatedAt: now.toISOString(),
-  };
+  }));
+
+  // Un bloque que falla no tumba a los demás: llega como `null`.
+  const settle = <T,>(promise: Promise<T>) => promise.catch(() => null);
+  return { money: settle(money), today: settle(today), people: settle(people), badges: settle(badges), updatedAt: now.toISOString() };
+}
+
+/** Todo el resumen junto (espera todos los bloques): para quien necesita la foto completa, como la ruta /resumen y las pruebas. */
+export async function loadHomeSummary(tenantId: string, modules: readonly ModuleValue[], role: string | null | undefined): Promise<HomeSummary> {
+  const parts = loadHomeSummaryParts(tenantId, modules, role);
+  const [money, today, people, badges] = await Promise.all([parts.money, parts.today, parts.people, parts.badges]);
+  if (!money || !today || !people || !badges) throw new Error("No se pudo cargar el resumen de Inicio.");
+  return { ...money, ...today, ...people, ...badges, updatedAt: parts.updatedAt };
 }
 
 /** Transferencias que el cliente avisó y falta verificar (insignia de Ventas y cobros); el mismo criterio de «¿Dónde está mi plata?». */

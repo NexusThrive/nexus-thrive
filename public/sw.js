@@ -10,7 +10,7 @@
  *  - Actualización: la versión nueva espera hasta que la persona pulsa
  *    "Actualizar" (mensaje SKIP_WAITING), para no recargar a media tarea.
  */
-const VERSION = "v2";
+const VERSION = "v3";
 const STATIC_CACHE = `nexus-static-${VERSION}`;
 const OFFLINE_URL = "/offline.html";
 
@@ -24,6 +24,25 @@ self.addEventListener("activate", (event) => {
       const names = await caches.keys();
       await Promise.all(names.filter((n) => n.startsWith("nexus-") && n !== STATIC_CACHE).map((n) => caches.delete(n)));
       await self.clients.claim();
+    })(),
+  );
+});
+
+// Tocar un aviso de escritorio: enfoca NEXUS si ya está abierto (y lo lleva a la pantalla del aviso) o abre una ventana. No guarda nada.
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const href = (event.notification.data && event.notification.data.href) || "/";
+  event.waitUntil(
+    (async () => {
+      const windows = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
+      for (const client of windows) {
+        if (new URL(client.url).origin === self.location.origin && "focus" in client) {
+          await client.focus();
+          if ("navigate" in client) await client.navigate(href).catch(() => {});
+          return;
+        }
+      }
+      await self.clients.openWindow(href);
     })(),
   );
 });
