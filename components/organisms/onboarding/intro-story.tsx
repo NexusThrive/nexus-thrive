@@ -1,23 +1,22 @@
-import { Check, CircleHelp, Equal, FileSpreadsheet, MessageCircleWarning, NotebookPen, Plus } from "lucide-react";
-import { IconTile } from "@/components/atoms/icon-tile";
+import { Check, CircleHelp, FileSpreadsheet, HandCoins, LineChart, MessageCircleWarning, NotebookPen, Sparkles, Users, Wallet, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-/** Diapositivas de la presentación: problemas → fórmula → arranque. */
+/** Diapositivas de la presentación: te reconoces → ves cómo se conecta todo → armamos tu espacio juntos. */
 export const INTRO_SLIDES = [
   {
     eyebrow: "Antes de empezar",
-    title: "¿Tu negocio vive así?",
-    description: "Así trabajan la mayoría de negocios antes de NEXUS.",
+    title: "¿Te suena familiar?",
+    description: "Casi todos los negocios empiezan así. No estás solo, y tiene arreglo.",
   },
   {
-    eyebrow: "La fórmula NEXUS",
-    title: "Todo en un solo lugar",
-    description: "Cada pieza se conecta con las demás: lo que pasa en una se refleja en todas.",
+    eyebrow: "Así funciona NEXUS",
+    title: "Todo conectado, sin trabajo extra",
+    description: "Lo que haces en un lugar aparece solo en los demás. Tú te dedicas a tu negocio.",
   },
   {
     eyebrow: "Comencemos",
-    title: "Vamos a crear y diseñar tu negocio ordenado",
-    description: "Son cuatro pasos y menos de tres minutos. Empiezas gratis.",
+    title: "Armemos tu espacio, juntos",
+    description: "Son cinco pasos cortos, menos de tres minutos. Yo te acompaño en cada uno y empiezas gratis.",
   },
 ];
 
@@ -44,89 +43,99 @@ const PROBLEMS = [
   },
 ];
 
-const FORMULA = ["Clientes", "Cobros", "Caja", "Finanzas"];
+/** Un solo gesto, y lo que NEXUS actualiza por ti. */
+const FLOW = [
+  { icon: Wallet, title: "Caja", text: "Entran $ 180.000 al turno de hoy" },
+  { icon: LineChart, title: "Finanzas", text: "Tus ingresos del mes se actualizan" },
+  { icon: Users, title: "Ficha de Laura", text: "Queda su pago y su historial al día" },
+];
 
 const FORMULA_POINTS = [
-  "Un cobro registrado actualiza tus finanzas y la ficha del cliente.",
-  "Tu panel te dice cada mañana qué pasó y qué viene.",
+  "Tu panel te cuenta cada mañana qué pasó y qué viene.",
   "Activas solo los módulos que tu rubro necesita.",
 ];
 
 const ROADMAP = [
-  { title: "Tu perfil", hint: "Persona natural o empresa" },
+  { title: "Tu etapa", hint: "Emprendiendo o ya en funcionamiento" },
   { title: "Tu negocio", hint: "Nombre, rubro, ciudad y enlace" },
-  { title: "Plan y módulos", hint: "Lo que tu rubro necesita" },
+  { title: "Tu operación", hint: "Cómo vendes y qué quieres controlar" },
+  { title: "Acceso", hint: "15 días gratis, tu código o un plan" },
   { title: "Confirmación", hint: "Revisas y creas tu espacio" },
 ];
+
+const card = "rounded-3xl border border-border/60 bg-card shadow-[0_1px_2px_rgba(10,10,11,.03)]";
 
 /** Contenido de la presentación (slides 0–2). Ocupa todo el alto disponible. */
 export function IntroStory({ slide }: { slide: number }) {
   if (slide === 0) {
     return (
-      <ul className="grid flex-1 content-center gap-3 sm:grid-cols-2">
-        {PROBLEMS.map(({ icon: Icon, title, text }, i) => (
-          <li
-            key={title}
-            className="nx-rise flex flex-col gap-3 rounded-lg border border-border bg-surface p-4 sm:p-5"
-            style={{ ["--i" as string]: i + 3 }}
-          >
-            <IconTile tone="danger" size="lg">
-              <Icon />
-            </IconTile>
-            <div className="min-w-0">
-              <p className="text-[14.5px] font-semibold text-foreground">{title}</p>
-              <p className="mt-1 text-[13px] leading-5 text-muted-foreground">{text}</p>
-            </div>
-          </li>
-        ))}
-      </ul>
+      <div className="flex flex-1 flex-col justify-center gap-4">
+        <ul className="grid gap-3.5 sm:grid-cols-2">
+          {PROBLEMS.map(({ icon: Icon, title, text }, i) => (
+            <li
+              key={title}
+              className={cn(card, "nx-rise group flex flex-col gap-4 p-5 transition-[transform,border-color] duration-300 hover:-translate-y-0.5 hover:border-danger/30")}
+              style={{ ["--i" as string]: i + 3 }}
+            >
+              <span className="relative grid size-12 place-items-center rounded-full bg-danger/10 text-danger">
+                <Icon aria-hidden="true" className="size-5" strokeWidth={1.7} />
+                <X aria-hidden="true" className="absolute -right-1 -top-1 size-[18px] rounded-full bg-card p-0.5 text-danger shadow-sm" strokeWidth={3} />
+              </span>
+              <div className="min-w-0">
+                <p className="font-display text-[15.5px] font-semibold leading-tight text-foreground">{title}</p>
+                <p className="mt-1.5 text-[13px] leading-5 text-muted-foreground">{text}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+        <p className="nx-rise flex items-center gap-2 rounded-2xl bg-accent-subtle/60 px-4 py-3 text-ui text-foreground" style={{ ["--i" as string]: 8 }}>
+          <Sparkles aria-hidden="true" className="size-4 shrink-0 text-accent-text" />
+          Si te suena familiar, NEXUS lo ordena por ti.
+        </p>
+      </div>
     );
   }
 
   if (slide === 1) {
     return (
-      <div className="flex flex-1 flex-col justify-center gap-3">
-        <div
-          className="nx-rise flex flex-wrap items-center gap-2 rounded-lg border border-border bg-surface p-4 sm:p-5"
-          style={{ ["--i" as string]: 3 }}
-        >
-          {FORMULA.map((item, i) => (
-            <span key={item} className="contents">
-              {i > 0 ? (
-                <Plus
-                  aria-hidden="true"
-                  className="nx-rise size-4 shrink-0 text-muted-foreground"
-                  style={{ ["--i" as string]: i * 2 + 4 }}
-                />
-              ) : null}
-              <span
-                className="nx-rise rounded-md border border-border bg-background px-3 py-2 text-[13.5px] font-semibold"
-                style={{ ["--i" as string]: i * 2 + 5 }}
-              >
-                {item}
-              </span>
-            </span>
-          ))}
-          <Equal aria-hidden="true" className="nx-rise size-4 shrink-0 text-muted-foreground" style={{ ["--i" as string]: 13 }} />
-          <span
-            className="nx-rise rounded-md bg-accent px-3 py-2 text-[13.5px] font-bold text-ink"
-            style={{ ["--i" as string]: 14 }}
-          >
-            Negocio ordenado
+      <div className="flex flex-1 flex-col justify-center gap-4">
+        {/* El gesto: registrar un cobro. */}
+        <div className={cn(card, "nx-rise flex items-center gap-4 p-5")} style={{ ["--i" as string]: 3 }}>
+          <span className="grid size-12 shrink-0 place-items-center rounded-full bg-accent text-ink">
+            <HandCoins aria-hidden="true" className="size-5" strokeWidth={1.8} />
+          </span>
+          <span className="grid min-w-0 flex-1">
+            <span className="text-xs text-muted-foreground">Tú haces esto</span>
+            <span className="font-display text-[16px] font-semibold leading-tight">Registras un cobro de $ 180.000 a Laura</span>
           </span>
         </div>
 
-        <ul className="grid gap-3">
-          {FORMULA_POINTS.map((line, i) => (
-            <li
-              key={line}
-              className="nx-rise flex items-center gap-3 rounded-lg border border-border bg-surface px-4 py-3 text-[13.5px] text-muted-foreground"
-              style={{ ["--i" as string]: 16 + i }}
-            >
-              <IconTile tone="success" size="sm" className="shrink-0">
-                <Check />
-              </IconTile>
-              <span className="min-w-0">{line}</span>
+        {/* Y NEXUS lo conecta: una línea baja del cobro y llega a cada pieza. */}
+        <div className="relative grid gap-2.5 pl-6">
+          <span aria-hidden="true" className="absolute bottom-6 left-[0.42rem] top-[-1rem] w-0.5 rounded-full bg-accent/50" />
+          <p className="nx-rise -mb-0.5 text-xs font-medium text-muted-foreground" style={{ ["--i" as string]: 5 }}>NEXUS hace el resto</p>
+          {FLOW.map(({ icon: Icon, title, text }, i) => (
+            <div key={title} className={cn(card, "nx-rise relative flex items-center gap-3.5 px-4 py-3.5")} style={{ ["--i" as string]: 7 + i * 2 }}>
+              <span aria-hidden="true" className="absolute -left-[1.45rem] top-1/2 size-3 -translate-y-1/2 rounded-full border-2 border-accent bg-card" />
+              <span className="grid size-10 shrink-0 place-items-center rounded-full bg-accent-subtle text-accent-text">
+                <Icon aria-hidden="true" className="size-4" strokeWidth={1.8} />
+              </span>
+              <span className="grid min-w-0 flex-1">
+                <span className="text-[14px] font-semibold">{title}</span>
+                <span className="text-[12.5px] text-muted-foreground">{text}</span>
+              </span>
+              <span className="grid size-6 shrink-0 place-items-center rounded-full bg-success/15 text-success">
+                <Check aria-hidden="true" className="size-3.5" strokeWidth={3} />
+              </span>
+            </div>
+          ))}
+        </div>
+
+        <ul className="nx-rise flex flex-wrap gap-2" style={{ ["--i" as string]: 14 }}>
+          {FORMULA_POINTS.map((line) => (
+            <li key={line} className="flex items-center gap-2 rounded-full bg-accent-subtle/60 px-4 py-2 text-[12.5px] text-foreground">
+              <Check aria-hidden="true" className="size-3.5 shrink-0 text-accent-text" strokeWidth={3} />
+              {line}
             </li>
           ))}
         </ul>
@@ -135,16 +144,12 @@ export function IntroStory({ slide }: { slide: number }) {
   }
 
   return (
-    <ol className="grid flex-1 content-center gap-3">
+    <ol className="relative flex flex-1 flex-col justify-center gap-3.5">
+      {/* La línea que une los pasos. */}
+      <span aria-hidden="true" className="absolute bottom-[3.2rem] left-[2.05rem] top-[3.2rem] w-0.5 rounded-full bg-border-strong/50" />
       {ROADMAP.map(({ title, hint }, i) => (
-        <li
-          key={title}
-          className="nx-rise flex items-center gap-4 rounded-lg border border-border bg-surface px-4 py-3.5"
-          style={{ ["--i" as string]: i + 3 }}
-        >
-          <span className="grid size-9 shrink-0 place-items-center rounded-md bg-surface-muted font-mono text-[11px] font-semibold text-accent-text">
-            {String(i + 1).padStart(2, "0")}
-          </span>
+        <li key={title} className={cn(card, "nx-rise relative flex items-center gap-4 px-4 py-3.5")} style={{ ["--i" as string]: i + 3 }}>
+          <span className="grid size-10 shrink-0 place-items-center rounded-full bg-accent font-display text-sm font-semibold text-ink">{i + 1}</span>
           <span className="min-w-0">
             <span className="block text-[14.5px] font-semibold text-foreground">{title}</span>
             <span className="mt-0.5 block text-[12.5px] text-muted-foreground">{hint}</span>

@@ -1,7 +1,9 @@
 import { Skeleton } from "@/components/atoms/skeleton";
 import { EmptyPageFrame } from "@/components/molecules/empty-page-frame";
-import { GridBackdrop } from "@/components/molecules/grid-backdrop";
 import { SkeletonEmptySwitch } from "./skeleton-empty-switch";
+
+/** Tarjeta de tablero (misma que `Widget`): esquinas suaves y borde casi invisible. */
+const W = "rounded-(--radius-widget) border border-border/60 bg-card";
 
 export type PageSkeletonVariant = "dashboard" | "table" | "detail" | "form" | "profile" | "apps" | "list" | "record" | "board";
 
@@ -13,7 +15,7 @@ function HeaderSkeleton({ actions = true }: { actions?: boolean }) {
         <Skeleton className="h-8 w-64 max-w-[80%]" />
         <Skeleton className="h-3.5 w-80 max-w-full" />
       </div>
-      {actions ? <Skeleton className="h-10 w-36" /> : null}
+      {actions ? <Skeleton className="h-11 w-36 rounded-full" /> : null}
     </div>
   );
 }
@@ -22,7 +24,7 @@ function KpiRowSkeleton({ count = 4 }: { count?: number }) {
   return (
     <div className="grid grid-cols-2 gap-3.5 xl:grid-cols-4">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="grid gap-3 rounded-lg border border-border bg-card p-4">
+        <div key={i} className="grid gap-3 rounded-(--radius-widget) border border-border/60 bg-card p-4">
           <Skeleton className="h-3 w-24" />
           <Skeleton className="h-7 w-32" />
           <Skeleton className="h-3 w-20" />
@@ -34,15 +36,15 @@ function KpiRowSkeleton({ count = 4 }: { count?: number }) {
 
 function TableSkeleton({ rows = 7 }: { rows?: number }) {
   return (
-    <div className="overflow-hidden rounded-lg border border-border bg-card">
-      <div className="flex gap-6 border-b border-border px-4 py-3.5">
+    <div className="overflow-hidden rounded-(--radius-widget) border border-border/60 bg-card">
+      <div className="flex gap-6 border-b border-border/50 px-5 py-4">
         {[28, 18, 14, 12].map((w, i) => (
           <Skeleton key={i} className="h-3" style={{ width: `${w}%` }} />
         ))}
       </div>
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="flex items-center gap-3 border-b border-border px-4 py-3 last:border-b-0">
-          <Skeleton className="size-[34px] shrink-0" />
+        <div key={i} className="flex items-center gap-3 border-b border-border/50 px-5 py-3.5 last:border-b-0">
+          <Skeleton className="size-11 shrink-0 rounded-full" />
           <div className="grid min-w-0 flex-1 gap-1.5">
             <Skeleton className="h-3.5" style={{ width: `${30 + ((i * 7) % 40)}%` }} />
             <Skeleton className="h-2.5 w-1/5" />
@@ -54,82 +56,72 @@ function TableSkeleton({ rows = 7 }: { rows?: number }) {
   );
 }
 
-/** Inicio (raíz): saludo y pastilla de prueba; debajo «Este mes», el cajón de 9 apps en 4 columnas, y «Hoy» y «Atención». */
-function AppsSkeleton({ label }: { label: string }) {
-  const side = "grid w-full max-w-xl gap-4 pt-2 min-[1100px]:w-auto min-[1100px]:min-w-[220px] min-[1100px]:max-w-[290px] min-[1100px]:flex-[1_1_240px]";
+/** Widget en esqueleto: título con su botón circular, una cifra y líneas. Misma forma que los de Inicio. */
+function WidgetSkeleton({ lines = 2, tall = false, className = "" }: { lines?: number; tall?: boolean; className?: string }) {
   return (
-    <div data-bleed="" role="status" aria-busy="true" aria-label={label} className="relative isolate min-h-[calc(100dvh-var(--topbar-height)-7rem-env(safe-area-inset-bottom,0px))] overflow-hidden md:min-h-[calc(100dvh-var(--topbar-height)-4rem)]">
-      <GridBackdrop variant="home" />
-      <div className="mx-auto flex max-w-[1240px] flex-col gap-7 px-6 pb-20 pt-5">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="grid gap-2.5">
-            <Skeleton className="h-2.5 w-36" />
-            <Skeleton className="h-7 w-72 max-w-full" />
-          </div>
-          <Skeleton className="h-10 w-80 max-w-full rounded-[10px]" />
+    <div className={`${W} grid content-start gap-4 p-5 ${className}`}>
+      <div className="flex items-start justify-between gap-3">
+        <div className="grid gap-2">
+          <Skeleton className="h-3.5 w-28" />
+          <Skeleton className="h-3 w-36" />
         </div>
-        <div className="flex flex-wrap items-start justify-center gap-8">
-          <div className={side}>
-            <Skeleton className="h-2.5 w-20" />
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="grid gap-2 py-2">
-                <Skeleton className="h-3 w-24" />
-                <Skeleton className="h-6 w-36" />
-                <Skeleton className="h-3 w-44" />
-              </div>
-            ))}
-          </div>
-          <ul className="mx-auto grid w-fit grid-cols-[repeat(2,112px)] justify-center gap-x-7 gap-y-[30px] pt-2 min-[420px]:grid-cols-[repeat(3,112px)] min-[600px]:grid-cols-[repeat(4,112px)] min-[1100px]:mx-0">
-            {Array.from({ length: 9 }).map((_, i) => (
-              <li key={i} className="grid justify-items-center gap-3">
-                <Skeleton className="size-[84px] rounded-[22px]" />
-                <Skeleton className="h-2.5" style={{ width: `${48 + ((i * 13) % 30)}px` }} />
-              </li>
-            ))}
-          </ul>
-          <div className={side}>
-            <Skeleton className="h-2.5 w-12" />
-            {Array.from({ length: 2 }).map((_, i) => (
-              <div key={i} className="flex gap-3 py-1">
-                <Skeleton className="mt-1 size-2 shrink-0 rounded-full" />
-                <div className="grid flex-1 gap-1.5">
-                  <Skeleton className="h-3 w-4/5" />
-                  <Skeleton className="h-2.5 w-1/2" />
-                </div>
-              </div>
-            ))}
-            <Skeleton className="mt-3 h-2.5 w-20" />
-            {Array.from({ length: 2 }).map((_, i) => (
-              <div key={i} className="flex gap-3 py-1">
-                <Skeleton className="mt-1 size-2 shrink-0 rounded-full" />
-                <div className="grid flex-1 gap-1.5">
-                  <Skeleton className="h-3 w-3/4" />
-                  <Skeleton className="h-2.5 w-2/5" />
-                </div>
-              </div>
-            ))}
-          </div>
+        <Skeleton className="size-9 shrink-0 rounded-full" />
+      </div>
+      <Skeleton className="h-8 w-40 max-w-full" />
+      {tall ? <Skeleton className="h-36 w-full rounded-3xl" /> : null}
+      {Array.from({ length: lines }).map((_, i) => (
+        <Skeleton key={i} className="h-3" style={{ width: `${86 - i * 18}%` }} />
+      ))}
+    </div>
+  );
+}
+
+/** Inicio (raíz): el saludo en su tarjeta cálida con AURI, cuatro cifras y dos filas de widgets, como el tablero real. */
+function AppsSkeleton({ label }: { label: string }) {
+  return (
+    <div data-bleed="" role="status" aria-busy="true" aria-label={label} className="mx-auto flex max-w-[1680px] flex-col gap-4 px-5 pb-16 pt-6 md:px-6">
+      <div className="relative grid items-center gap-6 overflow-hidden rounded-[28px] bg-accent-subtle/40 px-6 py-7 min-[820px]:grid-cols-[minmax(0,1fr)_auto] min-[820px]:px-9 min-[820px]:py-9">
+        <div className="grid gap-5">
+          <Skeleton className="h-12 w-80 max-w-full bg-card/70" />
+          <Skeleton className="h-12 w-52 max-w-full bg-card/70" />
+          <Skeleton className="h-4 w-96 max-w-full bg-card/70" />
         </div>
+        <Skeleton className="hidden size-[200px] rounded-full bg-card/60 min-[820px]:block" />
+      </div>
+      <div className="grid gap-4 min-[640px]:grid-cols-2 min-[1100px]:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <WidgetSkeleton key={i} lines={1} />
+        ))}
+      </div>
+      <div className="grid gap-4 min-[820px]:grid-cols-2 min-[1280px]:grid-cols-3">
+        <WidgetSkeleton tall lines={0} />
+        <WidgetSkeleton tall lines={0} className="bg-accent-subtle/40" />
+        <WidgetSkeleton tall lines={0} />
+      </div>
+      <div className="grid gap-4 min-[820px]:grid-cols-2 min-[1280px]:grid-cols-3">
+        <WidgetSkeleton lines={4} />
+        <WidgetSkeleton lines={4} />
+        <WidgetSkeleton lines={4} />
       </div>
     </div>
   );
 }
 
-/** Panel de control de una lista a todo el ancho: nuevo, título y menú; búsqueda al centro; paginador y vista a la derecha. */
+/** Panel de control de una lista a todo el ancho: «Nuevo» en píldora, título y menú; búsqueda en píldora al centro; paginador y vistas redondos a la derecha. */
 function ListToolbarSkeleton() {
   return (
-    <div className="grid items-center gap-x-4 gap-y-3 px-5 py-4 min-[1100px]:grid-cols-[1fr_minmax(0,543px)_1fr]">
+    <div className="grid items-center gap-x-5 gap-y-4 px-6 py-6 min-[1100px]:grid-cols-[1fr_minmax(0,620px)_1fr]">
       <div className="flex items-center gap-3">
-        <Skeleton className="h-[34px] w-[84px]" />
-        <Skeleton className="h-5 w-24" />
-        <Skeleton className="size-[34px]" />
+        <Skeleton className="h-12 w-[116px] rounded-full" />
+        <Skeleton className="h-7 w-28" />
+        <Skeleton className="size-11 rounded-full" />
       </div>
-      <Skeleton className="h-[34px] w-full justify-self-center max-w-[543px]" />
+      <Skeleton className="h-12 w-full max-w-[620px] justify-self-center rounded-full" />
       <div className="hidden items-center justify-end gap-2 min-[1100px]:flex">
-        <Skeleton className="h-3.5 w-16" />
-        <Skeleton className="size-[34px]" />
-        <Skeleton className="size-[34px]" />
-        <Skeleton className="ms-2 size-[34px]" />
+        <Skeleton className="h-4 w-16" />
+        <Skeleton className="size-11 rounded-full" />
+        <Skeleton className="size-11 rounded-full" />
+        <Skeleton className="ms-2 h-11 w-36 rounded-full" />
       </div>
     </div>
   );
@@ -140,19 +132,19 @@ function EmptySkeleton() {
   return (
     <EmptyPageFrame remember={false}>
       <div className="grid w-full max-w-2xl justify-items-center gap-6">
-        <Skeleton className="size-12 rounded-xl" />
+        <Skeleton className="size-16 rounded-full" />
         <div className="grid justify-items-center gap-2.5">
           <Skeleton className="h-5 w-56 max-w-full" />
           <Skeleton className="h-3.5 w-80 max-w-full" />
         </div>
         <div className="flex gap-3">
-          <Skeleton className="h-[34px] w-32" />
-          <Skeleton className="h-[34px] w-36" />
+          <Skeleton className="h-11 w-36 rounded-full" />
+          <Skeleton className="h-11 w-40 rounded-full" />
         </div>
         <div className="grid w-full gap-3 sm:grid-cols-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="grid gap-2.5 rounded-xl border border-border bg-card p-4">
-              <Skeleton className="size-8 rounded-lg" />
+            <div key={i} className="grid gap-2.5 rounded-3xl bg-card/85 p-5">
+              <Skeleton className="size-10 rounded-full" />
               <Skeleton className="h-3.5 w-3/4" />
               <Skeleton className="h-3 w-full" />
             </div>
@@ -169,9 +161,9 @@ function ListSkeleton({ label }: { label: string }) {
   return (
     <div data-bleed="" role="status" aria-busy="true" aria-label={label} className="flex flex-col">
       <ListToolbarSkeleton />
-      <div className="hidden border-b border-border md:block">
-        <div className="flex h-[38px] items-center gap-6 border-b border-border px-5">
-          <Skeleton className="size-3.5 shrink-0" />
+      <div className="hidden border-b border-border/50 md:block">
+        <div className="flex h-[54px] items-center gap-6 border-b border-border/50 px-5">
+          <Skeleton className="size-4 shrink-0 rounded-md" />
           {widths.map((w, i) => (
             <span key={i} className={i === 0 ? "flex-[1.6]" : "flex-1"}>
               <Skeleton className="h-3" style={{ width: `${40 + w}%` }} />
@@ -179,10 +171,10 @@ function ListSkeleton({ label }: { label: string }) {
           ))}
         </div>
         {Array.from({ length: 10 }).map((_, i) => (
-          <div key={i} className="flex h-[38px] items-center gap-6 border-b border-border/60 px-5 last:border-b-0">
-            <Skeleton className="size-3.5 shrink-0" />
+          <div key={i} className="flex h-[54px] items-center gap-6 border-b border-border/50 px-5 last:border-b-0">
+            <Skeleton className="size-4 shrink-0 rounded-md" />
             <span className="flex flex-[1.6] items-center gap-2.5">
-              <Skeleton className="size-6 shrink-0 rounded-md" />
+              <Skeleton className="size-8 shrink-0 rounded-full" />
               <Skeleton className="h-3" style={{ width: `${35 + ((i * 17) % 40)}%` }} />
             </span>
             {widths.slice(1).map((w, j) => (
@@ -195,8 +187,8 @@ function ListSkeleton({ label }: { label: string }) {
       </div>
       <ul className="md:hidden">
         {Array.from({ length: 9 }).map((_, i) => (
-          <li key={i} className="flex items-center gap-3 border-b border-border/60 px-5 py-2.5">
-            <Skeleton className="size-8 shrink-0 rounded-md" />
+          <li key={i} className="flex items-center gap-3 border-b border-border/50 px-5 py-2.5">
+            <Skeleton className="size-9 shrink-0 rounded-full" />
             <span className="grid min-w-0 flex-1 gap-1.5">
               <Skeleton className="h-3.5" style={{ width: `${40 + ((i * 11) % 35)}%` }} />
               <Skeleton className="h-2.5 w-1/3" />
@@ -221,13 +213,13 @@ function BoardSkeleton({ label }: { label: string }) {
             <div className="grid gap-2 px-1">
               <div className="flex items-center justify-between gap-3">
                 <Skeleton className="h-4" style={{ width: `${70 + ((col * 23) % 40)}px` }} />
-                <Skeleton className="size-[26px]" />
+                <Skeleton className="size-8 rounded-full" />
               </div>
               <Skeleton className="h-1.5 w-full rounded-full" />
               <Skeleton className="h-3 w-24" />
             </div>
             {Array.from({ length: n }).map((_, i) => (
-              <div key={i} className="grid gap-2.5 rounded-xl border border-border bg-card p-3.5">
+              <div key={i} className="grid gap-2.5 rounded-3xl border border-border/60 bg-card p-4">
                 <Skeleton className="h-3.5" style={{ width: `${55 + (((col + i) * 17) % 35)}%` }} />
                 <div className="flex items-center gap-2">
                   <Skeleton className="size-5 shrink-0 rounded-full" />
@@ -246,55 +238,78 @@ function BoardSkeleton({ label }: { label: string }) {
   );
 }
 
-/** Registro (ficha o formulario): panel de control y, a todo el ancho, tarjetas a la izquierda y la columna lateral a la derecha. */
+/** Registro (ficha o formulario): cabecera con volver, a la izquierda tarjetas anchas y a la derecha el perfil y sus datos, como la ficha real. */
 function RecordSkeleton({ label }: { label: string }) {
-  const card = "rounded-xl border border-border bg-card p-[22px]";
   return (
-    <div data-bleed="" role="status" aria-busy="true" aria-label={label} className="flex flex-col">
-      <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
-        <div className="flex items-center gap-3">
-          <Skeleton className="size-[34px]" />
-          <Skeleton className="h-5 w-48" />
+    <div data-bleed="" role="status" aria-busy="true" aria-label={label} className="flex flex-col pb-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 px-6 pb-2 pt-6">
+        <div className="flex items-center gap-4">
+          <Skeleton className="size-11 rounded-full" />
+          <Skeleton className="h-7 w-56" />
         </div>
         <div className="flex gap-2">
-          <Skeleton className="h-[34px] w-20" />
-          <Skeleton className="h-[34px] w-24" />
+          <Skeleton className="h-11 w-28 rounded-full" />
+          <Skeleton className="size-11 rounded-full" />
         </div>
       </div>
-      <div className="flex w-full flex-col items-start gap-6 px-5 pb-2 pt-2 lg:flex-row">
-        <div className="flex w-full min-w-0 flex-1 flex-col gap-4">
-          <div className={`${card} flex flex-wrap items-start gap-5`}>
-            <Skeleton className="size-[88px] shrink-0 rounded-[22px]" />
-            <div className="grid min-w-0 flex-1 basis-64 gap-3">
-              <Skeleton className="h-8 w-64 max-w-full" />
-              <Skeleton className="h-3.5 w-44" />
-              <Skeleton className="h-3.5 w-52" />
-              <Skeleton className="h-3.5 w-36" />
+      <div className="grid w-full items-start gap-4 px-6 pt-4 lg:grid-cols-[minmax(0,1fr)_380px] xl:grid-cols-[minmax(0,1fr)_420px]">
+        <div className="grid min-w-0 gap-4">
+          <div className={`${W} grid gap-4 p-6`}>
+            <div className="flex items-start justify-between gap-3">
+              <div className="grid gap-2">
+                <Skeleton className="h-3.5 w-44" />
+                <Skeleton className="h-3 w-56" />
+              </div>
+              <div className="flex gap-2">
+                <Skeleton className="h-10 w-32 rounded-full" />
+                <Skeleton className="h-10 w-28 rounded-full" />
+              </div>
             </div>
-          </div>
-          <div className={card}>
-            <Skeleton className="mb-4 h-4 w-32" />
-            <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-x-6 gap-y-5">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <div key={i} className="grid gap-2">
-                  <Skeleton className="h-3 w-24" />
-                  <Skeleton className="h-10 w-full" />
-                </div>
+            <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))" }}>
+              {Array.from({ length: 3 }).map((_, i) => (
+                <Skeleton key={i} className="h-[120px] rounded-3xl" />
               ))}
             </div>
           </div>
-          <div className={card}>
-            <Skeleton className="mb-4 h-4 w-28" />
-            <Skeleton className="h-10 w-full" />
+          <div className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))" }}>
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-[112px] rounded-3xl" />
+            ))}
+          </div>
+          <div className={`${W} grid gap-3 p-4`}>
+            <div className="flex gap-2">
+              {[70, 110, 130, 80].map((w, i) => (
+                <Skeleton key={i} className="h-10 rounded-full" style={{ width: w }} />
+              ))}
+            </div>
+            {Array.from({ length: 2 }).map((_, i) => (
+              <Skeleton key={i} className="h-[52px] rounded-2xl" />
+            ))}
           </div>
         </div>
-        <div className="flex w-full min-w-0 shrink-0 flex-col gap-4 lg:w-[400px] lg:border-l lg:border-border lg:ps-6 xl:w-[440px]">
-          <div className={`${card} grid gap-3`}>
-            <Skeleton className="h-4 w-24" />
+        <div className="grid min-w-0 gap-4">
+          <div className={`${W} grid justify-items-center gap-4 p-6`}>
+            <Skeleton className="size-[120px] rounded-full" />
+            <Skeleton className="h-7 w-44" />
+            <div className="flex gap-2">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <Skeleton key={i} className="size-11 rounded-full" />
+              ))}
+            </div>
+            <Skeleton className="h-11 w-full rounded-full" />
+          </div>
+          <div className={`${W} grid gap-4 p-6`}>
+            <div className="grid gap-2">
+              <Skeleton className="h-3.5 w-40" />
+              <Skeleton className="h-3 w-48" />
+            </div>
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="flex items-center gap-3">
-                <Skeleton className="size-[30px] shrink-0" />
-                <Skeleton className="h-3.5 flex-1" />
+                <Skeleton className="size-10 shrink-0 rounded-full" />
+                <div className="grid flex-1 gap-1.5">
+                  <Skeleton className="h-2.5 w-24" />
+                  <Skeleton className="h-3.5 w-3/4" />
+                </div>
               </div>
             ))}
           </div>
@@ -357,7 +372,7 @@ function GenericSkeleton({ variant, label, kpis }: { variant: PageSkeletonVarian
     <div className="grid gap-5" role="status" aria-busy="true" aria-label={label}>
       {variant === "profile" ? (
         // Ficha 360°: cabecera con foto y acciones, resumen en tres columnas y pestañas.
-        <div className="flex flex-wrap items-center gap-4 rounded-lg border border-border bg-card p-4 sm:p-5">
+        <div className="flex flex-wrap items-center gap-4 rounded-(--radius-widget) border border-border/60 bg-card p-4 sm:p-5">
           <Skeleton className="size-16 shrink-0 rounded-full" />
           <div className="grid min-w-0 flex-1 gap-2.5">
             <Skeleton className="h-6 w-56 max-w-[70%]" />
@@ -368,7 +383,7 @@ function GenericSkeleton({ variant, label, kpis }: { variant: PageSkeletonVarian
           </div>
           <div className="flex gap-2">
             <Skeleton className="h-10 w-28" />
-            <Skeleton className="size-10" />
+            <Skeleton className="size-10 rounded-full" />
           </div>
         </div>
       ) : variant === "detail" ? (
@@ -388,13 +403,13 @@ function GenericSkeleton({ variant, label, kpis }: { variant: PageSkeletonVarian
         <>
           <KpiRowSkeleton />
           <div className="grid gap-3.5 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
-            <div className="rounded-lg border border-border bg-card p-5">
+            <div className="rounded-(--radius-widget) border border-border/60 bg-card p-5">
               <Skeleton className="h-[220px] w-full" />
             </div>
-            <div className="grid gap-3 rounded-lg border border-border bg-card p-5">
+            <div className="grid gap-3 rounded-(--radius-widget) border border-border/60 bg-card p-5">
               {Array.from({ length: 4 }).map((_, i) => (
                 <div key={i} className="flex items-center gap-3">
-                  <Skeleton className="size-9 shrink-0" />
+                  <Skeleton className="size-10 shrink-0 rounded-full" />
                   <Skeleton className="h-3.5 flex-1" />
                 </div>
               ))}
@@ -416,7 +431,7 @@ function GenericSkeleton({ variant, label, kpis }: { variant: PageSkeletonVarian
 
       {variant === "detail" ? (
         <>
-          <div className="flex gap-4 border-b border-border pb-2.5">
+          <div className="flex gap-4 border-b border-border/50 pb-2.5">
             {[90, 110, 90, 120, 100].map((w, i) => (
               <Skeleton key={i} className="h-3.5" style={{ width: w }} />
             ))}
@@ -429,19 +444,19 @@ function GenericSkeleton({ variant, label, kpis }: { variant: PageSkeletonVarian
       {variant === "profile" ? (
         <>
           <div className="grid gap-5 lg:grid-cols-3">
-            <div className="grid gap-3 rounded-lg border border-border bg-card p-5 lg:col-span-2">
+            <div className="grid gap-3 rounded-(--radius-widget) border border-border/60 bg-card p-5 lg:col-span-2">
               <Skeleton className="h-3 w-32" />
               <Skeleton className="h-7 w-48" />
               <Skeleton className="h-2 w-full" />
               <Skeleton className="h-3 w-40" />
             </div>
-            <div className="grid gap-3 rounded-lg border border-border bg-card p-5">
+            <div className="grid gap-3 rounded-(--radius-widget) border border-border/60 bg-card p-5">
               <Skeleton className="h-3 w-28" />
               <Skeleton className="h-7 w-36" />
               <Skeleton className="h-3 w-24" />
             </div>
           </div>
-          <div className="flex gap-4 border-b border-border pb-2.5">
+          <div className="flex gap-4 border-b border-border/50 pb-2.5">
             {[90, 110, 90, 120, 100].map((w, i) => (
               <Skeleton key={i} className="h-3.5" style={{ width: w }} />
             ))}
@@ -452,12 +467,12 @@ function GenericSkeleton({ variant, label, kpis }: { variant: PageSkeletonVarian
 
       {variant === "form" ? (
         <>
-          <div className="flex gap-4 border-b border-border pb-2.5">
+          <div className="flex gap-4 border-b border-border/50 pb-2.5">
             {[110, 110, 70, 90].map((w, i) => (
               <Skeleton key={i} className="h-3.5" style={{ width: w }} />
             ))}
           </div>
-          <div className="grid gap-4 rounded-lg border border-border bg-card p-5 sm:grid-cols-2">
+          <div className="grid gap-4 rounded-(--radius-widget) border border-border/60 bg-card p-5 sm:grid-cols-2">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="grid gap-2">
                 <Skeleton className="h-3 w-28" />

@@ -6,8 +6,11 @@ import { usePathname, useRouter } from "next/navigation";
 import { LayoutGrid, ChevronDown, ChevronLeft, Plus, Search } from "lucide-react";
 import { N_PATH, THRIVE_LETTERS } from "@nexus/brand/BrandLogo";
 import { Button } from "@/components/atoms/button";
+import { buttonVariants } from "@/components/atoms/button-variants";
 import { ThemeToggle } from "@/components/atoms/theme-toggle";
 import { Kbd } from "@/components/atoms/kbd";
+import { Breadcrumbs } from "@/components/molecules/breadcrumbs";
+import { useTopbarCrumbs } from "@/lib/experience/hooks/use-topbar-crumbs";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +23,7 @@ import { MobileTopbarSearch } from "@/components/organisms/mobile-topbar-search"
 import { AccountButton } from "@/components/molecules/account-button";
 import { RouteBar } from "@/components/molecules/route-bar";
 import { useQuickCreate } from "@/components/organisms/quick-create-host";
+import { useCurrentUserName } from "@/components/providers/current-user";
 import { useOptionalPalette, useShell } from "@/components/providers/shell-context";
 import type { NavGroup, NavMenu } from "@/lib/core/capabilities/nav-types";
 import { cn } from "@/lib/utils";
@@ -34,12 +38,10 @@ import styles from "./app-topbar.module.css";
  * el selector de negocio, tema y cuenta. En móvil se compacta: logo, negocio y sección, y la búsqueda; «Crear»
  * vive en la barra inferior. La barra de ruta corre por el borde al navegar.
  */
-export function AppTopbar({ actions, notifications, search, switcher }: { actions?: ReactNode; /** Notificaciones (las muestra la barra de módulo y la general). */ notifications?: ReactNode; /** Selector de negocio (PC), a la derecha. */ switcher?: ReactNode; /** Buscador en línea de PC (`NavbarSearch`); sin él, el botón abre la paleta modal. */ search?: ReactNode }) {
-  const { title, brandName, hrefFor, openSearch, quickActions, createActions = quickActions, groups, activeKey } = useShell();
+function LegacyTopbar({ actions, notifications, search, switcher }: { actions?: ReactNode; /** Notificaciones (las muestra la barra de módulo y la general). */ notifications?: ReactNode; /** Selector de negocio (PC), a la derecha. */ switcher?: ReactNode; /** Buscador en línea de PC (`NavbarSearch`); sin él, el botón abre la paleta modal. */ search?: ReactNode }) {
+  const { title, brandName, hrefFor, openSearch, groups, activeKey } = useShell();
   // El buscador móvil comparte la paleta del negocio; el Operations Center no la tiene y usa su botón de búsqueda.
   const hasPalette = useOptionalPalette() !== null;
-  const router = useRouter();
-  const quick = useQuickCreate();
   const pathname = usePathname();
   // En la raíz (pantalla de aplicaciones) la barra queda reducida y transparente: solo logo, cambio de empresa y cuenta.
   const atHome = pathname.replace(/\/$/, "") === hrefFor("");
@@ -121,38 +123,7 @@ export function AppTopbar({ actions, notifications, search, switcher }: { action
 
         {/* Derecha: acción principal, avisos y preferencias, y la cuenta al final. */}
         <div className="flex shrink-0 items-center justify-end gap-2 md:gap-3 lg:col-start-3 lg:row-start-1 lg:justify-self-end">
-          {createActions.length > 0 ? (
-            <DropdownMenu modal={false}>
-              <DropdownMenuTrigger asChild>
-                <Button variant="accent" className="hidden md:inline-flex" data-press="" data-tour="create">
-                  <Plus aria-hidden="true" className="size-4" />
-                  Crear
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" sideOffset={8} data-nx-create-menu="" className="w-[min(340px,calc(100vw-24px))] p-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                <DropdownMenuLabel className="px-2.5 pb-1.5 text-2xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-                  Crear nuevo
-                </DropdownMenuLabel>
-                {createActions.map((action) => (
-                  <DropdownMenuItem
-                    key={action.key}
-                    onSelect={() => {
-                      if (!quick.open(action.key)) router.push(hrefFor(action.href));
-                    }}
-                    className="min-h-12 items-center gap-3 px-2.5"
-                  >
-                    <span className="grid size-8 shrink-0 place-items-center rounded-md bg-surface-muted text-foreground">
-                      <action.icon aria-hidden="true" strokeWidth={1.6} className="size-4" />
-                    </span>
-                    <span className="flex min-w-0 flex-col leading-tight">
-                      <span className="truncate text-sm font-medium text-foreground">{action.label}</span>
-                      <span className="truncate text-xs text-muted-foreground">{action.hint}</span>
-                    </span>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : null}
+          <CreateMenu />
           {/* Móvil: lupa, lo que falta por completar y las notificaciones; el tema y la cuenta viven en «Más». */}
           <div className="flex items-center gap-1 md:gap-0.5">
             {actions}
@@ -167,6 +138,134 @@ export function AppTopbar({ actions, notifications, search, switcher }: { action
       {hasPalette && !atHome ? <MobileTopbarSearch /> : null}
 
       {atHome ? null : <RouteBar className="absolute inset-x-auto left-[var(--sw)] right-0 top-full" />}
+    </header>
+  );
+}
+
+type TopbarProps = { actions?: ReactNode; /** Notificaciones (las muestra la barra de módulo y la general). */ notifications?: ReactNode; /** Selector de negocio (PC), a la derecha. */ switcher?: ReactNode; /** Buscador en línea de PC (`NavbarSearch`); sin él, el botón abre la paleta modal. */ search?: ReactNode };
+
+/**
+ * Barra superior. Con `variant="workspace"` (el negocio con barra lateral) en PC es una sola barra constante, también en Inicio: el título de la
+ * pantalla, el buscador (Ctrl K), «Crear», avisos, tema, el selector de negocio y la cuenta, sobre el gris de la barra lateral y sin celda de
+ * marca (el negocio y la N viven en la barra lateral). En móvil sigue la barra de siempre. Sin variante, la barra de siempre (Operations Center).
+ */
+export function AppTopbar({ variant, desktopActions, roleLabel, ...props }: TopbarProps & { variant?: "workspace"; /** Botones de la barra de PC (con la barra lateral no hace falta el lanzador que lleva `actions` en móvil). */ desktopActions?: ReactNode; /** Rol de la persona, bajo su nombre (barra del negocio). */ roleLabel?: string }) {
+  if (variant !== "workspace") return <LegacyTopbar {...props} />;
+  return (
+    <>
+      <WorkspaceBar {...props} actions={desktopActions} roleLabel={roleLabel} />
+      <div className="md:hidden">
+        <LegacyTopbar {...props} />
+      </div>
+    </>
+  );
+}
+
+/** «Crear»: todas las acciones del negocio en un menú que cuelga del botón (las que tienen mini-modal se abren aquí mismo). */
+function CreateMenu({ icon = false }: { /** Botón de icono (barra del negocio) en lugar del botón dorado con texto. */ icon?: boolean }) {
+  const { createActions = [], hrefFor } = useShell();
+  const router = useRouter();
+  const quick = useQuickCreate();
+  return (
+    <>
+      {createActions.length > 0 ? (
+        <DropdownMenu modal={false}>
+          <DropdownMenuTrigger asChild>
+            {icon ? (
+              <Button variant="accent" size="icon" aria-label="Crear" className="size-11 rounded-full" data-press="" data-tour="create">
+                <Plus aria-hidden="true" className="size-5" strokeWidth={2.2} />
+              </Button>
+            ) : (
+              <Button variant="accent" className="hidden md:inline-flex" data-press="" data-tour="create">
+                <Plus aria-hidden="true" className="size-4" />
+                Crear
+              </Button>
+            )}
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" sideOffset={8} data-nx-create-menu="" className="w-[min(360px,calc(100vw-24px))] p-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <DropdownMenuLabel className="px-3 pb-2 pt-1 font-display text-base font-medium text-foreground">
+              Crear nuevo
+            </DropdownMenuLabel>
+            {createActions.map((action) => (
+              <DropdownMenuItem
+                key={action.key}
+                onSelect={() => {
+                  if (!quick.open(action.key)) router.push(hrefFor(action.href));
+                }}
+                className="min-h-14 items-center gap-3.5 px-3"
+              >
+                <span className="grid size-10 shrink-0 place-items-center rounded-full bg-surface-muted text-foreground">
+                  <action.icon aria-hidden="true" strokeWidth={1.6} className="size-[18px]" />
+                </span>
+                <span className="flex min-w-0 flex-col leading-tight">
+                  <span className="truncate text-sm font-medium text-foreground">{action.label}</span>
+                  <span className="truncate text-xs text-muted-foreground">{action.hint}</span>
+                </span>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : null}
+    </>
+  );
+}
+
+/**
+ * Barra de PC del negocio (≥ 768 px), con la estructura de la historia sobre el gris del marco: título de la pantalla, buscador en píldora blanca,
+ * «Crear», mensajes y agenda (solo si esas funciones están encendidas), avisos y la cuenta con su nombre y rol. Fija, a la derecha de la barra lateral
+ * (`--sw`). Sin cambio de tema (el blanco es el único) ni de negocio (por ahora cada cuenta usa uno solo).
+ */
+function WorkspaceBar({ actions, notifications, search, roleLabel }: TopbarProps & { roleLabel?: string }) {
+  const { title, openSearch, groups, hrefFor } = useShell();
+  const crumbs = useTopbarCrumbs();
+  const name = useCurrentUserName();
+  const items = groups.flatMap((group) => group.items);
+  const messages = items.find((item) => item.href === "/canales/conversaciones");
+  const agenda = items.find((item) => item.href === "/bookings");
+  const iconLink = "size-11 rounded-full border-transparent bg-card";
+  return (
+    <header data-app-topbar="" data-workspace="" className="fixed right-0 top-0 z-(--z-topbar) hidden items-center gap-3 bg-surface-muted pt-[env(safe-area-inset-top,0px)] md:grid md:px-4 lg:px-6" style={{ left: "var(--sw)", height: "calc(var(--topbar-height) + env(safe-area-inset-top, 0px))", gridTemplateColumns: "minmax(max-content, 1fr) minmax(0, 440px) minmax(max-content, 1fr)" }}>
+      {crumbs?.length ? <Breadcrumbs items={[...crumbs]} className="mb-0 min-w-0 text-sm [&_ol]:flex-nowrap" /> : <h2 className="truncate text-ui font-semibold text-foreground">{title}</h2>}
+      <div data-tour="search" className="min-w-0" suppressHydrationWarning>
+        <div className="w-full">
+          {search ?? (
+            <button
+              type="button"
+              onClick={openSearch}
+              className="group flex h-11 w-full items-center gap-2.5 rounded-full bg-card pl-4 pr-2.5 text-ui text-muted-foreground transition-colors duration-200 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            >
+              <Search aria-hidden="true" className="size-[18px] shrink-0" />
+              <span className="truncate">Buscar clientes, cobros…</span>
+              <Kbd className="ml-auto h-6 shrink-0 rounded-full border-0 bg-surface-muted px-2.5 text-2xs">Ctrl K</Kbd>
+            </button>
+          )}
+        </div>
+      </div>
+      <div className="flex shrink-0 items-center justify-end gap-1.5">
+        <CreateMenu icon />
+        {messages ? (
+          <Link href={hrefFor(messages.href)} aria-label="Conversaciones" className={cn(buttonVariants({ variant: "outline", size: "icon-sm" }), iconLink)}>
+            <messages.icon aria-hidden="true" className="size-4" />
+          </Link>
+        ) : null}
+        {agenda ? (
+          <Link href={hrefFor(agenda.href)} aria-label={agenda.label} className={cn(buttonVariants({ variant: "outline", size: "icon-sm" }), iconLink)}>
+            <agenda.icon aria-hidden="true" className="size-4" />
+          </Link>
+        ) : null}
+        <span className="flex h-10 items-center gap-1.5 [&>span]:inline-flex [&>span]:items-center">{actions}</span>
+        <span className="flex h-10 items-center">{notifications}</span>
+        <span className="flex h-10 items-center gap-2 pl-1.5">
+          <AccountButton compact />
+          {name || roleLabel ? (
+            <span className="grid text-left leading-tight">
+              {name ? <span className="text-ui font-medium text-foreground">{name}</span> : null}
+              {roleLabel ? <span className="text-2xs text-muted-foreground">{roleLabel}</span> : null}
+            </span>
+          ) : null}
+        </span>
+      </div>
+      <RouteBar className="absolute inset-x-0 top-full" />
     </header>
   );
 }

@@ -59,18 +59,18 @@ export function HomeQuickSearch() {
         <DialogPrimitive.Overlay className="fixed inset-0 z-(--z-takeover) bg-overlay data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0" />
         <DialogPrimitive.Content
           aria-describedby={undefined}
-          className="fixed left-1/2 top-[12vh] z-(--z-takeover) w-[min(600px,calc(100vw-24px))] -translate-x-1/2 overflow-hidden rounded-xl border border-border bg-surface shadow-[var(--nx-shadow-overlay)] duration-[280ms] data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-[.97] data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-[.97]"
+          className="fixed left-1/2 top-[12vh] z-(--z-takeover) w-[min(600px,calc(100vw-24px))] -translate-x-1/2 overflow-hidden rounded-[28px] border border-border/60 bg-surface shadow-[var(--nx-shadow-overlay)] duration-[280ms] data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-[.97] data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-[.97]"
         >
           <DialogPrimitive.Title className="sr-only">Buscar en NEXUS o preguntarle a AURI</DialogPrimitive.Title>
           <Command loop label="Buscar o preguntarle a AURI">
-            <div className="relative border-b border-border">
+            <div className="relative border-b border-border/50">
               <Search aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 size-[18px] -translate-y-1/2 text-muted-foreground" />
               <Command.Input
                 autoFocus
                 value={search.query}
                 onValueChange={search.setQuery}
                 placeholder="Busca una sección, función, cliente, pago… o pregúntale a AURI"
-                className="h-[54px] w-full bg-transparent pl-[46px] pr-14 text-base outline-none placeholder:text-muted-foreground"
+                className="h-16 w-full bg-transparent pl-[50px] pr-14 text-base outline-none placeholder:text-muted-foreground"
               />
               <AuriAskButton query={search.query} status={search.status} run={run} />
             </div>

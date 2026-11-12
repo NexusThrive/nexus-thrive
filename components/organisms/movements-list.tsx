@@ -54,11 +54,14 @@ export function MovementsList({ items, title = "Movimientos" }: { items: Movemen
 
   let index = 0;
   return (
-    <section aria-labelledby="movements-title" className="min-w-0">
-      <div className="mb-3 mt-7 flex flex-wrap items-center justify-between gap-2.5">
-        <h2 id="movements-title" className="font-display text-[17px] font-semibold">
-          {title}
-        </h2>
+    <section aria-labelledby="movements-title" className="min-w-0 rounded-(--radius-widget) border border-border/60 bg-card p-6">
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-2.5">
+        <div className="grid gap-0.5">
+          <h2 id="movements-title" className="text-ui font-semibold text-foreground">
+            {title}
+          </h2>
+          <p className="text-xs text-muted-foreground">Cobros y gastos, por día</p>
+        </div>
         <SegmentedControl
           ariaLabel="Tipo de movimiento"
           value={filter}
@@ -70,28 +73,28 @@ export function MovementsList({ items, title = "Movimientos" }: { items: Movemen
           ]}
         />
       </div>
-      <div key={filter} className="overflow-hidden rounded-lg border border-border bg-surface">
+      <div key={filter} className="grid gap-5">
         {groups.length === 0 ? (
           <EmptyState
+            mark="center"
+            remember={false}
             title={filter === "out" ? "Aún no hay gastos" : filter === "in" ? "Aún no hay ingresos" : "Aún no hay movimientos"}
             description="Los pagos y gastos aparecerán aquí."
           />
         ) : (
           groups.map((g) => (
-            <div key={g.day}>
-              <h3 className="border-b border-border bg-surface-muted px-[18px] pb-1.5 pt-2.5 font-sans text-2xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
-                {g.day}
-              </h3>
+            <div key={g.day} className="grid gap-2">
+              <h3 className="text-xs font-medium text-muted-foreground">{g.day}</h3>
               {g.rows.map((m) => {
                 const inn = m.type === "in";
                 const Icon = inn ? Banknote : MinusCircle;
                 return (
                   <div
                     key={m.id}
-                    className="nx-rise flex min-h-[62px] items-center gap-3 border-b border-border px-[18px] py-3 last:border-b-0"
+                    className="nx-rise flex min-h-[64px] items-center gap-3 rounded-2xl bg-surface-muted/60 px-4 py-3"
                     style={{ ["--i" as string]: Math.min(index++, 12) }}
                   >
-                    <span className={cn("grid size-9 shrink-0 place-items-center rounded-md", inn ? "bg-surface-muted text-foreground" : "bg-accent-subtle text-accent-text")}>
+                    <span className={cn("grid size-10 shrink-0 place-items-center rounded-full", inn ? "bg-card text-foreground" : "bg-accent-subtle text-accent-text")}>
                       <Icon aria-hidden="true" className="size-4" strokeWidth={1.7} />
                     </span>
                     <div className="min-w-0 flex-1 leading-[1.3]">

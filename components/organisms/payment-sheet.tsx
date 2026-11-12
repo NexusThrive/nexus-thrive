@@ -201,22 +201,20 @@ export function PaymentSheet({
       onOpenChange={close}
       title="Registrar pago"
       description="Cobra y genera el comprobante."
-      size="lg"
+      size="xl"
       footer={footer}
       initialFocus="panel"
     >
       {/* PC: la cifra y el teclado a la izquierda, los datos del cobro a la derecha. Celular: una columna compacta. Sin scroll. */}
-      <div className="grid grid-cols-[minmax(0,1fr)] gap-2.5 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-6">
-        <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2 md:gap-3">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-2.5 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-8">
+        <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-3 md:gap-4">
           {error ? <Alert tone="danger">{error}</Alert> : null}
-          <div>
-            <AmountDisplay value={amount} className="[@media(max-height:700px)]:text-3xl" />
-            {/* En el celular se usa el teclado de la pantalla: la nota del teclado del computador sobra. */}
-            <p className="hidden text-center text-xs text-muted-foreground md:block">Escribe el valor con el teclado</p>
+          <div className="rounded-3xl bg-surface-muted/60 px-4 py-5">
+            <AmountDisplay value={amount} className="text-[clamp(40px,8vw,56px)] font-semibold [@media(max-height:700px)]:text-4xl" />
           </div>
           <Keypad onKey={press} />
         </div>
-        <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2.5 md:gap-4">
+        <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-3 md:gap-5">
           <Field label="Cliente">
             {(control) => (
               <Select {...control} value={customerId} onChange={(event) => setCustomerId(event.target.value)}>
@@ -231,9 +229,9 @@ export function PaymentSheet({
             )}
           </Field>
           {/* Medio de pago al lado de su etiqueta (en el celular ahorra una fila; en PC queda igual de claro). */}
-          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+          <div className="grid gap-2.5">
             <p className="text-ui font-medium">Medio de pago</p>
-            <ChipRow role="group" aria-label="Medio de pago">
+            <ChipRow role="group" aria-label="Medio de pago" className="flex-wrap overflow-visible">
               {methods.map((m) => (
                 <Chip key={m.value} selected={m.value === method} onClick={() => setMethod(m.value)}>
                   {m.label}

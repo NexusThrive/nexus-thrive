@@ -76,9 +76,9 @@ const HIT_OUT_MS = 200;
 const hitKey = (hit: SearchHit) => `${hit.kind}-${hit.id}`;
 
 const itemClass =
-  "relative flex min-h-[42px] cursor-pointer items-center gap-3 rounded-md px-2.5 text-sm outline-none data-[selected=true]:bg-surface-muted data-[selected=true]:before:-ml-2 data-[selected=true]:before:mr-[-5px] data-[selected=true]:before:h-[18px] data-[selected=true]:before:w-[3px] data-[selected=true]:before:-skew-x-[24deg] data-[selected=true]:before:bg-accent data-[selected=true]:before:content-[''] [&_svg]:size-4 [&_svg]:shrink-0";
+  "relative flex min-h-12 cursor-pointer items-center gap-3 rounded-2xl px-3.5 text-sm outline-none data-[selected=true]:bg-surface-muted [&_svg]:size-4 [&_svg]:shrink-0";
 const groupClass =
-  "[&_[cmdk-group-heading]]:px-2.5 [&_[cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:pt-2 [&_[cmdk-group-heading]]:text-2xs [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-[0.08em] [&_[cmdk-group-heading]]:text-muted-foreground";
+  "[&_[cmdk-group-heading]]:px-3.5 [&_[cmdk-group-heading]]:pb-1.5 [&_[cmdk-group-heading]]:pt-3 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground";
 
 /**
  * AURI AI al final del campo de búsqueda, en su círculo y mirando al frente (sin seguir el puntero): un clic le pasa lo escrito y
@@ -179,7 +179,7 @@ export function PaletteList({
         <>
         {/* La lista sigue en el documento (el campo la referencia con aria-controls) aunque no haya nada que mostrar. */}
         {/* Primeras sugerencias: las acciones rápidas (antes en Resumen). La lista sigue en el documento: el campo la referencia. */}
-        <Command.List className={cn("shrink-0 p-1.5", NO_SCROLLBAR)} hidden={actions.length === 0}>
+        <Command.List className={cn("shrink-0 p-2.5", NO_SCROLLBAR)} hidden={actions.length === 0}>
           <Command.Group heading="Crear" className={groupClass}>
             {actions.map((action) => (
               <Command.Item
@@ -196,7 +196,7 @@ export function PaletteList({
           </Command.Group>
         </Command.List>
         <div className="grid flex-1 content-center justify-items-center gap-3 px-6 py-10 text-center">
-          <span aria-hidden="true" className="grid size-14 place-items-center rounded-full bg-surface-muted ring-1 ring-border">
+          <span aria-hidden="true" className="grid size-14 place-items-center rounded-full bg-surface-muted">
             <Search className="size-6 text-muted-foreground" strokeWidth={1.6} />
           </span>
           <div className="grid gap-1">
@@ -208,7 +208,7 @@ export function PaletteList({
         </div>
         </>
       ) : (
-      <Command.List className={cn("overflow-y-auto p-1.5", NO_SCROLLBAR, className)}>
+      <Command.List className={cn("overflow-y-auto p-2.5", NO_SCROLLBAR, className)}>
         <Command.Empty className="nx-search-note px-4 py-6 text-center text-sm text-muted-foreground">
           {status === "loading" ? "Buscando…" : "Sin resultados."}
         </Command.Empty>
@@ -297,9 +297,9 @@ export function PaletteList({
         {status === "loading" ? "Buscando" : status === "error" ? "No se pudo buscar" : hits.length ? `${hits.length} resultados` : ""}
       </p>
       {status === "error" ? (
-        <p className="border-t border-border px-3.5 py-2 text-xs text-danger">No se pudo buscar ahora. Las secciones siguen disponibles.</p>
+        <p className="border-t border-border/50 px-5 py-2.5 text-xs text-danger">No se pudo buscar ahora. Las secciones siguen disponibles.</p>
       ) : null}
-      <div className="flex gap-3.5 border-t border-border px-3.5 py-2.5 text-[11.5px] text-muted-foreground pointer-coarse:hidden">
+      <div className="flex gap-4 border-t border-border/50 px-5 py-3 text-[11.5px] text-muted-foreground pointer-coarse:hidden">
         <span><Kbd>↑</Kbd> <Kbd>↓</Kbd> mover</span>
         <span><Kbd>Enter</Kbd> abrir</span>
         <span><Kbd>Esc</Kbd> cerrar</span>
@@ -354,18 +354,18 @@ export function CommandPalette({ inlineOnDesktop = false, inline = false }: { in
         <DialogPrimitive.Overlay className="fixed inset-0 z-(--z-takeover) bg-overlay data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0" />
         <DialogPrimitive.Content
           aria-describedby={undefined}
-          className="fixed left-1/2 top-[12vh] z-(--z-takeover) w-[min(600px,calc(100vw-24px))] -translate-x-1/2 overflow-hidden rounded-xl border border-border bg-surface shadow-[var(--nx-shadow-overlay)] duration-[280ms] data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-[.97] data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-[.97]"
+          className="fixed left-1/2 top-[12vh] z-(--z-takeover) w-[min(600px,calc(100vw-24px))] -translate-x-1/2 overflow-hidden rounded-[28px] border border-border/60 bg-surface shadow-[var(--nx-shadow-overlay)] duration-[280ms] data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-[.97] data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-[.97]"
         >
           <DialogPrimitive.Title className="sr-only">Buscar o ejecutar</DialogPrimitive.Title>
           <Command loop label="Buscar o ejecutar">
-            <div className="relative border-b border-border">
+            <div className="relative border-b border-border/50">
               <Search aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 size-[18px] -translate-y-1/2 text-muted-foreground" />
               <Command.Input
                 autoFocus
                 value={search.query}
                 onValueChange={search.setQuery}
                 placeholder="Busca clientes, pagos, gastos, catálogo o acciones"
-                className="h-[54px] w-full bg-transparent pl-[46px] pr-14 text-[15px] outline-none placeholder:text-muted-foreground"
+                className="h-16 w-full bg-transparent pl-[50px] pr-14 text-[15px] outline-none placeholder:text-muted-foreground"
               />
               <AuriAskButton query={search.query} status={search.status} run={run} />
             </div>

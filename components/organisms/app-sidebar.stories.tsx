@@ -73,3 +73,17 @@ export const IngresosYGastos: Story = {
     );
   },
 };
+
+/** El negocio: gris claro sin líneas, bloque del negocio con la N negra, y píldora blanca en el ítem activo. La separación la hace el panel blanco del contenido. */
+export const Workspace: Story = {
+  render: () => {
+    const groups = buildTenantNav("general", ["dashboard", "crm", "quotes", "inventory", "billing", "payments", "finance"]);
+    return (
+      <AppShellProvider value={{ brandName: "Simplapp", brandSub: "simplapp", groups, activeKey: "home", title: "Inicio", hrefFor: (href) => href, quickActions: [], openSearch: () => {} }}>
+        <div className="h-[640px]" style={sized("248px")}>
+          <AppSidebar variant="workspace" />
+        </div>
+      </AppShellProvider>
+    );
+  },
+};

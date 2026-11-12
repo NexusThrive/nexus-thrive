@@ -59,8 +59,9 @@ export function FirstStepsIndicator({ steps }: { steps: WelcomeStep[] }) {
           type="button"
           data-tour="first-steps"
           aria-label={`Primeros pasos: ${doneCount} de ${steps.length} completados. Ver la lista`}
-          className="relative grid size-10 shrink-0 place-items-center rounded-full text-accent-text outline-none transition-colors hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring pointer-coarse:size-11"
+          className="inline-flex shrink-0 items-center gap-2 rounded-full px-1 text-sm font-medium text-muted-foreground underline-offset-4 outline-none transition-colors hover:text-foreground hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring pointer-coarse:min-h-11"
         >
+          <span className="relative grid size-8 shrink-0 place-items-center text-accent-text">
           <svg aria-hidden="true" viewBox={`0 0 ${SIZE} ${SIZE}`} className="absolute inset-0 size-full">
             {steps.map((step, i) => (
               <path
@@ -74,7 +75,9 @@ export function FirstStepsIndicator({ steps }: { steps: WelcomeStep[] }) {
               />
             ))}
           </svg>
-          <span aria-hidden="true" className="relative font-display text-base font-extrabold leading-none">!</span>
+          <span aria-hidden="true" className="relative font-display text-sm font-extrabold leading-none">!</span>
+          </span>
+          <span className="hidden xl:inline">Primeros pasos · {doneCount} de {steps.length}</span>
         </button>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-[min(360px,calc(100vw-24px))] p-0">

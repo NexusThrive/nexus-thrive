@@ -39,7 +39,7 @@
   transform-style: preserve-3d;
   will-change: transform;
   transition: transform 1100ms var(--nx-ease-in-out);
-  animation: mark-in 700ms var(--nx-ease-out) backwards;
+  /* Sin animación de entrada propia: AURI llega volando desde el onboarding (View Transition `nx-auri`, motion.css). */
 }
 
 /* AURI (los ojos) ocupa su caja; la burbuja con lo que dice sale al lado. */
@@ -79,11 +79,22 @@
   transform: translateX(-50%);
   padding: 8px 14px;
   border-radius: 14px;
-  background: var(--ink, #0a0a0b);
-  color: #fff;
+  /* Clara, como el globo de AURI en el onboarding (no negra). */
+  background: var(--card);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 28px rgba(10, 10, 11, 0.1);
   font-size: 13px;
   line-height: 1.35;
   text-align: center;
+}
+
+/* El globo que escribe `EyeTracker` (en pantallas anchas) también es claro aquí; en el resto de la app conserva su estilo. */
+.mark :global(.eyt-say) {
+  background: var(--card);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 28px rgba(10, 10, 11, 0.1);
 }
 
 /* --- Texto ---------------------------------------------------------------- */
@@ -167,13 +178,6 @@
 @keyframes fade-in {
   from {
     opacity: 0;
-  }
-}
-
-@keyframes mark-in {
-  from {
-    opacity: 0;
-    transform: translate3d(-50%, -50%, 160px);
   }
 }
 

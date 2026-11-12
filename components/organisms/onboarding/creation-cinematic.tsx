@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore, type CSSProperties } from "react";
+import { useEffect, useState, useSyncExternalStore, ViewTransition, type CSSProperties } from "react";
 import { ArrowRight } from "lucide-react";
 import { EyeTracker, type EyeMood } from "@/components/atoms/eye-tracker";
 import { RevealText } from "@/components/atoms/reveal-text";
@@ -10,7 +10,7 @@ import styles from "./creation-cinematic.module.css";
 const MESSAGES = ["Creando tu negocio…", "Activando tus módulos…", "Preparando tu panel…", "Últimos detalles…"];
 
 /** Lo que AURI dice mientras crea el negocio (una frase cada pocos segundos; la última se repite). */
-const SPEECH = ["Estoy armando tu espacio.", "Activo lo que me contaste que usas.", "Preparo tu panel de inicio.", "Ya casi, un momento más."];
+const SPEECH = ["¡Perfecto! Ya tengo todo lo que necesito.", "Armo tu espacio y activo lo que me contaste que usas.", "Preparo tu panel de inicio.", "Ya casi, un momento más."];
 
 export type CinematicStatus = "creating" | "ready" | "error";
 
@@ -85,12 +85,10 @@ function useAuriScript(stage: Stage, name: string | undefined, planName: string)
     };
   }, [stage]);
 
-  const first = name ? `Hola ${name}! Soy AURI.` : "Hola! Soy AURI.";
+  // Ya se saludaron en el onboarding: aquí no se vuelve a decir «hola».
   const say =
     stage === "creating"
-      ? index === 0
-        ? first
-        : SPEECH[index]!
+      ? SPEECH[index]!
       : stage === "ready"
         ? `¡Listo! ${name ? `${name}, tu` : "Tu"} negocio ya existe.`
         : stage === "welcome"
@@ -159,7 +157,11 @@ export function CreationCinematic({
     <div role="dialog" aria-modal="true" aria-label={label} data-stage={stage} className={styles.root}>
       <div className={styles.scene} aria-hidden="true">
         <div className={styles.mark}>
-          <EyeTracker fit decorative front poke={false} size={132} shape="Ball" eyeScale={1.2} joy={auri.joy} mood={auri.mood} speaking={narrow && typedNarrow.length < (auri.say?.length ?? 0)} say={narrow ? null : auri.say} sayAt="br" />
+          <ViewTransition name="auri-onboarding" share="nx-auri" default="none">
+            <div>
+              <EyeTracker fit decorative front poke={false} size={132} shape="Ball" eyeScale={1.2} joy={auri.joy} mood={auri.mood} speaking={narrow && typedNarrow.length < (auri.say?.length ?? 0)} say={narrow ? null : auri.say} sayAt="br" />
+            </div>
+          </ViewTransition>
           {narrow && typedNarrow ? (
             <p aria-hidden="true" className={styles.bubble}>
               {typedNarrow}

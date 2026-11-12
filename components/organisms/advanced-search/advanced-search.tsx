@@ -55,12 +55,14 @@ export type AdvancedSearchProps = {
   /** Nombre de lo que se guarda si no hay nada activo que lo describa. */
   nombreBase?: string;
   className?: string;
+  /** Campo grande y en píldora (cabecera de una lista); sin él, el compacto de siempre. */
+  pill?: boolean;
 };
 
 const DEBOUNCE_MS = 250;
 const itemBase =
-  "flex min-h-8 w-full items-center gap-2.5 rounded-lg px-2.5 text-left text-ui text-foreground/85 outline-none transition-colors hover:bg-surface-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring pointer-coarse:min-h-11";
-const sep = <div role="separator" className="mx-1 my-1.5 h-px bg-border" />;
+  "flex min-h-10 w-full items-center gap-2.5 rounded-2xl px-3 text-left text-ui text-foreground/85 outline-none transition-colors hover:bg-surface-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring pointer-coarse:min-h-11";
+const sep = <div role="separator" className="mx-1 my-2 h-px bg-border/50" />;
 
 function PanelTitle({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return (
@@ -82,7 +84,7 @@ function Option({ active, count, onClick, children, ...rest }: { active: boolean
   );
 }
 
-export default function AdvancedSearch({ etiqueta, esquema, favoritos, conteos, acciones, alias, nombreBase = "Mi búsqueda", className }: AdvancedSearchProps) {
+export default function AdvancedSearch({ etiqueta, esquema, favoritos, conteos, acciones, alias, nombreBase = "Mi búsqueda", className, pill = false }: AdvancedSearchProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -230,11 +232,12 @@ export default function AdvancedSearch({ etiqueta, esquema, favoritos, conteos, 
           <div
             ref={barRef}
             className={cn(
-              "flex h-[34px] items-center gap-2 rounded-lg border bg-card pl-3 pr-2 transition-colors",
-              open ? "border-accent ring-2 ring-accent/25" : "border-border hover:border-foreground/20",
+              "flex items-center gap-2 border bg-card transition-colors",
+              pill ? "h-12 rounded-full pl-5 pr-2.5" : "h-[34px] rounded-lg pl-3 pr-2",
+              open ? "border-accent ring-2 ring-accent/25" : pill ? "border-border/60 hover:border-border-input" : "border-border hover:border-foreground/20",
             )}
           >
-            <Search aria-hidden="true" className="size-[15px] shrink-0 text-muted-foreground" />
+            <Search aria-hidden="true" className={cn("shrink-0 text-muted-foreground", pill ? "size-5" : "size-[15px]")} />
             <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto [scrollbar-width:none]">
               {impliedChips.map((id) => (
                 <span key={id} className={chip}>{filterOption(id)?.label}</span>
@@ -296,7 +299,7 @@ export default function AdvancedSearch({ etiqueta, esquema, favoritos, conteos, 
                     moveFocus(event, null);
                   }
                 }}
-                className="h-full min-w-20 flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+                className={cn("h-full min-w-20 flex-1 bg-transparent text-foreground outline-none placeholder:text-muted-foreground", pill ? "text-base" : "text-sm")}
               />
             </div>
             {isPending ? <NLoader size={14} className="shrink-0 text-current" /> : null}
@@ -306,7 +309,7 @@ export default function AdvancedSearch({ etiqueta, esquema, favoritos, conteos, 
               aria-expanded={open}
               aria-controls={open ? panelId : undefined}
               onClick={() => setOpen((value) => !value)}
-              className="grid size-[26px] shrink-0 place-items-center rounded-md text-muted-foreground outline-none hover:bg-surface-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
+              className={cn("grid shrink-0 place-items-center text-muted-foreground outline-none hover:bg-surface-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring", pill ? "size-9 rounded-full" : "size-[26px] rounded-md")}
             >
               <ChevronDown aria-hidden="true" className={cn("size-3.5 transition-transform", open && "rotate-180")} strokeWidth={2.2} />
             </button>
@@ -320,7 +323,7 @@ export default function AdvancedSearch({ etiqueta, esquema, favoritos, conteos, 
           align="center"
           sideOffset={8}
           style={{ "--popover-w": "760px" } as React.CSSProperties}
-          className="max-h-[70vh] overflow-y-auto overflow-x-hidden rounded-xl p-0"
+          className="max-h-[70vh] overflow-y-auto overflow-x-hidden rounded-3xl p-0"
           onOpenAutoFocus={(event) => event.preventDefault()}
           onEscapeKeyDown={() => {
             escaped.current = true;
@@ -346,7 +349,7 @@ export default function AdvancedSearch({ etiqueta, esquema, favoritos, conteos, 
         >
           <div className={cn("grid grid-cols-1", esquema.groupings.length > 0 ? "md:grid-cols-[1.1fr_1fr_0.95fr]" : "md:grid-cols-[1.1fr_0.95fr]")}>
             {/* Buscar en */}
-            <div className={cn("flex flex-wrap items-center gap-2 border-b border-border px-4 py-3", esquema.groupings.length > 0 ? "md:col-span-3" : "md:col-span-2")}>
+            <div className={cn("flex flex-wrap items-center gap-2 border-b border-border/50 px-5 py-4", esquema.groupings.length > 0 ? "md:col-span-3" : "md:col-span-2")}>
               <span className="text-xs text-muted-foreground">Buscar en</span>
               {esquema.fields.map((field) => {
                 const on = activeFields.includes(field.id);
@@ -369,7 +372,7 @@ export default function AdvancedSearch({ etiqueta, esquema, favoritos, conteos, 
             </div>
 
             {/* Filtros */}
-            <section aria-label="Filtros" className="border-b border-border p-3.5 md:border-b-0 md:border-r">
+            <section aria-label="Filtros" className="border-b border-border/50 p-4 md:border-b-0 md:border-r">
               <PanelTitle icon={<Filter className="size-[15px] fill-current" />}>Filtros</PanelTitle>
               {esquema.filterGroups.map((group, index) => (
                 <div key={group.id}>
@@ -398,7 +401,7 @@ export default function AdvancedSearch({ etiqueta, esquema, favoritos, conteos, 
 
             {/* Agrupar por */}
             {esquema.groupings.length > 0 ? (
-            <section aria-label="Agrupar por" className="border-b border-border p-3.5 md:border-b-0 md:border-r">
+            <section aria-label="Agrupar por" className="border-b border-border/50 p-4 md:border-b-0 md:border-r">
               <PanelTitle icon={<Layers className="size-[15px]" />}>Agrupar por</PanelTitle>
               {quickGroupings.map((grouping) => (
                 <Option key={grouping.id} active={state.groups.includes(grouping.id)} onClick={() => toggleGroup(grouping.id)}>
@@ -429,7 +432,7 @@ export default function AdvancedSearch({ etiqueta, esquema, favoritos, conteos, 
             ) : null}
 
             {/* Favoritos */}
-            <section aria-label="Favoritos" className="p-3.5">
+            <section aria-label="Favoritos" className="p-4">
               <PanelTitle icon={<Star className="size-[15px] fill-current" />}>Favoritos</PanelTitle>
               {favoritos.length === 0 ? <p className="px-2.5 pb-1 text-xs text-muted-foreground">Aún no guardas búsquedas.</p> : null}
               {favoritos.map((favorite) => (
@@ -438,13 +441,13 @@ export default function AdvancedSearch({ etiqueta, esquema, favoritos, conteos, 
                     <Option active={current?.id === favorite.id} onClick={() => { apply(stateOfSnapshot(favorite.params, esquema)); close(); }}>
                       <span className="inline-flex max-w-full items-center gap-1.5">
                         <span className="truncate">{favorite.name}</span>
-                        {favorite.isDefault ? <span className="shrink-0 rounded bg-surface-muted px-1 text-2xs text-muted-foreground">Por defecto</span> : null}
+                        {favorite.isDefault ? <span className="shrink-0 rounded-full bg-surface-muted px-2 text-2xs text-muted-foreground">Por defecto</span> : null}
                       </span>
                     </Option>
                   </div>
                   <DropdownMenu modal={false}>
                     <DropdownMenuTrigger asChild>
-                      <button type="button" data-sp-item="" aria-label={`Opciones de ${favorite.name}`} className="grid size-7 shrink-0 place-items-center rounded-md text-muted-foreground outline-none hover:bg-surface-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring pointer-coarse:size-11">
+                      <button type="button" data-sp-item="" aria-label={`Opciones de ${favorite.name}`} className="grid size-8 shrink-0 place-items-center rounded-full text-muted-foreground outline-none hover:bg-surface-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring pointer-coarse:size-11">
                         <MoreVertical aria-hidden="true" className="size-3.5" />
                       </button>
                     </DropdownMenuTrigger>
@@ -471,7 +474,7 @@ export default function AdvancedSearch({ etiqueta, esquema, favoritos, conteos, 
                     value={name}
                     maxLength={60}
                     onChange={(event) => setName(event.target.value)}
-                    className="h-[34px] w-full rounded-lg border border-border bg-background px-2.5 text-ui text-foreground outline-none focus-visible:border-accent focus-visible:outline-2 focus-visible:outline-ring"
+                    className="h-[34px] w-full rounded-full border border-border/60 bg-background px-3.5 text-ui text-foreground outline-none focus-visible:border-accent focus-visible:outline-2 focus-visible:outline-ring"
                   />
                   <label className="flex items-center gap-2 text-xs text-muted-foreground">
                     <Switch checked={asDefault} onCheckedChange={setAsDefault} aria-label="Usar como filtro por defecto" />
@@ -482,7 +485,7 @@ export default function AdvancedSearch({ etiqueta, esquema, favoritos, conteos, 
                       type="button"
                       disabled={saving || !name.trim()}
                       onClick={() => void save()}
-                      className="h-8 rounded-lg border border-accent bg-accent px-3.5 text-ui font-semibold text-accent-foreground outline-none hover:bg-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-50 pointer-coarse:h-11"
+                      className="h-9 rounded-full border border-accent bg-accent px-4 text-ui font-semibold text-accent-foreground outline-none hover:bg-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-50 pointer-coarse:h-11"
                     >
                       {saving ? "Guardando…" : "Guardar"}
                     </button>
@@ -490,7 +493,7 @@ export default function AdvancedSearch({ etiqueta, esquema, favoritos, conteos, 
                       type="button"
                       disabled={!current}
                       onClick={() => current && setDialog({ kind: "rename", favorite: current })}
-                      className="h-8 rounded-lg border border-border px-3.5 text-ui text-foreground outline-none hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-40 pointer-coarse:h-11"
+                      className="h-9 rounded-full border border-border/60 px-4 text-ui text-foreground outline-none hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-40 pointer-coarse:h-11"
                     >
                       Editar
                     </button>

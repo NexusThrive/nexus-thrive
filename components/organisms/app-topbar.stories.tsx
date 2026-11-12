@@ -107,3 +107,13 @@ export const MenusDeLaApp: Story = {
     await expect(within(menu).getByRole("menuitem", { name: /Categorías/ })).toHaveAttribute("aria-disabled", "true");
   },
 };
+
+/** La barra de PC del negocio: título, buscador en píldora, «Crear» de icono, avisos y la cuenta. Sin cambio de tema ni de negocio. */
+export const Workspace: Story = {
+  render: () => (
+    <div style={{ "--sw": "248px", "--topbar-height": "60px", minHeight: 140 } as React.CSSProperties}>
+      <AppTopbar variant="workspace" search={<NavbarSearch />} />
+      <CommandPalette inlineOnDesktop />
+    </div>
+  ),
+};

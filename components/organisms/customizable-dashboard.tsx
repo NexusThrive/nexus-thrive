@@ -27,7 +27,7 @@ import { Button } from "@/components/atoms/button";
 import { Select } from "@/components/atoms/select";
 import { Switch } from "@/components/atoms/switch";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/molecules/dropdown-menu";
-import { ChartWidget } from "@/components/molecules/charts/chart-widget";
+import { ChartWidget } from "@/components/widgets/charts/chart-widget";
 import { AddWidgetPanel, type BlockOption } from "@/components/organisms/add-widget-panel";
 import { entryOf, type ChartData, type ChartEntry, type ChartType } from "@/lib/experience/dashboard/chart-catalog";
 import {
