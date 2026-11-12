@@ -32,4 +32,5 @@ export const createCipheriv = serverOnly("createCipheriv");
 export const createDecipheriv = serverOnly("createDecipheriv");
 export const timingSafeEqual = serverOnly("timingSafeEqual");
 
-export default { randomBytes, randomUUID, createHash, createHmac, createCipheriv, createDecipheriv, timingSafeEqual };
+const nodeCrypto = { randomBytes, randomUUID, createHash, createHmac, createCipheriv, createDecipheriv, timingSafeEqual };
+export default nodeCrypto;
