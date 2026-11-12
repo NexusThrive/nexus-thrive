@@ -1,0 +1,55 @@
+/* Fondo de toda la pantalla: blanco liso. */
+.page {
+  background: var(--card);
+}
+
+/* El contenedor blanco grande: borde claro grueso y sombra, como una pieza de vidrio flotando. */
+.shell {
+  width: 100%;
+  max-width: 1360px;
+  /* Mide hasta 860 px y se encoge si la pantalla es más baja; en pantallas altas queda centrado, no pegado arriba. */
+  flex: 0 1 860px;
+  min-height: 0;
+  padding: 14px;
+  border: 1px solid color-mix(in srgb, var(--card) 70%, transparent);
+  border-radius: 44px;
+  background: color-mix(in srgb, var(--card) 82%, transparent);
+  box-shadow:
+    0 1px 2px rgba(10, 10, 11, 0.04),
+    0 30px 80px rgba(10, 10, 11, 0.14);
+}
+
+/* La tarjeta del formulario: gris-crema suave con esquinas generosas. */
+.form {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  padding: 28px 40px;
+  border-radius: 32px;
+  background: color-mix(in srgb, var(--surface-muted) 78%, var(--card));
+}
+/* La tarjeta pequeña de abajo (la otra entrada y la ayuda). */
+.tile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 24px;
+  border-radius: 32px;
+  background: color-mix(in srgb, var(--surface-muted) 78%, var(--card));
+}
+
+/* La N sola, en una pieza blanca redondeada (como el icono sobre la tarjeta de la referencia). */
+.logo {
+  flex: none;
+  display: grid;
+  justify-self: start;
+  place-items: center;
+  width: 72px;
+  height: 76px;
+  border-radius: 22px;
+  background: var(--card);
+  box-shadow:
+    0 1px 2px rgba(10, 10, 11, 0.05),
+    0 8px 20px rgba(10, 10, 11, 0.08);
+}
