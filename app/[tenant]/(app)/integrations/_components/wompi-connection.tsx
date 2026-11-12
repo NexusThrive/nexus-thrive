@@ -4,6 +4,7 @@ import { MoneyInput } from "@/components/molecules/money-input";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { buttonVariants } from "@/components/atoms/button-variants";
+import { cn } from "@/lib/utils";
 import { inputClasses } from "@/components/atoms/input";
 import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
@@ -44,22 +45,22 @@ export function WompiConnection({ slug, connection, eventsUrl, tariff }: { slug:
       {connection?.connected && eventsUrl ? (
         <div className="grid gap-1 text-xs">
           <p className="text-muted-foreground">URL de eventos para pegar en Wompi (Desarrolladores → URL de eventos):</p>
-          <code className="break-all rounded-md bg-muted px-2 py-1 font-mono text-foreground">{eventsUrl}</code>
+          <code className="break-all rounded-xl bg-surface-muted px-3 py-2 font-mono text-foreground">{eventsUrl}</code>
         </div>
       ) : null}
       <div className="flex flex-wrap gap-2">
         {connection?.connected ? null : (
-          <button type="button" onClick={() => setOpen(true)} className={buttonVariants({ size: "sm" })}>
+          <button type="button" onClick={() => setOpen(true)} className={cn(buttonVariants({ variant: "accent" }), "h-10 rounded-full px-5 text-sm font-semibold")}>
             {connection ? "Volver a conectar Wompi" : "Conectar Wompi"}
           </button>
         )}
         {connection?.connected ? (
-          <button type="button" onClick={() => setTariffOpen(true)} className={buttonVariants({ variant: "outline", size: "sm" })}>
+          <button type="button" onClick={() => setTariffOpen(true)} className={cn(buttonVariants({ variant: "outline" }), "h-10 rounded-full border-border/60 bg-transparent px-4 text-sm")}>
             {tariff.feePct > 0 || tariff.feeFixed > 0 ? "Cambiar comisión" : "Configurar comisión"}
           </button>
         ) : null}
         {connection ? (
-          <button type="button" disabled={pending} onClick={disconnect} className={buttonVariants({ variant: "outline", size: "sm" })}>
+          <button type="button" disabled={pending} onClick={disconnect} className={cn(buttonVariants({ variant: "outline" }), "h-10 rounded-full border-border/60 bg-transparent px-4 text-sm")}>
             {pending ? "Desconectando…" : "Desconectar"}
           </button>
         ) : null}

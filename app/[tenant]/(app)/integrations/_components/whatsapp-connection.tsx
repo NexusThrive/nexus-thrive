@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { buttonVariants } from "@/components/atoms/button-variants";
+import { cn } from "@/lib/utils";
 import { inputClasses } from "@/components/atoms/input";
 import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
@@ -31,12 +32,12 @@ export function WhatsappConnection({ slug, connection, webhookUrl }: { slug: str
       {connection?.connected && webhookUrl ? (
         <div className="grid gap-1 text-xs">
           <p className="text-muted-foreground">Webhook para pegar en Meta (WhatsApp → Configuración → Webhook):</p>
-          <code className="break-all rounded-md bg-muted px-2 py-1 font-mono text-foreground">{webhookUrl}</code>
+          <code className="break-all rounded-xl bg-surface-muted px-3 py-2 font-mono text-foreground">{webhookUrl}</code>
         </div>
       ) : null}
       <div className="flex flex-wrap gap-2">
-        {connection?.connected ? null : <button type="button" onClick={() => setOpen(true)} className={buttonVariants({ size: "sm" })}>{connection ? "Volver a conectar WhatsApp" : "Conectar WhatsApp"}</button>}
-        {connection ? <button type="button" disabled={pending} onClick={disconnect} className={buttonVariants({ variant: "outline", size: "sm" })}>{pending ? "Desconectando…" : "Desconectar"}</button> : null}
+        {connection?.connected ? null : <button type="button" onClick={() => setOpen(true)} className={cn(buttonVariants({ variant: "accent" }), "h-10 rounded-full px-5 text-sm font-semibold")}>{connection ? "Volver a conectar WhatsApp" : "Conectar WhatsApp"}</button>}
+        {connection ? <button type="button" disabled={pending} onClick={disconnect} className={cn(buttonVariants({ variant: "outline" }), "h-10 rounded-full border-border/60 bg-transparent px-4 text-sm")}>{pending ? "Desconectando…" : "Desconectar"}</button> : null}
       </div>
       <FormDialog
         open={open}

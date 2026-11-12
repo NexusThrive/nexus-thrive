@@ -5,6 +5,8 @@ import { ConnectionCard, type ConnectionState, type Maturity } from "@/component
 import { PageHeader } from "@/components/molecules/page-header";
 import { PermissionNotice } from "@/components/molecules/permission-notice";
 import { buttonVariants } from "@/components/atoms/button-variants";
+import { cn } from "@/lib/utils";
+import { CreditCard, FileText, MessageCircle, Plug } from "lucide-react";
 import { can } from "@/lib/core/auth/permissions";
 import { CAPABILITIES, type CapabilityStatus } from "@/lib/core/capabilities/registry";
 import { joinRoles, rolesThatCan } from "@/lib/core/auth/roles";
@@ -15,6 +17,7 @@ import { listConnections, type ConnectionRow } from "@/lib/integrations/provider
 import { adapterFor } from "@/lib/integrations/providers/registry";
 import { gatewayAccount } from "@/lib/domains/finance/payments/accounts-db";
 import { getAppBaseUrl } from "@/lib/foundation/app-url";
+import { IntegrationsGrid } from "./_components/integrations-grid";
 import { WhatsappConnection } from "./_components/whatsapp-connection";
 import { WompiConnection } from "./_components/wompi-connection";
 
@@ -37,10 +40,10 @@ export default async function IntegrationsPage({ params }: { params: Promise<{ t
   const { tenant } = await params;
   const ctx = await requireTenantContext(tenant, "/integrations");
   if (!ctx) notFound();
-  const header = <PageHeader eyebrow="Sistema" title="Integraciones" description="Las herramientas externas que usa tu negocio y en qué estado están." />;
+  const header = <PageHeader title="Integraciones" description="Las herramientas externas que usa tu negocio y en qué estado están." />;
   if (!can(ctx.role, "business.manage")) {
     return (
-      <div className="grid gap-5">
+      <div data-bleed="" className="grid gap-5 px-6 pb-8 pt-6">
         {header}
         <PermissionNotice permission="business.manage" action="ver las integraciones" />
       </div>
@@ -64,6 +67,7 @@ export default async function IntegrationsPage({ params }: { params: Promise<{ t
       ...base0,
       id: wompi?.id ?? "wompi-none",
       name: "Wompi",
+      logo: "/integrations/wompi.svg",
       description: wompi
         ? "Tus clientes pagan con tarjeta o PSE y el dinero llega a tu cuenta Wompi; el ingreso se registra al confirmarse."
         : "Conecta tu cuenta Wompi para cobrar con tarjeta o PSE. Mientras tanto, tus cobros y pedidos se pagan por transferencia o efectivo y los confirmas en Cobros en línea.",
@@ -117,31 +121,51 @@ export default async function IntegrationsPage({ params }: { params: Promise<{ t
 
   const dataManagers = joinRoles(rolesThatCan("data.exchange"));
 
+  const items = [
+    ...cards.map(({ id, ...card }) => ({ id, kind: card.kind, card: <ConnectionCard {...card} managedBy={managers} /> })),
+    {
+      id: "datos",
+      kind: "Datos",
+      card: (
+        <ConnectionCard name="Importar y exportar" kind="Datos" description="Sube clientes y catálogo desde Excel o CSV y descarga copias de tus datos." state="manual" maturity="Disponible" managedBy={dataManagers} href={`${base}/data`} actionLabel="Abrir Importar y exportar" />
+      ),
+    },
+  ];
+  const ideas = [
+    { icon: CreditCard, name: "Wompi", text: "Cobros con tarjeta y PSE" },
+    { icon: FileText, name: "Factura electrónica", text: "Documentos ante la DIAN" },
+    { icon: MessageCircle, name: "WhatsApp Business", text: "Conversaciones con tus clientes" },
+  ];
+
   return (
-    <div className="grid gap-5">
+    <div data-bleed="" className="grid gap-5 px-6 pb-8 pt-6">
       {header}
       {cards.length === 0 ? (
-          <EmptyState mark="page"
+        <div className="grid gap-6">
+          <EmptyState
+            mark="center"
+            remember={false}
+            icon={<Plug />}
             title="Aún no tienes herramientas para conectar"
-            description="Cuando enciendas funciones como Cobros en línea o Factura electrónica, sus conexiones aparecerán aquí."
-            action={<Link href={`${base}/functions`} className={buttonVariants({ variant: "outline" })}>Ver funciones</Link>}
+            description="Enciende funciones como Cobros en línea o Factura electrónica y sus conexiones aparecerán aquí, con su estado real."
+            action={<Link href={`${base}/functions`} className={cn(buttonVariants({ variant: "accent" }), "h-11 rounded-full px-6 text-sm font-semibold")}>Ver funciones</Link>}
           />
+          <ul aria-label="Ejemplos de integraciones" className="grid gap-4 opacity-70 sm:grid-cols-3">
+            {ideas.map(({ icon: Icon, name, text }) => (
+              <li key={name} className="flex items-center gap-3 rounded-(--radius-widget) border border-dashed border-border-strong p-4">
+                <span aria-hidden="true" className="grid size-11 place-items-center rounded-2xl bg-surface-muted text-muted-foreground">
+                  <Icon className="size-5" strokeWidth={1.7} />
+                </span>
+                <span className="grid">
+                  <span className="text-ui font-semibold text-foreground">{name}</span>
+                  <span className="text-xs text-muted-foreground">{text}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
       ) : (
-        <section aria-label="Herramientas conectadas" className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {cards.map(({ id, ...card }) => (
-            <ConnectionCard key={id} {...card} managedBy={managers} />
-          ))}
-          <ConnectionCard
-            name="Importar y exportar"
-            kind="Datos"
-            description="Sube clientes y catálogo desde Excel o CSV y descarga copias de tus datos."
-            state="manual"
-            maturity="Disponible"
-            managedBy={dataManagers}
-            href={`${base}/data`}
-            actionLabel="Abrir Importar y exportar"
-          />
-        </section>
+        <IntegrationsGrid items={items} />
       )}
       <p className="text-xs text-muted-foreground">
         Aquí solo aparecen las herramientas que ya puedes usar y cuya función está encendida. Para encender otras, ve a{" "}
