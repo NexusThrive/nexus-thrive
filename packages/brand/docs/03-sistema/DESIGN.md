@@ -18,18 +18,23 @@ documento dice qué existe, dónde vive y cómo se usa.
 
 ---
 
-## 1. Marca (no se cambia)
+## 1. Marca (no se cambia) y lenguaje de interfaz: Soft Enterprise
 
-Todo sale del logo: un bloque negro sólido, esquinas rectas y cortes
-diagonales. De ahí las reglas:
+La **marca** sale del logo y no cambia: negro y oro, Montserrat, la N con su
+corte a 24°. La **interfaz** evoluciona hacia *Soft Enterprise*: tranquila,
+limpia y suave sin perder la densidad que pide una operación de negocio.
 
-- **Negro dominante, oro como único acento.** Proporción 60 % tinta/neutros
-  oscuros, 30 % papel, 10 % oro. El oro marca *una* cosa por pantalla (el CTA
-  principal, el dato que importa, el ítem activo).
-- **Radios casi nulos** (2–8 px). Nada de píldoras salvo avatares e
-  indicadores circulares.
-- **Bordes en lugar de sombras.** Solo flotan con sombra las superficies que
-  están *encima* de otras: diálogos, paneles, menús y notificaciones.
+- **Claro por defecto.** Fondo papel cálido (`--background`), superficies
+  blancas (`--surface`), bordes sutiles y texto casi negro (`--nx-ink-soft`).
+- **Oro como acento de acción, nunca como fondo dominante.** El botón
+  principal (`Button` `primary`), lo seleccionado y el dato que importa.
+  Una sola tarjeta de oro por tablero. Sin rellenos negros en la interfaz:
+  el negro queda para el logo, el texto y piezas de identidad.
+- **Radios suaves en tres niveles** (§2): controles 10 px, contenedores
+  12–24 px, estado en píldora. Hojas y diálogos 28 px.
+- **Profundidad sutil.** Escala de sombras cálidas `xs · sm · md · lg`: casi
+  nada en reposo, `sm` al pasar el cursor, `md` en lo que flota (menús) y
+  `lg` en diálogos y paneles. El borde sigue separando; la sombra solo eleva.
 - **Un solo motivo gráfico:** el corte diagonal a −24° de la N (`--nx-angle`).
   Aparece en cargas, barras de progreso y destellos; nunca como decoración
   repetida.
@@ -97,7 +102,8 @@ interruptor de la barra). Densidad compacta con `data-density="compact"`
 | Grupo | Tokens |
 |---|---|
 | Espacio (base 4 px) | `--space-1`…`--space-20` (4–80 px) |
-| Radios | `--radius-sm` 2 · `md` 4 · `lg` 6 · `xl` 8 px |
+| Radios (primitivos `--nx-radius-*`) | `xs` 6 · `sm` 8 · `md` 10 (controles) · `lg` 12 (tarjetas) · `xl` 14 · `2xl` 16 (menús, avisos) · `3xl` 24 (Widget, `--radius-widget`) · `sheet` 28 (diálogos y hojas). Utilidades `rounded-*`; `rounded-full` para estado. Sin `rounded-[Npx]` ni `rounded` plano |
+| Sombras (primitivos `--nx-shadow-*`) | `shadow-xs` (campos, botón `outline`) · `shadow-sm` (tarjeta al pasar el cursor) · `shadow-md` (menús, ayuda; `--shadow-popover`) · `shadow-lg` / `shadow-overlay` (diálogos, paneles) · `shadow-focus` (halo oro de un campo enfocado). Sin `shadow-[…]` sueltas |
 | Texto de interfaz (DR-02) | `text-2xs` 11 px (solo metadatos) · `text-xs` 12 · `text-ui` 13 (texto operativo: tablas, listas, menús) · `text-sm` 14 · `text-base` 16 · `text-lg` 18. Sin `text-[Npx]` nuevos (lo vigila `type-scale-freeze.test.ts`). `cn()` conoce `2xs` y `ui` como tamaños |
 | Controles | `--control-h` 40 px (34 compacta, **44 px con puntero táctil**, DR-15) · `--row-h` 56 px |
 | Documento e impresión (DR-05) | `--doc-ink` · `--doc-muted` · `--doc-soft` · `--doc-faint` · `--doc-rule` · `--doc-line` · `--doc-bg` · `--doc-gold` · `--doc-edge` · `--doc-edge-strong` (clases `text-doc-*`, `bg-doc-*`, `border-doc-*`): recibos, facturas y comprobantes se ven igual en cualquier tema |
@@ -106,8 +112,8 @@ interruptor de la barra). Densidad compacta con `data-density="compact"`
 
 ### Elevación y capas
 
-Sombra solo en lo que flota: `--shadow-popover` (menús, ayuda) y
-`--nx-shadow-overlay` (diálogos y paneles).
+Profundidad sutil con la escala de sombras (§2): en reposo las superficies se separan por color y borde; la sombra crece con la
+elevación (`xs` → `lg`). Una sola fuente: `--nx-shadow-*` en `tokens.css`; `theme-v4.css` solo las nombra para Tailwind.
 
 | Capa | Token | Valor | Qué va |
 |---|---|---|---|
@@ -146,8 +152,17 @@ por uno igual de visible.
 
 ## 3. Componentes
 
-Diseño atómico en `components/`. Cada componente compartido tiene historia en
-Storybook con sus estados.
+Diseño atómico en `components/`.
+
+**Storybook es la fuente de verdad del catálogo.** El diseño fluye de Storybook a la app, nunca al revés:
+
+1. Un componente nuevo empieza por su historia: anatomía, variantes y estados (normal, foco, deshabilitado, cargando, error,
+   vacío) con datos de muestra. El código cumple ese contrato; no se documenta después de implementar.
+2. Un cambio de aspecto (una barra lateral, un botón) se hace en el componente compartido y se revisa en su historia: todas
+   las pantallas que lo usan cambian a la vez. Una pantalla no reimplementa ni sobrescribe el aspecto de un componente.
+3. Una variante antes que un componente nuevo; un componente nuevo solo con dos usos reales (§ «Proponer una variante»).
+4. Lo vigila `tests/architecture/stories-coverage.test.ts`: un componente de `components/` sin historia hace fallar las
+   pruebas. La deuda heredada está en `stories-baseline.json` y solo baja (`node scripts/stories-baseline.mjs`).
 
 | Nivel | Carpeta | Qué va | Ejemplos |
 |---|---|---|---|
