@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { AlertTriangle, ArrowRight } from "lucide-react";
-import { KpiCard } from "@/components/molecules/kpi-card";
+import { KpiCard } from "@/components/widgets/kpi-card";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { formatCurrency } from "@/lib/foundation/format";
 import type { MoneyOverview } from "@/lib/experience/dashboard/where-is-my-money";
