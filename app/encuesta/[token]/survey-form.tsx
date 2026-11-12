@@ -53,7 +53,7 @@ export default function SurveyForm({ token }: { token: string }) {
         <legend className="mb-2 text-ui font-medium">¿Qué tan probable es que recomiendes NEXUS? (opcional)</legend>
         <div className="grid grid-cols-11 gap-1">
           {Array.from({ length: 11 }, (_, n) => (
-            <button key={n} type="button" aria-pressed={nps === String(n)} onClick={() => setNps(nps === String(n) ? "" : String(n))} className={cn("rounded-md border py-1.5 font-mono text-xs", nps === String(n) ? "border-foreground bg-foreground text-background" : "border-border-input")}>
+            <button key={n} type="button" aria-pressed={nps === String(n)} onClick={() => setNps(nps === String(n) ? "" : String(n))} className={cn("rounded-md border py-1.5 font-mono text-xs", nps === String(n) ? "border-accent bg-accent text-ink" : "border-border-input")}>
               {n}
             </button>
           ))}

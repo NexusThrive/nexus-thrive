@@ -11,7 +11,8 @@ const users = [
 const verticals = [{ value: "general", label: "General / Otro" }, { value: "gym", label: "Gimnasio" }, { value: "retail", label: "Tienda" }];
 
 const meta = {
-  title: "Operations Center/Usuarios",
+  title: "Páginas/Operations Center/Usuarios",
+  id: "operations-center-usuarios",
   component: UsersView,
   decorators: [withShell],
   parameters: { layout: "padded", docs: { description: { component: "Personas de la plataforma: cuántos negocios tiene cada una, su límite y la creación de un negocio para ella. Las acciones son de muestra en Storybook." } } },

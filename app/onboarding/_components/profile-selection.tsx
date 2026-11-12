@@ -49,7 +49,7 @@ export default function ProfileSelection({
               className={cn(
                 "group flex flex-col justify-center rounded-3xl border p-5 text-left transition-[border-color,background-color,box-shadow] duration-200 sm:min-h-[220px] sm:p-6",
                 isSelected
-                  ? "border-accent bg-accent-subtle/60 shadow-[0_0_0_4px_rgba(212,175,55,.18)]"
+                  ? "border-accent bg-accent-subtle/60 shadow-focus"
                   : "border-border/60 bg-card hover:border-accent/50",
               )}
             >

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { buttonVariants } from "@/components/atoms/button-variants";
 import { auth } from "@clerk/nextjs/server";
 import { Wordmark } from "@/components/atoms/wordmark";
 import { homeTenantFor } from "@/lib/core/tenancy/membership";
@@ -67,7 +68,7 @@ export default async function BenefitPage({
             </p>
             <Link
               href="/auth/callback"
-              className="mt-2 inline-flex h-11 items-center justify-center rounded-md bg-ink px-6 text-sm font-semibold text-white transition hover:bg-black"
+              className={buttonVariants({ className: "mt-2 h-11 px-6 text-sm" })}
             >
               Entrar a mi negocio
             </Link>
@@ -140,7 +141,7 @@ async function ActiveBenefit({
         <input type="hidden" name="code" value={code} />
         <button
           type="submit"
-          className="inline-flex h-11 w-full items-center justify-center rounded-md bg-ink px-6 text-sm font-semibold text-white transition hover:bg-black"
+          className={buttonVariants({ className: "h-11 w-full px-6 text-sm" })}
         >
           {paid
             ? "Activar mi cuenta"

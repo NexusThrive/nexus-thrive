@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
 import { StarsInput } from "./pipeline-ui";
 
 const field =
-  "h-11 w-full min-w-0 rounded-2xl border border-border/60 bg-background px-4 text-ui text-foreground outline-none placeholder:text-muted-foreground transition-colors focus:border-accent focus:shadow-[0_0_0_3px_color-mix(in_oklab,var(--accent)_16%,transparent)]";
+  "h-11 w-full min-w-0 rounded-2xl border border-border/60 bg-background px-4 text-ui text-foreground outline-none placeholder:text-muted-foreground transition-colors focus:border-accent focus:shadow-focus";
 
 type Contact = { kind: "existing"; customer: PickerCustomer } | { kind: "new"; name: string } | null;
 

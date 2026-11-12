@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { buttonVariants } from "@/components/atoms/button-variants";
 import { STATUS_LABELS } from "@/lib/domains/finance/payments/intents";
 import { publicIntent } from "@/lib/domains/finance/payments/intents-db";
 import { ProofForm } from "./_components/proof-form";
@@ -24,7 +25,7 @@ export default async function PayPage({ params }: { params: Promise<{ reference:
         <p className="text-sm">{intent.description}</p>
         <p role="status" className={`text-sm font-semibold ${tone}`}>{STATUS_LABELS[intent.status]}</p>
         {intent.payUrl ? (
-          <a href={intent.payUrl} className="inline-flex h-12 items-center justify-center rounded-md bg-primary px-5 text-[15px] font-semibold text-primary-foreground">
+          <a href={intent.payUrl} className={buttonVariants({ size: "lg", className: "px-5" })}>
             Pagar con tarjeta o PSE
           </a>
         ) : null}

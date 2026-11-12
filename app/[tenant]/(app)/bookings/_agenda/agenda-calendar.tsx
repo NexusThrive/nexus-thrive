@@ -187,7 +187,7 @@ export default function AgendaCalendar({
                             e.stopPropagation();
                             go("day", day);
                           }}
-                          className={cn("grid size-6 place-items-center rounded-full font-mono text-xs tabular-nums hover:bg-border", isToday && "bg-ink font-bold text-[#F7F6F3]")}
+                          className={cn("grid size-6 place-items-center rounded-full font-mono text-xs tabular-nums hover:bg-border", isToday && "bg-accent font-bold text-ink")}
                         >
                           {Number(day.slice(8))}
                         </button>
