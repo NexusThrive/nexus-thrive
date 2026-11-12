@@ -47,15 +47,15 @@ export default function ProfileSelection({
               aria-pressed={isSelected}
               data-press="card"
               className={cn(
-                "group flex flex-col justify-center rounded-lg border p-5 text-left transition-[border-color,background-color,box-shadow] duration-200 sm:min-h-[240px] sm:p-6",
+                "group flex flex-col justify-center rounded-3xl border p-5 text-left transition-[border-color,background-color,box-shadow] duration-200 sm:min-h-[220px] sm:p-6",
                 isSelected
-                  ? "border-accent bg-accent-subtle/60 shadow-[0_0_0_3px_rgba(212,175,55,.18)]"
-                  : "border-border-input bg-surface hover:border-border-input-hover",
+                  ? "border-accent bg-accent-subtle/60 shadow-[0_0_0_4px_rgba(212,175,55,.18)]"
+                  : "border-border/60 bg-card hover:border-accent/50",
               )}
             >
               <span
                 className={cn(
-                  "grid size-11 place-items-center rounded-lg transition sm:size-10",
+                  "grid size-12 place-items-center rounded-full transition",
                   isSelected
                     ? "bg-accent text-ink"
                     : "bg-surface-muted text-muted-foreground group-hover:text-foreground",

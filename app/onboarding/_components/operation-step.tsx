@@ -24,11 +24,11 @@ function Group<T extends string>({ legend, hint, options, value, onChange }: { l
               data-press=""
               onClick={() => toggle(o.value)}
               className={cn(
-                "flex items-start gap-2.5 rounded-md border px-3 py-2.5 text-left transition-[border-color,background-color,box-shadow] duration-200 pointer-coarse:min-h-11",
-                on ? "border-accent bg-accent-subtle/60 shadow-[0_0_0_3px_rgba(212,175,55,.18)]" : "border-border-input bg-surface hover:border-border-input-hover",
+                "flex items-start gap-3 rounded-2xl border px-4 py-3 text-left transition-[border-color,background-color,box-shadow] duration-200 pointer-coarse:min-h-11",
+                on ? "border-accent bg-accent-subtle/60 shadow-[0_0_0_3px_rgba(212,175,55,.18)]" : "border-border/60 bg-card hover:border-accent/50",
               )}
             >
-              <span aria-hidden="true" className={cn("mt-0.5 grid size-4 shrink-0 place-items-center rounded-sm border", on ? "border-accent bg-accent text-ink" : "border-border-input")}>{on ? <Check className="size-3" strokeWidth={3} /> : null}</span>
+              <span aria-hidden="true" className={cn("mt-0.5 grid size-[18px] shrink-0 place-items-center rounded-full border", on ? "border-accent bg-accent text-ink" : "border-border-input")}>{on ? <Check className="size-3" strokeWidth={3} /> : null}</span>
               <span className="min-w-0">
                 <span className="block text-ui font-medium leading-tight">{o.label}</span>
                 {o.hint ? <span className="mt-0.5 block text-xs leading-snug text-muted-foreground">{o.hint}</span> : null}

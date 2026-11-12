@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { SPLASH_COOKIE } from "@/components/organisms/app-entry-splash";
 import { ArrowRight } from "lucide-react";
 import { completeAdaptiveOnboardingAction } from "@/app/onboarding/actions";
 import { validateAdaptiveOnboarding } from "@/lib/core/tenancy/onboarding/validation";
@@ -89,6 +91,7 @@ export default function OnboardingWizard({
   const [cinematic, setCinematic] = useState<CinematicStatus | null>(null);
   const [slug, setSlug] = useState<string | null>(null);
   const [benefit, setBenefit] = useState<OnboardingBenefit | null>(pendingBenefit ?? null);
+  const router = useRouter();
   const [, startTransition] = useTransition();
 
   const validation = useMemo(
@@ -200,8 +203,11 @@ export default function OnboardingWizard({
     }
     const v = validation.values;
     const input: AdaptiveOnboardingInput = { ...v, tenantId: prefill.tenantId };
-    setError(null);
-    setCinematic("creating");
+    // La pantalla de creación entra dentro de una transición: así React anima el viaje de AURI (View Transition compartida).
+    startTransition(() => {
+      setError(null);
+      setCinematic("creating");
+    });
     startTransition(async () => {
       const [result] = await Promise.all([completeAdaptiveOnboardingAction(input), sleep(MIN_CINEMATIC_MS)]);
       if (result.status === "ok") {
@@ -233,6 +239,9 @@ export default function OnboardingWizard({
   const scene = (
     <OnboardingScene
       mode={step === "intro" ? "intro" : "preview"}
+      step={step}
+      guide={{ firstName, businessName: draft.name, tenantType: draft.tenantType, hasBenefit: Boolean(benefit) }}
+      auriHandoff={Boolean(cinematic)}
       introSlide={slide}
       preview={{
         name: draft.name,
@@ -293,7 +302,7 @@ export default function OnboardingWizard({
         onClick={step === "confirm" ? submit : goNext}
         data-mag=""
         disabled={cinematic === "creating"}
-        className={cn(buttonVariants({ variant: step === "confirm" ? "accent" : "primary", size: "lg" }), "min-w-40 max-sm:flex-1")}
+        className={cn(buttonVariants({ variant: "accent", size: "lg" }), "h-12 min-w-44 rounded-full text-base font-semibold max-sm:flex-1")}
       >
         {primaryLabel}
         <ArrowRight aria-hidden="true" className="size-4" />
@@ -419,9 +428,11 @@ export default function OnboardingWizard({
           error={error ?? undefined}
           onBack={() => setCinematic(null)}
           onEnter={() => {
-            // Recarga completa a propósito: la app arranca con su intro de la N.
-            // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-            if (slug) window.location.assign(`/${slug}`);
+            // Navegación suave (sin recargar): la pantalla de creación se queda hasta que el panel esté listo, sin animación de carga, y AURI
+            // viaja a su lugar en el Inicio para explicarlo (View Transition `nx-auri`, `?bienvenida=1`). La marca de sesión evita la intro de la N.
+            if (!slug) return;
+            document.cookie = `${SPLASH_COOKIE}=1; path=/; SameSite=Lax`;
+            startTransition(() => router.push(`/${slug}?bienvenida=1`));
           }}
         />
       ) : null}
