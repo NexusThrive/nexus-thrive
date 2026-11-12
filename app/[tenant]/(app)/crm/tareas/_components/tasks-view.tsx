@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus } from "lucide-react";
+import { CalendarClock, Check, Plus } from "lucide-react";
 import { Alert } from "@/components/molecules/alert";
-import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { inputClasses } from "@/components/atoms/input";
 import { Select } from "@/components/atoms/select";
@@ -17,6 +16,7 @@ import { FormDialog } from "@/components/organisms/form-sheet";
 import { completeTaskAction, createTaskAction, rescheduleTaskAction, type TaskResult } from "@/app/[tenant]/(app)/crm/tareas/actions";
 import type { TaskRow } from "@/lib/business/customers/tasks-db";
 import type { TaskView } from "@/lib/business/customers/tasks";
+import { cn } from "@/lib/utils";
 
 type Dialog = { kind: "new" } | { kind: "edit"; row: TaskRow } | null;
 
@@ -50,7 +50,7 @@ export default function TasksView({ slug, mine, overdue, all, team, customers, p
         <div className="max-w-full overflow-x-auto pb-1">
           <SegmentedControl ariaLabel="Vista" value={view} onChange={setView} options={[{ value: "mine", label: "Mis tareas", count: mine.length || undefined }, { value: "overdue", label: "Vencidas", count: overdue.length || undefined }, { value: "all", label: "Todas" }]} />
         </div>
-        <button type="button" onClick={() => setDialog({ kind: "new" })} className={buttonVariants({ className: "ml-auto" })}>
+        <button type="button" onClick={() => setDialog({ kind: "new" })} className={cn(buttonVariants({ variant: "accent" }), "ml-auto h-11 rounded-full px-6 text-sm font-semibold")}>
           <Plus aria-hidden="true" className="size-4" /> Nueva tarea
         </button>
       </div>
@@ -73,23 +73,42 @@ export default function TasksView({ slug, mine, overdue, all, team, customers, p
       ) : null}
 
       {rows.length === 0 ? (
-        <EmptyState mark="page" remember={view === "mine"} title={view === "mine" ? "No tienes tareas asignadas" : view === "overdue" ? "Nada vencido" : "Sin tareas abiertas"} description={view === "overdue" ? "Todo lo que tiene fecha va al día." : "Crea una para que nadie olvide el siguiente paso con un cliente."} />
+        <EmptyState
+          mark="center"
+          remember={false}
+          icon={<Check />}
+          title={view === "mine" ? "No tienes tareas asignadas" : view === "overdue" ? "Nada vencido" : "Sin tareas abiertas"}
+          description={view === "overdue" ? "Todo lo que tiene fecha va al día." : "Crea una para que nadie olvide el siguiente paso con un cliente."}
+          action={
+            view === "overdue" ? undefined : (
+              <button type="button" onClick={() => setDialog({ kind: "new" })} className={cn(buttonVariants({ variant: "accent" }), "h-11 rounded-full px-6 text-sm font-semibold")}>
+                <Plus aria-hidden="true" className="size-4" /> Nueva tarea
+              </button>
+            )
+          }
+        />
       ) : (
-        <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">
+        <ul className="grid gap-2.5">
           {rows.map((t) => (
-            <li key={t.id} className="flex min-w-0 flex-wrap items-start gap-x-3 gap-y-2 px-4 py-3">
-              <button type="button" onClick={() => complete(t.id)} aria-label={`Completar: ${t.title}`} className="mt-0.5 size-5 shrink-0 rounded-md border border-border bg-card hover:border-accent" />
+            <li key={t.id} className="nx-rise flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2 rounded-2xl bg-surface-muted/60 px-5 py-4">
+              <button type="button" onClick={() => complete(t.id)} aria-label={`Completar: ${t.title}`} className="grid size-7 shrink-0 place-items-center rounded-full border-2 border-border-strong bg-card text-transparent outline-none transition-colors hover:border-accent hover:text-accent-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
+                <Check aria-hidden="true" className="size-3.5" strokeWidth={3} />
+              </button>
               <div className="min-w-0 flex-1">
-                <p className="break-words text-ui font-medium">{t.title}</p>
-                <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
-                  {t.dueDay ? <span className={t.overdue ? "font-medium text-danger" : undefined}>{t.overdue ? `Vencida · ${t.dueDay}` : t.dueDay === today ? "Hoy" : t.dueDay}</span> : <span>Sin fecha</span>}
-                  {t.projectName ? <span>· Proyecto {t.projectName}</span> : null}
+                <p className="break-words text-ui font-medium text-foreground">{t.title}</p>
+                <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+                  <span className={cn("inline-flex items-center gap-1 rounded-full px-2.5 py-0.5", t.overdue ? "bg-danger/10 font-medium text-danger" : "bg-card")}>
+                    <CalendarClock aria-hidden="true" className="size-3" />
+                    {t.dueDay ? (t.overdue ? `Vencida · ${t.dueDay}` : t.dueDay === today ? "Hoy" : t.dueDay) : "Sin fecha"}
+                  </span>
+                  {t.projectName ? <span>Proyecto {t.projectName}</span> : null}
                   {t.customerName ? <span>· {t.customerName}</span> : null}
                   <span>· {t.assigneeId === me ? "Para ti" : (t.assigneeName ?? "Sin asignar")}</span>
                 </p>
               </div>
-              {t.overdue ? <Badge variant="destructive">Vencida</Badge> : null}
-              <button type="button" onClick={() => setDialog({ kind: "edit", row: t })} aria-label={`Cambiar fecha o responsable: ${t.title}`} className={buttonVariants({ variant: "ghost", size: "sm" })}>Cambiar</button>
+              <button type="button" onClick={() => setDialog({ kind: "edit", row: t })} aria-label={`Cambiar fecha o responsable: ${t.title}`} className={cn(buttonVariants({ variant: "outline" }), "h-10 rounded-full border-border/60 bg-card px-4 text-sm")}>
+                Cambiar
+              </button>
             </li>
           ))}
         </ul>

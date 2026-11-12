@@ -18,7 +18,7 @@ export default async function TareasPage({ params, searchParams }: { params: Pro
   const today = todayCO();
   const [mine, overdue, all, team, customers, projects] = await Promise.all([listTasks(ctx.tenantId, "mine", ctx.memberId, today), listTasks(ctx.tenantId, "overdue", ctx.memberId, today), listTasks(ctx.tenantId, "all", ctx.memberId, today), teamOptions(ctx.tenantId), customerOptions(ctx.tenantId), projectOptions(ctx.tenantId)]);
   return (
-    <div className="grid gap-5">
+    <div data-bleed="" className="grid gap-5 px-6 pb-8 pt-6">
       <PageHeader title="Tareas" description="Que nadie olvide el siguiente paso: por cliente, por proyecto y por persona." />
       <TasksView slug={tenant} mine={mine} overdue={overdue} all={all} team={team} customers={customers} projects={projects} today={today} me={ctx.memberId} initialCustomerId={sp.nuevo === "1" ? sp.cliente : undefined} />
     </div>

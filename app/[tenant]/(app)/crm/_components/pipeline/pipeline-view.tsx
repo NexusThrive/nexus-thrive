@@ -6,7 +6,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import CrmSearchBar from "./crm-search-bar";
 import type { FavoriteItem } from "@/components/organisms/advanced-search/advanced-search";
 import type { SearchSchema } from "@/lib/foundation/list-search";
-import { CalendarDays, ChartColumn, Clock, Columns3, List, MoreVertical, X } from "lucide-react";
+import { CalendarDays, ChartColumn, Clock, Columns3, List, MoreVertical, Plus, X } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/molecules/dropdown-menu";
 import { useToast } from "@/components/molecules/toast";
@@ -18,6 +18,7 @@ import type { PickerCustomer } from "@/lib/business/growth/pipeline-read";
 import { shortMoney } from "@/lib/business/growth/pipeline";
 import { cn } from "@/lib/utils";
 import { Board } from "./board";
+import OpportunityDrawer from "./opportunity-drawer";
 import { ActivitiesView, CalendarView, ChartView, ListView, type ActivityItem } from "./views";
 
 export type PipelineViewName = "tablero" | "lista" | "calendario" | "grafico" | "actividades";
@@ -79,6 +80,7 @@ export default function PipelineView({
   const [, start] = useTransition();
   const [quickStage, setQuickStage] = useState<string | null>(params.get("nueva") === "1" ? "first" : null);
   const [showLost, setShowLost] = useState(false);
+  const [openId, setOpenId] = useState<string | null>(null);
   const [saving, setSaving] = useState<ReadonlySet<string>>(new Set());
   const [doneIds, setDoneIds] = useState<ReadonlySet<string>>(new Set());
   const [now] = useState(() => Date.now());
@@ -115,6 +117,16 @@ export default function PipelineView({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- setParams lee la URL vigente
   }, [view, params]);
 
+  /** Quita búsqueda y filtros (incluido «Mis oportunidades») para ver todo el pipeline. `v=1` evita que se reaplique el favorito por defecto. */
+  const clearFilters = () =>
+    setParams({ q: null, en: null, filtros: null, regla: null, responsable: null, etiqueta: null, prioridad: null, desde: null, hasta: null, min: null, max: null, cliente: null, mios: "0", v: "1" });
+
+  /** «Nueva oportunidad»: vuelve al tablero (si estaba en otra vista) y abre la creación rápida. */
+  const createNew = () => {
+    if (view !== "tablero") setParams({ vista: null });
+    setQuickStage("first");
+  };
+
   const mark = (id: string, on: boolean) => setSaving((s) => {
     const n = new Set(s);
     if (on) n.add(id);
@@ -122,13 +134,20 @@ export default function PipelineView({
     return n;
   });
 
-  const move = (card: PipelineCard, stageId: string) => {
+  /** Mueve la tarjeta a otra etapa; con `index` (arrastre) queda en ese lugar de la columna y no al final. */
+  const move = (card: PipelineCard, stageId: string, index?: number) => {
     const stage = stages.find((s) => s.id === stageId);
     if (!stage) return;
     mark(card.id, true);
     start(async () => {
       apply({ type: "move", id: card.id, stage });
       const r = await moveStageAction(slug, card.id, stageId);
+      if (r.ok && index !== undefined) {
+        const ids = shown.filter((c) => c.stageId === stageId && c.id !== card.id).map((c) => c.id);
+        ids.splice(Math.min(index, ids.length), 0, card.id);
+        apply({ type: "order", ids });
+        await reorderAction(slug, ids);
+      }
       mark(card.id, false);
       toast(r.ok ? (r.message ?? "Etapa actualizada") : r.message, r.ok ? "success" : "error");
       router.refresh();
@@ -148,14 +167,15 @@ export default function PipelineView({
     <div data-bleed="" className="flex flex-col">
       {/* Panel de control: 3 zonas */}
       {/* Por ancho: celular = acciones, buscador y vistas (a todo el ancho); 640–1100 = acciones y vistas arriba, buscador abajo; ≥ 1100 = 3 zonas. */}
-      <div className="grid items-center gap-x-4 gap-y-3 px-5 py-4 [grid-template-areas:'left'_'search'_'views'] sm:grid-cols-[1fr_auto] sm:[grid-template-areas:'left_views'_'search_search'] min-[1100px]:grid-cols-[1fr_minmax(0,543px)_1fr] min-[1100px]:[grid-template-areas:'left_search_views']">
+      <div className="grid items-center gap-x-5 gap-y-4 px-6 py-6 [grid-template-areas:'left'_'search'_'views'] sm:grid-cols-[1fr_auto] sm:[grid-template-areas:'left_views'_'search_search'] min-[1100px]:grid-cols-[1fr_minmax(0,620px)_1fr] min-[1100px]:[grid-template-areas:'left_search_views']">
         <div className="flex min-w-0 items-center gap-3 [grid-area:left]">
-          <button type="button" onClick={() => (view === "tablero" ? setQuickStage("first") : (setParams({ vista: null }), setQuickStage("first")))} className={buttonVariants({ variant: "accent", size: "sm", className: "h-[34px] font-semibold" })}>
+          <button type="button" onClick={createNew} className={cn(buttonVariants({ variant: "accent", size: "lg" }), "h-12 rounded-full px-6 text-base font-semibold")}>
+            <Plus aria-hidden="true" className="size-5" strokeWidth={2.2} />
             Nueva oportunidad
           </button>
-          <h1 className="truncate text-lg font-medium text-foreground">Pipeline</h1>
+          <h1 className="truncate font-display text-2xl font-semibold text-foreground">Pipeline</h1>
           <DropdownMenu>
-            <DropdownMenuTrigger aria-label="Más acciones" className="grid size-8 shrink-0 place-items-center rounded-lg text-muted-foreground outline-none hover:bg-surface-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
+            <DropdownMenuTrigger aria-label="Más acciones" className="grid size-11 shrink-0 place-items-center rounded-full text-muted-foreground outline-none hover:bg-surface-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
               <MoreVertical aria-hidden="true" className="size-4" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start">
@@ -170,20 +190,20 @@ export default function PipelineView({
           </DropdownMenu>
         </div>
 
-        <div className="flex w-full min-w-0 items-center gap-2 justify-self-center [grid-area:search] min-[1100px]:max-w-[543px]">
+        <div className="flex w-full min-w-0 items-center gap-2 justify-self-center [grid-area:search] min-[1100px]:max-w-[620px]">
           {customerName ? (
-            <span className="flex shrink-0 items-center gap-1.5 rounded-md bg-surface-muted px-2 py-[3px] text-xs text-foreground">
+            <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-surface-muted px-3 py-1 text-xs text-foreground">
               {customerName}
               <button type="button" aria-label={`Quitar filtro: ${customerName}`} onClick={() => setParams({ cliente: null })} className="text-muted-foreground hover:text-foreground">
                 <X aria-hidden="true" className="size-3" />
               </button>
             </span>
           ) : null}
-          <CrmSearchBar slug={slug} schema={schema} favorites={favorites} className="h-9 min-w-0 flex-1" />
+          <CrmSearchBar slug={slug} schema={schema} favorites={favorites} className="min-w-0 flex-1" />
         </div>
 
         <div className="flex items-center justify-end [grid-area:views]">
-          <div role="group" aria-label="Vistas" className="flex w-full gap-0.5 rounded-[10px] border border-border bg-card p-[3px] sm:w-auto">
+          <div role="group" aria-label="Vistas" className="flex h-11 w-full gap-0.5 rounded-full border border-border/60 bg-card p-1 sm:w-auto">
             {VIEWS.map(({ key, label, icon: Icon }) => (
               <button
                 key={key}
@@ -191,7 +211,7 @@ export default function PipelineView({
                 aria-label={label}
                 aria-pressed={view === key}
                 onClick={() => setParams({ vista: key === "tablero" ? null : key })}
-                className={cn("grid h-[30px] flex-1 place-items-center rounded-[7px] outline-none focus-visible:outline-2 focus-visible:outline-ring sm:w-[34px] sm:flex-none", view === key ? "bg-surface-muted text-accent-text" : "text-muted-foreground hover:bg-surface-muted hover:text-foreground")}
+                className={cn("grid h-9 flex-1 place-items-center rounded-full outline-none focus-visible:outline-2 focus-visible:outline-ring sm:w-10 sm:flex-none", view === key ? "bg-surface-muted text-accent-text" : "text-muted-foreground hover:bg-surface-muted hover:text-foreground")}
               >
                 <Icon aria-hidden="true" className="size-4" />
               </button>
@@ -215,6 +235,9 @@ export default function PipelineView({
           onMove={move}
           onReorder={reorder}
           onShowLost={() => setShowLost(true)}
+          onOpen={(card) => setOpenId(card.id)}
+          noMatch={hasAny && cards.length === 0 && !quickStage}
+          onClearFilters={clearFilters}
           canConfig={canConfig}
           onCreateStage={async (name, probability, afterId) => {
             const r = await createStageAction(slug, name, probability, afterId);
@@ -238,15 +261,16 @@ export default function PipelineView({
           }
         />
       ) : view === "lista" ? (
-        <ListView slug={slug} cards={shown} stages={stages} now={now} />
+        <ListView cards={shown} stages={stages} now={now} onOpen={(card) => setOpenId(card.id)} onCreate={createNew} />
       ) : view === "calendario" ? (
-        <CalendarView slug={slug} cards={shown} now={now} month={month} monthHref={(m) => `${pathname}?${new URLSearchParams({ ...Object.fromEntries(params.entries()), mes: m }).toString()}`} />
+        <CalendarView cards={shown} now={now} onOpen={(card) => setOpenId(card.id)} onCreate={createNew} month={month} monthHref={(m) => `${pathname}?${new URLSearchParams({ ...Object.fromEntries(params.entries()), mes: m }).toString()}`} />
       ) : view === "grafico" ? (
-        <ChartView cards={shown} stages={stages} />
+        <ChartView cards={shown} stages={stages} onCreate={createNew} />
       ) : (
         <ActivitiesView
           slug={slug}
           now={now}
+          onCreate={createNew}
           items={activities.filter((a) => !doneIds.has(a.id))}
           pendingIds={saving}
           onDone={(id) => {
@@ -261,6 +285,8 @@ export default function PipelineView({
           }}
         />
       )}
+
+      <OpportunityDrawer slug={slug} stages={stages} card={shown.find((c) => c.id === openId) ?? null} onClose={() => setOpenId(null)} />
 
       <ResponsiveSheet open={showLost} onOpenChange={setShowLost} drawer title="Oportunidades perdidas" description={`${lost.count} · ${shortMoney(lost.total)}`} unsavedGuard={false}>
         {lostRows.length ? (

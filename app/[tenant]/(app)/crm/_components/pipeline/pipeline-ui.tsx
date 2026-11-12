@@ -55,7 +55,7 @@ const CHIP_TONE = {
 /** Chip de la próxima actividad (o «Pedido creado» / «Cobrado» en las ganadas). */
 export function ActivityChip({ chip, className }: { chip: CardChip; className?: string }) {
   return (
-    <span className={cn("inline-flex shrink-0 items-center gap-1 rounded-md px-2 py-[3px] text-2xs font-medium", CHIP_TONE[chip.tone], className)}>
+    <span className={cn("inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-0.5 text-2xs font-medium", CHIP_TONE[chip.tone], className)}>
       {chip.tone === "today" || chip.tone === "overdue" || (chip.tone === "planned" && chip.text !== "Sin actividad") ? <Clock aria-hidden="true" className="size-[11px]" /> : null}
       {chip.text}
     </span>

@@ -10,7 +10,7 @@ import { redirect } from "next/navigation";
 const MINE_ALIAS: SearchAlias = { param: "mios", map: { "0": "todas" } };
 import { listOpportunities } from "@/lib/business/growth/opportunities-db";
 import { pendingCrmActivities, pickerCustomer } from "@/lib/business/growth/pipeline-read";
-import { bogotaMonth, parseMoney } from "@/lib/business/growth/pipeline";
+import { bogotaMonth, filterPipelineCards, parseMoney } from "@/lib/business/growth/pipeline";
 import { can } from "@/lib/core/auth/permissions";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
 import PipelineView, { type PipelineViewName } from "./_components/pipeline/pipeline-view";
@@ -49,12 +49,13 @@ export default async function PipelinePage({ params, searchParams }: { params: P
   };
   // Las etapas se aseguran una sola vez antes de las cargas en paralelo (si no, un negocio nuevo las crearía dos veces).
   await ensureStages(ctx.tenantId);
-  const [board, everything, lost, favorites] = await Promise.all([
-    loadPipeline(ctx.tenantId, filters),
+  // El tablero se carga una sola vez y los filtros se aplican sobre lo cargado (antes eran dos cargas completas).
+  const [everything, lost, favorites] = await Promise.all([
     loadPipeline(ctx.tenantId),
     listOpportunities(ctx.tenantId, "LOST", 100),
     listSavedSearches(ctx.tenantId, ctx.memberId, CRM_SECTION),
   ]);
+  const board = { ...everything, cards: filterPipelineCards(everything.cards, filters) };
 
   // Al entrar sin haber tocado la búsqueda se aplica el favorito por defecto (`v` marca que ya se tocó).
   const defaultFavorite = favorites.find((f) => f.isDefault);

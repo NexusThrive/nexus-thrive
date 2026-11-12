@@ -3,7 +3,7 @@
 import { useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, CalendarClock, ChevronLeft, ChevronRight, FileText, Mail, MessageCircle, MoreVertical, Paperclip, Phone, Search, Users, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, CalendarClock, Check, ChevronLeft, ChevronRight, FileText, Mail, MessageCircle, MoreHorizontal, Paperclip, Phone, Search, Users, X } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { inputClasses, textareaClasses } from "@/components/atoms/input";
 import { Select } from "@/components/atoms/select";
@@ -32,13 +32,15 @@ import { ACTIVITY_LABEL, activityState, bogotaDay, parseMoney, type ActivityKind
 import { formatCurrency } from "@/lib/foundation/format";
 import { cn } from "@/lib/utils";
 import { CustomerAvatar } from "@/components/atoms/customer-avatar";
+import { TopbarCrumbs } from "@/components/molecules/topbar-crumbs";
 import { Initials, StarsInput } from "../../../_components/pipeline/pipeline-ui";
 
-const card = "rounded-xl border border-border bg-card p-[22px]";
-const outline = cn(buttonVariants({ variant: "outline", size: "sm" }), "h-[34px] border border-border bg-transparent");
-const quick = "inline-flex h-[34px] items-center gap-2 rounded-lg border border-border px-3 text-ui text-foreground outline-none hover:border-accent focus-visible:outline-2 focus-visible:outline-ring";
+const card = "rounded-(--radius-widget) border border-border/60 bg-card p-6";
+const outline = cn(buttonVariants({ variant: "outline", size: "sm" }), "h-10 rounded-full border border-border/60 bg-transparent px-4");
+const quick = "inline-flex h-10 items-center gap-2 rounded-full border border-border/60 px-4 text-ui font-medium text-foreground outline-none transition-colors hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
 const addLink = "font-medium text-accent-text underline-offset-2 outline-none hover:underline focus-visible:outline-2 focus-visible:outline-ring";
-const box = "flex flex-col gap-1 rounded-[10px] border border-border bg-background px-3.5 py-3";
+const box = "flex flex-col gap-1 rounded-2xl bg-surface-muted/60 px-4 py-3.5";
+const round = "grid size-11 shrink-0 place-items-center rounded-full bg-surface-muted text-foreground outline-none transition-colors hover:bg-accent-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
 const TIME = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", hour: "numeric", minute: "2-digit" });
 const DAY = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", day: "numeric", month: "short", year: "numeric" });
 const ICON: Record<ActivityKind, typeof Phone> = { CALL: Phone, MEETING: Users, PROPOSAL: FileText, OTHER: CalendarClock };
@@ -154,31 +156,69 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
     );
 
   return (
-    <div data-bleed="" className="flex flex-col">
-      {/* Panel de control */}
-      <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
-        <div className="flex min-w-0 items-center gap-3">
-          <Link href={backHref} aria-label="Volver al pipeline" className="grid size-[34px] shrink-0 place-items-center rounded-lg border border-border text-foreground outline-none hover:border-accent focus-visible:outline-2 focus-visible:outline-ring">
-            <ArrowLeft aria-hidden="true" className="size-4" />
+    <div
+      data-bleed=""
+      className="flex flex-col pb-6"
+      style={{ backgroundImage: "radial-gradient(70% 55% at 0% 0%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 70%), radial-gradient(60% 50% at 100% 100%, color-mix(in srgb, var(--accent) 6%, transparent), transparent 70%)" }}
+    >
+      {/* La ruta («Pipeline › nombre») vive en la barra superior. */}
+      <TopbarCrumbs items={[{ label: "Pipeline", href: backHref }, { label: o.name }]} />
+      {/* Cabecera: volver, título y acciones */}
+      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-4 px-6 pb-2 pt-6">
+        <div className="flex min-w-0 items-center gap-4">
+          <Link href={backHref} aria-label="Volver al pipeline" className={round}>
+            <ArrowLeft aria-hidden="true" className="size-5" />
           </Link>
-          <nav aria-label="Ruta" className="min-w-0">
-            <ol className="flex min-w-0 items-center gap-2.5 text-lg font-medium">
-              <li>
-                <Link href={backHref} className="text-muted-foreground outline-none hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
-                  Pipeline
+          <p className="font-display text-xl font-medium tracking-tight text-foreground min-[820px]:text-2xl">Oportunidad</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2.5">
+          {open ? (
+            <>
+              <button type="button" disabled={pending} onClick={() => run(() => winAction(slug, o.id))} className="h-11 rounded-full bg-success/15 px-5 text-sm font-semibold text-success outline-none transition-colors hover:bg-success/25 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-60">
+                Ganada
+              </button>
+              <button type="button" disabled={pending} onClick={() => setLosing(true)} className="h-11 rounded-full bg-danger/10 px-5 text-sm font-semibold text-danger outline-none transition-colors hover:bg-danger/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-60">
+                Perdida
+              </button>
+            </>
+          ) : o.status === "LOST" ? (
+            <button type="button" disabled={pending} onClick={() => run(() => reopenAction(slug, o.id))} className={cn(outline, "h-11 px-5")}>
+              Reabrir
+            </button>
+          ) : null}
+          <Link href={`/${slug}/ventas/cotizaciones?nuevo=1${o.customer ? `&cliente=${o.customer.id}` : ""}`} className={cn(buttonVariants({ variant: "accent" }), "h-11 rounded-full px-6 text-sm font-semibold")}>
+            Nueva cotización
+          </Link>
+          {pager ? (
+            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+              {pager.prevHref ? (
+                <Link href={pager.prevHref} aria-label="Oportunidad anterior" className="grid size-10 place-items-center rounded-full hover:bg-surface-muted">
+                  <ChevronLeft aria-hidden="true" className="size-4" />
                 </Link>
-              </li>
-              <li aria-hidden="true" className="text-muted-foreground">›</li>
-              <li aria-current="page" className="truncate text-foreground">
-                {o.name}
-              </li>
-            </ol>
-          </nav>
+              ) : (
+                <span aria-hidden="true" className="grid size-10 place-items-center opacity-40">
+                  <ChevronLeft className="size-4" />
+                </span>
+              )}
+              <span className="tabular-nums">
+                {pager.index} / {pager.total}
+              </span>
+              {pager.nextHref ? (
+                <Link href={pager.nextHref} aria-label="Oportunidad siguiente" className="grid size-10 place-items-center rounded-full hover:bg-surface-muted">
+                  <ChevronRight aria-hidden="true" className="size-4" />
+                </Link>
+              ) : (
+                <span aria-hidden="true" className="grid size-10 place-items-center opacity-40">
+                  <ChevronRight className="size-4" />
+                </span>
+              )}
+            </div>
+          ) : null}
           <DropdownMenu>
-            <DropdownMenuTrigger aria-label="Más acciones" disabled={pending} className="grid size-8 shrink-0 place-items-center rounded-lg text-muted-foreground outline-none hover:bg-surface-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
-              <MoreVertical aria-hidden="true" className="size-4" />
+            <DropdownMenuTrigger aria-label="Más acciones" disabled={pending} className={round}>
+              <MoreHorizontal aria-hidden="true" className="size-5" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
+            <DropdownMenuContent align="end">
               {open ? <DropdownMenuItem onSelect={() => run(() => loseAction(slug, o.id, null, "Archivada"))}>Archivar</DropdownMenuItem> : null}
               <DropdownMenuItem onSelect={() => run(() => duplicateOpportunityAction(slug, o.id), (r) => r.ok && "id" in r && router.push(`/${slug}/crm/oportunidades/${(r as { id: string }).id}`))}>Duplicar</DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -194,67 +234,35 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="flex flex-wrap items-center gap-2.5">
-          {open ? (
-            <>
-              <button type="button" disabled={pending} onClick={() => run(() => winAction(slug, o.id))} className="h-[34px] rounded-lg border border-success/40 px-3.5 text-sm font-semibold text-success outline-none hover:border-success focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-60">
-                Ganado
-              </button>
-              <button type="button" disabled={pending} onClick={() => setLosing(true)} className="h-[34px] rounded-lg border border-danger/40 px-3.5 text-sm text-danger outline-none hover:border-danger focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-60">
-                Perdido
-              </button>
-            </>
-          ) : o.status === "LOST" ? (
-            <button type="button" disabled={pending} onClick={() => run(() => reopenAction(slug, o.id))} className={outline}>
-              Reabrir
-            </button>
-          ) : null}
-          <Link href={`/${slug}/ventas/cotizaciones?nuevo=1${o.customer ? `&cliente=${o.customer.id}` : ""}`} className={buttonVariants({ variant: "accent", size: "sm", className: "h-[34px] font-semibold" })}>
-            Nueva cotización
-          </Link>
-          {pager ? (
-            <div className="ms-2 flex items-center gap-0.5 text-ui text-muted-foreground">
-              {pager.prevHref ? (
-                <Link href={pager.prevHref} aria-label="Oportunidad anterior" className="grid size-8 place-items-center rounded-lg hover:bg-surface-muted">
-                  <ChevronLeft aria-hidden="true" className="size-4" />
-                </Link>
-              ) : (
-                <span aria-hidden="true" className="grid size-8 place-items-center opacity-40">
-                  <ChevronLeft className="size-4" />
-                </span>
-              )}
-              <span className="tabular-nums">
-                {pager.index} / {pager.total}
-              </span>
-              {pager.nextHref ? (
-                <Link href={pager.nextHref} aria-label="Oportunidad siguiente" className="grid size-8 place-items-center rounded-lg hover:bg-surface-muted">
-                  <ChevronRight aria-hidden="true" className="size-4" />
-                </Link>
-              ) : (
-                <span aria-hidden="true" className="grid size-8 place-items-center opacity-40">
-                  <ChevronRight className="size-4" />
-                </span>
-              )}
-            </div>
-          ) : null}
-        </div>
       </div>
 
       {/* A todo el ancho, con el margen del panel de control: el detalle a la izquierda y la actividad a la derecha. */}
-      <div className="flex w-full flex-col items-start gap-6 px-5 pb-2 pt-2 lg:flex-row">
-        <div className="flex w-full min-w-0 flex-1 flex-col gap-4">
+      <div className="grid w-full items-start gap-4 px-6 pt-4 lg:grid-cols-[minmax(0,1fr)_380px] xl:grid-cols-[minmax(0,1fr)_420px]">
+        <div className="grid min-w-0 gap-4">
           {/* Etapas */}
-          <section aria-label="Etapa de la oportunidad" className={cn(card, "px-[22px] pb-[18px] pt-5")}>
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
-              <span>{o.status === "LOST" ? `Perdida${o.lostReason ? ` · ${o.lostReason}` : ""}` : `Etapa actual · lleva ${days} ${days === 1 ? "día" : "días"} aquí`}</span>
-              {editable ? <span>Haz clic en una etapa para moverla</span> : null}
+          <section aria-labelledby="opp-etapa" className={cn(card, "grid gap-4")}>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="grid gap-0.5">
+                <h2 id="opp-etapa" className="text-ui font-semibold text-foreground">
+                  Etapa
+                </h2>
+                <p className="text-xs text-muted-foreground">
+                  {o.status === "LOST" ? `Perdida${o.lostReason ? ` · ${o.lostReason}` : ""}` : `Lleva ${days} ${days === 1 ? "día" : "días"} en ${o.stages[stageIndex]?.name ?? "esta etapa"}`}
+                </p>
+              </div>
+              {editable && o.status === "OPEN" && o.stages[stageIndex + 1] ? (
+                <button type="button" disabled={pending} onClick={() => run(() => moveStageAction(slug, o.id, o.stages[stageIndex + 1]!.id))} className={cn(buttonVariants({ variant: "accent" }), "h-11 rounded-full px-5 text-sm font-semibold")}>
+                  Pasar a {o.stages[stageIndex + 1]!.name}
+                  <ArrowRight aria-hidden="true" className="size-4" />
+                </button>
+              ) : null}
             </div>
-            <ol className="flex items-start">
+            <ol className="grid gap-2" style={{ gridTemplateColumns: `repeat(${o.stages.length}, minmax(0, 1fr))` }}>
               {o.stages.map((s, i) => {
                 const current = s.id === o.stageId && o.status !== "LOST";
+                const done = o.status !== "LOST" && i < stageIndex;
                 return (
-                  <li key={s.id} className="relative flex min-w-0 flex-1 flex-col items-center gap-2">
-                    {i < o.stages.length - 1 ? <span aria-hidden="true" className="absolute left-[calc(50%+18px)] right-[calc(-50%+18px)] top-[13px] h-0.5 bg-border-strong" /> : null}
+                  <li key={s.id} className="min-w-0">
                     <button
                       type="button"
                       disabled={!editable || current || pending}
@@ -262,17 +270,21 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
                       aria-label={current ? `${i + 1} · ${s.name} (etapa actual)` : `${i + 1} · Mover a ${s.name}`}
                       onClick={() => run(() => moveStageAction(slug, o.id, s.id))}
                       className={cn(
-                        "relative z-[1] grid size-7 place-items-center rounded-full border-2 text-xs outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-                        current ? "border-accent bg-accent font-bold text-accent-foreground shadow-[0_0_0_4px_color-mix(in_oklab,var(--accent)_18%,transparent)]" : "border-border-strong bg-surface-muted text-muted-foreground enabled:hover:border-accent",
+                        "flex h-14 w-full items-center justify-center gap-2 rounded-2xl px-3 text-sm outline-none transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+                        current ? "bg-accent font-semibold text-ink" : done ? "bg-accent-subtle font-medium text-foreground" : "bg-surface-muted/60 text-muted-foreground",
+                        editable && !current && "hover:bg-accent-subtle hover:text-foreground",
                       )}
                     >
-                      {i + 1}
+                      <span aria-hidden="true" className={cn("grid size-6 shrink-0 place-items-center rounded-full text-xs", current ? "bg-ink/10" : "bg-card/80")}>
+                        {done ? <Check className="size-3.5" strokeWidth={2.4} /> : i + 1}
+                      </span>
+                      <span className="truncate">{s.name}</span>
                     </button>
-                    <span className={cn("text-center text-ui", current ? "font-semibold text-foreground" : "text-muted-foreground", i < stageIndex && "text-foreground/80")}>{s.name}</span>
                   </li>
                 );
               })}
             </ol>
+            {editable ? <p className="text-xs text-muted-foreground">Toca una etapa para mover la oportunidad. La actual va en oro y las que ya pasó, con ✓.</p> : null}
           </section>
 
           {/* Identidad y cifras */}
@@ -281,14 +293,14 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
               {editing === "name" ? (
                 inline({ k: "name", value: o.name, placeholder: "Nombre de la oportunidad", render: null, parse: (v) => (v.trim().length >= 3 ? { name: v } : null) })
               ) : (
-                <h1 id="opp-nombre" className="text-3xl font-semibold tracking-tight text-foreground">
+                <h1 id="opp-nombre" className="font-display text-3xl font-semibold tracking-tight text-foreground">
                   <button type="button" disabled={!editable} onClick={() => setEditing("name")} className="text-left outline-none focus-visible:outline-2 focus-visible:outline-ring enabled:hover:text-accent-text">
                     {o.name}
                   </button>
                 </h1>
               )}
               {o.tags.map((t) => (
-                <span key={t} className="inline-flex items-center gap-1 rounded-full border border-border-strong px-2.5 py-[3px] text-xs text-foreground">
+                <span key={t} className="inline-flex items-center gap-1 rounded-full bg-surface-muted px-3 py-1 text-xs text-foreground">
                   {t}
                   {editable ? (
                     <button type="button" aria-label={`Quitar etiqueta ${t}`} onClick={() => save({ tags: o.tags.filter((x) => x !== t) })} className="text-muted-foreground hover:text-foreground">
@@ -440,8 +452,8 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
           </section>
 
           {/* Pestañas */}
-          <section aria-label="Detalle" className="overflow-hidden rounded-xl border border-border bg-card">
-            <div role="tablist" aria-label="Detalle" className="flex flex-wrap gap-1 border-b border-border px-4">
+          <section aria-label="Detalle" className="overflow-hidden rounded-(--radius-widget) border border-border/60 bg-card">
+            <div role="tablist" aria-label="Detalle" className="flex flex-wrap gap-1.5 p-4 pb-2">
               {[
                 { key: "notas" as const, label: "Notas" },
                 { key: "ventas" as const, label: "Cotizaciones y pedidos" },
@@ -456,13 +468,13 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
                   aria-controls={`opp-tab-${t.key}`}
                   id={`opp-tabbtn-${t.key}`}
                   onClick={() => setTab(t.key)}
-                  className={cn("-mb-px border-b-2 px-3 py-3.5 text-sm outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring", tab === t.key ? "border-accent font-medium text-foreground" : "border-transparent text-muted-foreground hover:text-foreground")}
+                  className={cn("rounded-full px-4 py-2 text-sm outline-none transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring", tab === t.key ? "bg-accent-subtle font-medium text-foreground" : "text-muted-foreground hover:bg-surface-muted hover:text-foreground")}
                 >
                   {t.label}
                 </button>
               ))}
             </div>
-            <div role="tabpanel" id={`opp-tab-${tab}`} aria-labelledby={`opp-tabbtn-${tab}`} className="px-[22px] pb-6 pt-[18px]">
+            <div role="tabpanel" id={`opp-tab-${tab}`} aria-labelledby={`opp-tabbtn-${tab}`} className="px-6 pb-6 pt-3">
               {tab === "notas" ? (
                 <>
                   <label htmlFor="opp-desc" className="sr-only">
@@ -545,15 +557,15 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
         </div>
 
         {/* Columna de actividad: la próxima actividad y la línea de tiempo, sin fondo de tarjeta */}
-        <aside className="flex w-full min-w-0 shrink-0 flex-col gap-5 lg:w-[400px] lg:border-l lg:border-border lg:ps-6 xl:w-[440px]">
+        <aside className="grid min-w-0 gap-4">
           {open ? (
-            <section aria-labelledby="opp-proxima" className={cn(card, "flex flex-col gap-3.5", next && "border-accent-subtle")}>
+            <section aria-labelledby="opp-proxima" className={cn(card, "flex flex-col gap-3.5", next && "border-accent/40")}>
               <div className="flex items-center justify-between gap-2.5">
-                <h2 id="opp-proxima" className={cn("text-xs font-semibold uppercase tracking-[0.09em]", next ? "text-accent-text" : "text-muted-foreground")}>
+                <h2 id="opp-proxima" className={cn("text-ui font-semibold", next ? "text-accent-text" : "text-foreground")}>
                   Próxima actividad
                 </h2>
                 {next ? (
-                  <span className={cn("rounded-md px-2.5 py-[3px] text-xs font-medium", nextState === "overdue" ? "bg-danger-subtle text-danger" : nextState === "today" ? "bg-accent-subtle text-accent-text" : "bg-surface-muted text-muted-foreground")}>
+                  <span className={cn("rounded-full px-3 py-1 text-xs font-medium", nextState === "overdue" ? "bg-danger-subtle text-danger" : nextState === "today" ? "bg-accent-subtle text-accent-text" : "bg-surface-muted text-muted-foreground")}>
                     {nextState === "overdue" ? "Vencida" : nextState === "today" ? "Hoy" : DAY.format(new Date(next.dueAt)).replace(".", "").replace(/ de /g, " ")}
                   </span>
                 ) : null}
@@ -561,7 +573,7 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
               {next ? (
                 <>
                   <div className="flex items-center gap-3">
-                    <span aria-hidden="true" className="grid size-9 shrink-0 place-items-center rounded-[10px] bg-surface-muted text-accent-text">
+                    <span aria-hidden="true" className="grid size-10 shrink-0 place-items-center rounded-full bg-surface-muted text-accent-text">
                       {(() => {
                         const Icon = ICON[next.kind];
                         return <Icon className="size-[18px]" />;
@@ -587,7 +599,7 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
                           },
                         )
                       }
-                      className={buttonVariants({ variant: "accent", size: "sm", className: "h-[34px] font-semibold" })}
+                      className={cn(buttonVariants({ variant: "accent" }), "h-10 rounded-full px-5 text-sm font-semibold")}
                     >
                       Marcar hecha
                     </button>
@@ -607,13 +619,13 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
             </section>
           ) : null}
 
-          <section aria-labelledby="opp-actividad" className="flex flex-col gap-[18px]">
+          <section aria-labelledby="opp-actividad" className={cn(card, "flex flex-col gap-[18px]")}>
             <div className="flex flex-wrap items-center justify-between gap-2.5">
               <h2 id="opp-actividad" className="text-base font-semibold text-foreground">
                 Actividad
               </h2>
               <div className="flex gap-1">
-                <button type="button" aria-label="Buscar en la actividad" aria-pressed={searching} onClick={() => setSearching((s) => !s)} className="grid size-[30px] place-items-center rounded-lg text-muted-foreground hover:bg-surface-muted hover:text-foreground">
+                <button type="button" aria-label="Buscar en la actividad" aria-pressed={searching} onClick={() => setSearching((s) => !s)} className="grid size-10 place-items-center rounded-full bg-surface-muted text-foreground outline-none transition-colors hover:bg-accent-subtle focus-visible:outline-2 focus-visible:outline-ring">
                   <Search aria-hidden="true" className="size-4" />
                 </button>
                 <input
@@ -634,7 +646,7 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
                     run(() => attachOpportunityFileAction(fd));
                   }}
                 />
-                <button type="button" aria-label="Adjuntar archivo" onClick={() => fileRef.current?.click()} className="grid size-[30px] place-items-center rounded-lg text-muted-foreground hover:bg-surface-muted hover:text-foreground">
+                <button type="button" aria-label="Adjuntar archivo" onClick={() => fileRef.current?.click()} className="grid size-10 place-items-center rounded-full bg-surface-muted text-foreground outline-none transition-colors hover:bg-accent-subtle focus-visible:outline-2 focus-visible:outline-ring">
                   <Paperclip aria-hidden="true" className="size-4" />
                 </button>
               </div>
@@ -671,7 +683,7 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
                 </label>
                 <textarea id="opp-nota" name="nota" rows={3} autoFocus required className={textareaClasses} />
                 <div className="flex gap-2">
-                  <button type="submit" disabled={pending} className={buttonVariants({ variant: "accent", size: "sm", className: "h-[34px] font-semibold" })}>
+                  <button type="submit" disabled={pending} className={cn(buttonVariants({ variant: "accent" }), "h-10 rounded-full px-5 text-sm font-semibold")}>
                     Guardar nota
                   </button>
                   <button type="button" onClick={() => setNoting(false)} className={outline}>
