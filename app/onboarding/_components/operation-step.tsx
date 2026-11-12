@@ -25,7 +25,7 @@ function Group<T extends string>({ legend, hint, options, value, onChange }: { l
               onClick={() => toggle(o.value)}
               className={cn(
                 "flex items-start gap-3 rounded-2xl border px-4 py-3 text-left transition-[border-color,background-color,box-shadow] duration-200 pointer-coarse:min-h-11",
-                on ? "border-accent bg-accent-subtle/60 shadow-[0_0_0_3px_rgba(212,175,55,.18)]" : "border-border/60 bg-card hover:border-accent/50",
+                on ? "border-accent bg-accent-subtle/60 shadow-focus" : "border-border/60 bg-card hover:border-accent/50",
               )}
             >
               <span aria-hidden="true" className={cn("mt-0.5 grid size-[18px] shrink-0 place-items-center rounded-full border", on ? "border-accent bg-accent text-ink" : "border-border-input")}>{on ? <Check className="size-3" strokeWidth={3} /> : null}</span>

@@ -321,7 +321,7 @@ function Column({
                   }
                 }}
                 aria-describedby="crm-rename-hint"
-                className="max-w-full truncate rounded text-left outline-none focus-visible:outline-2 focus-visible:outline-ring"
+                className="max-w-full truncate rounded-xs text-left outline-none focus-visible:outline-2 focus-visible:outline-ring"
               >
                 {stage.name}
               </button>
@@ -845,7 +845,7 @@ export function Board({
         </div>
         {noMatch && !empty ? (
           <div className="pointer-events-none absolute inset-x-0 top-24 z-10 flex justify-center px-5">
-            <div role="status" className="pointer-events-auto grid w-full max-w-lg justify-items-center gap-5 rounded-[28px] border border-border/60 bg-card/95 px-8 py-9 text-center shadow-[var(--nx-shadow-overlay)] backdrop-blur-sm">
+            <div role="status" className="pointer-events-auto grid w-full max-w-lg justify-items-center gap-5 rounded-sheet border border-border/60 bg-card/95 px-8 py-9 text-center shadow-overlay backdrop-blur-sm">
               <span aria-hidden="true" className="grid size-14 place-items-center rounded-full bg-accent-subtle text-accent-text ring-8 ring-accent-subtle/40">
                 <Search className="size-6" />
               </span>
@@ -867,7 +867,7 @@ export function Board({
         ) : null}
         {empty ? (
           <div className="pointer-events-none absolute inset-x-0 top-20 flex justify-center px-5">
-            <div className="pointer-events-auto grid w-full max-w-2xl justify-items-center gap-6 rounded-[28px] border border-border/60 bg-card/95 px-8 py-10 text-center shadow-[var(--nx-shadow-overlay)] backdrop-blur-sm">
+            <div className="pointer-events-auto grid w-full max-w-2xl justify-items-center gap-6 rounded-sheet border border-border/60 bg-card/95 px-8 py-10 text-center shadow-overlay backdrop-blur-sm">
               <span aria-hidden="true" className="grid size-16 place-items-center rounded-full bg-accent-subtle text-accent-text ring-8 ring-accent-subtle/40">
                 <Target className="size-7" />
               </span>
@@ -907,7 +907,7 @@ export function Board({
       </div>
       <DragOverlay dropAnimation={{ duration: reduced ? 0 : 200, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }}>
         {draggingStage ? (
-          <div className="grid w-[300px] gap-1.5 rounded-3xl border border-accent/60 bg-card p-4 ring-4 ring-accent/15 shadow-[var(--nx-shadow-overlay)]">
+          <div className="grid w-[300px] gap-1.5 rounded-3xl border border-accent/60 bg-card p-4 ring-4 ring-accent/15 shadow-overlay">
             <span className="flex items-center gap-2 text-ui font-semibold text-foreground">
               <GripVertical aria-hidden="true" className="size-4 text-accent-text" />
               {draggingStage.name}
@@ -916,7 +916,7 @@ export function Board({
             <span className="text-xs text-muted-foreground">Suéltala entre dos etapas. «Ganado» siempre queda al final.</span>
           </div>
         ) : dragging ? (
-          <div className="flex w-[300px] rotate-[1.5deg] flex-col gap-3 rounded-3xl border border-accent/60 bg-card p-4 ring-4 ring-accent/15 shadow-[var(--nx-shadow-overlay)]">
+          <div className="flex w-[300px] rotate-[1.5deg] flex-col gap-3 rounded-3xl border border-accent/60 bg-card p-4 ring-4 ring-accent/15 shadow-overlay">
             <CardBody card={dragging} now={now} />
           </div>
         ) : null}

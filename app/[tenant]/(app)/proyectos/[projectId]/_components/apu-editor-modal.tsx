@@ -321,7 +321,7 @@ export default function ApuEditorModal({
                             <div className="flex items-center gap-2">
                               {resource.imageId ? (
                                 // eslint-disable-next-line @next/next/no-img-element -- foto servida por la API propia
-                                <img src={apuImageUrl(resource.imageId)!} alt="" loading="lazy" className="h-8 w-8 shrink-0 rounded border border-border bg-card object-contain" />
+                                <img src={apuImageUrl(resource.imageId)!} alt="" loading="lazy" className="h-8 w-8 shrink-0 rounded-xs border border-border bg-card object-contain" />
                               ) : null}
                               <span className="truncate text-foreground">
                                 {resource.name}

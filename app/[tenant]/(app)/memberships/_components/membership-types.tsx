@@ -71,7 +71,7 @@ export default function MembershipTypes({
                 <p className="flex items-center gap-2 font-medium text-foreground">
                   <span className="truncate">{type.name}</span>
                   {!type.active ? (
-                    <span className="rounded bg-muted px-1.5 py-0.5 text-2xs font-semibold uppercase text-muted-foreground">Oculto</span>
+                    <span className="rounded-xs bg-muted px-1.5 py-0.5 text-2xs font-semibold uppercase text-muted-foreground">Oculto</span>
                   ) : null}
                 </p>
                 <p className="mt-0.5 text-sm text-muted-foreground">

@@ -219,15 +219,15 @@ function ProgressRow({
               <td className="px-3 py-1.5 text-right">
                 {confirming === entry.id ? (
                   <span className="inline-flex items-center gap-1">
-                    <button type="button" disabled={pending} onClick={() => onDelete(entry.id)} className="rounded px-2 py-0.5 font-medium text-destructive hover:bg-destructive/10">
+                    <button type="button" disabled={pending} onClick={() => onDelete(entry.id)} className="rounded-xs px-2 py-0.5 font-medium text-destructive hover:bg-destructive/10">
                       Eliminar
                     </button>
-                    <button type="button" onClick={() => setConfirming(null)} className="rounded px-2 py-0.5 text-muted-foreground hover:bg-muted">
+                    <button type="button" onClick={() => setConfirming(null)} className="rounded-xs px-2 py-0.5 text-muted-foreground hover:bg-muted">
                       No
                     </button>
                   </span>
                 ) : (
-                  <button type="button" onClick={() => setConfirming(entry.id)} aria-label="Eliminar acta" className="rounded p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive">
+                  <button type="button" onClick={() => setConfirming(entry.id)} aria-label="Eliminar acta" className="rounded-xs p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive">
                     <Trash2 aria-hidden="true" className="h-3.5 w-3.5" />
                   </button>
                 )}

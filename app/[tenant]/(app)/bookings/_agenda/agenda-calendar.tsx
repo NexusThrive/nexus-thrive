@@ -203,7 +203,7 @@ export default function AgendaCalendar({
                                 e.stopPropagation();
                                 setOpen(b);
                               }}
-                              className={cn("block w-full truncate rounded px-1 py-0.5 text-left text-2xs hover:bg-surface", b.status === "CANCELLED" && "text-muted-foreground line-through")}
+                              className={cn("block w-full truncate rounded-xs px-1 py-0.5 text-left text-2xs hover:bg-surface", b.status === "CANCELLED" && "text-muted-foreground line-through")}
                             >
                               <span className="font-mono">{hhmm(b.start)}</span> {b.serviceName}
                             </button>

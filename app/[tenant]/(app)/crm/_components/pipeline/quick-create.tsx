@@ -214,7 +214,7 @@ export function QuickCreate({ slug, stageId, preset = null, onClose }: { slug: s
         />
         <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         {open && options.length ? (
-          <ul id={listId} role="listbox" aria-label="Clientes" className="absolute inset-x-0 top-[52px] z-(--z-raised) rounded-3xl border border-border/60 bg-popover p-2 shadow-[var(--nx-shadow-overlay)]">
+          <ul id={listId} role="listbox" aria-label="Clientes" className="absolute inset-x-0 top-[52px] z-(--z-raised) rounded-3xl border border-border/60 bg-popover p-2 shadow-overlay">
             {results.length ? <li role="presentation" className="px-3 pb-1 pt-2 text-xs font-medium text-muted-foreground">Clientes</li> : null}
             {options.map((opt, i) =>
               opt.kind === "existing" ? (
