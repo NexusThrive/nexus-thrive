@@ -18,9 +18,9 @@ const avatarVariants = cva("relative flex shrink-0 overflow-hidden rounded-md", 
 });
 
 /**
- * Avatar NEXUS THRIVE: cuadrado de radio 4 px (nunca círculo). Sin foto, la
- * inicial en Montserrat 700 sobre `--primary`; `tone="gold"` para clientes
- * destacados y `tone="neutral"` para listas largas.
+ * Avatar NEXUS THRIVE: cuadrado suave de radio de control (10 px; nunca círculo). Sin foto, la
+ * inicial en Montserrat sobre gris suave (`tone="neutral"`, por defecto); `tone="gold"` para clientes
+ * destacados e `ink` para piezas de identidad.
  */
 function Avatar({
   className,
@@ -57,7 +57,7 @@ const FALLBACK_TONES = {
 
 function AvatarFallback({
   className,
-  tone = "ink",
+  tone = "neutral",
   ...props
 }: React.ComponentProps<typeof AvatarPrimitive.Fallback> & {
   tone?: keyof typeof FALLBACK_TONES;
