@@ -3,7 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { HardHat, ImagePlus, Trash2, User, X } from "lucide-react";
-import { KpiCard } from "@/components/molecules/kpi-card";
+import { KpiCard } from "@/components/widgets/kpi-card";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { NLoader } from "@/components/atoms/n-loader";
 import { Button } from "@/components/atoms/button";

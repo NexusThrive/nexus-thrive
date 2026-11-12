@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, X } from "lucide-react";
-import { KpiCard } from "@/components/molecules/kpi-card";
+import { KpiCard } from "@/components/widgets/kpi-card";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { Button } from "@/components/atoms/button";
 import { Badge } from "@/components/atoms/badge";

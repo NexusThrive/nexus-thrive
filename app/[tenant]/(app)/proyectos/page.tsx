@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { createTenantDb } from "@/lib/core/tenancy/db";
 import { PROJECT_STATUSES, isValidProjectStatus } from "@/lib/industry/construction/project-domain";
-import { KpiCard } from "@/components/molecules/kpi-card";
+import { KpiCard } from "@/components/widgets/kpi-card";
 import { PageHeader } from "@/components/molecules/page-header";
 import SearchInput from "@/components/molecules/search-input";
 import FilterSelect from "@/components/molecules/filter-select";
