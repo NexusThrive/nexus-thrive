@@ -1,0 +1,3808 @@
+[
+ {
+  "requested": "/app",
+  "final": "/app/menus",
+  "status": 200,
+  "title": "Menús · Colega Menus",
+  "h1": "Menús",
+  "headings": [
+   "Cómo se arma tu menú"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Esconder cómo se arma tu menú",
+   "¿Cómo funciona?",
+   "Agotados",
+   "Nuevo menú",
+   "Arrastra para reordenar Menú del día",
+   "Subir Menú del día",
+   "Bajar Menú del día",
+   "Más acciones: Menú del día"
+  ],
+  "fields": [
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_aasav5val5ubrbH1_",
+    "ph": ""
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/orders",
+  "final": "/app/orders",
+  "status": 200,
+  "title": "Pedidos · Colega Menus",
+  "h1": "Pedidos",
+  "headings": [
+   "En preparación0",
+   "Listos0",
+   "Terminados hoy0"
+  ],
+  "tabs": [
+   "En preparación0",
+   "Listos0",
+   "Terminados hoy0"
+  ],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Punto de venta",
+   "Activar sonido",
+   "Programados (0)",
+   "Pantalla completa",
+   "En preparación0",
+   "Listos0",
+   "Terminados hoy0"
+  ],
+  "fields": [],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/store",
+  "final": "/app/store",
+  "status": 200,
+  "title": "Tienda en línea · Colega Menus",
+  "h1": "Tienda en línea",
+  "headings": [
+   "Configura tu Tienda",
+   "Enlace de tu Tienda",
+   "Historial de la Tienda"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Hacer pedido de prueba",
+   "Copiar enlace",
+   "Ver QR",
+   "Pedido de prueba"
+  ],
+  "fields": [
+   {
+    "type": "checkbox",
+    "name": "pause-alerts",
+    "ph": ""
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/tables",
+  "final": "/app/tables",
+  "status": 200,
+  "title": "Mesas · Colega Menus",
+  "h1": "Mesas",
+  "headings": [],
+  "tabs": [
+   "Plano",
+   "Lista y QR",
+   "Ajustes",
+   "Salón"
+  ],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Plano",
+   "Lista y QR",
+   "Ajustes",
+   "Salón",
+   "Área",
+   "Opciones de Salón",
+   "Deshacer",
+   "Rehacer",
+   "Agregar Redonda",
+   "Agregar Cuadrada",
+   "Agregar Rectangular",
+   "Agregar Booth",
+   "Agregar Barra",
+   "Agregar Entrada",
+   "Agregar Salida",
+   "Agregar Baños",
+   "Agregar Caja",
+   "Agregar Cocina",
+   "Agregar Barra de servicio",
+   "Agregar Ventana",
+   "Agregar Pared",
+   "Agregar Planta",
+   "Agregar Columna",
+   "Agregar Escalera",
+   "Agregar Pantalla",
+   "Agregar Zona",
+   "Agregar Texto",
+   "Seleccionar varias",
+   "Acercar",
+   "Alejar",
+   "Ajustar a pantalla",
+   "Vista del POS"
+  ],
+  "fields": [],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/riders",
+  "final": "/app/riders",
+  "status": 200,
+  "title": "Repartidores · Colega Menus",
+  "h1": "Repartidores",
+  "headings": [
+   "Lo que puedes lograr",
+   "Tus repartidores, tu control",
+   "La cocina asigna, ellos entregan",
+   "El efectivo, bien contado",
+   "Tu cliente sabe dónde va su pedido",
+   "Mide tus entregas",
+   "Conoce Repartidores"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Agregar repartidor"
+  ],
+  "fields": [],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/platforms",
+  "final": "/app/platforms",
+  "status": 200,
+  "title": "Plataformas de delivery · Colega Menus",
+  "h1": "Plataformas de delivery",
+  "headings": [
+   "Uber Eats",
+   "Rappi",
+   "DiDi Food",
+   "Lo que puedes lograr",
+   "Uber Eats, Rappi y DiDi en tu caja",
+   "Todo a la misma cocina",
+   "Lo que de verdad te queda",
+   "Cada app con su color",
+   "Compara tus canales"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Guardar"
+  ],
+  "fields": [
+   {
+    "type": "checkbox",
+    "name": "_R_1mav5val5ubrb_-enabled",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "_R_1mav5val5ubrb_-commission",
+    "ph": "25"
+   },
+   {
+    "type": "text",
+    "name": "_R_1mav5val5ubrb_-fee",
+    "ph": "0"
+   },
+   {
+    "type": "checkbox",
+    "name": "_R_1mav5val5ubrb_-vat",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "_R_1mav5val5ubrb_-markup",
+    "ph": "0"
+   },
+   {
+    "type": "checkbox",
+    "name": "_R_2mav5val5ubrb_-enabled",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "_R_2mav5val5ubrb_-commission",
+    "ph": "25"
+   },
+   {
+    "type": "text",
+    "name": "_R_2mav5val5ubrb_-fee",
+    "ph": "0"
+   },
+   {
+    "type": "checkbox",
+    "name": "_R_2mav5val5ubrb_-vat",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "_R_2mav5val5ubrb_-markup",
+    "ph": "0"
+   },
+   {
+    "type": "checkbox",
+    "name": "_R_3mav5val5ubrb_-enabled",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "_R_3mav5val5ubrb_-commission",
+    "ph": "25"
+   },
+   {
+    "type": "text",
+    "name": "_R_3mav5val5ubrb_-fee",
+    "ph": "0"
+   },
+   {
+    "type": "checkbox",
+    "name": "_R_3mav5val5ubrb_-vat",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "_R_3mav5val5ubrb_-markup",
+    "ph": "0"
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/devices",
+  "final": "/app/devices",
+  "status": 200,
+  "title": "Cajas e impresoras · Colega Menus",
+  "h1": "Cajas e impresoras",
+  "headings": [
+   "Impresoras",
+   "Tu caja está lista"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Agregar impresora"
+  ],
+  "fields": [],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/menus",
+  "final": "/app/menus",
+  "status": 200,
+  "title": "Menús · Colega Menus",
+  "h1": "Menús",
+  "headings": [
+   "Cómo se arma tu menú"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Esconder cómo se arma tu menú",
+   "¿Cómo funciona?",
+   "Agotados",
+   "Nuevo menú",
+   "Arrastra para reordenar Menú del día",
+   "Subir Menú del día",
+   "Bajar Menú del día",
+   "Más acciones: Menú del día"
+  ],
+  "fields": [
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_aasav5val5ubrbH1_",
+    "ph": ""
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/modifiers",
+  "final": "/app/modifiers",
+  "status": 200,
+  "title": "Modificadores · Colega Menus",
+  "h1": "Modificadores",
+  "headings": [
+   "Cómo se arma tu menú"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Esconder cómo se arma tu menú",
+   "Nuevo grupo"
+  ],
+  "fields": [],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/tags",
+  "final": "/app/tags",
+  "status": 200,
+  "title": "Etiquetas · Colega Menus",
+  "h1": "Etiquetas",
+  "headings": [
+   "Conoce Etiquetas"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "¿Cómo funciona?",
+   "Nueva etiqueta",
+   "Editar: Picante",
+   "Más acciones: Picante",
+   "Editar: Recomendado",
+   "Más acciones: Recomendado",
+   "Editar: Vegetariano",
+   "Más acciones: Vegetariano"
+  ],
+  "fields": [
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_9maav5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_9qaav5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_9uaav5val5ubrbH1_",
+    "ph": ""
+   }
+  ],
+  "tables": [
+   [
+    "Etiqueta",
+    "Productos",
+    "Visible",
+    "Acciones"
+   ]
+  ],
+  "empty": true
+ },
+ {
+  "requested": "/app/appearance",
+  "final": "/app/appearance",
+  "status": 200,
+  "title": "Personalización · Colega Menus",
+  "h1": "Personalización",
+  "headings": [
+   "Logo",
+   "Colores",
+   "Estilo",
+   "Tipografía",
+   "Formato de la carta",
+   "Idiomas e IA",
+   "Colega Cards",
+   "Acompaña con:"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "¿Cómo funciona?",
+   "Recomendadas",
+   "Elegir mis fuentes",
+   "Guardar formato",
+   "Guardar",
+   "Desayunos",
+   "Platos fuertes",
+   "Bebidas",
+   "Chilaquiles verdes",
+   "Molletes",
+   "Hot cakes",
+   "Café de olla$45.00"
+  ],
+  "fields": [
+   {
+    "type": "file",
+    "name": "_R_1mav5val5ubrb_",
+    "ph": ""
+   },
+   {
+    "type": "color",
+    "name": "_R_32mav5val5ubrb_",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "",
+    "ph": ""
+   },
+   {
+    "type": "color",
+    "name": "_R_52mav5val5ubrb_",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "",
+    "ph": ""
+   },
+   {
+    "type": "radio",
+    "name": "_R_2av5val5ubrb_-mode",
+    "ph": ""
+   },
+   {
+    "type": "radio",
+    "name": "_R_2av5val5ubrb_-mode",
+    "ph": ""
+   },
+   {
+    "type": "radio",
+    "name": "_R_2av5val5ubrb_-corners",
+    "ph": ""
+   },
+   {
+    "type": "radio",
+    "name": "_R_2av5val5ubrb_-corners",
+    "ph": ""
+   },
+   {
+    "type": "radio",
+    "name": "_R_2av5val5ubrb_-corners",
+    "ph": ""
+   },
+   {
+    "type": "radio",
+    "name": "_R_2av5val5ubrb_-font",
+    "ph": ""
+   },
+   {
+    "type": "radio",
+    "name": "_R_2av5val5ubrb_-font",
+    "ph": ""
+   },
+   {
+    "type": "radio",
+    "name": "_R_2av5val5ubrb_-font",
+    "ph": ""
+   },
+   {
+    "type": "radio",
+    "name": "_R_2av5val5ubrb_-font",
+    "ph": ""
+   },
+   {
+    "type": "radio",
+    "name": "_R_2av5val5ubrb_-font",
+    "ph": ""
+   },
+   {
+    "type": "radio",
+    "name": "_R_2av5val5ubrb_-font",
+    "ph": ""
+   },
+   {
+    "type": "radio",
+    "name": "_R_2av5val5ubrb_-font",
+    "ph": ""
+   },
+   {
+    "type": "radio",
+    "name": "_R_2av5val5ubrb_-font",
+    "ph": ""
+   },
+   {
+    "type": "radio",
+    "name": "_R_2av5val5ubrb_-font",
+    "ph": ""
+   },
+   {
+    "type": "radio",
+    "name": "_R_2av5val5ubrb_-font",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "",
+    "ph": ""
+   },
+   {
+    "type": "radio",
+    "name": "_R_5mav5val5ubrb_-default",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "",
+    "ph": ""
+   },
+   {
+    "type": "radio",
+    "name": "_R_5mav5val5ubrb_-default",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "",
+    "ph": ""
+   },
+   {
+    "type": "radio",
+    "name": "_R_5mav5val5ubrb_-default",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_17mmav5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_1bmmav5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_1fmmav5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "search",
+    "name": "",
+    "ph": "Buscar un plato…"
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/banners",
+  "final": "/app/banners",
+  "status": 200,
+  "title": "Banners · Colega Menus",
+  "h1": "Banners",
+  "headings": [
+   "Conoce Banners"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "¿Cómo funciona?",
+   "Nuevo banner"
+  ],
+  "fields": [],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/sales",
+  "final": "/app/sales",
+  "status": 200,
+  "title": "Ventas · Colega Menus",
+  "h1": "Ventas",
+  "headings": [
+   "Ventas por día",
+   "Por canal",
+   "Por método de pago",
+   "Horas pico",
+   "Productos más vendidos",
+   "Clientes nuevos y recurrentes",
+   "Conoce Ventas"
+  ],
+  "tabs": [
+   "Resumen",
+   "Pedidos",
+   "Productos",
+   "Cortes de caja",
+   "Mesas"
+  ],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Filtros",
+   "Más opciones",
+   "Resumen",
+   "Pedidos",
+   "Productos",
+   "Cortes de caja",
+   "Mesas",
+   "Piezas",
+   "Monto"
+  ],
+  "fields": [
+   {
+    "type": "select-one",
+    "name": ""
+   },
+   {
+    "type": "select-one",
+    "name": "_R_4q6av5val5ubrb_"
+   },
+   {
+    "type": "select-one",
+    "name": "_R_6q6av5val5ubrb_"
+   },
+   {
+    "type": "select-one",
+    "name": "_R_8q6av5val5ubrb_"
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/inventory",
+  "final": "/app/inventory",
+  "status": 200,
+  "title": "Inventario · Colega Menus",
+  "h1": "Inventario",
+  "headings": [
+   "Lista de arranque",
+   "Lo que se está acabando"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Registrar compra",
+   "Registrar merma"
+  ],
+  "fields": [],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/inventory/stock",
+  "final": "/app/inventory/stock",
+  "status": 200,
+  "title": "Existencias · Colega Menus",
+  "h1": "Existencias",
+  "headings": [],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Por agotarse0",
+   "En negativo0",
+   "Filtros",
+   "Más opciones",
+   "Registrar compra"
+  ],
+  "fields": [
+   {
+    "type": "search",
+    "name": "base-ui-_R_15l5fiv5val5ubrb_",
+    "ph": "Buscar insumo"
+   },
+   {
+    "type": "select-one",
+    "name": "_R_ml5fiv5val5ubrb_"
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_36l5fiv5val5ubrbH1_",
+    "ph": ""
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/inventory/purchases",
+  "final": "/app/inventory/purchases",
+  "status": 200,
+  "title": "Compras y proveedores · Colega Menus",
+  "h1": "Compras y proveedores",
+  "headings": [
+   "Compras"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Registrar compra"
+  ],
+  "fields": [
+   {
+    "type": "month",
+    "name": "purch-month",
+    "ph": ""
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/inventory/counts",
+  "final": "/app/inventory/counts",
+  "status": 200,
+  "title": "Conteos y mermas · Colega Menus",
+  "h1": "Conteos y mermas",
+  "headings": [
+   "Conteos",
+   "Mermas de los últimos 30 días"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "¿Qué es Conteo?",
+   "Nuevo conteo",
+   "¿Qué es Merma?",
+   "Registrar merma"
+  ],
+  "fields": [],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/inventory/production",
+  "final": "/app/inventory/production",
+  "status": 200,
+  "title": "Producción · Colega Menus",
+  "h1": "Producción",
+  "headings": [],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo"
+  ],
+  "fields": [],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/inventory/reports",
+  "final": "/app/inventory/reports",
+  "status": 200,
+  "title": "Reportes de inventario · Colega Menus",
+  "h1": "Reportes de inventario",
+  "headings": [
+   "Donde más se pierde",
+   "Mermas por motivo",
+   "Detalle por insumo"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "¿Qué es Teórico contra real?"
+  ],
+  "fields": [
+   {
+    "type": "date",
+    "name": "rep-from",
+    "ph": ""
+   },
+   {
+    "type": "date",
+    "name": "rep-to",
+    "ph": ""
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/brand",
+  "final": "/app/brand",
+  "status": 200,
+  "title": "Ajustes de la marca · Colega Menus",
+  "h1": "Ajustes de la marca",
+  "headings": [
+   "Identidad",
+   "Menú",
+   "Caja",
+   "Clientes",
+   "Escala",
+   "Personal",
+   "Eliminar este restaurante"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Eliminar restaurante"
+  ],
+  "fields": [],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/branches",
+  "final": "/app/branches",
+  "status": 200,
+  "title": "Sucursales · Colega Menus",
+  "h1": "Sucursales",
+  "headings": [
+   "Cómo se organiza tu Cuenta",
+   "Restaurante",
+   "Sucursal",
+   "Conoce Sucursales"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "¿Cómo funciona?",
+   "Agregar restaurante",
+   "Agregar sucursal",
+   "Editar sucursal",
+   "Copiar enlace",
+   "Ver QR",
+   "Solicitar reseña en Google Maps",
+   "Pausar"
+  ],
+  "fields": [],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/billing",
+  "final": "/app/billing",
+  "status": 200,
+  "title": "Suscripción y pagos · Colega Menus",
+  "h1": "Suscripción y pagos",
+  "headings": [
+   "Factura de Colega Menus",
+   "Conoce Suscripción y pagos"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "¿Cómo funciona?",
+   "Activar plan",
+   "Activar tienda",
+   "Activar Agente IA",
+   "Subir a Escala"
+  ],
+  "fields": [
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_1hjav5val5ubrbH1_",
+    "ph": ""
+   }
+  ],
+  "tables": [
+   [
+    "Sucursal",
+    "Plan",
+    "Acciones"
+   ]
+  ],
+  "empty": true
+ },
+ {
+  "requested": "/app/team",
+  "final": "/app/team",
+  "status": 200,
+  "title": "Personal · Colega Menus",
+  "h1": "Personal",
+  "headings": [
+   "Lo que puedes lograr",
+   "Tu equipo en un solo lugar",
+   "Checador en la caja",
+   "Horarios sin pleitos",
+   "Vacaciones y permisos",
+   "Asistencia clara",
+   "Conoce Equipo"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Agregar persona",
+   "Activos0",
+   "Por completar0",
+   "Dados de baja0"
+  ],
+  "fields": [
+   {
+    "type": "search",
+    "name": "base-ui-_R_9b7av5val5ubrb_",
+    "ph": "Buscar por nombre o celular"
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/activity",
+  "final": "/app/activity",
+  "status": 200,
+  "title": "Actividad · Colega Menus",
+  "h1": "Actividad",
+  "headings": [
+   "Conoce Actividad"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Filtrar"
+  ],
+  "fields": [
+   {
+    "type": "select-one",
+    "name": "sucursal"
+   },
+   {
+    "type": "select-one",
+    "name": "persona"
+   }
+  ],
+  "tables": [
+   [
+    "Persona",
+    "Cambio",
+    "Sucursal",
+    "Fecha"
+   ]
+  ],
+  "empty": true
+ },
+ {
+  "requested": "/app/academy",
+  "final": "/app/academy",
+  "status": 200,
+  "title": "Academia · Colega Menus",
+  "h1": "Academia",
+  "headings": [
+   "Conoce tu panel",
+   "Conoce Menús",
+   "Conoce Pedidos",
+   "Conoce Ventas",
+   "Conoce la Tienda en línea",
+   "Conoce Mesas",
+   "Conoce Repartidores",
+   "Conoce Clientes",
+   "Conoce Cupones",
+   "Conoce Modificadores",
+   "Conoce Etiquetas",
+   "Conoce Personalización",
+   "Conoce Banners",
+   "Conoce Reseñas de platos",
+   "Conoce el Asistente",
+   "Conoce Sucursales",
+   "Conoce Suscripción y pagos",
+   "Conoce Equipo",
+   "Conoce el Estado de resultados",
+   "Conoce Gastos",
+   "Conoce Costos",
+   "Conoce Satisfacción y reseñas",
+   "Conoce Opiniones",
+   "Conoce Tarjetas",
+   "Conoce Actividad"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Visto",
+   "Marcar como visto"
+  ],
+  "fields": [],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/feedback",
+  "final": "/app/feedback",
+  "status": 200,
+  "title": "Feedback y sugerencias · Colega Menus",
+  "h1": "Feedback y sugerencias",
+  "headings": [
+   "Mis envíos"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Agregar captura",
+   "Enviar"
+  ],
+  "fields": [
+   {
+    "type": "radio",
+    "name": "type",
+    "ph": ""
+   },
+   {
+    "type": "radio",
+    "name": "type",
+    "ph": ""
+   },
+   {
+    "type": "radio",
+    "name": "type",
+    "ph": ""
+   },
+   {
+    "type": "radio",
+    "name": "type",
+    "ph": ""
+   },
+   {
+    "type": "textarea",
+    "name": "_R_6av5val5ubrb_-message",
+    "ph": "¿Qué mejorarías y por qué?"
+   },
+   {
+    "type": "file",
+    "name": "",
+    "ph": ""
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/refiere",
+  "final": "/app/refiere",
+  "status": 200,
+  "title": "Refiere y gana · Colega Menus",
+  "h1": "Refiere y gana",
+  "headings": [
+   "Tu enlace y tu código",
+   "Tus recomendados"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Cambiar código",
+   "Copiar",
+   "Descargar QR"
+  ],
+  "fields": [],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/tools",
+  "final": "/app/tools",
+  "status": 200,
+  "title": "Más herramientas · Colega Menus",
+  "h1": "Herramientas",
+  "headings": [
+   "Volver a recomendar",
+   "En tu panel",
+   "Menú digital",
+   "Mi negocio",
+   "Punto de venta (POS)",
+   "Pedidos y comandera",
+   "Tienda en línea",
+   "Repartidores",
+   "Mesas",
+   "Inventario y recetas",
+   "Ventas y reportes",
+   "Más herramientas",
+   "Reservaciones y lista de espera",
+   "CEDIS",
+   "Pódium",
+   "Clientes",
+   "Cupones y promociones",
+   "Fidelidad y recompensas",
+   "Opiniones y reseñas",
+   "Tienda de artículos",
+   "Finanzas",
+   "Horarios y vacaciones",
+   "Asistente con IA",
+   "Facturación electrónica",
+   "WhatsApp del restaurante"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Ocultar de mi barra",
+   "Apagar",
+   "Activar",
+   "No me interesa",
+   "Activar con Clientes"
+  ],
+  "fields": [],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/menus/recipes",
+  "final": "/app/menus/recipes",
+  "status": 200,
+  "title": "Recetas · Colega Menus",
+  "h1": "Recetas",
+  "headings": [
+   "Cómo se arma tu menú",
+   "Recetas de platillos",
+   "Preparados"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Esconder cómo se arma tu menú",
+   "Archivadas (0)",
+   "Nueva receta",
+   "Nuevo preparado"
+  ],
+  "fields": [],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/menus/items",
+  "final": "/app/menus/items",
+  "status": 200,
+  "title": "Insumos · Colega Menus",
+  "h1": "Insumos",
+  "headings": [
+   "Cómo se arma tu menú"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Esconder cómo se arma tu menú",
+   "Escanear",
+   "Filtros",
+   "Más opciones",
+   "Nuevo insumo"
+  ],
+  "fields": [
+   {
+    "type": "search",
+    "name": "base-ui-_R_4lllfiv5val5ubrb_",
+    "ph": "Buscar insumo o código"
+   },
+   {
+    "type": "select-one",
+    "name": "_R_6llfiv5val5ubrb_"
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/branches?abrir=restaurante",
+  "final": "/app/branches?abrir=restaurante",
+  "status": 200,
+  "title": "Sucursales · Colega Menus",
+  "h1": "Sucursales",
+  "headings": [
+   "Cómo se organiza tu Cuenta",
+   "Restaurante",
+   "Sucursal",
+   "Nuevo restaurante",
+   "Conoce Sucursales"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "¿Cómo funciona?",
+   "Agregar restaurante",
+   "Agregar sucursal",
+   "Editar sucursal",
+   "Copiar enlace",
+   "Ver QR",
+   "Solicitar reseña en Google Maps",
+   "Pausar"
+  ],
+  "fields": [],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/branches?abrir=sucursal",
+  "final": "/app/branches?abrir=sucursal",
+  "status": 200,
+  "title": "Sucursales · Colega Menus",
+  "h1": "Sucursales",
+  "headings": [
+   "Cómo se organiza tu Cuenta",
+   "Restaurante",
+   "Sucursal",
+   "Nueva sucursal de <restaurante>",
+   "Conoce Sucursales"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "¿Cómo funciona?",
+   "Agregar restaurante",
+   "Agregar sucursal",
+   "Editar sucursal",
+   "Copiar enlace",
+   "Ver QR",
+   "Solicitar reseña en Google Maps",
+   "Pausar"
+  ],
+  "fields": [],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/view-as",
+  "final": "/app/view-as",
+  "status": 200,
+  "title": "Ver como · Colega Menus",
+  "h1": "Ver como",
+  "headings": [],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Ver el panel así"
+  ],
+  "fields": [
+   {
+    "type": "radio",
+    "name": "role",
+    "ph": ""
+   },
+   {
+    "type": "radio",
+    "name": "role",
+    "ph": ""
+   },
+   {
+    "type": "radio",
+    "name": "role",
+    "ph": ""
+   },
+   {
+    "type": "radio",
+    "name": "role",
+    "ph": ""
+   },
+   {
+    "type": "radio",
+    "name": "role",
+    "ph": ""
+   },
+   {
+    "type": "select-one",
+    "name": "view-scope"
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/menus/import",
+  "final": "/app/menus/import",
+  "status": 200,
+  "title": "Importar menú con IA · Colega Menus",
+  "h1": "Importar menú con IA",
+  "headings": [
+   "Desde la plantilla de Excel"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Subir mi plantilla",
+   "Elegir archivo",
+   "Tomar foto",
+   "Leer mi menú con IA"
+  ],
+  "fields": [
+   {
+    "type": "file",
+    "name": "",
+    "ph": ""
+   },
+   {
+    "type": "file",
+    "name": "_R_a5fiv5val5ubrb_",
+    "ph": ""
+   },
+   {
+    "type": "file",
+    "name": "",
+    "ph": ""
+   }
+  ],
+  "tables": [],
+  "empty": false
+ },
+ {
+  "requested": "/app/menus/photos",
+  "final": "/app/menus/photos",
+  "status": 200,
+  "title": "Subir fotos · Colega Menus",
+  "h1": "Subir fotos",
+  "headings": [
+   "Para que se relacionen bien"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Elegir fotos",
+   "Elegir carpeta"
+  ],
+  "fields": [
+   {
+    "type": "file",
+    "name": "",
+    "ph": ""
+   },
+   {
+    "type": "file",
+    "name": "",
+    "ph": ""
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/branches?abrir=datos",
+  "final": "/app/branches?abrir=datos",
+  "status": 200,
+  "title": "Sucursales · Colega Menus",
+  "h1": "Sucursales",
+  "headings": [
+   "Cómo se organiza tu Cuenta",
+   "Restaurante",
+   "Sucursal",
+   "Editar <sucursal>",
+   "Conoce Sucursales"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "¿Cómo funciona?",
+   "Agregar restaurante",
+   "Agregar sucursal",
+   "Editar sucursal",
+   "Copiar enlace",
+   "Ver QR",
+   "Solicitar reseña en Google Maps",
+   "Pausar"
+  ],
+  "fields": [],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/preview",
+  "final": "/app/preview",
+  "status": 200,
+  "title": "Vista previa de tu menú · Colega Menus",
+  "h1": "Chilaquiles verdes",
+  "headings": [
+   "Acompaña con:",
+   "Reseñas",
+   "Asistente del menú"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Desayunos",
+   "Platos fuertes",
+   "Bebidas",
+   "Chilaquiles verdes",
+   "Molletes",
+   "Hot cakes",
+   "Café de olla$45.00",
+   "Cerrar",
+   "Opciones vegetarianas",
+   "Algo sin picante",
+   "¿Cuál es la especialidad?",
+   "¿Qué me recomiendas?",
+   "Enviar"
+  ],
+  "fields": [
+   {
+    "type": "search",
+    "name": "",
+    "ph": "Buscar un plato…"
+   },
+   {
+    "type": "text",
+    "name": "_R_ceav5ubrb_-input",
+    "ph": "Escribe tu pregunta…"
+   }
+  ],
+  "tables": [],
+  "empty": false
+ },
+ {
+  "requested": "/app/branches?abrir=qr",
+  "final": "/app/branches?abrir=qr",
+  "status": 200,
+  "title": "Sucursales · Colega Menus",
+  "h1": "Sucursales",
+  "headings": [
+   "Cómo se organiza tu Cuenta",
+   "Restaurante",
+   "Sucursal",
+   "QR de <sucursal>",
+   "Conoce Sucursales"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "¿Cómo funciona?",
+   "Agregar restaurante",
+   "Agregar sucursal",
+   "Editar sucursal",
+   "Copiar enlace",
+   "Ver QR",
+   "Solicitar reseña en Google Maps",
+   "Pausar"
+  ],
+  "fields": [],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/menus/recipes?tab=link",
+  "final": "/app/menus/recipes?tab=link",
+  "status": 200,
+  "title": "Recetas · Colega Menus",
+  "h1": "Recetas",
+  "headings": [
+   "Cómo se arma tu menú",
+   "0 % de lo que vendiste tiene receta",
+   "Platillos de esta sucursal"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Esconder cómo se arma tu menú",
+   "Ligar por nombre",
+   "Crear receta",
+   "Con IA"
+  ],
+  "fields": [
+   {
+    "type": "text",
+    "name": "target-pct",
+    "ph": ""
+   },
+   {
+    "type": "select-one",
+    "name": ""
+   },
+   {
+    "type": "select-one",
+    "name": ""
+   },
+   {
+    "type": "select-one",
+    "name": ""
+   },
+   {
+    "type": "select-one",
+    "name": ""
+   },
+   {
+    "type": "select-one",
+    "name": ""
+   },
+   {
+    "type": "select-one",
+    "name": ""
+   },
+   {
+    "type": "select-one",
+    "name": ""
+   },
+   {
+    "type": "select-one",
+    "name": ""
+   },
+   {
+    "type": "select-one",
+    "name": ""
+   },
+   {
+    "type": "select-one",
+    "name": ""
+   }
+  ],
+  "tables": [
+   [
+    "Platillo",
+    "Categoría",
+    "Precio",
+    "Costo",
+    "% costo",
+    "Receta",
+    "Acciones"
+   ]
+  ],
+  "empty": true
+ },
+ {
+  "requested": "/app/menus/bdf35027-0b9a-4050-a903-88df08f0f178",
+  "final": "/app/menus/bdf35027-0b9a-4050-a903-88df08f0f178",
+  "status": 200,
+  "title": "Menú del día · Colega Menus",
+  "h1": "Menú del día",
+  "headings": [],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Más acciones: Menú del día",
+   "Todo el día",
+   "Arrastra para reordenar Desayunos",
+   "Desayunos(3)",
+   "Subir Desayunos",
+   "Bajar Desayunos",
+   "Más acciones: Desayunos",
+   "Arrastra para reordenar Chilaquiles verdes",
+   "Arrastra para reordenar Molletes",
+   "Arrastra para reordenar Hot cakes",
+   "Arrastra para reordenar Platos fuertes",
+   "Platos fuertes(4)",
+   "Subir Platos fuertes",
+   "Bajar Platos fuertes",
+   "Más acciones: Platos fuertes",
+   "Arrastra para reordenar Enchiladas suizas",
+   "Arrastra para reordenar Tacos al pastor (3)",
+   "Arrastra para reordenar Ensalada de la huerta",
+   "Arrastra para reordenar Hamburguesa de la cas",
+   "Arrastra para reordenar Bebidas",
+   "Bebidas(3)",
+   "Subir Bebidas",
+   "Bajar Bebidas",
+   "Más acciones: Bebidas",
+   "Arrastra para reordenar Café de olla",
+   "Arrastra para reordenar Agua de jamaica",
+   "Arrastra para reordenar Limonada mineral",
+   "Agregar categoría"
+  ],
+  "fields": [
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_16kblfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_k5bdlfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_a5e9bdlfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_a9e9bdlfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_ade9bdlfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_k6bdlfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_k5eabdlfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_k9eabdlfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_kdeabdlfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_kheabdlfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_k7bdlfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_a5ebbdlfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_a9ebbdlfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_adebbdlfiv5val5ubrbH1_",
+    "ph": ""
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/colega-cards",
+  "final": "/app/colega-cards",
+  "status": 200,
+  "title": "Satisfacción y reseñas · Colega Menus",
+  "h1": "Más reseñas de 5 estrellas, menos sorpresas",
+  "headings": [
+   "Tarjetas NFC y QR en tus mesas",
+   "Califican en segundos",
+   "Cada opinión a su lugar",
+   "Alertas por WhatsApp",
+   "Más reseñas de 5 estrellas",
+   "Cómo funciona",
+   "Conoce Satisfacción y reseñas"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Configurar para <sucursal>"
+  ],
+  "fields": [],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/inventory/purchases?tab=suppliers",
+  "final": "/app/inventory/purchases?tab=suppliers",
+  "status": 200,
+  "title": "Compras y proveedores · Colega Menus",
+  "h1": "Compras y proveedores",
+  "headings": [
+   "Proveedores"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Archivados (0)",
+   "Nuevo proveedor"
+  ],
+  "fields": [],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/inventory/purchases?tab=orders",
+  "final": "/app/inventory/purchases?tab=orders",
+  "status": 200,
+  "title": "Compras y proveedores · Colega Menus",
+  "h1": "Compras y proveedores",
+  "headings": [
+   "Pedido sugerido",
+   "Órdenes de compra"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo"
+  ],
+  "fields": [],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/domains",
+  "final": "/app/domains",
+  "status": 200,
+  "title": "Dominios · Colega Menus",
+  "h1": "Dominios",
+  "headings": [
+   "Conectar un dominio"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Conectar"
+  ],
+  "fields": [
+   {
+    "type": "text",
+    "name": "domain-hostname",
+    "ph": "menu.tumarca.mx"
+   },
+   {
+    "type": "radio",
+    "name": "domain-purpose",
+    "ph": ""
+   },
+   {
+    "type": "radio",
+    "name": "domain-purpose",
+    "ph": ""
+   },
+   {
+    "type": "radio",
+    "name": "domain-landing",
+    "ph": ""
+   },
+   {
+    "type": "radio",
+    "name": "domain-landing",
+    "ph": ""
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/menus/translations",
+  "final": "/app/menus/translations",
+  "status": 200,
+  "title": "Traducciones · Colega Menus",
+  "h1": "Traducciones",
+  "headings": [],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo"
+  ],
+  "fields": [],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/devices?tab=pos&scope=brand",
+  "final": "/app/devices?tab=pos&scope=brand",
+  "status": 200,
+  "title": "Cajas e impresoras · Colega Menus",
+  "h1": "Cajas e impresoras",
+  "headings": [
+   "Pestañas de la caja",
+   "Al tomar el pedido",
+   "Vista del catálogo",
+   "Al cobrar",
+   "Pantalla de cliente",
+   "Comandera",
+   "Seguridad"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Fijar para todas",
+   "No se pide",
+   "Opcional",
+   "Obligatorio",
+   "Apagado",
+   "Foto grande",
+   "Foto chica",
+   "Solo nombre",
+   "Chico",
+   "Mediano",
+   "Grande",
+   "Neutro",
+   "Categoría",
+   "Producto",
+   "Arriba",
+   "A la izquierda",
+   "No se pregunta",
+   "Se pregunta",
+   "Ninguna",
+   "10 %",
+   "15 %",
+   "20 %",
+   "Guardar",
+   "Todo",
+   "Desayunos",
+   "Platos fuertes",
+   "Bebidas",
+   "Chilaquiles verdes$125.00",
+   "Molletes$95.00",
+   "Hot cakes$89.00",
+   "Enchiladas suizas$155.00",
+   "Tacos al pastor (3)$99.00",
+   "Ensalada de la huerta$110.00",
+   "Hamburguesa de la casa$165.00",
+   "Café de olla$45.00",
+   "Agua de jamaica$40.00",
+   "Limonada mineral$45.00"
+  ],
+  "fields": [
+   {
+    "type": "select-one",
+    "name": "pos-scope"
+   },
+   {
+    "type": "checkbox",
+    "name": "pos-showOrders",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "pos-showTables",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "pos-showDrafts",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "pos-showInventory",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "pos-showReservations",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "pos-showStore",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "pos-showChats",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "",
+    "ph": ""
+   },
+   {
+    "type": "select-one",
+    "name": "pos-defaultChannel"
+   },
+   {
+    "type": "checkbox",
+    "name": "",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "",
+    "ph": ""
+   },
+   {
+    "type": "select-one",
+    "name": "pos-defaultFulfillment"
+   },
+   {
+    "type": "checkbox",
+    "name": "pos-itemNotes",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "pos-discounts",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "pos-catalogPrice",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "pos-displayTips",
+    "ph": ""
+   },
+   {
+    "type": "number",
+    "name": "base-ui-_R_4pdbsav5val5ubrb_",
+    "ph": ""
+   },
+   {
+    "type": "number",
+    "name": "base-ui-_R_59dbsav5val5ubrb_",
+    "ph": ""
+   },
+   {
+    "type": "number",
+    "name": "base-ui-_R_5pdbsav5val5ubrb_",
+    "ph": ""
+   },
+   {
+    "type": "number",
+    "name": "base-ui-_R_69dbsav5val5ubrb_",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "pos-displayRegister",
+    "ph": ""
+   },
+   {
+    "type": "number",
+    "name": "pos-prepTargetMinutes",
+    "ph": ""
+   },
+   {
+    "type": "number",
+    "name": "pos-lockMinutes",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "pos-pinCancel",
+    "ph": ""
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/coupons",
+  "final": "/app/coupons",
+  "status": 200,
+  "title": "Cupones · Colega Menus",
+  "h1": "Cupones",
+  "headings": [
+   "Lo que puedes lograr",
+   "Promociones que sí se miden",
+   "Para cada ocasión",
+   "Atrae nuevos clientes",
+   "Fácil de compartir",
+   "Sin abusos",
+   "Conoce Cupones"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Nuevo cupón"
+  ],
+  "fields": [],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/whatsapp",
+  "final": "/app/whatsapp",
+  "status": 200,
+  "title": "WhatsApp · Colega Menus",
+  "h1": "WhatsApp",
+  "headings": [
+   "Conecta tu WhatsApp Business",
+   "Canal de cada sucursal",
+   "Lo que puedes lograr",
+   "Avisos del pedido por WhatsApp",
+   "Desde tu propio número",
+   "Plantillas listas",
+   "Tus clientes, más cerca",
+   "Cuántos avisos salieron"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Conectar WhatsApp",
+   "Datos para el agente de <sucursal>"
+  ],
+  "fields": [],
+  "tables": [
+   [
+    "Sucursal",
+    "Número",
+    "Agente IA",
+    "Acciones"
+   ]
+  ],
+  "empty": true
+ },
+ {
+  "requested": "/app/team/schedule",
+  "final": "/app/team/schedule",
+  "status": 200,
+  "title": "Horarios · Colega Menus",
+  "h1": "Horarios",
+  "headings": [
+   "Conoce Equipo"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Semana anterior",
+   "Semana siguiente",
+   "Esta semana",
+   "Turnos",
+   "Copiar semana pasada",
+   "Volver al horario fijo",
+   "Publicar"
+  ],
+  "fields": [],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/team/time-off",
+  "final": "/app/team/time-off",
+  "status": 200,
+  "title": "Vacaciones · Colega Menus",
+  "h1": "Vacaciones",
+  "headings": [
+   "Conoce Equipo"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Mes anterior",
+   "Mes siguiente"
+  ],
+  "fields": [],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/team/attendance",
+  "final": "/app/team/attendance",
+  "status": 200,
+  "title": "Asistencia · Colega Menus",
+  "h1": "Asistencia",
+  "headings": [
+   "Conoce Equipo"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Día anterior",
+   "Día siguiente"
+  ],
+  "fields": [],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/team/training",
+  "final": "/app/team/training",
+  "status": 200,
+  "title": "Capacitación · Colega Menus",
+  "h1": "Capacitación",
+  "headings": [
+   "Conoce Equipo"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo"
+  ],
+  "fields": [],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/team?tab=accesos",
+  "final": "/app/team?tab=accesos",
+  "status": 200,
+  "title": "Personal · Colega Menus",
+  "h1": "Personal",
+  "headings": [
+   "Roles personalizados",
+   "Mi PIN para la caja",
+   "Conoce Equipo"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Ver en tarjetas",
+   "Ver en lista",
+   "Filtros",
+   "Agregar persona",
+   "Nuevo rol",
+   "Mostrar contraseña",
+   "Guardar mi PIN"
+  ],
+  "fields": [
+   {
+    "type": "search",
+    "name": "base-ui-_R_2ap7av5val5ubrb_",
+    "ph": "Buscar persona"
+   },
+   {
+    "type": "select-one",
+    "name": "_R_b97av5val5ubrb_"
+   },
+   {
+    "type": "password",
+    "name": "pin",
+    "ph": ""
+   }
+  ],
+  "tables": [
+   [
+    "Persona",
+    "Correo",
+    "Teléfono",
+    "Rol",
+    "Estado",
+    "Acceso",
+    "Acciones"
+   ]
+  ],
+  "empty": true
+ },
+ {
+  "requested": "/app/setup",
+  "final": "/app/setup",
+  "status": 200,
+  "title": "Elige tus herramientas · Colega Menus",
+  "h1": "¿Qué tipo de negocio tienes?",
+  "headings": [],
+  "tabs": [],
+  "buttons": [
+   "TaqueríaTacos, tortas y antojitos",
+   "PizzeríaPara comer aquí, recoger o domicilio",
+   "Desayunos y brunchMañanas con mesas llenas",
+   "Comida rápidaHamburguesas, alitas, snacks",
+   "Restaurante con servicio a mesaMeseros, mesas",
+   "Cafetería o panaderíaCafé, pan y clientes fre",
+   "BarBebidas, botanas y cuentas abiertas",
+   "Dark kitchenSolo pedidos para llevar o domici",
+   "Cadena o varias sucursalesVarias ubicaciones ",
+   "OtroCuéntanos con las siguientes preguntas"
+  ],
+  "fields": [],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/devices/new",
+  "final": "/app/devices/new",
+  "status": 200,
+  "title": "Agregar dispositivo · Colega Menus",
+  "h1": "Agregar dispositivo",
+  "headings": [],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "¿Cómo funciona?",
+   "Aprobar dispositivo"
+  ],
+  "fields": [
+   {
+    "type": "text",
+    "name": "pair-code",
+    "ph": "K7M-4QX"
+   },
+   {
+    "type": "text",
+    "name": "pair-name",
+    "ph": "Ej. Caja 2 o Tablet cocina"
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/products/398cb94d-b7d6-42e0-abfb-a779f4dd2ff2",
+  "final": "/app/products/398cb94d-b7d6-42e0-abfb-a779f4dd2ff2",
+  "status": 200,
+  "title": "Producto · Colega Menus",
+  "h1": "Editar producto",
+  "headings": [
+   "FotosSin fotos",
+   "Datos",
+   "Recetas",
+   "Qué lleva",
+   "EtiquetasPicante, Recomendado",
+   "ModificadoresNinguno",
+   "Acompaña conCafé de olla",
+   "VisibilidadCaja, menú digital y Tienda",
+   "Vista previa",
+   "Por sucursal"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Más acciones",
+   "FotosSin fotos",
+   "Datos",
+   "Mejorar con IA",
+   "Precio único",
+   "Varias opciones",
+   "Recetas",
+   "Qué lleva",
+   "EtiquetasPicante, Recomendado",
+   "Sugerir etiquetas",
+   "Picante",
+   "Recomendado",
+   "Vegetariano",
+   "ModificadoresNinguno",
+   "Acompaña conCafé de olla",
+   "Quitar Café de olla",
+   "Agregar Agua de jamaica",
+   "Agregar Limonada mineral",
+   "Agregar Hot cakes",
+   "Agregar Molletes",
+   "Agregar Enchiladas suizas",
+   "Agregar Ensalada de la huerta",
+   "Agregar Hamburguesa de la casa",
+   "Agregar Tacos al pastor (3)",
+   "VisibilidadCaja, menú digital y Tienda",
+   "Sin color",
+   "Rojo",
+   "Naranja",
+   "Ámbar",
+   "Amarillo",
+   "Lima",
+   "Verde",
+   "Turquesa",
+   "Azul cielo",
+   "Índigo",
+   "Morado",
+   "Rosa",
+   "Gris",
+   "Guardar producto"
+  ],
+  "fields": [
+   {
+    "type": "file",
+    "name": "_R_52plfiv5val5ubrb_",
+    "ph": ""
+   },
+   {
+    "type": "file",
+    "name": "_R_52plfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "name",
+    "ph": ""
+   },
+   {
+    "type": "textarea",
+    "name": "description",
+    "ph": ""
+   },
+   {
+    "type": "select-one",
+    "name": "categoryId"
+   },
+   {
+    "type": "text",
+    "name": "price",
+    "ph": "0.00"
+   },
+   {
+    "type": "search",
+    "name": "base-ui-_R_9lgplfiv5val5ubrb_",
+    "ph": "Buscar producto"
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_2dkplfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_2lkplfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_2tkplfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "base-ui-_R_56q5fiv5val5ubrb_",
+    "ph": "125.00"
+   },
+   {
+    "type": "select-one",
+    "name": ""
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/products/05505869-c4e3-4bc9-8f7d-e35d09ad7776",
+  "final": "/app/products/05505869-c4e3-4bc9-8f7d-e35d09ad7776",
+  "status": 200,
+  "title": "Producto · Colega Menus",
+  "h1": "Editar producto",
+  "headings": [
+   "FotosSin fotos",
+   "Datos",
+   "Recetas",
+   "Qué lleva",
+   "EtiquetasVegetariano",
+   "ModificadoresNinguno",
+   "Acompaña conNinguno",
+   "VisibilidadCaja, menú digital y Tienda",
+   "Vista previa",
+   "Por sucursal"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Más acciones",
+   "FotosSin fotos",
+   "Datos",
+   "Mejorar con IA",
+   "Precio único",
+   "Varias opciones",
+   "Recetas",
+   "Qué lleva",
+   "EtiquetasVegetariano",
+   "Sugerir etiquetas",
+   "Picante",
+   "Recomendado",
+   "Vegetariano",
+   "ModificadoresNinguno",
+   "Acompaña conNinguno",
+   "Agregar Agua de jamaica",
+   "Agregar Café de olla",
+   "Agregar Limonada mineral",
+   "Agregar Chilaquiles verdes",
+   "Agregar Hot cakes",
+   "Agregar Enchiladas suizas",
+   "Agregar Ensalada de la huerta",
+   "Agregar Hamburguesa de la casa",
+   "VisibilidadCaja, menú digital y Tienda",
+   "Sin color",
+   "Rojo",
+   "Naranja",
+   "Ámbar",
+   "Amarillo",
+   "Lima",
+   "Verde",
+   "Turquesa",
+   "Azul cielo",
+   "Índigo",
+   "Morado",
+   "Rosa",
+   "Gris",
+   "Guardar producto",
+   "Guardar precios por sucursal"
+  ],
+  "fields": [
+   {
+    "type": "file",
+    "name": "_R_52plfiv5val5ubrb_",
+    "ph": ""
+   },
+   {
+    "type": "file",
+    "name": "_R_52plfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "name",
+    "ph": ""
+   },
+   {
+    "type": "textarea",
+    "name": "description",
+    "ph": ""
+   },
+   {
+    "type": "select-one",
+    "name": "categoryId"
+   },
+   {
+    "type": "text",
+    "name": "price",
+    "ph": "0.00"
+   },
+   {
+    "type": "search",
+    "name": "base-ui-_R_9lgplfiv5val5ubrb_",
+    "ph": "Buscar producto"
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_2dkplfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_2lkplfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_2tkplfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "base-ui-_R_56q5fiv5val5ubrb_",
+    "ph": "95.00"
+   },
+   {
+    "type": "select-one",
+    "name": ""
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/products/0ab0f454-e108-4aed-9a84-4ba9295ac14c",
+  "final": "/app/products/0ab0f454-e108-4aed-9a84-4ba9295ac14c",
+  "status": 200,
+  "title": "Producto · Colega Menus",
+  "h1": "Editar producto",
+  "headings": [
+   "FotosSin fotos",
+   "Datos",
+   "Recetas",
+   "Qué lleva",
+   "EtiquetasVegetariano",
+   "ModificadoresNinguno",
+   "Acompaña conNinguno",
+   "VisibilidadCaja, menú digital y Tienda",
+   "Vista previa",
+   "Por sucursal"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Más acciones",
+   "FotosSin fotos",
+   "Datos",
+   "Mejorar con IA",
+   "Precio único",
+   "Varias opciones",
+   "Recetas",
+   "Qué lleva",
+   "EtiquetasVegetariano",
+   "Sugerir etiquetas",
+   "Picante",
+   "Recomendado",
+   "Vegetariano",
+   "ModificadoresNinguno",
+   "Acompaña conNinguno",
+   "Agregar Agua de jamaica",
+   "Agregar Café de olla",
+   "Agregar Limonada mineral",
+   "Agregar Chilaquiles verdes",
+   "Agregar Molletes",
+   "Agregar Enchiladas suizas",
+   "Agregar Ensalada de la huerta",
+   "Agregar Hamburguesa de la casa",
+   "VisibilidadCaja, menú digital y Tienda",
+   "Sin color",
+   "Rojo",
+   "Naranja",
+   "Ámbar",
+   "Amarillo",
+   "Lima",
+   "Verde",
+   "Turquesa",
+   "Azul cielo",
+   "Índigo",
+   "Morado",
+   "Rosa",
+   "Gris",
+   "Guardar producto",
+   "Guardar precios por sucursal"
+  ],
+  "fields": [
+   {
+    "type": "file",
+    "name": "_R_52plfiv5val5ubrb_",
+    "ph": ""
+   },
+   {
+    "type": "file",
+    "name": "_R_52plfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "name",
+    "ph": ""
+   },
+   {
+    "type": "textarea",
+    "name": "description",
+    "ph": ""
+   },
+   {
+    "type": "select-one",
+    "name": "categoryId"
+   },
+   {
+    "type": "text",
+    "name": "price",
+    "ph": "0.00"
+   },
+   {
+    "type": "search",
+    "name": "base-ui-_R_9lgplfiv5val5ubrb_",
+    "ph": "Buscar producto"
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_2dkplfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_2lkplfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_2tkplfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "base-ui-_R_56q5fiv5val5ubrb_",
+    "ph": "89.00"
+   },
+   {
+    "type": "select-one",
+    "name": ""
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/products/new?category=ddab7725-097d-4be6-a960-d00f0c32efcc",
+  "final": "/app/products/new?category=ddab7725-097d-4be6-a960-d00f0c32efcc",
+  "status": 200,
+  "title": "Nuevo producto · Colega Menus",
+  "h1": "Nuevo producto",
+  "headings": [
+   "Fotos",
+   "Datos",
+   "Recetas",
+   "EtiquetasNinguno",
+   "ModificadoresNinguno",
+   "Acompaña conNinguno",
+   "VisibilidadCaja, menú digital y Tienda",
+   "Vista previa"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Fotos",
+   "Datos",
+   "Escribir con IA",
+   "Precio único",
+   "Varias opciones",
+   "Recetas",
+   "EtiquetasNinguno",
+   "Sugerir etiquetas",
+   "Picante",
+   "Recomendado",
+   "Vegetariano",
+   "ModificadoresNinguno",
+   "Acompaña conNinguno",
+   "Agregar Agua de jamaica",
+   "Agregar Café de olla",
+   "Agregar Limonada mineral",
+   "Agregar Chilaquiles verdes",
+   "Agregar Hot cakes",
+   "Agregar Molletes",
+   "Agregar Enchiladas suizas",
+   "Agregar Ensalada de la huerta",
+   "VisibilidadCaja, menú digital y Tienda",
+   "Sin color",
+   "Rojo",
+   "Naranja",
+   "Ámbar",
+   "Amarillo",
+   "Lima",
+   "Verde",
+   "Turquesa",
+   "Azul cielo",
+   "Índigo",
+   "Morado",
+   "Rosa",
+   "Gris",
+   "Guardar producto"
+  ],
+  "fields": [
+   {
+    "type": "file",
+    "name": "_R_2hd5fiv5val5ubrb_",
+    "ph": ""
+   },
+   {
+    "type": "file",
+    "name": "_R_2hd5fiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "name",
+    "ph": ""
+   },
+   {
+    "type": "textarea",
+    "name": "description",
+    "ph": ""
+   },
+   {
+    "type": "select-one",
+    "name": "categoryId"
+   },
+   {
+    "type": "text",
+    "name": "price",
+    "ph": "0.00"
+   },
+   {
+    "type": "search",
+    "name": "base-ui-_R_4qod5fiv5val5ubrb_",
+    "ph": "Buscar producto"
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_16qd5fiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_1aqd5fiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_1eqd5fiv5val5ubrbH1_",
+    "ph": ""
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/products/7a3db1cb-7f14-4003-beda-0ab5ee83f332",
+  "final": "/app/products/7a3db1cb-7f14-4003-beda-0ab5ee83f332",
+  "status": 200,
+  "title": "Producto · Colega Menus",
+  "h1": "Editar producto",
+  "headings": [
+   "FotosSin fotos",
+   "Datos",
+   "Recetas",
+   "Qué lleva",
+   "EtiquetasRecomendado",
+   "ModificadoresNinguno",
+   "Acompaña conAgua de jamaica",
+   "VisibilidadCaja, menú digital y Tienda",
+   "Vista previa",
+   "Por sucursal"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Más acciones",
+   "FotosSin fotos",
+   "Datos",
+   "Mejorar con IA",
+   "Precio único",
+   "Varias opciones",
+   "Recetas",
+   "Qué lleva",
+   "EtiquetasRecomendado",
+   "Sugerir etiquetas",
+   "Picante",
+   "Recomendado",
+   "Vegetariano",
+   "ModificadoresNinguno",
+   "Acompaña conAgua de jamaica",
+   "Quitar Agua de jamaica",
+   "Agregar Café de olla",
+   "Agregar Limonada mineral",
+   "Agregar Chilaquiles verdes",
+   "Agregar Hot cakes",
+   "Agregar Molletes",
+   "Agregar Ensalada de la huerta",
+   "Agregar Hamburguesa de la casa",
+   "Agregar Tacos al pastor (3)",
+   "VisibilidadCaja, menú digital y Tienda",
+   "Sin color",
+   "Rojo",
+   "Naranja",
+   "Ámbar",
+   "Amarillo",
+   "Lima",
+   "Verde",
+   "Turquesa",
+   "Azul cielo",
+   "Índigo",
+   "Morado",
+   "Rosa",
+   "Gris",
+   "Guardar producto"
+  ],
+  "fields": [
+   {
+    "type": "file",
+    "name": "_R_52plfiv5val5ubrb_",
+    "ph": ""
+   },
+   {
+    "type": "file",
+    "name": "_R_52plfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "name",
+    "ph": ""
+   },
+   {
+    "type": "textarea",
+    "name": "description",
+    "ph": ""
+   },
+   {
+    "type": "select-one",
+    "name": "categoryId"
+   },
+   {
+    "type": "text",
+    "name": "price",
+    "ph": "0.00"
+   },
+   {
+    "type": "search",
+    "name": "base-ui-_R_9lgplfiv5val5ubrb_",
+    "ph": "Buscar producto"
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_2dkplfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_2lkplfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_2tkplfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "base-ui-_R_56q5fiv5val5ubrb_",
+    "ph": "155.00"
+   },
+   {
+    "type": "select-one",
+    "name": ""
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/products/152f975c-ee55-4782-b8d2-dcf53b373117",
+  "final": "/app/products/152f975c-ee55-4782-b8d2-dcf53b373117",
+  "status": 200,
+  "title": "Producto · Colega Menus",
+  "h1": "Editar producto",
+  "headings": [
+   "FotosSin fotos",
+   "Datos",
+   "Recetas",
+   "Qué lleva",
+   "EtiquetasPicante",
+   "ModificadoresNinguno",
+   "Acompaña conNinguno",
+   "VisibilidadCaja, menú digital y Tienda",
+   "Vista previa",
+   "Por sucursal"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Más acciones",
+   "FotosSin fotos",
+   "Datos",
+   "Mejorar con IA",
+   "Precio único",
+   "Varias opciones",
+   "Recetas",
+   "Qué lleva",
+   "EtiquetasPicante",
+   "Sugerir etiquetas",
+   "Picante",
+   "Recomendado",
+   "Vegetariano",
+   "ModificadoresNinguno",
+   "Acompaña conNinguno",
+   "Agregar Agua de jamaica",
+   "Agregar Café de olla",
+   "Agregar Limonada mineral",
+   "Agregar Chilaquiles verdes",
+   "Agregar Hot cakes",
+   "Agregar Molletes",
+   "Agregar Enchiladas suizas",
+   "Agregar Ensalada de la huerta",
+   "VisibilidadCaja, menú digital y Tienda",
+   "Sin color",
+   "Rojo",
+   "Naranja",
+   "Ámbar",
+   "Amarillo",
+   "Lima",
+   "Verde",
+   "Turquesa",
+   "Azul cielo",
+   "Índigo",
+   "Morado",
+   "Rosa",
+   "Gris",
+   "Guardar producto",
+   "Guardar precios por sucursal"
+  ],
+  "fields": [
+   {
+    "type": "file",
+    "name": "_R_52plfiv5val5ubrb_",
+    "ph": ""
+   },
+   {
+    "type": "file",
+    "name": "_R_52plfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "name",
+    "ph": ""
+   },
+   {
+    "type": "textarea",
+    "name": "description",
+    "ph": ""
+   },
+   {
+    "type": "select-one",
+    "name": "categoryId"
+   },
+   {
+    "type": "text",
+    "name": "price",
+    "ph": "0.00"
+   },
+   {
+    "type": "search",
+    "name": "base-ui-_R_9lgplfiv5val5ubrb_",
+    "ph": "Buscar producto"
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_2dkplfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_2lkplfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_2tkplfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "base-ui-_R_56q5fiv5val5ubrb_",
+    "ph": "99.00"
+   },
+   {
+    "type": "select-one",
+    "name": ""
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/products/06aee16d-f92b-4845-abc3-a63b9964aae2",
+  "final": "/app/products/06aee16d-f92b-4845-abc3-a63b9964aae2",
+  "status": 200,
+  "title": "Producto · Colega Menus",
+  "h1": "Editar producto",
+  "headings": [
+   "FotosSin fotos",
+   "Datos",
+   "Recetas",
+   "Qué lleva",
+   "EtiquetasVegetariano",
+   "ModificadoresNinguno",
+   "Acompaña conNinguno",
+   "VisibilidadCaja, menú digital y Tienda",
+   "Vista previa",
+   "Por sucursal"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Más acciones",
+   "FotosSin fotos",
+   "Datos",
+   "Mejorar con IA",
+   "Precio único",
+   "Varias opciones",
+   "Recetas",
+   "Qué lleva",
+   "EtiquetasVegetariano",
+   "Sugerir etiquetas",
+   "Picante",
+   "Recomendado",
+   "Vegetariano",
+   "ModificadoresNinguno",
+   "Acompaña conNinguno",
+   "Agregar Agua de jamaica",
+   "Agregar Café de olla",
+   "Agregar Limonada mineral",
+   "Agregar Chilaquiles verdes",
+   "Agregar Hot cakes",
+   "Agregar Molletes",
+   "Agregar Enchiladas suizas",
+   "Agregar Hamburguesa de la casa",
+   "VisibilidadCaja, menú digital y Tienda",
+   "Sin color",
+   "Rojo",
+   "Naranja",
+   "Ámbar",
+   "Amarillo",
+   "Lima",
+   "Verde",
+   "Turquesa",
+   "Azul cielo",
+   "Índigo",
+   "Morado",
+   "Rosa",
+   "Gris",
+   "Guardar producto",
+   "Guardar precios por sucursal"
+  ],
+  "fields": [
+   {
+    "type": "file",
+    "name": "_R_52plfiv5val5ubrb_",
+    "ph": ""
+   },
+   {
+    "type": "file",
+    "name": "_R_52plfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "name",
+    "ph": ""
+   },
+   {
+    "type": "textarea",
+    "name": "description",
+    "ph": ""
+   },
+   {
+    "type": "select-one",
+    "name": "categoryId"
+   },
+   {
+    "type": "text",
+    "name": "price",
+    "ph": "0.00"
+   },
+   {
+    "type": "search",
+    "name": "base-ui-_R_9lgplfiv5val5ubrb_",
+    "ph": "Buscar producto"
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_2dkplfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_2lkplfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_2tkplfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "base-ui-_R_56q5fiv5val5ubrb_",
+    "ph": "110.00"
+   },
+   {
+    "type": "select-one",
+    "name": ""
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/products/e1b01d35-6286-4048-908f-59ce9739a691",
+  "final": "/app/products/e1b01d35-6286-4048-908f-59ce9739a691",
+  "status": 200,
+  "title": "Producto · Colega Menus",
+  "h1": "Editar producto",
+  "headings": [
+   "FotosSin fotos",
+   "Datos",
+   "Recetas",
+   "Qué lleva",
+   "EtiquetasNinguno",
+   "ModificadoresNinguno",
+   "Acompaña conNinguno",
+   "VisibilidadCaja, menú digital y Tienda",
+   "Vista previa",
+   "Por sucursal"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Más acciones",
+   "FotosSin fotos",
+   "Datos",
+   "Mejorar con IA",
+   "Precio único",
+   "Varias opciones",
+   "Recetas",
+   "Qué lleva",
+   "EtiquetasNinguno",
+   "Sugerir etiquetas",
+   "Picante",
+   "Recomendado",
+   "Vegetariano",
+   "ModificadoresNinguno",
+   "Acompaña conNinguno",
+   "Agregar Agua de jamaica",
+   "Agregar Café de olla",
+   "Agregar Limonada mineral",
+   "Agregar Chilaquiles verdes",
+   "Agregar Hot cakes",
+   "Agregar Molletes",
+   "Agregar Enchiladas suizas",
+   "Agregar Ensalada de la huerta",
+   "VisibilidadCaja, menú digital y Tienda",
+   "Sin color",
+   "Rojo",
+   "Naranja",
+   "Ámbar",
+   "Amarillo",
+   "Lima",
+   "Verde",
+   "Turquesa",
+   "Azul cielo",
+   "Índigo",
+   "Morado",
+   "Rosa",
+   "Gris",
+   "Guardar producto",
+   "Guardar precios por sucursal"
+  ],
+  "fields": [
+   {
+    "type": "file",
+    "name": "_R_52plfiv5val5ubrb_",
+    "ph": ""
+   },
+   {
+    "type": "file",
+    "name": "_R_52plfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "name",
+    "ph": ""
+   },
+   {
+    "type": "textarea",
+    "name": "description",
+    "ph": ""
+   },
+   {
+    "type": "select-one",
+    "name": "categoryId"
+   },
+   {
+    "type": "text",
+    "name": "price",
+    "ph": "0.00"
+   },
+   {
+    "type": "search",
+    "name": "base-ui-_R_9lgplfiv5val5ubrb_",
+    "ph": "Buscar producto"
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_2dkplfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_2lkplfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_2tkplfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "base-ui-_R_56q5fiv5val5ubrb_",
+    "ph": "165.00"
+   },
+   {
+    "type": "select-one",
+    "name": ""
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/products/new?category=c85da51e-a878-43eb-8f4b-376250b4770b",
+  "final": "/app/products/new?category=c85da51e-a878-43eb-8f4b-376250b4770b",
+  "status": 200,
+  "title": "Nuevo producto · Colega Menus",
+  "h1": "Nuevo producto",
+  "headings": [
+   "Fotos",
+   "Datos",
+   "Recetas",
+   "EtiquetasNinguno",
+   "ModificadoresNinguno",
+   "Acompaña conNinguno",
+   "VisibilidadCaja, menú digital y Tienda",
+   "Vista previa"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Fotos",
+   "Datos",
+   "Escribir con IA",
+   "Precio único",
+   "Varias opciones",
+   "Recetas",
+   "EtiquetasNinguno",
+   "Sugerir etiquetas",
+   "Picante",
+   "Recomendado",
+   "Vegetariano",
+   "ModificadoresNinguno",
+   "Acompaña conNinguno",
+   "Agregar Agua de jamaica",
+   "Agregar Café de olla",
+   "Agregar Limonada mineral",
+   "Agregar Chilaquiles verdes",
+   "Agregar Hot cakes",
+   "Agregar Molletes",
+   "Agregar Enchiladas suizas",
+   "Agregar Ensalada de la huerta",
+   "VisibilidadCaja, menú digital y Tienda",
+   "Sin color",
+   "Rojo",
+   "Naranja",
+   "Ámbar",
+   "Amarillo",
+   "Lima",
+   "Verde",
+   "Turquesa",
+   "Azul cielo",
+   "Índigo",
+   "Morado",
+   "Rosa",
+   "Gris",
+   "Guardar producto"
+  ],
+  "fields": [
+   {
+    "type": "file",
+    "name": "_R_2hd5fiv5val5ubrb_",
+    "ph": ""
+   },
+   {
+    "type": "file",
+    "name": "_R_2hd5fiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "name",
+    "ph": ""
+   },
+   {
+    "type": "textarea",
+    "name": "description",
+    "ph": ""
+   },
+   {
+    "type": "select-one",
+    "name": "categoryId"
+   },
+   {
+    "type": "text",
+    "name": "price",
+    "ph": "0.00"
+   },
+   {
+    "type": "search",
+    "name": "base-ui-_R_4qod5fiv5val5ubrb_",
+    "ph": "Buscar producto"
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_16qd5fiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_1aqd5fiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_1eqd5fiv5val5ubrbH1_",
+    "ph": ""
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/products/1ecc40b3-2f56-485e-a098-9a0b4d8d7f99",
+  "final": "/app/products/1ecc40b3-2f56-485e-a098-9a0b4d8d7f99",
+  "status": 200,
+  "title": "Producto · Colega Menus",
+  "h1": "Editar producto",
+  "headings": [
+   "FotosSin fotos",
+   "Datos",
+   "Recetas",
+   "Qué lleva",
+   "EtiquetasNinguno",
+   "ModificadoresNinguno",
+   "Acompaña conNinguno",
+   "VisibilidadCaja, menú digital y Tienda",
+   "Vista previa",
+   "Por sucursal"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Más acciones",
+   "FotosSin fotos",
+   "Datos",
+   "Mejorar con IA",
+   "Precio único",
+   "Varias opciones",
+   "Recetas",
+   "Qué lleva",
+   "EtiquetasNinguno",
+   "Sugerir etiquetas",
+   "Picante",
+   "Recomendado",
+   "Vegetariano",
+   "ModificadoresNinguno",
+   "Acompaña conNinguno",
+   "Agregar Agua de jamaica",
+   "Agregar Limonada mineral",
+   "Agregar Chilaquiles verdes",
+   "Agregar Hot cakes",
+   "Agregar Molletes",
+   "Agregar Enchiladas suizas",
+   "Agregar Ensalada de la huerta",
+   "Agregar Hamburguesa de la casa",
+   "VisibilidadCaja, menú digital y Tienda",
+   "Sin color",
+   "Rojo",
+   "Naranja",
+   "Ámbar",
+   "Amarillo",
+   "Lima",
+   "Verde",
+   "Turquesa",
+   "Azul cielo",
+   "Índigo",
+   "Morado",
+   "Rosa",
+   "Gris",
+   "Guardar producto",
+   "Guardar precios por sucursal"
+  ],
+  "fields": [
+   {
+    "type": "file",
+    "name": "_R_52plfiv5val5ubrb_",
+    "ph": ""
+   },
+   {
+    "type": "file",
+    "name": "_R_52plfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "name",
+    "ph": ""
+   },
+   {
+    "type": "textarea",
+    "name": "description",
+    "ph": ""
+   },
+   {
+    "type": "select-one",
+    "name": "categoryId"
+   },
+   {
+    "type": "text",
+    "name": "price",
+    "ph": "0.00"
+   },
+   {
+    "type": "search",
+    "name": "base-ui-_R_9lgplfiv5val5ubrb_",
+    "ph": "Buscar producto"
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_2dkplfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_2lkplfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_2tkplfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "base-ui-_R_56q5fiv5val5ubrb_",
+    "ph": "45.00"
+   },
+   {
+    "type": "select-one",
+    "name": ""
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/products/fe3f543a-b39a-4cce-a6e5-6c73113bd1a2",
+  "final": "/app/products/fe3f543a-b39a-4cce-a6e5-6c73113bd1a2",
+  "status": 200,
+  "title": "Producto · Colega Menus",
+  "h1": "Editar producto",
+  "headings": [
+   "FotosSin fotos",
+   "Datos",
+   "Recetas",
+   "Qué lleva",
+   "EtiquetasNinguno",
+   "ModificadoresNinguno",
+   "Acompaña conNinguno",
+   "VisibilidadCaja, menú digital y Tienda",
+   "Vista previa",
+   "Por sucursal"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Más acciones",
+   "FotosSin fotos",
+   "Datos",
+   "Mejorar con IA",
+   "Precio único",
+   "Varias opciones",
+   "Recetas",
+   "Qué lleva",
+   "EtiquetasNinguno",
+   "Sugerir etiquetas",
+   "Picante",
+   "Recomendado",
+   "Vegetariano",
+   "ModificadoresNinguno",
+   "Acompaña conNinguno",
+   "Agregar Café de olla",
+   "Agregar Limonada mineral",
+   "Agregar Chilaquiles verdes",
+   "Agregar Hot cakes",
+   "Agregar Molletes",
+   "Agregar Enchiladas suizas",
+   "Agregar Ensalada de la huerta",
+   "Agregar Hamburguesa de la casa",
+   "VisibilidadCaja, menú digital y Tienda",
+   "Sin color",
+   "Rojo",
+   "Naranja",
+   "Ámbar",
+   "Amarillo",
+   "Lima",
+   "Verde",
+   "Turquesa",
+   "Azul cielo",
+   "Índigo",
+   "Morado",
+   "Rosa",
+   "Gris",
+   "Guardar producto",
+   "Guardar precios por sucursal"
+  ],
+  "fields": [
+   {
+    "type": "file",
+    "name": "_R_52plfiv5val5ubrb_",
+    "ph": ""
+   },
+   {
+    "type": "file",
+    "name": "_R_52plfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "name",
+    "ph": ""
+   },
+   {
+    "type": "textarea",
+    "name": "description",
+    "ph": ""
+   },
+   {
+    "type": "select-one",
+    "name": "categoryId"
+   },
+   {
+    "type": "text",
+    "name": "price",
+    "ph": "0.00"
+   },
+   {
+    "type": "search",
+    "name": "base-ui-_R_9lgplfiv5val5ubrb_",
+    "ph": "Buscar producto"
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_2dkplfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_2lkplfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_2tkplfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "base-ui-_R_56q5fiv5val5ubrb_",
+    "ph": "40.00"
+   },
+   {
+    "type": "select-one",
+    "name": ""
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/products/b05dacf5-8adc-460f-846e-a443687ee51a",
+  "final": "/app/products/b05dacf5-8adc-460f-846e-a443687ee51a",
+  "status": 200,
+  "title": "Producto · Colega Menus",
+  "h1": "Editar producto",
+  "headings": [
+   "FotosSin fotos",
+   "Datos",
+   "Recetas",
+   "Qué lleva",
+   "EtiquetasNinguno",
+   "ModificadoresNinguno",
+   "Acompaña conNinguno",
+   "VisibilidadCaja, menú digital y Tienda",
+   "Vista previa",
+   "Por sucursal"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Más acciones",
+   "FotosSin fotos",
+   "Datos",
+   "Mejorar con IA",
+   "Precio único",
+   "Varias opciones",
+   "Recetas",
+   "Qué lleva",
+   "EtiquetasNinguno",
+   "Sugerir etiquetas",
+   "Picante",
+   "Recomendado",
+   "Vegetariano",
+   "ModificadoresNinguno",
+   "Acompaña conNinguno",
+   "Agregar Agua de jamaica",
+   "Agregar Café de olla",
+   "Agregar Chilaquiles verdes",
+   "Agregar Hot cakes",
+   "Agregar Molletes",
+   "Agregar Enchiladas suizas",
+   "Agregar Ensalada de la huerta",
+   "Agregar Hamburguesa de la casa",
+   "VisibilidadCaja, menú digital y Tienda",
+   "Sin color",
+   "Rojo",
+   "Naranja",
+   "Ámbar",
+   "Amarillo",
+   "Lima",
+   "Verde",
+   "Turquesa",
+   "Azul cielo",
+   "Índigo",
+   "Morado",
+   "Rosa",
+   "Gris",
+   "Guardar producto",
+   "Guardar precios por sucursal"
+  ],
+  "fields": [
+   {
+    "type": "file",
+    "name": "_R_52plfiv5val5ubrb_",
+    "ph": ""
+   },
+   {
+    "type": "file",
+    "name": "_R_52plfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "name",
+    "ph": ""
+   },
+   {
+    "type": "textarea",
+    "name": "description",
+    "ph": ""
+   },
+   {
+    "type": "select-one",
+    "name": "categoryId"
+   },
+   {
+    "type": "text",
+    "name": "price",
+    "ph": "0.00"
+   },
+   {
+    "type": "search",
+    "name": "base-ui-_R_9lgplfiv5val5ubrb_",
+    "ph": "Buscar producto"
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_2dkplfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_2lkplfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_2tkplfiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "base-ui-_R_56q5fiv5val5ubrb_",
+    "ph": "45.00"
+   },
+   {
+    "type": "select-one",
+    "name": ""
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/products/new?category=feba390b-c9bf-4c1d-99da-e6dabe3bd5aa",
+  "final": "/app/products/new?category=feba390b-c9bf-4c1d-99da-e6dabe3bd5aa",
+  "status": 200,
+  "title": "Nuevo producto · Colega Menus",
+  "h1": "Nuevo producto",
+  "headings": [
+   "Fotos",
+   "Datos",
+   "Recetas",
+   "EtiquetasNinguno",
+   "ModificadoresNinguno",
+   "Acompaña conNinguno",
+   "VisibilidadCaja, menú digital y Tienda",
+   "Vista previa"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Fotos",
+   "Datos",
+   "Escribir con IA",
+   "Precio único",
+   "Varias opciones",
+   "Recetas",
+   "EtiquetasNinguno",
+   "Sugerir etiquetas",
+   "Picante",
+   "Recomendado",
+   "Vegetariano",
+   "ModificadoresNinguno",
+   "Acompaña conNinguno",
+   "Agregar Agua de jamaica",
+   "Agregar Café de olla",
+   "Agregar Limonada mineral",
+   "Agregar Chilaquiles verdes",
+   "Agregar Hot cakes",
+   "Agregar Molletes",
+   "Agregar Enchiladas suizas",
+   "Agregar Ensalada de la huerta",
+   "VisibilidadCaja, menú digital y Tienda",
+   "Sin color",
+   "Rojo",
+   "Naranja",
+   "Ámbar",
+   "Amarillo",
+   "Lima",
+   "Verde",
+   "Turquesa",
+   "Azul cielo",
+   "Índigo",
+   "Morado",
+   "Rosa",
+   "Gris",
+   "Guardar producto"
+  ],
+  "fields": [
+   {
+    "type": "file",
+    "name": "_R_2hd5fiv5val5ubrb_",
+    "ph": ""
+   },
+   {
+    "type": "file",
+    "name": "_R_2hd5fiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "text",
+    "name": "name",
+    "ph": ""
+   },
+   {
+    "type": "textarea",
+    "name": "description",
+    "ph": ""
+   },
+   {
+    "type": "select-one",
+    "name": "categoryId"
+   },
+   {
+    "type": "text",
+    "name": "price",
+    "ph": "0.00"
+   },
+   {
+    "type": "search",
+    "name": "base-ui-_R_4qod5fiv5val5ubrb_",
+    "ph": "Buscar producto"
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_16qd5fiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_1aqd5fiv5val5ubrbH1_",
+    "ph": ""
+   },
+   {
+    "type": "checkbox",
+    "name": "base-ui-_R_1eqd5fiv5val5ubrbH1_",
+    "ph": ""
+   }
+  ],
+  "tables": [],
+  "empty": true
+ },
+ {
+  "requested": "/app/team/attendance?vista=periodo",
+  "final": "/app/team/attendance?vista=periodo",
+  "status": 200,
+  "title": "Asistencia · Colega Menus",
+  "h1": "Asistencia",
+  "headings": [
+   "Conoce Equipo"
+  ],
+  "tabs": [],
+  "buttons": [
+   "Borrar datos de ejemplo",
+   "Ver"
+  ],
+  "fields": [
+   {
+    "type": "date",
+    "name": "_R_m5fiv5val5ubrb_",
+    "ph": ""
+   },
+   {
+    "type": "date",
+    "name": "_R_165fiv5val5ubrb_",
+    "ph": ""
+   }
+  ],
+  "tables": [],
+  "empty": true
+ }
+]
