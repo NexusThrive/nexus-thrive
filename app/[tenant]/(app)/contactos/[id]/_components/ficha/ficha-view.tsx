@@ -2,13 +2,17 @@ import FichaGroups from "./ficha-groups";
 import type { GroupOption } from "../../../_components/customer-group-dialogs";
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { Banknote, CalendarDays, CreditCard, FileText, Mail, MapPin, MessageCircle, Phone, Receipt, ShoppingBag, Target } from "lucide-react";
+import { Banknote, CalendarDays, CalendarPlus, CreditCard, Globe, IdCard, Mail, MapPin, Megaphone, MessageCircle, Pencil, Phone, Plus, Receipt, ShoppingBag, Target, UserRound, Users, type LucideIcon } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { CustomerAvatar } from "@/components/atoms/customer-avatar";
+import { EmptyState } from "@/components/molecules/empty-state";
+import { Widget, WidgetHead, widgetRow } from "@/components/widgets/widget";
+import { TopbarCrumbs } from "@/components/molecules/topbar-crumbs";
 import { cn } from "@/lib/utils";
 import FichaActivity, { type ActivityItem } from "./ficha-activity";
 import FichaControl from "./ficha-control";
+import FichaMissing from "./ficha-missing";
 
 export type FichaTab = "citas" | "ventas" | "productos" | "facturas" | "membresias" | "relacionados" | "notas";
 export type FichaRow = { id: string; date: string; title: string; amount?: string; status?: { label: string; tone: "pending" | "ok" | "muted" } };
@@ -23,13 +27,24 @@ const TABS: { key: FichaTab; label: string }[] = [
   { key: "notas", label: "Notas" },
 ];
 
-const card = "rounded-xl border border-border bg-card p-[22px]";
-const addLink = "font-medium text-accent-text underline-offset-2 outline-none hover:underline focus-visible:outline-2 focus-visible:outline-ring";
-const quick = "inline-flex h-[34px] items-center gap-2 rounded-lg border border-border px-3 text-ui font-medium text-foreground outline-none hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
+/** Botón circular de acción (editar, llamar, escribir…): mismo gesto que la referencia. */
+const round = "grid size-11 shrink-0 place-items-center rounded-full bg-surface-muted text-foreground outline-none transition-colors hover:bg-accent-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
+
+/** Icono de cada dato del cliente según su etiqueta (la lista llega ya armada del servidor). */
+function dataIcon(label: string): LucideIcon {
+  const l = label.toLowerCase();
+  if (l.includes("documento")) return IdCard;
+  if (l.includes("ciudad")) return MapPin;
+  if (l.includes("país") || l.includes("pais")) return Globe;
+  if (l.includes("conoci")) return Megaphone;
+  if (l.includes("registrado")) return CalendarDays;
+  return UserRound;
+}
 
 /**
- * Ficha del cliente en modo lectura: la misma estructura de Nuevo cliente (panel de control, tarjetas y columna lateral). Identidad,
- * botones de resumen que filtran el historial, datos del cliente, pestañas de historial y la columna de actividad.
+ * Ficha del cliente en modo lectura, como un tablero suave: arriba el título y tres cifras; a la izquierda el historial de interacción en
+ * fichas, las cifras restantes y las pestañas; a la derecha el perfil (avatar grande y botones redondos) y la información detallada.
+ * Mismos datos y rutas de siempre; solo cambia cómo se presentan.
  */
 export default function FichaView(props: {
   slug: string;
@@ -53,7 +68,8 @@ export default function FichaView(props: {
   rows: FichaRow[];
   /** Contenido propio de la pestaña (Notas). */
   tabContent?: ReactNode;
-  emptyTab: { text: string; action?: { label: string; href: string } };
+  /** Botón para asignar una membresía a este cliente (ya vinculado); `null` si el módulo no está activo. */
+  membershipAction?: ReactNode;
   activity: ActivityItem[];
   now: string;
 }) {
@@ -62,13 +78,14 @@ export default function FichaView(props: {
   const shownPhone = phone.length === 10 ? `+57 ${phone.slice(0, 3)} ${phone.slice(3, 6)} ${phone.slice(6)}` : phone ? `+57 ${phone}` : null;
   const wa = phone ? `https://wa.me/${phone.length === 10 ? `57${phone}` : phone}` : null;
   const edit = (field: string) => hrefFor({ editar: "1", campo: field });
+  const editHref = `/${slug}/contactos/${customer.id}?editar=1`;
 
-  const contact: { icon: typeof Phone; value: string | null; empty: string; field: string }[] = [
-    { icon: Phone, value: shownPhone, empty: "Sin teléfono", field: "phone" },
-    { icon: Mail, value: customer.email, empty: "Sin correo", field: "email" },
-    { icon: MapPin, value: customer.address, empty: "Sin dirección", field: "address" },
+  const contact: { icon: LucideIcon; label: string; value: string | null; empty: string; field: string }[] = [
+    { icon: Phone, label: "Teléfono", value: shownPhone, empty: "Sin teléfono", field: "phone" },
+    { icon: Mail, label: "Correo electrónico", value: customer.email, empty: "Sin correo", field: "email" },
+    { icon: MapPin, label: "Dirección", value: customer.address, empty: "Sin dirección", field: "address" },
   ];
-  const summary: { key: FichaTab; icon: typeof Phone; value: string; label: string; href?: string }[] = [
+  const summary: { key: FichaTab; icon: LucideIcon; value: string; label: string; href?: string }[] = [
     ...(props.crmHref && props.summary.opportunities != null ? [{ key: "citas" as FichaTab, icon: Target, value: String(props.summary.opportunities), label: "Oportunidades", href: props.crmHref }] : []),
     { key: "citas", icon: CalendarDays, value: String(props.summary.bookings), label: "Citas" },
     { key: "ventas", icon: ShoppingBag, value: String(props.summary.sales), label: "Ventas" },
@@ -76,9 +93,58 @@ export default function FichaView(props: {
     { key: "ventas", icon: Banknote, value: props.summary.owed, label: "Por cobrar" },
     { key: "facturas", icon: Receipt, value: props.summary.invoiced, label: "Facturado" },
   ];
+  const inTiles = summary;
+  // Información detallada: solo lo que ya existe; lo que falta se sugiere desde el «!» de la tarjeta.
+  const rows = [
+    ...contact.map((c) => ({ icon: c.icon, label: c.label, value: c.value, field: c.field as string | undefined })),
+    ...props.data.map((d) => ({ icon: dataIcon(d.label), label: d.label, value: d.value, field: d.field })),
+  ];
+  const known = rows.filter((r): r is typeof r & { value: string } => Boolean(r.value));
+  const missing = rows.filter((r) => !r.value && r.field).map((r) => ({ label: r.label, href: edit(r.field as string) }));
+  // Estado vacío de cada pestaña: icono, qué es, y un botón que lleva a crearlo ya vinculado a este cliente (el enlace trae `cliente=`).
+  const first = customer.name.trim().split(/\s+/)[0] ?? customer.name;
+  const cta = cn(buttonVariants({ variant: "accent" }), "h-11 rounded-full px-6 text-sm font-semibold");
+  const sale = props.saleHref ? (
+    <Link href={props.saleHref} className={cta}>
+      Crear venta
+    </Link>
+  ) : undefined;
+  function emptyFor(key: FichaTab): { icon: ReactNode; title: string; description: string; action?: ReactNode } {
+    switch (key) {
+      case "citas":
+        return {
+          icon: <CalendarDays />,
+          title: "Aún no tiene citas",
+          description: `Agenda la primera cita de ${first}: queda vinculada a su ficha y le avisamos por WhatsApp.`,
+          action: props.bookHref ? (
+            <Link href={props.bookHref} className={cta}>
+              Agendar cita
+            </Link>
+          ) : undefined,
+        };
+      case "ventas":
+        return { icon: <ShoppingBag />, title: "Aún no tiene ventas ni pagos", description: `Crea una venta o registra un cobro: quedará en el historial de ${first}.`, action: sale };
+      case "facturas":
+        return { icon: <Receipt />, title: "Aún no tiene facturas", description: "Las facturas salen de una venta. Crea la primera y aparecerá aquí.", action: sale };
+      case "membresias":
+        return { icon: <CreditCard />, title: "Aún no tiene membresías", description: `Asigna un plan a ${first} y aquí verás su vigencia y sus renovaciones.`, action: props.membershipAction };
+      case "relacionados":
+        return { icon: <Users />, title: "Aún no tiene contactos relacionados", description: "Aquí aparecerán las personas o empresas vinculadas a este cliente." };
+      default:
+        return { icon: <ShoppingBag />, title: "Aún no hay nada", description: "Cuando haya movimientos, los verás aquí." };
+    }
+  }
+  const summaryHref = (s: (typeof summary)[number]) => s.href ?? `${hrefFor({ tab: s.key })}#historial`;
 
   return (
-    <div data-bleed="" className="flex flex-col" suppressHydrationWarning>
+    <div
+      data-bleed=""
+      className="flex flex-col pb-6"
+      style={{ backgroundImage: "radial-gradient(70% 55% at 0% 0%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 70%), radial-gradient(60% 50% at 100% 100%, color-mix(in srgb, var(--accent) 6%, transparent), transparent 70%)" }}
+      suppressHydrationWarning
+    >
+      {/* La ruta («Clientes › nombre») vive en la barra superior, donde se dice en qué vista se está. */}
+      <TopbarCrumbs items={[{ label: props.customersLabel, href: props.listHref }, { label: customer.name }]} />
       <FichaControl
         slug={slug}
         customerId={customer.id}
@@ -93,125 +159,36 @@ export default function FichaView(props: {
         pager={props.pager}
       />
 
-      {/* A todo el ancho, con el margen del panel de control: la ficha a la izquierda y la actividad a la derecha. */}
-      <div className="flex w-full flex-col items-start gap-6 px-5 pb-2 pt-2 lg:flex-row">
-        <div className="flex w-full min-w-0 flex-1 flex-col gap-4">
-          {/* Identidad */}
-          <section aria-labelledby="ficha-nombre" className={cn(card, "flex flex-wrap items-start gap-5")}>
-            <span className="grid size-[88px] shrink-0 place-items-center overflow-hidden rounded-[22px] bg-accent-subtle">
-              <CustomerAvatar identity={{ name: customer.name, id: customer.id }} photoUrl={customer.photoUrl} className="size-full" />
-            </span>
-            <div className="grid min-w-0 flex-1 basis-64 gap-3">
-              <div className="flex flex-wrap items-center gap-2">
-                <h1 id="ficha-nombre" className="min-w-0 text-3xl font-semibold tracking-tight text-foreground">
-                  {customer.name}
-                </h1>
-                <Badge tone={customer.active ? "success" : "muted"}>{customer.active ? "Activo" : "Archivado"}</Badge>
-                <Badge variant="outline">{customer.kind === "COMPANY" ? "Empresa" : "Persona"}</Badge>
-              </div>
-              <ul className="grid gap-2 text-sm">
-                {contact.map(({ icon: Icon, value, empty, field }) => (
-                  <li key={field} className="flex min-w-0 items-center gap-2">
-                    <Icon aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
-                    {value ? (
-                      <span className="truncate text-foreground">{value}</span>
-                    ) : (
-                      <>
-                        <span className="text-muted-foreground">{empty}</span>
-                        <Link href={edit(field)} className={addLink} aria-label={`Añadir ${empty.replace("Sin ", "")}`}>
-                          Añadir
-                        </Link>
-                      </>
-                    )}
-                  </li>
-                ))}
-              </ul>
-              <FichaGroups tenantSlug={props.slug} customerId={customer.id} customerName={customer.name} current={customer.groups} options={props.groupOptions} />
-              <div className="flex flex-wrap items-center gap-2">
-                {customer.tags.map((tag) => (
-                  <span key={tag} className="rounded-full border border-border-strong px-2.5 py-0.5 text-xs text-foreground">
-                    {tag}
+      <div className="grid w-full items-start gap-4 px-6 pt-4 lg:grid-cols-[minmax(0,1fr)_380px] xl:grid-cols-[minmax(0,1fr)_420px]">
+        {/* Columna ancha: historial en fichas, cifras y pestañas */}
+        <div className="grid min-w-0 gap-4">
+          <Widget aria-labelledby="ficha-actividad" className="p-6">
+            <FichaActivity bare slug={slug} customerId={customer.id} customerName={customer.name} items={props.activity} whatsappHref={wa} activityHref={props.activityHref} now={props.now} />
+          </Widget>
+
+          {inTiles.length ? (
+            <nav aria-label="Resumen del cliente" className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))" }}>
+              {inTiles.map((s) => (
+                <Link
+                  key={s.label}
+                  href={summaryHref(s)}
+                  className="group grid min-h-[112px] content-between gap-3 rounded-3xl border border-border/60 bg-card p-4 outline-none transition-colors hover:bg-accent-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                >
+                  <span className="flex items-center justify-between gap-2">
+                    <span className="text-xs text-muted-foreground">{s.label}</span>
+                    <span aria-hidden="true" className="grid size-8 place-items-center rounded-full bg-surface-muted text-accent-text">
+                      <s.icon className="size-4" strokeWidth={1.7} />
+                    </span>
                   </span>
-                ))}
-                <Link href={edit("tags")} className={cn(addLink, "text-xs")}>
-                  + Etiqueta
+                  <span className="truncate text-xl font-semibold tabular-nums">{s.value}</span>
                 </Link>
-              </div>
-              {wa || customer.email ? (
-                <div className="flex flex-wrap gap-2 pt-1">
-                  {wa ? (
-                    <a href={wa} target="_blank" rel="noopener noreferrer" className={quick}>
-                      <MessageCircle aria-hidden="true" className="size-4 text-success" />
-                      WhatsApp
-                    </a>
-                  ) : null}
-                  {phone ? (
-                    <a href={`tel:+57${phone}`} className={quick}>
-                      <Phone aria-hidden="true" className="size-4 text-muted-foreground" />
-                      Llamar
-                    </a>
-                  ) : null}
-                  {customer.email ? (
-                    <a href={`mailto:${customer.email}`} className={quick}>
-                      <Mail aria-hidden="true" className="size-4 text-muted-foreground" />
-                      Enviar correo
-                    </a>
-                  ) : null}
-                </div>
-              ) : null}
-            </div>
-          </section>
-
-          {/* Botones de resumen: cada uno abre su pestaña del historial */}
-          <nav aria-label="Resumen del cliente" className={cn("grid gap-3", summary.length > 5 ? "grid-cols-2 sm:grid-cols-3" : "grid-cols-[repeat(auto-fit,minmax(136px,1fr))]")}>
-            {summary.map(({ key, icon: Icon, value, label, href }) => (
-              <Link
-                key={label}
-                href={href ?? `${hrefFor({ tab: key })}#historial`}
-                className="flex items-center gap-3 rounded-[10px] border border-border bg-card px-3.5 py-3 outline-none transition-colors duration-(--d1) hover:border-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none"
-              >
-                <span aria-hidden="true" className="grid size-9 shrink-0 place-items-center rounded-lg bg-surface-muted text-accent-text">
-                  <Icon className="size-4" />
-                </span>
-                <span className="grid min-w-0">
-                  <span className="truncate text-base font-semibold text-foreground">{value}</span>
-                  <span className="text-xs text-muted-foreground">{label}</span>
-                </span>
-              </Link>
-            ))}
-          </nav>
-
-          {/* Datos del cliente */}
-          <section aria-labelledby="ficha-datos" className={card}>
-            <h2 id="ficha-datos" className="mb-4 text-base font-semibold text-foreground">
-              Datos del cliente
-            </h2>
-            <dl className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-x-6 gap-y-5">
-              {props.data.map((d) => (
-                <div key={d.label} className="grid gap-1">
-                  <dt className="text-xs text-muted-foreground">{d.label}</dt>
-                  <dd className="text-sm">
-                    {d.value ? (
-                      <span className="text-foreground">{d.value}</span>
-                    ) : (
-                      <span className="flex flex-wrap gap-2">
-                        <span className="text-muted-foreground">{d.empty}</span>
-                        {d.field ? (
-                          <Link href={edit(d.field)} className={addLink} aria-label={`Añadir ${d.label.toLowerCase()}`}>
-                            Añadir
-                          </Link>
-                        ) : null}
-                      </span>
-                    )}
-                  </dd>
-                </div>
               ))}
-            </dl>
-          </section>
+            </nav>
+          ) : null}
 
-          {/* Historial */}
-          <section id="historial" aria-label="Historial" className="scroll-mt-20 overflow-hidden rounded-xl border border-border bg-card">
-            <nav aria-label="Historial del cliente" className="flex overflow-x-auto border-b border-border px-2">
+          {/* Historial por pestañas */}
+          <Widget id="historial" aria-label="Historial" className="scroll-mt-20 gap-0 p-0">
+            <nav aria-label="Historial del cliente" className="flex gap-1.5 overflow-x-auto p-4 pb-3">
               {TABS.map((t) => (
                 <Link
                   key={t.key}
@@ -219,8 +196,8 @@ export default function FichaView(props: {
                   aria-current={props.tab === t.key ? "page" : undefined}
                   scroll={false}
                   className={cn(
-                    "-mb-px shrink-0 border-b-2 px-3 py-3.5 text-sm outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring",
-                    props.tab === t.key ? "border-accent font-medium text-foreground" : "border-transparent text-muted-foreground hover:text-foreground",
+                    "shrink-0 rounded-full px-4 py-2 text-sm outline-none transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring",
+                    props.tab === t.key ? "bg-accent-subtle font-medium text-foreground" : "text-muted-foreground hover:bg-surface-muted hover:text-foreground",
                   )}
                 >
                   {t.label}
@@ -228,11 +205,11 @@ export default function FichaView(props: {
               ))}
             </nav>
             {props.tabContent ? (
-              <div className="p-[22px]">{props.tabContent}</div>
+              <div className="p-6 pt-3">{props.tabContent}</div>
             ) : props.rows.length ? (
-              <ul>
+              <ul className="grid gap-2 p-4 pt-1">
                 {props.rows.map((r) => (
-                  <li key={r.id} className="flex items-center gap-4 border-b border-border/60 px-[22px] py-4 text-sm last:border-b-0">
+                  <li key={r.id} className={cn(widgetRow, "flex items-center gap-4 px-4 py-3.5 text-sm")}>
                     <span className="w-[110px] shrink-0 text-muted-foreground tabular-nums">{r.date}</span>
                     <span className="min-w-0 flex-1 truncate text-foreground">{r.title}</span>
                     {r.amount ? <span className="shrink-0 font-medium tabular-nums text-foreground">{r.amount}</span> : null}
@@ -245,21 +222,120 @@ export default function FichaView(props: {
                 ))}
               </ul>
             ) : (
-              <div className="flex flex-wrap items-center justify-between gap-3 px-[22px] py-5">
-                <p className="text-sm text-muted-foreground">{props.emptyTab.text}</p>
-                {props.emptyTab.action ? (
-                  <Link href={props.emptyTab.action.href} className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-[34px] border border-border bg-transparent")}>
-                    <FileText aria-hidden="true" className="size-4" />
-                    {props.emptyTab.action.label}
-                  </Link>
-                ) : null}
-              </div>
+              <EmptyState remember={false} mark="center" headingLevel={3} className="pt-4" {...emptyFor(props.tab)} />
             )}
-          </section>
+          </Widget>
         </div>
 
-        <aside className="flex w-full min-w-0 shrink-0 flex-col gap-4 lg:w-[400px] lg:border-l lg:border-border lg:ps-6 xl:w-[440px]">
-          <FichaActivity bare slug={slug} customerId={customer.id} items={props.activity} whatsappHref={wa} activityHref={props.activityHref} now={props.now} />
+        {/* Columna derecha: perfil e información detallada */}
+        <aside className="grid min-w-0 gap-4">
+          <Widget aria-labelledby="ficha-nombre" className="justify-items-center gap-4 p-6 text-center">
+            <span className="grid size-[120px] shrink-0 place-items-center overflow-hidden rounded-full bg-accent-subtle ring-8 ring-accent-subtle/50">
+              <CustomerAvatar identity={{ name: customer.name, id: customer.id }} photoUrl={customer.photoUrl} className="size-full" />
+            </span>
+            <div className="grid justify-items-center gap-2">
+              <h1 id="ficha-nombre" className="min-w-0 break-words font-display text-2xl font-semibold tracking-tight text-foreground">
+                {customer.name}
+              </h1>
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                <Badge tone={customer.active ? "success" : "muted"}>{customer.active ? "Activo" : "Archivado"}</Badge>
+                <Badge variant="outline">{customer.kind === "COMPANY" ? "Empresa" : "Persona"}</Badge>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              <Link href={editHref} aria-label="Editar cliente" title="Editar" className={round}>
+                <Pencil aria-hidden="true" className="size-[18px]" strokeWidth={1.7} />
+              </Link>
+              {wa ? (
+                <a href={wa} target="_blank" rel="noopener noreferrer" aria-label="Escribir por WhatsApp" title="WhatsApp" className={round}>
+                  <MessageCircle aria-hidden="true" className="size-[18px]" strokeWidth={1.7} />
+                </a>
+              ) : null}
+              {phone ? (
+                <a href={`tel:+57${phone}`} aria-label="Llamar" title="Llamar" className={round}>
+                  <Phone aria-hidden="true" className="size-[18px]" strokeWidth={1.7} />
+                </a>
+              ) : null}
+              {customer.email ? (
+                <a href={`mailto:${customer.email}`} aria-label="Enviar correo" title="Enviar correo" className={round}>
+                  <Mail aria-hidden="true" className="size-[18px]" strokeWidth={1.7} />
+                </a>
+              ) : null}
+              {props.bookHref ? (
+                <Link href={props.bookHref} aria-label="Nueva cita" title="Nueva cita" className={round}>
+                  <CalendarPlus aria-hidden="true" className="size-[18px]" strokeWidth={1.7} />
+                </Link>
+              ) : null}
+            </div>
+            {props.saleHref ? (
+              <Link href={props.saleHref} className={cn(buttonVariants({ variant: "accent" }), "h-11 w-full rounded-full text-sm font-semibold")}>
+                Nueva venta
+              </Link>
+            ) : null}
+            {customer.groups.length || customer.tags.length ? (
+              <div className="grid w-full justify-items-center gap-3 border-t border-border/50 pt-4">
+                <FichaGroups part="chips" tenantSlug={props.slug} customerId={customer.id} customerName={customer.name} current={customer.groups} options={props.groupOptions} />
+                {customer.tags.length ? (
+                  <div className="flex flex-wrap items-center justify-center gap-2">
+                    {customer.tags.map((tag) => (
+                      <span key={tag} className="rounded-full bg-surface-muted px-3 py-1 text-xs text-foreground">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+            {/* Pie de la tarjeta: «Grupo» y «Etiqueta» como dos botones divididos, de borde a borde. */}
+            <div className="-mx-6 -mb-6 mt-2 grid w-[calc(100%+3rem)] grid-cols-2 border-t border-border/50">
+              <FichaGroups
+                part="add"
+                tenantSlug={props.slug}
+                customerId={customer.id}
+                customerName={customer.name}
+                current={customer.groups}
+                options={props.groupOptions}
+                addClassName="inline-flex h-14 items-center justify-center gap-2 rounded-bl-(--radius-widget) text-sm font-medium text-accent-text outline-none transition-colors hover:bg-accent-subtle focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
+              />
+              <Link href={edit("tags")} className="inline-flex h-14 items-center justify-center gap-2 rounded-br-(--radius-widget) border-l border-border/50 text-sm font-medium text-accent-text outline-none transition-colors hover:bg-accent-subtle focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring">
+                <Plus aria-hidden="true" className="size-4" />
+                Etiqueta
+              </Link>
+            </div>
+          </Widget>
+
+          <Widget aria-labelledby="ficha-datos" className="p-6">
+            <WidgetHead
+              id="ficha-datos"
+              title="Información detallada"
+              subtitle="Contacto, documento y origen"
+              right={
+                <span className="flex items-center gap-2">
+                  <FichaMissing items={missing} editHref={editHref} />
+                  <Link href={editHref} aria-label="Editar la información del cliente" title="Editar" className={cn(round, "size-9")}>
+                    <Pencil aria-hidden="true" className="size-4" strokeWidth={1.7} />
+                  </Link>
+                </span>
+              }
+            />
+            {known.length ? (
+              <dl className="grid gap-1">
+                {known.map((d) => (
+                  <div key={d.label} className="flex items-center gap-3 rounded-2xl px-2 py-2.5">
+                    <span aria-hidden="true" className="grid size-10 shrink-0 place-items-center rounded-full bg-surface-muted text-muted-foreground">
+                      <d.icon className="size-[18px]" strokeWidth={1.6} />
+                    </span>
+                    <div className="grid min-w-0 flex-1 gap-0.5">
+                      <dt className="text-xs text-muted-foreground">{d.label}</dt>
+                      <dd className="min-w-0 truncate text-ui font-medium text-foreground">{d.value}</dd>
+                    </div>
+                  </div>
+                ))}
+              </dl>
+            ) : (
+              <p className={cn(widgetRow, "text-ui text-muted-foreground")}>Aún no hay datos. Pulsa el «!» para ver cuáles añadir.</p>
+            )}
+          </Widget>
         </aside>
       </div>
     </div>

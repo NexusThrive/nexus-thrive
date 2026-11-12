@@ -107,7 +107,7 @@ function cellFor(key: ColumnKey, row: CustomerRow, terms?: string[], onAddToGrou
       return (
         <span className="flex min-w-0 items-center gap-1">
           {row.groups.slice(0, 2).map((g) => (
-            <span key={g.id} className="inline-flex min-w-0 items-center gap-1 rounded-md bg-surface-muted px-1.5 py-0.5 text-xs text-foreground">
+            <span key={g.id} className="inline-flex min-w-0 items-center gap-1 rounded-full bg-surface-muted px-2.5 py-0.5 text-xs text-foreground">
               <span className="shrink-0 text-accent-text"><GroupIcon name={g.icon} className="size-3" /></span>
               <span className="truncate">{g.name}</span>
             </span>
@@ -368,9 +368,9 @@ export default function CustomerTable({
   // Seleccionar es para eliminar: sin ese permiso no hay casillas ni barra.
   const selectable = canRemove;
   const stickyAvatar = selectable ? 44 : 0;
-  const stickyName = stickyAvatar + 36;
-  const stickyBg = (isSelected: boolean) => (isSelected ? "bg-accent-subtle" : "bg-background group-hover:bg-surface-muted");
-  const fixedWidth = (selectable ? 44 : 0) + 36 + columns.widthOf("name") + 44;
+  const stickyName = stickyAvatar + 48;
+  const stickyBg = (isSelected: boolean) => (isSelected ? "bg-accent-subtle" : "bg-background md:bg-card group-hover:bg-surface-muted");
+  const fixedWidth = (selectable ? 44 : 0) + 48 + columns.widthOf("name") + 44;
   const dataWidth = columns.visible.reduce((sum, column) => sum + columns.widthOf(column.key), 0);
   // Las columnas de datos visibles llenan el ancho disponible; la casilla, el avatar y el nombre no se estiran.
   const scale = boxWidth > fixedWidth + dataWidth && dataWidth > 0 ? (boxWidth - fixedWidth) / dataWidth : 1;
@@ -381,7 +381,7 @@ export default function CustomerTable({
     <tr
       key={`${keyPrefix}${row.id}`}
       onClick={(event) => openProfile(event, row.id)}
-      className={cn("group h-[38px] cursor-pointer transition hover:bg-muted/60", selected.has(row.id) && "bg-accent-subtle/30")}
+      className="group h-[54px] cursor-pointer"
     >
       {selectable ? (
         <td className={cn("sticky left-0 z-(--z-raised) ps-5 pe-0", stickyBg(selected.has(row.id)))}>
@@ -395,7 +395,7 @@ export default function CustomerTable({
         </td>
       ) : null}
       <td className={cn("sticky z-(--z-raised) px-2", stickyBg(selected.has(row.id)))} style={{ left: stickyAvatar }}>
-        <Face row={row} className="flex size-[22px] items-center justify-center rounded-[5px] bg-accent-subtle text-2xs font-semibold text-accent-text" />
+        <Face row={row} className="flex size-8 items-center justify-center rounded-full bg-accent-subtle text-2xs font-semibold text-accent-text" />
       </td>
       <td className={cn("sticky z-(--z-raised) px-3", stickyBg(selected.has(row.id)))} style={{ left: stickyName }}>
         <p className="flex min-w-0 items-center gap-2 font-medium text-foreground">
@@ -413,7 +413,7 @@ export default function CustomerTable({
         </p>
       </td>
       {columns.visible.map((column) => (
-        <td key={column.key} className="truncate px-3 text-muted-foreground">
+        <td key={column.key} className={cn("truncate px-3 text-muted-foreground", selected.has(row.id) ? "bg-accent-subtle" : "group-hover:bg-surface-muted")}>
           {cellFor(column.key, row, searchTerms, setGroupTarget)}
         </td>
       ))}
@@ -504,8 +504,8 @@ export default function CustomerTable({
           description={filtered ? "Prueba con otros filtros o quítalos para ver todo." : query ? "Prueba con otro término o limpia la búsqueda." : isArchivedView ? `Los ${customersLabel} que archives aparecen aquí.` : "Registra el primero para llevar su historial, sus citas y sus cobros."}
           icon={query || filtered ? <Search /> : isArchivedView ? <Archive /> : <Users />}
           preview={!query && !filtered && !isArchivedView ? CUSTOMER_PREVIEW : undefined}
-          action={filtered && clearHref ? <Link href={clearHref} className={buttonVariants({ variant: "outline", size: "sm", className: "h-[34px]" })}>Quitar filtros</Link> : !query && !isArchivedView ? <Link href={`/${tenantSlug}/contactos/nuevo`} className={buttonVariants({ variant: "accent", size: "sm", className: "h-[34px]" })}><Plus aria-hidden="true" className="size-4" /> Nuevo cliente</Link> : undefined}
-          secondaryAction={!query && !filtered && !isArchivedView ? <Link href={`/${tenantSlug}/data`} className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-[34px] border border-border")}>Importar desde Excel</Link> : undefined}
+          action={filtered && clearHref ? <Link href={clearHref} className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-11 rounded-full border border-border/60 px-5")}>Quitar filtros</Link> : !query && !isArchivedView ? <Link href={`/${tenantSlug}/contactos/nuevo`} className={cn(buttonVariants({ variant: "accent", size: "sm" }), "h-11 rounded-full px-6 text-sm font-semibold")}><Plus aria-hidden="true" className="size-4" /> Nuevo cliente</Link> : undefined}
+          secondaryAction={!query && !filtered && !isArchivedView ? <Link href={`/${tenantSlug}/data`} className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-11 rounded-full border border-border/60 px-5")}>Importar desde Excel</Link> : undefined}
           highlights={
             !query && !filtered && !isArchivedView
               ? [
@@ -526,17 +526,17 @@ export default function CustomerTable({
               </caption>
               <colgroup>
                 {selectable ? <col style={{ width: 44 }} /> : null}
-                <col style={{ width: 36 }} />
+                <col style={{ width: 48 }} />
                 <col style={{ width: columns.widthOf("name") }} />
                 {columns.visible.map((column) => (
                   <col key={column.key} style={{ width: shown(column.key) }} />
                 ))}
                 <col style={{ width: 44 }} />
               </colgroup>
-              <thead className="sticky top-0 z-(--z-sticky) border-b border-border bg-background text-xs font-medium text-muted-foreground">
-                <tr className="h-[38px]">
+              <thead className="sticky top-0 z-(--z-sticky) border-b border-border/50 bg-background text-xs md:bg-card font-medium text-muted-foreground">
+                <tr className="h-12">
                   {selectable ? (
-                    <th scope="col" className="sticky left-0 z-(--z-raised) bg-background ps-5 pe-0">
+                    <th scope="col" className="sticky left-0 z-(--z-raised) bg-background md:bg-card ps-5 pe-0">
                       <input
                         type="checkbox"
                         aria-label={`Seleccionar todos los ${customersLabel} de esta página`}
@@ -551,10 +551,10 @@ export default function CustomerTable({
                       />
                     </th>
                   ) : null}
-                  <th scope="col" className="sticky z-(--z-raised) bg-background px-2" style={{ left: stickyAvatar }}>
+                  <th scope="col" className="sticky z-(--z-raised) bg-background md:bg-card px-2" style={{ left: stickyAvatar }}>
                     <span className="sr-only">Foto</span>
                   </th>
-                  <th scope="col" className="group/th sticky z-(--z-raised) bg-background px-3" style={{ left: stickyName }} aria-sort={sort === "name_asc" ? "ascending" : sort === "name_desc" ? "descending" : "none"}>
+                  <th scope="col" className="group/th sticky z-(--z-raised) bg-background md:bg-card px-3" style={{ left: stickyName }} aria-sort={sort === "name_asc" ? "ascending" : sort === "name_desc" ? "descending" : "none"}>
                     <button type="button" onClick={() => setSort(nameSort)} className="inline-flex max-w-full items-center gap-1 truncate outline-none hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
                       {terms.customer}
                       {sortIcon(sort !== "recent", sort === "name_desc")}
@@ -579,12 +579,12 @@ export default function CustomerTable({
                       <ResizeHandle columnKey={column.key} label={column.label} prefs={columns} scale={scale} />
                     </th>
                   ))}
-                  <th scope="col" className="sticky right-0 z-(--z-raised) bg-background px-2">
+                  <th scope="col" className="sticky right-0 z-(--z-raised) bg-background md:bg-card px-2">
                     <ColumnChooser prefs={columns} />
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border border-b border-border">
+              <tbody className="divide-y divide-border/50 border-b border-border/50">
                 {groups ? renderGroups(groups, 0) : rows.map((row) => renderRow(row))}
               </tbody>
             </table>

@@ -27,6 +27,7 @@ export default function CustomerSearchBar({
   const counts = useCallback((state: SearchState) => customerFilterCountsAction(tenantSlug, state), [tenantSlug]);
   return (
     <AdvancedSearch
+      pill
       className={className}
       etiqueta={`Buscar ${terms.customers.toLowerCase()}`}
       esquema={schema}

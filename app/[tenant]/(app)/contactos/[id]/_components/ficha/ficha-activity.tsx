@@ -1,21 +1,21 @@
 "use client";
 
-import { useActionState, useRef, useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { MessageCircle, Paperclip, Search, X } from "lucide-react";
+import { CheckSquare, MessageCircle, Paperclip, Search, X } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { inputClasses, textareaClasses } from "@/components/atoms/input";
+import { inputClasses } from "@/components/atoms/input";
 import { useToast } from "@/components/molecules/toast";
-import { createCustomerNoteAction, type NoteFormState } from "@/app/[tenant]/(app)/contactos/[id]/actions";
+import NoteDialog from "../note-dialog";
 import { attachCustomerFileAction } from "@/app/[tenant]/(app)/contactos/[id]/ficha-actions";
 import { cn } from "@/lib/utils";
 
 /** Evento de la actividad ya preparado en el servidor (fecha ISO; `fresh` = de las últimas 24 horas). */
 export type ActivityItem = { id: string; date: string; text: string; author: string | null; fresh: boolean };
 
-const outline = cn(buttonVariants({ variant: "outline", size: "sm" }), "h-[34px] border border-border bg-transparent");
-const iconButton = "grid size-8 place-items-center rounded-lg text-muted-foreground outline-none hover:bg-surface-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring";
+const outline = cn(buttonVariants({ variant: "outline", size: "sm" }), "h-10 rounded-full border border-border/60 bg-transparent px-4");
+const iconButton = "grid size-9 place-items-center rounded-full bg-surface-muted text-foreground outline-none transition-colors hover:bg-accent-subtle focus-visible:outline-2 focus-visible:outline-ring";
 const day = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", day: "numeric", month: "short", year: "numeric" });
 const dayKey = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Bogota" });
 const time = new Intl.DateTimeFormat("es-CO", { timeZone: "America/Bogota", hour: "numeric", minute: "2-digit" });
@@ -39,6 +39,7 @@ export default function FichaActivity({
   whatsappHref,
   activityHref,
   now,
+  customerName,
   bare = false,
 }: {
   /** Sin fondo de tarjeta: la línea de tiempo en la columna derecha de la ficha. */
@@ -51,6 +52,8 @@ export default function FichaActivity({
   activityHref: string | null;
   /** Instante del servidor (ISO) para «Hoy» y «Ayer» sin desajuste de hidratación. */
   now: string;
+  /** Para el modal de «Nueva nota». */
+  customerName: string;
 }) {
   const router = useRouter();
   const { toast } = useToast();
@@ -59,16 +62,6 @@ export default function FichaActivity({
   const [q, setQ] = useState("");
   const [uploading, startUpload] = useTransition();
   const fileRef = useRef<HTMLInputElement>(null);
-  const noteRef = useRef<HTMLTextAreaElement>(null);
-  const [state, formAction, saving] = useActionState<NoteFormState, FormData>(async (prev, fd) => {
-    const r = await createCustomerNoteAction(prev, fd);
-    if (r.status === "ok") {
-      toast("Nota registrada", "success");
-      setNoting(false);
-      router.refresh();
-    }
-    return r;
-  }, { status: "idle" });
 
   const today = dayKey.format(new Date(now));
   const yesterday = dayKey.format(new Date(new Date(now).getTime() - 86_400_000));
@@ -94,12 +87,30 @@ export default function FichaActivity({
     });
 
   return (
-    <section aria-labelledby="ficha-actividad" className={bare ? "" : "rounded-xl border border-border bg-card p-[22px]"}>
-      <div className="mb-4 flex items-center justify-between gap-2">
-        <h2 id="ficha-actividad" className="text-base font-semibold text-foreground">
-          Actividad
-        </h2>
-        <div className="flex items-center gap-1">
+    <section aria-labelledby="ficha-actividad" className={bare ? "" : "rounded-(--radius-widget) border border-border/60 bg-card p-6"}>
+      <div className="mb-4 flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
+        <div className="grid gap-0.5">
+          <h2 id="ficha-actividad" className="text-ui font-semibold text-foreground">
+            Historial de interacción
+          </h2>
+          <p className="text-xs text-muted-foreground">Mensajes, notas, pagos y citas</p>
+        </div>
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          {whatsappHref ? (
+            <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className={cn(buttonVariants({ variant: "accent", size: "sm" }), "h-10 rounded-full px-5 font-semibold")}>
+              <MessageCircle aria-hidden="true" className="size-4" />
+              Enviar mensaje
+            </a>
+          ) : null}
+          <button type="button" aria-haspopup="dialog" onClick={() => setNoting(true)} className={outline}>
+            Registrar nota
+          </button>
+          {activityHref ? (
+            <Link href={activityHref} className={outline}>
+              <CheckSquare aria-hidden="true" className="size-4" />
+              Nueva tarea
+            </Link>
+          ) : null}
           <button type="button" aria-label="Buscar en la actividad" aria-pressed={searching} onClick={() => setSearching((s) => !s)} className={iconButton}>
             <Search aria-hidden="true" className="size-4" />
           </button>
@@ -125,73 +136,24 @@ export default function FichaActivity({
         </div>
       ) : null}
 
-      <div className="flex flex-wrap gap-2">
-        {whatsappHref ? (
-          <a href={whatsappHref} target="_blank" rel="noopener noreferrer" className={buttonVariants({ variant: "accent", size: "sm", className: "h-[34px] font-semibold" })}>
-            <MessageCircle aria-hidden="true" className="size-4" />
-            Enviar mensaje
-          </a>
-        ) : null}
-        <button type="button" aria-expanded={noting} onClick={() => {
-          setNoting((n) => !n);
-          requestAnimationFrame(() => noteRef.current?.focus());
-        }} className={outline}>
-          Registrar nota
-        </button>
-        {activityHref ? (
-          <Link href={activityHref} className={outline}>
-            Actividad
-          </Link>
-        ) : null}
-      </div>
-
-      {noting ? (
-        <form action={formAction} className="mt-4 grid gap-2">
-          <input type="hidden" name="tenantSlug" value={slug} />
-          <input type="hidden" name="customerId" value={customerId} />
-          <label htmlFor="ficha-nota" className="text-xs font-medium text-muted-foreground">
-            Nota interna
-          </label>
-          <textarea ref={noteRef} id="ficha-nota" name="content" rows={3} maxLength={2000} required defaultValue={state.status === "error" ? state.content : ""} aria-invalid={state.status === "error" || undefined} aria-describedby={state.status === "error" ? "ficha-nota-error" : undefined} className={textareaClasses} />
-          {state.status === "error" ? (
-            <p id="ficha-nota-error" role="alert" className="text-xs text-danger">
-              {state.message}
-            </p>
-          ) : null}
-          <div className="flex gap-2">
-            <button type="submit" disabled={saving} className={buttonVariants({ variant: "accent", size: "sm", className: "h-[34px] font-semibold" })}>
-              {saving ? "Guardando…" : "Guardar nota"}
-            </button>
-            <button type="button" onClick={() => setNoting(false)} className={outline}>
-              Cancelar
-            </button>
-          </div>
-        </form>
-      ) : null}
-
       {groups.length === 0 ? (
         <p className="mt-6 text-center text-sm text-muted-foreground">{term ? "Nada coincide con la búsqueda." : "Aún no hay actividad."}</p>
       ) : (
         // Alto máximo y scroll propio: la columna no se alarga sin fin. Se enfoca con Tab para desplazarla.
-        <div role="region" aria-label="Historial de actividad" tabIndex={0} className="-me-2 mt-2 max-h-[min(60vh,560px)] overflow-y-auto overscroll-contain pe-2 outline-none focus-visible:outline-2 focus-visible:outline-ring">
+        <div role="region" aria-label="Historial de actividad" tabIndex={0} className="-me-2 mt-4 grid max-h-[min(60vh,560px)] gap-5 overflow-y-auto overscroll-contain pe-2 outline-none focus-visible:outline-2 focus-visible:outline-ring">
           {groups.map((group) => (
-            <div key={group.label}>
-              <p className="my-4 flex items-center gap-3 text-xs text-muted-foreground">
-                <span aria-hidden="true" className="h-px flex-1 bg-border" />
-                {group.label}
-                <span aria-hidden="true" className="h-px flex-1 bg-border" />
-              </p>
-              <ol className="grid gap-4">
+            <div key={group.label} className="grid gap-3">
+              <p className="text-xs font-medium text-muted-foreground">{group.label}</p>
+              {/* Fichas como en la referencia, todas en gris suave; la reciente lleva un punto de oro junto a su hora. */}
+              <ol className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))" }}>
                 {group.items.map((item) => (
-                  <li key={item.id} className="flex gap-3">
-                    <span aria-hidden="true" className={cn("mt-1.5 size-2 shrink-0 rounded-full", item.fresh ? "bg-accent" : "bg-muted-foreground/60")} />
-                    <div className="min-w-0">
-                      <p className="text-ui text-foreground">{item.text}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {item.author ? `${item.author} · ` : ""}
-                        {time.format(new Date(item.date))}
-                      </p>
-                    </div>
+                  <li key={item.id} className={cn("grid min-h-[120px] content-between gap-3 rounded-3xl p-4", "bg-surface-muted/60 text-foreground")}>
+                    <p className="flex items-center gap-1.5 text-xs tabular-nums text-muted-foreground">
+                      {item.fresh ? <span aria-hidden="true" className="size-2 rounded-full bg-accent" /> : null}
+                      {time.format(new Date(item.date))}
+                    </p>
+                    <p className="line-clamp-3 text-ui font-medium leading-snug">{item.text}</p>
+                    {item.author ? <p className="truncate text-xs text-muted-foreground">{item.author}</p> : null}
                   </li>
                 ))}
               </ol>
@@ -199,6 +161,7 @@ export default function FichaActivity({
           ))}
         </div>
       )}
+      <NoteDialog open={noting} onOpenChange={setNoting} tenantSlug={slug} customerId={customerId} customerName={customerName} />
     </section>
   );
 }

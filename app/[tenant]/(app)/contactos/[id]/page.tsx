@@ -20,6 +20,7 @@ import FichaView, { type FichaRow, type FichaTab } from "./_components/ficha/fic
 import type { ActivityItem } from "./_components/ficha/ficha-activity";
 import NotesPanel from "./_components/notes-panel";
 import PurchasesPanel from "./_components/purchases-panel";
+import AssignMembership from "./_components/assign-membership";
 import { customerPurchases } from "@/lib/business/customers/purchases-db";
 
 export const metadata: Metadata = { title: "Ficha del cliente" };
@@ -120,14 +121,16 @@ export default async function CustomerPage({
   const bookHref = canBook ? `/${tenantSlug}/bookings?nuevo=1&cliente=${id}` : null;
   const saleHref = canSell ? `/${tenantSlug}/ventas/cotizaciones?nuevo=1&cliente=${id}` : null;
   const activeMembership = memberships.find((m) => m.status !== "expired") ?? null;
+  // «Asignar membresía» (ya vinculado a este cliente) para el estado vacío de Membresías, solo con el módulo activo.
+  const membershipAction = (await isRouteEnabled(pageCtx.tenantId, "/memberships")) ? (
+    <AssignMembership tenantSlug={tenantSlug} customerId={customer.id} customerName={customer.name} hasActive={Boolean(activeMembership)} canCharge={can(pageCtx.role, "money.handle")} className="h-11 rounded-full px-6 text-sm font-semibold" />
+  ) : null;
   const sales = payments.filter((p) => p.status === "APPROVED");
 
   // Pestaña activa: filas, contenido propio o estado vacío.
   let rows: FichaRow[] = [];
-  let emptyTab: { text: string; action?: { label: string; href: string } } = { text: "" };
   if (tab === "citas") {
     rows = ficha.bookings.map((b) => ({ id: b.id, date: fmtDate(b.start), title: b.title, status: BOOKING_STATUS[b.status] }));
-    emptyTab = { text: "Aún no tiene citas.", action: bookHref ? { label: "Agendar primera cita", href: bookHref } : undefined };
   } else if (tab === "ventas") {
     rows = payments.slice(0, 50).map((p) => ({
       id: p.id,
@@ -136,10 +139,8 @@ export default async function CustomerPage({
       amount: formatCurrency(p.amount),
       status: { label: paymentStatusLabel(p.status), tone: p.status === "APPROVED" ? "ok" : p.status === "PENDING" ? "pending" : "muted" },
     }));
-    emptyTab = { text: "Aún no tiene ventas ni facturas.", action: saleHref ? { label: "Crear primera venta", href: saleHref } : undefined };
   } else if (tab === "facturas") {
     rows = ficha.invoices.map((i) => ({ id: i.id, date: fmtDate(i.issueDate), title: `Factura ${i.number}`, amount: formatCurrency(i.total), status: INVOICE_STATUS[i.status] }));
-    emptyTab = { text: "Aún no tiene ventas ni facturas.", action: saleHref ? { label: "Crear primera venta", href: saleHref } : undefined };
   } else if (tab === "membresias") {
     rows = memberships.map((m) => ({
       id: m.id,
@@ -148,9 +149,6 @@ export default async function CustomerPage({
       amount: formatCurrency(m.price),
       status: m.status === "expired" ? { label: "Vencida", tone: "muted" } : m.status === "expiring" ? { label: "Por vencer", tone: "pending" } : { label: "Activa", tone: "ok" },
     }));
-    emptyTab = { text: "Aún no tiene membresías." };
-  } else if (tab === "relacionados") {
-    emptyTab = { text: "Aún no tiene contactos relacionados." };
   }
 
   // Actividad: alta, citas, ventas y pagos, notas, documentos y archivos, de lo más nuevo a lo más viejo.
@@ -217,8 +215,8 @@ export default async function CustomerPage({
       ]}
       tab={tab}
       rows={rows}
-      tabContent={tab === "notas" ? <NotesPanel tenantSlug={tenantSlug} customerId={customer.id} initialNotes={notes} /> : tab === "productos" ? <PurchasesPanel purchases={await customerPurchases(tenantRecord.id, customer.id)} saleHref={saleHref} /> : undefined}
-      emptyTab={emptyTab}
+      tabContent={tab === "notas" ? <NotesPanel tenantSlug={tenantSlug} customerId={customer.id} customerName={customer.name} initialNotes={notes} /> : tab === "productos" ? <PurchasesPanel purchases={await customerPurchases(tenantRecord.id, customer.id)} saleHref={saleHref} /> : undefined}
+      membershipAction={membershipAction}
       activity={activity}
       now={now.toISOString()}
     />

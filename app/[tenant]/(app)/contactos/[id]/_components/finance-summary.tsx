@@ -34,7 +34,7 @@ export default function FinanceSummary({
       </CardHeader>
 
       <div className="grid gap-3 sm:grid-cols-2">
-        <div className="rounded-md border border-border bg-surface-muted px-3.5 py-3">
+        <div className="rounded-2xl bg-surface-muted/60 px-4 py-3.5">
           <p className="text-xs text-muted-foreground">Total aprobado</p>
           <p className="mt-1 font-display text-lg font-semibold tabular-nums text-foreground">
             {formatCurrency(metrics.ltv)}
@@ -45,7 +45,7 @@ export default function FinanceSummary({
             {paymentsTotal} registrados
           </p>
         </div>
-        <div className="rounded-md border border-border bg-surface-muted px-3.5 py-3">
+        <div className="rounded-2xl bg-surface-muted/60 px-4 py-3.5">
           <p className="text-xs text-muted-foreground">Ticket promedio</p>
           <p className="mt-1 font-display text-lg font-semibold tabular-nums text-foreground">
             {formatCurrency(metrics.avgTicket)}

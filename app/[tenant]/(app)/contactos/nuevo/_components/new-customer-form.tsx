@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Banknote, CalendarPlus, Camera, ChevronDown, ChevronRight, History, Mail, Phone, ShoppingBag } from "lucide-react";
+import { ArrowLeft, Banknote, CalendarPlus, Camera, ChevronDown, History, Mail, Phone, ShoppingBag } from "lucide-react";
+import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { CustomerAvatar } from "@/components/atoms/customer-avatar";
 import { inputClasses, textareaClasses } from "@/components/atoms/input";
@@ -12,6 +13,7 @@ import { Field, focusFirstInvalid } from "@/components/molecules/field";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useToast } from "@/components/molecules/toast";
 import { useConfirm } from "@/components/organisms/confirm-dialog";
+import { TopbarCrumbs } from "@/components/molecules/topbar-crumbs";
 import { checkDuplicateAction, createNewCustomerAction } from "@/app/[tenant]/(app)/contactos/nuevo/actions";
 import {
   COUNTRIES,
@@ -29,12 +31,23 @@ type Errors = Partial<Record<keyof NewCustomerInput, string>>;
 type Duplicate = { id: string; name: string; field: "phone" | "email" } | null;
 type SaveMode = "open" | "book" | "another";
 
-const card = "rounded-xl border border-border bg-card p-[22px]";
-const cardTitle = "mb-4 text-base font-semibold text-foreground";
+const card = "rounded-(--radius-widget) border border-border/60 bg-card p-6";
+
+/** Cabecera de una tarjeta del formulario: título y una línea que dice para qué es (como las de la ficha). */
+function SectionHead({ id, title, subtitle }: { id: string; title: string; subtitle: string }) {
+  return (
+    <div className="mb-5 grid gap-0.5">
+      <h2 id={id} className="text-ui font-semibold text-foreground">
+        {title}
+      </h2>
+      <p className="text-xs text-muted-foreground">{subtitle}</p>
+    </div>
+  );
+}
 
 /**
- * Vista «Nuevo cliente»: panel de control (volver, ruta, guardar), formulario en tarjetas y, a la derecha, la vista previa en
- * vivo y lo que se podrá hacer al guardar. Solo el nombre es obligatorio. Salir con cambios sin guardar pide confirmación.
+ * Vista «Nuevo cliente», con la misma estructura de la ficha: arriba volver, título y guardar (la ruta va en la barra superior); a la
+ * izquierda el formulario en tarjetas suaves y, a la derecha, la vista previa en vivo como perfil y lo que se podrá hacer al guardar. Solo el nombre es obligatorio. Salir con cambios sin guardar pide confirmación.
  */
 export default function NewCustomerForm({
   slug,
@@ -171,42 +184,33 @@ export default function NewCustomerForm({
   const previewPhone = phoneDigits(v.phone);
 
   return (
-    <div data-bleed="" className="flex flex-col">
-      {/* Panel de control */}
-      <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
-        <div className="flex min-w-0 items-center gap-3">
-          <Link href={backHref} aria-label={editId ? `Volver a la ficha de ${customerName ?? "este cliente"}` : `Volver a ${customersLabel}`} className="grid size-[34px] shrink-0 place-items-center rounded-lg border border-border text-foreground outline-none hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
-            <ArrowLeft aria-hidden="true" className="size-4" />
+    <div
+      data-bleed=""
+      className="flex flex-col pb-6"
+      style={{ backgroundImage: "radial-gradient(70% 55% at 0% 0%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 70%), radial-gradient(60% 50% at 100% 100%, color-mix(in srgb, var(--accent) 6%, transparent), transparent 70%)" }}
+    >
+      {/* La ruta («Clientes › Nuevo cliente») vive en la barra superior. */}
+      <TopbarCrumbs items={[{ label: customersLabel, href: listHref }, { label: editId ? (customerName ?? "Editar cliente") : "Nuevo cliente" }]} />
+      {/* Cabecera: volver, título y guardar */}
+      <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-4 px-6 pb-2 pt-6">
+        <div className="flex min-w-0 items-center gap-4">
+          <Link href={backHref} aria-label={editId ? `Volver a la ficha de ${customerName ?? "este cliente"}` : `Volver a ${customersLabel}`} className="grid size-11 shrink-0 place-items-center rounded-full bg-surface-muted text-foreground outline-none transition-colors hover:bg-accent-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
+            <ArrowLeft aria-hidden="true" className="size-5" />
           </Link>
-          <nav aria-label="Ruta" className="min-w-0">
-            <ol className="flex min-w-0 items-center gap-1.5 text-lg font-medium">
-              <li>
-                <Link href={listHref} className="text-muted-foreground outline-none hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
-                  {customersLabel}
-                </Link>
-              </li>
-              <li aria-hidden="true">
-                <ChevronRight className="size-4 text-muted-foreground" />
-              </li>
-              <li aria-current="page" className="truncate text-foreground">
-                {editId ? (customerName ?? "Editar cliente") : "Nuevo cliente"}
-              </li>
-            </ol>
-          </nav>
+          <p className="font-display text-xl font-medium tracking-tight text-foreground min-[820px]:text-2xl">{editId ? "Editar cliente" : "Nuevo cliente"}</p>
         </div>
         <div className="flex items-center gap-2">
           {dirty ? <span className="text-xs text-muted-foreground">Sin guardar</span> : null}
-          <button type="button" onClick={discard} disabled={pending} className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-[34px] border border-border bg-transparent")}>
+          <button type="button" onClick={discard} disabled={pending} className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-11 rounded-full border border-border/60 bg-transparent px-5")}>
             Descartar
           </button>
-          <button type="button" onClick={() => save("open")} disabled={pending} className={buttonVariants({ variant: "accent", size: "sm", className: "h-[34px] font-semibold" })}>
+          <button type="button" onClick={() => save("open")} disabled={pending} className={cn(buttonVariants({ variant: "accent", size: "sm" }), "h-11 rounded-full px-6 text-sm font-semibold")}>
             {pending ? "Guardando…" : "Guardar"}
           </button>
         </div>
       </div>
 
-      {/* Como la ficha: a todo el ancho, con el margen del panel de control; el formulario a la izquierda y la vista previa a la derecha. */}
-      <div className="flex w-full flex-col items-start gap-6 px-5 pb-2 pt-2 lg:flex-row">
+      <div className="grid w-full items-start gap-4 px-6 pt-4 lg:grid-cols-[minmax(0,1fr)_380px] xl:grid-cols-[minmax(0,1fr)_420px]">
         <form
           ref={formRef}
           noValidate
@@ -214,7 +218,7 @@ export default function NewCustomerForm({
             event.preventDefault();
             save("open");
           }}
-          className="flex w-full min-w-0 flex-1 flex-col gap-4"
+          className="grid min-w-0 gap-4"
         >
           {/* Identidad */}
           <section aria-label="Identidad" className={cn(card, "flex flex-wrap items-start gap-5")}>
@@ -236,7 +240,7 @@ export default function NewCustomerForm({
                 type="button"
                 onClick={() => photoRef.current?.click()}
                 aria-label={photo ? "Cambiar la foto" : "Agregar una foto"}
-                className="grid size-[88px] place-items-center overflow-hidden rounded-[22px] border border-dashed border-border-strong bg-background text-muted-foreground outline-none hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                className="grid size-24 place-items-center overflow-hidden rounded-full border border-dashed border-border-strong bg-surface-muted/60 text-muted-foreground outline-none hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
               >
                 {photo ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -279,14 +283,12 @@ export default function NewCustomerForm({
 
           {/* Contacto */}
           <section aria-labelledby="nc-contacto" className={card}>
-            <h2 id="nc-contacto" className={cardTitle}>
-              Contacto
-            </h2>
+            <SectionHead id="nc-contacto" title="Contacto" subtitle="Cómo hablarle y cómo identificarlo" />
             <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-x-5 gap-y-[18px]">
               <Field label="Teléfono" error={errors.phone} hint="Lo usamos para recordatorios de citas por WhatsApp.">
                 {(c) => (
                   <div className="flex">
-                    <span aria-hidden="true" className="grid w-10 shrink-0 place-items-center rounded-s-lg border border-e-0 border-border bg-surface-muted text-sm text-muted-foreground">
+                    <span aria-hidden="true" className="grid w-10 shrink-0 place-items-center rounded-s-xl border border-e-0 border-border bg-surface-muted text-sm text-muted-foreground">
                       +57
                     </span>
                     <input
@@ -332,9 +334,7 @@ export default function NewCustomerForm({
 
           {/* Ubicación */}
           <section aria-labelledby="nc-ubicacion" className={card}>
-            <h2 id="nc-ubicacion" className={cardTitle}>
-              Ubicación
-            </h2>
+            <SectionHead id="nc-ubicacion" title="Ubicación" subtitle="Dónde queda, para visitas y envíos" />
             <div className="grid gap-[18px]">
               <Field label="Dirección">
                 {(c) => <input {...c} {...field("address")} autoComplete="street-address" placeholder="Calle, número y barrio" className={inputClasses} />}
@@ -359,14 +359,14 @@ export default function NewCustomerForm({
 
           {/* Etiquetas, origen y notas */}
           <details className={cn(card, "group p-0")}>
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-xl p-[22px] outline-none focus-visible:outline-2 focus-visible:outline-ring [&::-webkit-details-marker]:hidden">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-(--radius-widget) p-6 outline-none focus-visible:outline-2 focus-visible:outline-ring [&::-webkit-details-marker]:hidden">
               <span className="grid gap-0.5">
-                <span className="text-base font-semibold text-foreground">Etiquetas, origen y notas</span>
+                <span className="text-ui font-semibold text-foreground">Etiquetas, origen y notas</span>
                 <span className="text-xs text-muted-foreground">Opcional · ayuda a segmentar y dar seguimiento</span>
               </span>
-              <ChevronDown aria-hidden="true" className="size-4 shrink-0 text-muted-foreground transition-transform duration-(--d2) ease-(--nx-ease-out) group-open:rotate-180 motion-reduce:transition-none" />
+              <ChevronDown aria-hidden="true" className="size-9 shrink-0 rounded-full bg-surface-muted p-2.5 text-foreground transition-transform duration-(--d2) ease-(--nx-ease-out) group-open:rotate-180 motion-reduce:transition-none" />
             </summary>
-            <div className="grid gap-[18px] px-[22px] pb-[22px]">
+            <div className="grid gap-[18px] px-6 pb-6">
               <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-x-5 gap-y-[18px]">
                 <Field label="Etiquetas" hint="Separadas por coma: VIP, mayorista, referido…">
                   {(c) => <input {...c} {...field("tags")} autoComplete="off" className={inputClasses} />}
@@ -389,14 +389,14 @@ export default function NewCustomerForm({
 
           {/* Facturación electrónica */}
           <details className={cn(card, "group p-0")}>
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-xl p-[22px] outline-none focus-visible:outline-2 focus-visible:outline-ring [&::-webkit-details-marker]:hidden">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 rounded-(--radius-widget) p-6 outline-none focus-visible:outline-2 focus-visible:outline-ring [&::-webkit-details-marker]:hidden">
               <span className="grid gap-0.5">
-                <span className="text-base font-semibold text-foreground">Facturación electrónica</span>
+                <span className="text-ui font-semibold text-foreground">Facturación electrónica</span>
                 <span className="text-xs text-muted-foreground">Solo si le vas a facturar · correo y datos fiscales</span>
               </span>
-              <ChevronDown aria-hidden="true" className="size-4 shrink-0 text-muted-foreground transition-transform duration-(--d2) ease-(--nx-ease-out) group-open:rotate-180 motion-reduce:transition-none" />
+              <ChevronDown aria-hidden="true" className="size-9 shrink-0 rounded-full bg-surface-muted p-2.5 text-foreground transition-transform duration-(--d2) ease-(--nx-ease-out) group-open:rotate-180 motion-reduce:transition-none" />
             </summary>
-            <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-x-5 gap-y-[18px] px-[22px] pb-[22px]">
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-x-5 gap-y-[18px] px-6 pb-6">
               <Field label="Correo para facturas" error={errors.invoiceEmail}>
                 {(c) => <input {...c} {...field("invoiceEmail")} type="email" autoComplete="off" placeholder="Si es distinto al de contacto" className={inputClasses} />}
               </Field>
@@ -417,70 +417,70 @@ export default function NewCustomerForm({
 
           {/* Acciones */}
           <div className="flex flex-wrap gap-3">
-            <button type="submit" disabled={pending} className={buttonVariants({ variant: "accent", className: "h-[38px] font-semibold" })}>
+            <button type="submit" disabled={pending} className={cn(buttonVariants({ variant: "accent" }), "h-12 rounded-full px-7 text-sm font-semibold")}>
               {editId ? "Guardar cambios" : "Guardar"}
             </button>
             {canBook && !editId ? (
-              <button type="button" disabled={pending} onClick={() => save("book")} className={cn(buttonVariants({ variant: "outline" }), "h-[38px] border border-border")}>
+              <button type="button" disabled={pending} onClick={() => save("book")} className={cn(buttonVariants({ variant: "outline" }), "h-12 rounded-full border border-border/60 px-6")}>
                 Guardar y agendar cita
               </button>
             ) : null}
             {editId ? null : (
-              <button type="button" disabled={pending} onClick={() => save("another")} className={cn(buttonVariants({ variant: "outline" }), "h-[38px] border border-border")}>
+              <button type="button" disabled={pending} onClick={() => save("another")} className={cn(buttonVariants({ variant: "outline" }), "h-12 rounded-full border border-border/60 px-6")}>
                 Guardar y crear otro
               </button>
             )}
           </div>
         </form>
 
-        {/* Columna lateral */}
-        <aside className="flex w-full min-w-0 shrink-0 flex-col gap-4 lg:w-[400px] lg:border-l lg:border-border lg:ps-6 xl:w-[440px]">
-          <section aria-labelledby="nc-preview" className={card}>
-            <h2 id="nc-preview" className={cardTitle}>
+        {/* Columna lateral: la vista previa como perfil y lo que se podrá hacer al guardar */}
+        <aside className="grid min-w-0 gap-4">
+          <section aria-labelledby="nc-preview" className={cn(card, "grid justify-items-center gap-4 text-center")}>
+            <h2 id="nc-preview" className="sr-only">
               Vista previa
             </h2>
-            <div className="flex items-center gap-3">
-              <span aria-hidden="true" className="grid size-[52px] shrink-0 place-items-center overflow-hidden rounded-[14px] bg-accent-subtle text-base font-semibold text-accent-text">
-                {photo ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={photo.url} alt="" className="size-full object-cover" />
-                ) : (
-                  <CustomerAvatar identity={{ name: previewName, email: v.email, phone: v.phone }} className="size-full" />
-                )}
-              </span>
-              <div className="min-w-0">
-                <p className={cn("truncate text-base font-semibold", previewName ? "text-foreground" : "text-muted-foreground")}>{previewName || "Nombre del cliente"}</p>
-                <p className="text-xs text-muted-foreground">{v.kind === "COMPANY" ? "Empresa" : "Persona"}</p>
-              </div>
+            <span aria-hidden="true" className="grid size-[120px] shrink-0 place-items-center overflow-hidden rounded-full bg-accent-subtle text-base font-semibold text-accent-text ring-8 ring-accent-subtle/50">
+              {photo ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={photo.url} alt="" className="size-full object-cover" />
+              ) : (
+                <CustomerAvatar identity={{ name: previewName, email: v.email, phone: v.phone }} className="size-full" />
+              )}
+            </span>
+            <div className="grid justify-items-center gap-2">
+              <p className={cn("break-words font-display text-2xl font-semibold tracking-tight", previewName ? "text-foreground" : "text-muted-foreground")}>{previewName || "Nombre del cliente"}</p>
+              <Badge variant="outline">{v.kind === "COMPANY" ? "Empresa" : "Persona"}</Badge>
             </div>
-            <ul className="mt-4 grid gap-2 text-sm">
-              <li className="flex items-center gap-2">
-                <Phone aria-hidden="true" className="size-4 text-muted-foreground" />
-                <span className={previewPhone ? "text-foreground" : "text-muted-foreground"}>{previewPhone ? `+57 ${previewPhone.replace(/^(\d{3})(\d{3})(\d{4})$/, "$1 $2 $3")}` : "Teléfono"}</span>
+            <ul className="grid w-full gap-1 text-left">
+              <li className="flex items-center gap-3 rounded-2xl px-2 py-2">
+                <span aria-hidden="true" className="grid size-10 shrink-0 place-items-center rounded-full bg-surface-muted text-muted-foreground">
+                  <Phone className="size-[18px]" strokeWidth={1.6} />
+                </span>
+                <span className={cn("text-ui", previewPhone ? "font-medium text-foreground" : "text-muted-foreground")}>{previewPhone ? `+57 ${previewPhone.replace(/^(\d{3})(\d{3})(\d{4})$/, "$1 $2 $3")}` : "Teléfono"}</span>
               </li>
-              <li className="flex min-w-0 items-center gap-2">
-                <Mail aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
-                <span className={cn("truncate", v.email.trim() ? "text-foreground" : "text-muted-foreground")}>{v.email.trim() || "Correo electrónico"}</span>
+              <li className="flex min-w-0 items-center gap-3 rounded-2xl px-2 py-2">
+                <span aria-hidden="true" className="grid size-10 shrink-0 place-items-center rounded-full bg-surface-muted text-muted-foreground">
+                  <Mail className="size-[18px]" strokeWidth={1.6} />
+                </span>
+                <span className={cn("truncate text-ui", v.email.trim() ? "font-medium text-foreground" : "text-muted-foreground")}>{v.email.trim() || "Correo electrónico"}</span>
               </li>
             </ul>
           </section>
 
           <section aria-labelledby="nc-despues" className={card}>
-            <h2 id="nc-despues" className={cardTitle}>
-              Al guardar podrás
-            </h2>
-            <ul className="grid gap-3 text-sm">
+            <SectionHead id="nc-despues" title="Al guardar podrás" subtitle="Todo queda en su ficha" />
+            <ul className="grid gap-1">
               {[
                 { icon: CalendarPlus, label: "Agendar una cita" },
                 { icon: ShoppingBag, label: "Crear una venta o membresía" },
                 { icon: Banknote, label: "Registrar un pago" },
                 { icon: History, label: "Ver historial, notas y actividad" },
               ].map(({ icon: Icon, label }) => (
-                <li key={label} className="flex items-center gap-3">
-                  <span aria-hidden="true" className="grid size-[30px] shrink-0 place-items-center rounded-lg bg-surface-muted text-accent-text">
-                    <Icon className="size-4" />
+                <li key={label} className="flex items-center gap-3 rounded-2xl px-2 py-2">
+                  <span aria-hidden="true" className="grid size-10 shrink-0 place-items-center rounded-full bg-surface-muted text-accent-text">
+                    <Icon className="size-[18px]" strokeWidth={1.6} />
                   </span>
-                  <span className="text-foreground">{label}</span>
+                  <span className="text-ui text-foreground">{label}</span>
                 </li>
               ))}
             </ul>
