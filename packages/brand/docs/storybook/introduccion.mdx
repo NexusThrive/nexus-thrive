@@ -4,9 +4,21 @@ import { Meta } from "@storybook/addon-docs/blocks";
 
 # NEXUS THRIVE · Sistema de diseño
 
-El logo manda: **negro dominante, oro como único acento (≤ 10 %), esquinas casi rectas,
-bordes en lugar de sombras y un solo ángulo, 24°**, el corte de la N. Todo lo que ves aquí
-es el código real de la app: cada historia importa el mismo componente que usan las páginas.
+La identidad es el logo: **negro y oro (el oro como único acento, ≤ 10 %), Montserrat e Inter y
+el corte a 24° de la N**. Sobre esa identidad, la interfaz es **suave, limpia y tranquila**.
+Todo lo que ves aquí es el código real de la app: cada historia importa el mismo componente
+que usan las páginas.
+
+## Lenguaje visual
+
+| Rasgo | Cómo se ve | Dónde leer más |
+| --- | --- | --- |
+| **Letra suave** | Títulos en Montserrat 500; `font-semibold` vale 550 y `font-bold` 620 | Fundamentos/Tipografía |
+| **Tres niveles de forma** | Esquinas cortas (acciones y campos), píldoras (estado) y superficies de 24–28 px | Fundamentos/Espacio y forma |
+| **Sin líneas, con color** | Marco gris claro y panel blanco que flota; los separa el fondo, no un borde | Fundamentos/Capas y elevación |
+| **Tablero de tarjetas** | `Widget`: borde casi invisible, sin sombra, una sola tarjeta de oro por tablero | Widgets/Widget |
+| **Carga tranquila** | Skeleton gris con un barrido tenue; nada de movimiento decorativo continuo | Fundamentos/Movimiento |
+| **Oro en lugar de negro** | Los botones principales y los acentos del armazón del negocio van en oro | Fundamentos/Colores |
 
 La especificación completa vive en el repositorio: `DESIGN.md` (marca, tokens, componentes,
 movimiento), `PRODUCT.md` (para quién y con qué principios) y los patrones, la accesibilidad y la lista de calidad que se copia
@@ -18,7 +30,7 @@ en cada PR: todo vive en `packages/brand/docs/`.
 | --- | --- |
 | **Introducción** | Este documento, cómo elegir el patrón de interacción, accesibilidad e inventario |
 | **Fundamentos** | Colores, tipografía, espacio y forma, capas y elevación, movimiento |
-| **Átomos → Plantillas** | Cada componente con sus estados; arriba cambias tema claro/oscuro y tamaño móvil |
+| **Átomos → Páginas** | Cada componente con sus estados; arriba cambias tema claro/oscuro y tamaño móvil |
 
 La pestaña **Accessibility** de cada historia corre axe en vivo.
 
@@ -28,6 +40,7 @@ La pestaña **Accessibility** de cada historia corre axe en vivo.
 | --- | --- | --- | --- |
 | Átomos | `components/atoms` | Una sola pieza visual; no conoce el negocio | Button, Input, Badge, Chip, NMark |
 | Moléculas | `components/molecules` | Pocos átomos con un propósito | Field, ContextHelp, Popover, Toast, EmptyState |
+| Widgets | `components/widgets` | Tarjetas de tablero: una cifra, una gráfica o una lista corta | Widget, KpiCard, ChartWidget, Gráficas |
 | Organismos | `components/organisms` | Secciones completas, pueden leer contexto | ResponsiveSheet, FormDialog, ConfirmDialog, AppSidebar |
 | Plantillas | `components/templates` | Esqueleto de página sin datos | TenantShell, AuthLayout, PublicLayout |
 | Páginas | `app/**/page.tsx` | Rutas de Next: cargan datos y llenan plantillas | Inicio, Clientes, Finanzas |

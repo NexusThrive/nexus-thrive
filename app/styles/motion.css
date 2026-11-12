@@ -86,6 +86,19 @@ html[data-motion="off"] *::after {
   }
 }
 
+/* Crear el negocio: AURI viaja de su cuadro en el onboarding al centro de la pantalla de creación (misma pieza, mismo nombre). Dueño:
+   <ViewTransition> de React en onboarding-scene.tsx (origen) y creation-cinematic.tsx (destino). */
+::view-transition-group(.nx-auri) {
+  animation-duration: var(--d4);
+  animation-timing-function: var(--nx-ease-out);
+}
+::view-transition-old(.nx-auri),
+::view-transition-new(.nx-auri) {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 ::view-transition-new(.nx-appear):only-child {
   animation: nx-vt-appear var(--d2) var(--nx-ease-out) 80ms both;
 }
@@ -459,4 +472,53 @@ html[data-motion="off"] .nx-flash {
 }
 .nx-search-note {
   animation: nx-fade-in 200ms ease-out 350ms both;
+}
+
+/* Hueco de destino al arrastrar una oportunidad entre etapas: crece desde 0 y las tarjetas de abajo se corren con él. */
+@keyframes nx-gap-open {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+}
+.nx-gap {
+  animation: nx-gap-open var(--d2) var(--nx-ease-out);
+}
+@keyframes nx-gap-open-x {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+}
+.nx-gap-x {
+  animation: nx-gap-open-x var(--d2) var(--nx-ease-out);
+}
+@media (prefers-reduced-motion: reduce) {
+  .nx-gap,
+  .nx-gap-x {
+    animation: none;
+  }
+}
+
+/* Indicador de «cargando» en un enlace (LinkPendingHint): aparece tras una breve espera y solo cambia la opacidad. */
+.nx-link-pending {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--accent);
+  opacity: 0;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+.nx-link-pending[data-pending] {
+  opacity: 1;
+  transition: opacity var(--d2) 140ms;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nx-link-pending[data-pending] {
+    transition: none;
+  }
 }

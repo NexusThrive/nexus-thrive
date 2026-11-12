@@ -53,6 +53,10 @@ usa. Su archivo es de uso personal
 (`packages/brand/fonts/public_stunt/READ_BEFORE_ANY_USE.txt`): revisar la
 licencia antes de llevarla a piezas públicas.
 
+**Letra suave:** `base.css` activa el suavizado en gris y el kerning, y los títulos (`h1`–`h4`, `PageHeader`, `CardTitle`) van en Montserrat **500**;
+la negrita queda para cifras y nombres propios. En Tailwind, `font-semibold` vale 550 y `font-bold` 620 (`globals.css`), así que toda la interfaz baja un
+escalón sin tocar cada componente. Montserrat solo trae 500, 600 y 700.
+
 Escala (`--text-*` en `tokens.css`): 12 · 14 · 16 · 18 · 20 · 24 · 30 · 40 ·
 52 px. En la app: etiquetas 13 px/500, cuerpo 13–14 px, título de página
 Montserrat 600 22–28 px, título de panel 18 px/600. Texto corrido hasta
@@ -149,7 +153,8 @@ Storybook con sus estados.
 |---|---|---|---|
 | Tokens | `packages/brand/css` | Valores | color, capas, movimiento |
 | Átomos | `components/atoms` | Un control, sin estado de negocio | `Button`, `Input`, `Select`, `Switch`, `Badge`, `NMark`, `Skeleton` |
-| Moléculas | `components/molecules` | Combinación pequeña con contrato | `Field`, `ContextHelp`, `Popover`, `Tooltip`, `Alert`, `EmptyState`, `LoadingState`, `Toast`, `PageHeader`, `KpiCard` |
+| Moléculas | `components/molecules` | Combinación pequeña con contrato | `Field`, `ContextHelp`, `Popover`, `Tooltip`, `Alert`, `EmptyState`, `LoadingState`, `Toast`, `PageHeader` |
+| Widgets | `components/widgets` | Tarjeta de tablero con una cifra o un dibujo; se compone de átomos y moléculas y no conoce rutas ni permisos | `Widget`, `KpiCard`, `ChartWidget`, `DonutChart`, `GaugeChart`, `SeriesChart` |
 | Organismos | `components/organisms` | Bloque con comportamiento | `ResponsiveSheet`, `FormDialog`/`FormDrawer`, `ConfirmDialog`, `DataTable`, `AppSidebar`, `CommandPalette` |
 | Plantillas | `components/templates` | Esqueleto de página | `TenantShell`, `AuthLayout`, `OnboardingLayout` |
 | De una función | `app/**/_components` | Componen lo compartido; no recrean modales ni campos | `CustomerSheet`, `TicketDesk` |
@@ -253,6 +258,8 @@ Reglas:
    animación.
 4. Escalonado solo en la primera carga de una lista (`nx-rise`, 50 ms por
    ítem, máximo ~8 ítems).
+   **Desplazamiento con inercia:** `SmoothScroll` (`components/providers/smooth-scroll.tsx`) lleva la rueda y el trackpad del panel con dos filtros en cascada
+   (sin sobrepaso ni temblor; sin librerías; el táctil y el teclado quedan nativos).
 5. **Modales que nacen del botón.** En PC, `ResponsiveSheet` (modal
    centrado) se abre con un morfeo desde el control que lo activó (arranca con
    su tamaño y posición, 380 ms, con enfoque) y se cierra hacia él (200 ms). Si
@@ -273,6 +280,7 @@ Reglas:
 
    | Barra superior al cambiar de barra (Inicio ↔ módulo ↔ Sistema) | View Transitions: `<ViewTransition>` de React en `app-topbar.tsx` |
    | Abrir una app desde Inicio y volver (≥ 768 px) | View Transitions: icono del cajón (`app-grid.tsx`) y vista de la app (`AppStage`), mismo nombre `appTransitionName`, clase `nx-app` |
+   | Crear el negocio (onboarding): AURI pasa de su cuadro al centro de la pantalla de creación | View Transitions: `<ViewTransition name="auri-onboarding">` en `onboarding-scene.tsx` (origen) y `creation-cinematic.tsx` (destino), clase `nx-auri`, `--d4` |
 
    **View Transitions: solo la barra superior.** Next 16.3 trae `<ViewTransition>` en el React del App Router. Caso real: la barra de
    Inicio y la de módulo son componentes distintos, así que el logo, los avisos, el tema, el nombre del negocio y la cuenta se quitaban
@@ -298,6 +306,22 @@ Reglas:
 
 - **Shell de la app** (`TenantShell`, y el mismo para el panel CEO): barra
   inferior con "Crear" bajo 768 px; **riel de 88 px con etiqueta abreviada de 768 a 1023 px**; **barra lateral expandida (248 px) desde 1024 px** (DR-13, DR-14); barra superior con desenfoque. Las etiquetas abreviadas salen de `short-label.ts`.
+- **Armazón del negocio en PC (variante `workspace`):** `AppSidebar variant="workspace"` y `AppTopbar variant="workspace"`. Marco gris claro
+  (`surface-muted`) **sin líneas divisorias**: la separación la hace el contenido, que va en un panel blanco (`card`) con esquinas redondeadas que flota
+  a la derecha de la barra lateral (`.panel` en `tenant-shell.module.css`). La barra lateral lleva arriba el bloque del negocio con la **N en negro**
+  y el botón de contraer; el ítem activo es una píldora blanca sin sombra ni corte oro. La barra superior (sin celda de marca ni lanzador) lleva el título
+  de la pantalla, el buscador en píldora blanca (`NavbarSearch variant="pill"`), «Crear» de icono, conversaciones y agenda (solo si esas funciones están
+  encendidas), avisos y la cuenta con su nombre y rol; **sin cambio de tema ni de negocio** mientras el blanco sea el único tema y cada cuenta use un solo
+  negocio. Inicio usa este mismo armazón (ya no es una pantalla aparte). Sin rellenos negros: los botones principales y los acentos van en oro. Inicio
+  es un tablero fijo, sin edición (`AppHome`), en tres filas de tarjetas como el story «Tablero de inicio (referencia)»: cifras clave; ventas de la semana y
+  dona de ingresos contra gastos; «Para hoy», actividad reciente y agenda de hoy. Usa los datos reales de `loadHomeSummary`; `/resumen` redirige a Inicio. Bajo 768 px no cambia: barra superior de siempre y barra inferior. El panel CEO conserva su
+  barra lateral y su navbar sin la variante.
+- **Widgets de tablero (`Widget`, `components/widgets/widget.tsx`):** la tarjeta suave de Inicio. Esquinas `--radius-widget` (24 px), borde casi
+  invisible (`border/60`), sin sombra, filas interiores en gris suave (`widgetRow`) y botón circular con flecha arriba a la derecha (`WidgetHead href`).
+  Tipos: cifra con `DeltaPill` (`WidgetValue`), barras con fondo rayado (`HatchBars`), línea sobre oro (`LineArea`), fichas de acceso (`QuickTile`) y
+  pila de avatares (`AvatarStack`). Una sola tarjeta de oro (`variant="accent"`) por tablero. Historia: «Widgets/Widget».
+  **Saludo de Inicio:** el protagonista del tablero, no una cabecera: fondo cálido `accent-subtle` con un velo de oro, esquinas de 28 px, Montserrat 500 a 48 px
+  (el nombre en 600 y oro), una frase con lo que pasa hoy y píldoras suaves (`rounded-full`, fondo `card/70`) con el negocio y la prueba gratuita.
 - **Página:** `PageHeader` (eyebrow, título, descripción, acción principal a
   la derecha) → filtros → contenido. Ancho máximo `--content-max`.
 - **Puntos de quiebre:** `sm` 640 · `md` 768 (modal centrado y panel lateral;

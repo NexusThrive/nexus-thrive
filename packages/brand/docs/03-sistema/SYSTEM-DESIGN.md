@@ -125,7 +125,7 @@ El sistema se estudia como **un lenguaje completo**, no como colores, bordes e i
 | Iconografía | `IconTile`, iconos por rubro (`vertical-icons`) | Sin guía de uso |
 | Bordes, superficies y elevaciones | Tokens de elevación y capas (sin `z-index` numérico) | Vigente |
 | Indicadores de estado | `Badge`, `Chip`, `Delta`, `ProgressBar` | Sin catálogo de significados |
-| Gráficos y visualizaciones | `components/molecules/charts`, `Sparkline`, `KpiCard` | Sin guía de cuándo usar cuál |
+| Gráficos y visualizaciones | `components/widgets/charts`, `Sparkline`, `KpiCard` | Sin guía de cuándo usar cuál |
 | Movimiento y transiciones | `docs/design/movimiento.md` (un dueño por transición) | Vigente |
 | Composición de páginas | `TenantShell`, `PageSkeleton`, `CustomizableDashboard` | Por documentar |
 

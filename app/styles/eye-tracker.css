@@ -137,3 +137,10 @@
 
 /* como marca pequeña (botón, cabecera): el marco se ajusta a la bola */
 .eyt-fit.eyt { width: auto; height: auto; }
+
+/* variante de oro: cuerpo dorado y ojos de tinta, para fondos cálidos donde un cuerpo negro pesa demasiado (el saludo de Inicio) */
+.eyt-gold .eyt {
+  --eyt-body: var(--accent);
+  --eyt-eye: var(--nx-ink);
+  --eyt-edge: transparent;
+}

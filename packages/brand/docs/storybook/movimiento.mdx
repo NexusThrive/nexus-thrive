@@ -43,6 +43,21 @@ qué cambió, que se guardó); nunca adorna sin motivo.
 - El contenido se lee durante la transición y el foco no espera a la animación.
 - Abrir y cerrar rápido varias veces no rompe el estado.
 
+## Piezas con dueño propio
+
+Cada transición tiene **un solo dueño**: no se combinan CSS, Web Animations y una librería sobre
+el mismo elemento. La tabla completa está en `DESIGN.md` §4.
+
+| Pieza | Dueño | Notas |
+| --- | --- | --- |
+| Skeleton (`.nx-sk`) | CSS | Gris suave con un barrido tenue de brillo de 1,7 s; sin ángulos |
+| Hueco al arrastrar una oportunidad | CSS (`nx-gap`, `nx-gap-x`) | Crece desde 0 y las tarjetas de abajo se corren con él |
+| «Cargando» en un enlace (`LinkPendingHint`) | CSS (`nx-link-pending`) | Aparece tras 140 ms de espera y solo cambia la opacidad |
+| Casillas nativas | CSS | La marca se dibuja con `scale`, 220 ms |
+| Desplazamiento con inercia | `SmoothScroll` | Dos filtros en cascada para rueda y trackpad; táctil y teclado quedan nativos |
+| AURI al crear el negocio | View Transitions | `<ViewTransition name="auri-onboarding">` en el onboarding y en la cinemática, clase `nx-auri`, `--d4` |
+| Barra superior y abrir una app | View Transitions | Solo estos casos; los modales siguen con su morfeo |
+
 ## Rendimiento
 
 - **Cero librerías de animación.** El artifact usaba GSAP, Motion y AutoAnimate; aquí todo es
