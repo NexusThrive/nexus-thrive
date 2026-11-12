@@ -32,11 +32,11 @@ export function SkeletonRows({
       {Array.from({ length: rows }, (_, i) =>
         variant === "form" ? (
           <div key={i} className="grid gap-2" aria-hidden="true">
-            <Skeleton className="h-3 w-24" />
-            <Skeleton className="h-[var(--control-h)] w-full rounded-md" />
+            <Skeleton className="h-3 w-24 rounded-full" />
+            <Skeleton className="h-[var(--control-h)] w-full rounded-xl" />
           </div>
         ) : (
-          <Skeleton key={i} aria-hidden="true" className={cn("h-4 rounded-sm", widths[i % widths.length])} />
+          <Skeleton key={i} aria-hidden="true" className={cn("h-4 rounded-full", widths[i % widths.length])} />
         ),
       )}
     </div>

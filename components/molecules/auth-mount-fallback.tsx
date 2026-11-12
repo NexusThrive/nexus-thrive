@@ -105,7 +105,7 @@ export function AuthMountFallback({ children }: { children: React.ReactNode }) {
   const showSkeleton = !ready && (!wasReady || waited);
 
   return (
-    <div ref={host} className="relative min-h-[380px]">
+    <div ref={host} className="relative min-h-[360px]">
       {/* El formulario entra con un fundido al estar listo (no aparece de golpe al cambiar de modo). */}
       <div
         data-in={ready || late ? "" : undefined}
@@ -116,22 +116,28 @@ export function AuthMountFallback({ children }: { children: React.ReactNode }) {
       <div
         role={showSkeleton ? "status" : undefined}
         aria-hidden={showSkeleton ? undefined : true}
-        aria-label={wasReady ? "Entrando" : "Cargando acceso"}
-        className="absolute inset-0 grid content-start gap-[18px] bg-surface transition-opacity duration-300 ease-out data-[hidden]:pointer-events-none data-[hidden]:opacity-0 data-[hidden]:duration-200"
+                className="absolute inset-0 grid content-start gap-[18px] bg-transparent transition-opacity duration-300 ease-out data-[hidden]:pointer-events-none data-[hidden]:opacity-0 data-[hidden]:duration-200"
         data-hidden={showSkeleton ? undefined : ""}
       >
-        <Skeleton className="h-11 w-full" />
-        <div className="flex items-center gap-3">
-          <Skeleton className="h-px flex-1" />
-          <Skeleton className="h-3 w-6" />
-          <Skeleton className="h-px flex-1" />
+        {/* Solo la forma del formulario (título, botón social, campo y botón), sin texto: un lector de pantalla recibe el estado por la etiqueta. */}
+        <span className="sr-only">{wasReady ? "Entrando" : "Cargando acceso"}</span>
+        <div aria-hidden="true" className="grid gap-[18px]">
+          <div className="grid gap-2">
+            <Skeleton className="h-7 w-40 rounded-full" />
+            <Skeleton className="h-4 w-64 rounded-full" />
+          </div>
+          <Skeleton className="h-14 w-full rounded-full" />
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-px flex-1" />
+            <Skeleton className="h-3 w-4 rounded-full" />
+            <Skeleton className="h-px flex-1" />
+          </div>
+          <div className="grid gap-2">
+            <Skeleton className="h-3 w-28 rounded-full" />
+            <Skeleton className="h-14 w-full rounded-2xl" />
+          </div>
+          <Skeleton className="h-14 w-full rounded-full" />
         </div>
-        <div className="grid gap-2">
-          <Skeleton className="h-3 w-28" />
-          <Skeleton className="h-11 w-full" />
-        </div>
-        <Skeleton className="h-11 w-full" />
-        <p className="text-center text-ui text-muted-foreground">{wasReady ? "Entrando…" : "Cargando acceso…"}</p>
       </div>
     </div>
   );
@@ -140,12 +146,12 @@ export function AuthMountFallback({ children }: { children: React.ReactNode }) {
 function Failed() {
 
   return (
-    <div className="grid gap-4 rounded-lg border border-border bg-surface p-6 text-center">
-      <span className="mx-auto grid size-10 place-items-center rounded-full bg-amber-100 text-amber-700">
+    <div className="grid gap-4 rounded-3xl bg-surface-muted/60 p-6 text-center">
+      <span className="mx-auto grid size-12 place-items-center rounded-full bg-accent-subtle text-accent-text">
         <TriangleAlert aria-hidden="true" className="size-5" />
       </span>
       <div className="grid gap-1.5">
-        <p className="font-display text-[15px] font-bold">No pudimos cargar el acceso</p>
+        <p className="font-display text-base font-semibold">No pudimos cargar el acceso</p>
         <p className="text-ui text-muted-foreground">
           El formulario de inicio de sesión no se pudo cargar. Puede ser un problema de conexión o
           que el dominio no esté habilitado todavía.
@@ -155,14 +161,14 @@ function Failed() {
         <button
           type="button"
           onClick={() => window.location.reload()}
-          className="inline-flex items-center gap-1.5 rounded-sm bg-ink px-3.5 py-2 text-ui font-semibold text-white transition hover:bg-black"
+          className="inline-flex h-11 items-center gap-1.5 rounded-full bg-accent px-5 text-ui font-semibold text-ink transition-colors hover:bg-accent-hover"
         >
           <RefreshCw aria-hidden="true" className="size-3.5" />
           Reintentar
         </button>
         <a
           href="mailto:soporte@nexusthrive.com.co"
-          className="inline-flex items-center gap-1.5 rounded-sm border border-border px-3.5 py-2 text-ui font-semibold transition hover:bg-surface-muted"
+          className="inline-flex h-11 items-center gap-1.5 rounded-full border border-border/60 bg-card px-5 text-ui font-medium transition-colors hover:bg-surface-muted"
         >
           <LifeBuoy aria-hidden="true" className="size-3.5" />
           Escríbenos

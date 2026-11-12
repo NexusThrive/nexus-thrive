@@ -247,11 +247,11 @@ function Select({
           }}
           // Dentro de un diálogo modal el <body> queda con pointer-events:none; la lista flota fuera y debe seguir recibiendo clics.
           style={{ pointerEvents: "auto" }}
-          className="nx-select-list z-(--z-popover) w-[max(var(--radix-popover-trigger-width),180px)] max-w-[calc(100vw-24px)] origin-(--radix-popover-content-transform-origin) rounded-md border border-border bg-popover p-1 text-sm text-popover-foreground shadow-(--shadow-popover) outline-none"
+          className="nx-select-list z-(--z-popover) w-[max(var(--radix-popover-trigger-width),180px)] max-w-[calc(100vw-24px)] origin-(--radix-popover-content-transform-origin) rounded-3xl border border-border/60 bg-popover p-2 text-sm text-popover-foreground shadow-(--shadow-popover) outline-none"
         >
           {hasSearch ? (
-            <div className="relative mb-1 border-b border-border px-1 pb-1">
-              <Search aria-hidden="true" className="pointer-events-none absolute left-3 top-[calc(50%-2px)] size-3.5 -translate-y-1/2 text-muted-foreground" />
+            <div className="relative mb-1.5 px-0.5 pb-0.5">
+              <Search aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
               <input
                 ref={searchRef}
                 type="text"
@@ -265,7 +265,7 @@ function Select({
                 value={query}
                 onChange={(event) => changeQuery(event.target.value)}
                 onKeyDown={(event) => onKeyDown(event, true)}
-                className="h-9 w-full rounded-sm bg-transparent pl-8 pr-2 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:bg-surface-muted pointer-coarse:h-11"
+                className="h-10 w-full rounded-full bg-surface-muted pl-9 pr-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:bg-accent-subtle pointer-coarse:h-11"
               />
             </div>
           ) : null}
@@ -287,8 +287,8 @@ function Select({
                       onPointerMove={() => !option.disabled && setActive(index)}
                       onClick={() => commit(index)}
                       className={cn(
-                        "relative flex min-h-11 cursor-pointer items-center gap-2 rounded-sm px-2.5 py-1.5 outline-none md:min-h-9",
-                        "data-[active]:bg-surface-muted data-[active]:before:absolute data-[active]:before:left-0 data-[active]:before:top-1/2 data-[active]:before:h-4 data-[active]:before:w-[3px] data-[active]:before:-translate-y-1/2 data-[active]:before:-skew-x-[24deg] data-[active]:before:bg-accent data-[active]:before:content-['']",
+                        "relative flex min-h-11 cursor-pointer items-center gap-2 rounded-2xl px-3.5 py-2 outline-none md:min-h-10",
+                        "data-[active]:bg-surface-muted",
                         option.disabled && "cursor-not-allowed opacity-45",
                         option.value === current && "font-semibold",
                       )}

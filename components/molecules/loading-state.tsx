@@ -29,7 +29,13 @@ export function LoadingState({
         className,
       )}
     >
-      <NMark size={inline ? 16 : 28} state="loop" />
+      {inline ? (
+        <NMark size={16} state="loop" />
+      ) : (
+        <span aria-hidden="true" className="grid size-12 shrink-0 place-items-center rounded-full bg-surface-muted">
+          <NMark size={24} state="loop" />
+        </span>
+      )}
       <span>{label}</span>
     </div>
   );

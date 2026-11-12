@@ -34,8 +34,8 @@ export function EmptyState({
   icon?: ReactNode;
   /** Nivel del título para respetar la jerarquía de la página. */
   headingLevel?: 2 | 3 | 4;
-  /** `corner`: N de contorno en la esquina (por defecto). `page`: vista entera vacía, texto centrado y N grande abajo. */
-  mark?: "corner" | "page";
+  /** `corner`: N de contorno en la esquina (por defecto). `page`: vista entera vacía, texto centrado y N grande abajo. `center`: panel o pestaña vacía, sin la N: icono en círculo, texto y acción centrados. */
+  mark?: "corner" | "page" | "center";
   /** Con `page`: anota la ruta como vacía para que la próxima precarga pinte este estado y no filas (apágalo con filtros o búsqueda). */
   remember?: boolean;
   /** Con `page`: acción secundaria junto a la principal (p. ej. «Importar»), con estilo de contorno. */
@@ -59,18 +59,32 @@ export function EmptyState({
       {action && <div className={cn("mt-5 flex flex-wrap items-center gap-2", mark === "page" && "nx-flash justify-center")}>{action}</div>}
     </>
   );
+  if (mark === "center") {
+    return (
+      <div className={cn("grid justify-items-center gap-1 px-6 py-10 text-center", className)}>
+        {icon ? (
+          <span aria-hidden="true" className="mb-3 grid size-14 place-items-center rounded-full bg-surface-muted text-accent-text [&_svg]:size-6">
+            {icon}
+          </span>
+        ) : null}
+        <Heading className="font-display text-lg font-semibold text-foreground">{title}</Heading>
+        {description ? <p className="max-w-md text-ui text-muted-foreground">{description}</p> : null}
+        {action ? <div className="mt-4 flex flex-wrap items-center justify-center gap-2">{action}</div> : null}
+      </div>
+    );
+  }
   if (mark === "page") {
     return (
       <EmptyPageFrame remember={remember} preview={preview} className={className}>
         <div className="grid w-full max-w-2xl justify-items-center gap-6">
           {icon ? (
-            <span aria-hidden="true" className="grid size-12 place-items-center rounded-xl border border-border bg-card text-accent-text [&_svg]:size-6">
+            <span aria-hidden="true" className="grid size-16 place-items-center rounded-full bg-accent-subtle text-accent-text ring-8 ring-accent-subtle/40 [&_svg]:size-7">
               {icon}
             </span>
           ) : null}
           <div className="grid gap-2">
-            <Heading className="font-display text-xl font-semibold text-foreground">{title}</Heading>
-            {description ? <p className="mx-auto max-w-md text-sm text-muted-foreground">{description}</p> : null}
+            <Heading className="font-display text-2xl font-medium tracking-tight text-foreground">{title}</Heading>
+            {description ? <p className="mx-auto max-w-md text-base text-muted-foreground">{description}</p> : null}
           </div>
           {action || secondaryAction ? (
             <div className="flex flex-wrap items-center justify-center gap-3">
@@ -81,8 +95,8 @@ export function EmptyState({
           {highlights?.length ? (
             <ul className="grid w-full gap-3 text-left sm:grid-cols-3">
               {highlights.map((h) => (
-                <li key={h.title} className="flex gap-3 rounded-xl border border-border bg-card/85 p-4 backdrop-blur-sm sm:flex-col sm:gap-2.5">
-                  <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-lg bg-surface-muted text-accent-text [&_svg]:size-4">
+                <li key={h.title} className="flex gap-3 rounded-3xl bg-card/85 p-5 backdrop-blur-sm sm:flex-col sm:gap-3">
+                  <span aria-hidden="true" className="grid size-10 shrink-0 place-items-center rounded-full bg-surface-muted text-accent-text [&_svg]:size-[18px]">
                     {h.icon}
                   </span>
                   <span className="grid gap-0.5">

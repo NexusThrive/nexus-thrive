@@ -62,7 +62,7 @@ export function SegmentedControl<T extends string>({
       role="group"
       aria-label={ariaLabel}
       className={cn(
-        "relative inline-flex max-w-full gap-0.5 rounded-md border border-border bg-surface-muted p-[3px]",
+        "relative inline-flex max-w-full gap-0.5 rounded-full border border-border/60 bg-surface-muted p-[3px]",
         block && "flex w-full",
         className,
       )}
@@ -70,7 +70,7 @@ export function SegmentedControl<T extends string>({
       <span
         ref={indicatorRef}
         aria-hidden="true"
-        className="absolute inset-y-[3px] left-0 z-0 rounded-sm bg-surface shadow-[0_1px_2px_rgba(0,0,0,.08),0_0_0_1px_var(--border)] transition-[transform,width] duration-[420ms] ease-[var(--nx-ease-spring)]"
+        className="absolute inset-y-[3px] left-0 z-0 rounded-full bg-surface shadow-[0_1px_2px_rgba(0,0,0,.08),0_0_0_1px_var(--border)] transition-[transform,width] duration-[420ms] ease-[var(--nx-ease-spring)]"
       />
       {options.map((option) => {
         const active = option.value === value;
@@ -83,7 +83,7 @@ export function SegmentedControl<T extends string>({
             data-press=""
             onClick={() => onChange(option.value)}
             className={cn(
-              "relative z-10 inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-sm font-medium transition-colors duration-200 outline-none focus-visible:outline-2 focus-visible:outline-ring [&_svg]:size-4",
+              "relative z-10 inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-full font-medium transition-colors duration-200 outline-none focus-visible:outline-2 focus-visible:outline-ring [&_svg]:size-4",
               block && "flex-1",
               size === "sm" ? "h-[22px] px-2.5 text-xs pointer-coarse:h-11" : "h-[30px] px-[13px] text-ui pointer-coarse:h-11",
               active ? "text-foreground" : "text-muted-foreground hover:text-foreground",

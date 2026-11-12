@@ -5,12 +5,12 @@ import { cn } from "@/lib/utils";
 /**
  * Clases del campo de texto NEXUS THRIVE, compartidas con Textarea y Select:
  * alto `--control-h`, borde gris suave `--border-input` (más marcado al pasar
- * el cursor), radio 4 px,
+ * el cursor), radio `--radius-xl` (8 px, `rounded-xl`),
  * fondo superficie y, al enfocar, borde `--ring` con halo oro de 3 px.
  * `aria-invalid` lo pinta de rojo.
  */
 export const fieldClasses =
-  "w-full min-w-0 rounded-md border border-border-input bg-surface px-3 text-sm text-foreground transition-[border-color,box-shadow] duration-200 outline-none hover:border-border-input-hover placeholder:text-muted-foreground focus-visible:border-ring focus-visible:shadow-[0_0_0_3px_rgba(212,175,55,0.18)] disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-danger";
+  "w-full min-w-0 rounded-xl border border-border-input bg-surface px-3.5 text-sm text-foreground transition-[border-color,box-shadow] duration-200 outline-none hover:border-border-input-hover placeholder:text-muted-foreground focus-visible:border-ring focus-visible:shadow-[0_0_0_3px_rgba(212,175,55,0.18)] disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-danger";
 
 /** Campo de una línea: alto de control (40 px; 34 en densidad compacta). */
 export const inputClasses = `${fieldClasses} h-[var(--control-h)]`;

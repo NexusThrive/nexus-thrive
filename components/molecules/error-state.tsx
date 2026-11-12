@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
  *
  * - `role="alert"` anuncia el fallo una vez; el título es un encabezado para que
  *   la persona se oriente con lector de pantalla.
+ * - Centrado en el panel, con icono en círculo y halo; botones en píldora y la referencia como etiqueta discreta.
  * - Una sola acción principal (`Reintentar`); `action` añade la salida alternativa
  *   (volver al inicio) sin competir con ella.
  * - `variant="block"` es para un bloque dentro de una página que sigue funcionando.
@@ -42,38 +43,43 @@ export function ErrorState({
   className?: string;
 }) {
   const Heading = `h${headingLevel}` as const;
+  const page = variant === "page";
   return (
     <div
       role="alert"
       className={cn(
-        "flex flex-col items-center justify-center text-center",
-        variant === "page" ? "min-h-[50vh] px-6 py-16" : "rounded-lg border border-border bg-card px-6 py-10",
+        "grid w-full place-items-center text-center",
+        page ? "min-h-[calc(100dvh-var(--topbar-height)-9rem)] px-6 py-16" : "rounded-(--radius-widget) border border-border/60 bg-card px-6 py-12",
         className,
       )}
     >
-      <span
-        aria-hidden="true"
-        className="grid size-12 place-items-center rounded-md bg-danger-subtle text-danger"
-      >
-        <AlertTriangle className="size-6" />
-      </span>
-      <Heading className="mt-4 font-display text-lg font-semibold text-foreground">{title}</Heading>
-      <p className="mt-1 max-w-md text-sm text-muted-foreground">{description}</p>
-      {onRetry || action ? (
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-          {onRetry ? (
-            <Button onClick={onRetry}>
-              <RotateCw aria-hidden="true" className="size-4" /> {retryLabel}
-            </Button>
-          ) : null}
-          {action}
-        </div>
-      ) : null}
-      {reference ? (
-        <p className="mt-6 text-xs text-muted-foreground">
-          Referencia: <code className="font-mono">{reference}</code>
-        </p>
-      ) : null}
+      <div className="grid max-w-md justify-items-center gap-2">
+        {/* Icono en círculo con halo suave, sin bordes ni fondos duros. */}
+        <span aria-hidden="true" className="relative mb-4 grid size-28 place-items-center">
+          <span className="absolute inset-0 rounded-full bg-danger-subtle/40" />
+          <span className="absolute inset-3 rounded-full bg-danger-subtle/70" />
+          <span className="relative grid size-14 place-items-center rounded-full bg-card text-danger shadow-[0_1px_2px_rgba(0,0,0,0.06)]">
+            <AlertTriangle className="size-6" strokeWidth={1.8} />
+          </span>
+        </span>
+        <Heading className="font-display text-2xl font-medium tracking-tight text-foreground">{title}</Heading>
+        <p className="text-base text-muted-foreground">{description}</p>
+        {onRetry || action ? (
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+            {onRetry ? (
+              <Button variant="accent" size="lg" className="rounded-full px-7" onClick={onRetry}>
+                <RotateCw aria-hidden="true" className="size-4" /> {retryLabel}
+              </Button>
+            ) : null}
+            {action}
+          </div>
+        ) : null}
+        {reference ? (
+          <p className="mt-6 inline-flex items-center gap-2 rounded-full bg-surface-muted px-3.5 py-1.5 text-xs text-muted-foreground">
+            Referencia <code className="font-mono text-foreground">{reference}</code>
+          </p>
+        ) : null}
+      </div>
     </div>
   );
 }

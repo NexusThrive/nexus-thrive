@@ -6,9 +6,8 @@ import { cn } from "@/lib/utils";
 
 /**
  * Chip seleccionable (medio de pago, categoría, hora libre) — CTL·04 del
- * artefacto. Alto 32 px, radio 2 px; sin elegir lleva borde gris suave y al
- * elegirlo se rellena de tinta (oro en oscuro) y rebota con un resorte
- * (600 · 12). Es un botón con `aria-pressed`: el grupo decide si es
+ * artefacto. Píldora de 40 px; sin elegir va en gris suave y al elegirlo se
+ * tiñe de oro suave con borde dorado y rebota con un resorte (600 · 12). Es un botón con `aria-pressed`: el grupo decide si es
  * selección única o múltiple.
  */
 export function Chip({
@@ -33,10 +32,10 @@ export function Chip({
         onClick?.(event);
       }}
       className={cn(
-        "inline-flex h-8 pointer-coarse:h-11 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-sm border px-[13px] text-ui font-medium transition-[background-color,color,border-color] duration-200 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-45",
+        "inline-flex h-10 pointer-coarse:h-11 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border px-4 text-ui font-medium transition-[background-color,color,border-color] duration-200 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-45",
         selected
-          ? "border-primary bg-primary text-primary-foreground"
-          : "border-border-input bg-transparent text-foreground hover:border-border-input-hover",
+          ? "border-accent bg-accent-subtle text-foreground"
+          : "border-transparent bg-surface-muted/70 text-foreground hover:bg-surface-muted",
         className,
       )}
       {...props}
