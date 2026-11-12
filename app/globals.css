@@ -286,7 +286,7 @@ body {
   overflow: hidden;
   /* Gris suave y esquinas redondeadas (una línea de texto queda en píldora); el brillo es un barrido tenue, sin ángulos. */
   background: var(--surface-muted);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
 }
 .nx-sk::after {
   content: "";
