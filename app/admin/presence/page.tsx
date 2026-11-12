@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { KpiCard } from "@/components/molecules/kpi-card";
+import { KpiCard } from "@/components/widgets/kpi-card";
 import { PageHeader, SectionTitle } from "@/components/molecules/page-header";
 import { getStaffContext } from "@/lib/platform/team/access";
 import { presenceOverview } from "@/lib/platform/presence/presence";

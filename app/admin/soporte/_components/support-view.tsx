@@ -8,7 +8,7 @@ import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { Chip, ChipRow } from "@/components/atoms/chip";
 import { EmptyState } from "@/components/molecules/empty-state";
-import { KpiCard } from "@/components/molecules/kpi-card";
+import { KpiCard } from "@/components/widgets/kpi-card";
 import { SearchField } from "@/components/molecules/search-field";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useMinute } from "@/lib/experience/hooks/use-minute";

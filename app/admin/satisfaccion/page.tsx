@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Badge } from "@/components/atoms/badge";
-import { KpiCard } from "@/components/molecules/kpi-card";
+import { KpiCard } from "@/components/widgets/kpi-card";
 import { PageHeader } from "@/components/molecules/page-header";
 import { formatDateTime } from "@/lib/foundation/format";
 import { getStaffContext } from "@/lib/platform/team/access";

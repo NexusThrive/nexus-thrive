@@ -8,7 +8,7 @@ import { buttonVariants } from "@/components/atoms/button-variants";
 import { Chip, ChipRow } from "@/components/atoms/chip";
 import { inputClasses } from "@/components/atoms/input";
 import { EmptyState } from "@/components/molecules/empty-state";
-import { KpiCard } from "@/components/molecules/kpi-card";
+import { KpiCard } from "@/components/widgets/kpi-card";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { CHARGE_STATUSES, daysBetween, dunningLabel, SUBSCRIPTION_STATUSES, type BillingPolicyValues } from "@/lib/platform/billing/billing-rules";
 import type { ChargeRow, SubscriptionRow } from "@/lib/platform/billing/billing";
