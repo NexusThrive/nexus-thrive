@@ -20,6 +20,7 @@ Esta lista se generó a partir del comentario inicial de cada archivo (30 archiv
 | `page-authorization.test.ts` | SEC-03 (docs/internal/historico/nexus-architecture/security-audit.md): cada página de un negocio comprueba sesión + membresía activa por sí misma. El layout de `app/[tenant]` no basta: en la navegación del App Router puede no ejec… |
 | `tenant-scope.test.ts` | Bloque A.4: todo repositorio de `lib/` que lee o escribe una tabla de un negocio (las que tienen `tenantId` en el contrato) filtra por `tenantId` en su `.where({ ... })`. Se lee el código: la prueba falla con el archivo, la línea … |
 | `ui-rules.test.ts` | Reglas del sistema de diseño que se pueden leer en el código (DESIGN.md §3, packages/brand/docs/04-patrones/interaction-patterns.md). Lo que ya existía y aún no se migró está en las listas de deuda: solo se achican. Si migras un archivo, sácalo de la… |
+| `no-private-storage.test.ts` | Los datos de un negocio no se guardan en el navegador (`pwa.md`): la caché de secciones (`lib/experience/hooks/section-cache.ts`) vive solo en memoria, sin `localStorage`, `sessionStorage` ni IndexedDB, y la interfaz no usa IndexedDB. |
 | `v10-business-completo.test.ts` | V10 · Etapa B · Business completo. |
 | `v10-business.test.ts` | V10 · M3 — `lib/business` deja de ser un cajón y pasa a módulos con una responsabilidad cada uno. |
 | `v10-composicion.test.ts` | V10 · M1 — Una sola raíz de composición: `lib/runtime`. |
