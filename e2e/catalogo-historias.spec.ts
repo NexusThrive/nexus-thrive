@@ -23,7 +23,8 @@ async function openStory(page: Page, id: string) {
  *   accesibilidad del catálogo antes de convertirla en regla.
  * - `CATALOGO_FILTRO=<texto>[,<texto>…]`: solo las historias cuyo id contiene alguno de esos textos (útil al trabajar en un componente).
  *
- * Solo corre en el proyecto de escritorio: el de móvil repetiría lo mismo; lo responsive vive en `responsive.spec.ts`.
+ * No forma parte de `pnpm test:e2e`: corre con `pnpm test:catalogo` (proyecto «catalogo», solo escritorio); lo responsive vive en
+ * `responsive.spec.ts`.
  */
 type Entry = { id: string; type: "story" | "docs"; title: string };
 
@@ -33,8 +34,7 @@ const stories = Object.values(index.entries).filter((e) => e.type === "story" &&
 
 test.describe("catálogo de historias", () => {
   for (const story of stories) {
-    test(story.id, async ({ page }, testInfo) => {
-      test.skip(testInfo.project.name !== "escritorio", "el recorrido corre una sola vez, en escritorio");
+    test(story.id, async ({ page }) => {
       const errores: string[] = [];
       page.on("pageerror", (error) => errores.push(error.message));
 
