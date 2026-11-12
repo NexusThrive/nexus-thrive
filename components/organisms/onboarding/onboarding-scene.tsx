@@ -85,7 +85,7 @@ export function OnboardingScene({
           )}
         </div>
         <p className="sr-only" aria-live="polite">{line.text}</p>
-        <p aria-hidden="true" className="relative min-h-[4.5rem] w-full rounded-3xl border border-border bg-card px-5 py-3.5 font-display text-[17px] font-medium leading-snug tracking-[-0.01em] shadow-[0_1px_2px_rgba(10,10,11,.04),0_14px_32px_rgba(10,10,11,.07)]">
+        <p aria-hidden="true" className="relative min-h-[4.5rem] w-full rounded-3xl border border-border bg-card px-5 py-3.5 font-display text-[17px] font-medium leading-snug tracking-[-0.01em] shadow-md">
           <span className="absolute -top-[7px] left-1/2 size-3.5 -translate-x-1/2 rotate-45 border-l border-t border-border bg-card" />
           {typed}
           <span className={cn("ml-0.5 inline-block h-[1.05em] w-0.5 translate-y-[0.18em] bg-[var(--nx-gold-600)]", !typing && "motion-safe:animate-pulse")} />
@@ -109,7 +109,7 @@ function IntroFill({ ordered }: { ordered: boolean }) {
       {ordered ? (
         <ul className="grid w-full grid-cols-2 gap-3">
           {ORDER.map(({ icon: Icon, label, text }, i) => (
-            <li key={label} className="nx-rise flex flex-col gap-2 rounded-3xl bg-card p-4 shadow-[0_1px_2px_rgba(10,10,11,.04),0_12px_28px_rgba(10,10,11,.07)]" style={{ ["--i" as string]: i }}>
+            <li key={label} className="nx-rise flex flex-col gap-2 rounded-3xl bg-card p-4 shadow-md" style={{ ["--i" as string]: i }}>
               <span className="grid size-9 place-items-center rounded-full bg-accent-subtle text-accent-text"><Icon aria-hidden="true" className="size-4" /></span>
               <span className="grid">
                 <span className="text-ui font-semibold">{label}</span>
@@ -122,7 +122,7 @@ function IntroFill({ ordered }: { ordered: boolean }) {
         CHAOS.map(({ icon: Icon, label, x, y, r }, i) => (
           <span key={label} className="absolute left-1/2 top-1/2" style={{ transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) rotate(${r}deg)` }}>
             <span
-              className="flex items-center gap-2 whitespace-nowrap rounded-full bg-card px-3.5 py-2 text-[12.5px] text-foreground shadow-[0_8px_20px_rgba(10,10,11,.1)] motion-safe:animate-[nx-float_4s_ease-in-out_infinite]"
+              className="flex items-center gap-2 whitespace-nowrap rounded-full bg-card px-3.5 py-2 text-[12.5px] text-foreground shadow-md motion-safe:animate-[nx-float_4s_ease-in-out_infinite]"
               style={{ animationDelay: `${i * -0.8}s` }}
             >
               <Icon aria-hidden="true" className="size-3.5 text-muted-foreground" />
@@ -145,7 +145,7 @@ function ProfileFill({ type }: { type: ScenePreview["tenantType"] }) {
       {items.map(({ key, icon: Icon, title, text }) => {
         const on = type === key;
         return (
-          <li key={key} className={cn("flex items-center gap-4 rounded-3xl p-4 transition-all duration-500", on ? "scale-[1.02] bg-card shadow-[0_1px_2px_rgba(10,10,11,.04),0_16px_36px_rgba(10,10,11,.1)] ring-2 ring-accent" : "bg-card/55 opacity-70")}>
+          <li key={key} className={cn("flex items-center gap-4 rounded-3xl p-4 transition-all duration-500", on ? "scale-[1.02] bg-card shadow-lg ring-2 ring-accent" : "bg-card/55 opacity-70")}>
             <span className={cn("grid size-11 place-items-center rounded-full", on ? "bg-accent text-ink" : "bg-surface-muted text-muted-foreground")}><Icon aria-hidden="true" className="size-5" /></span>
             <span className="grid">
               <span className="text-ui font-semibold">{title}</span>
@@ -171,7 +171,7 @@ function BusinessPreview({ preview }: { preview: ScenePreview }) {
       <p className="mb-3 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
         <Sparkles aria-hidden="true" className="size-3.5 text-accent-text" /> Así se ve tu espacio
       </p>
-      <div className="overflow-hidden rounded-[28px] bg-card shadow-[0_1px_2px_rgba(10,10,11,.04),0_20px_44px_rgba(10,10,11,.1)]">
+      <div className="overflow-hidden rounded-sheet bg-card shadow-lg">
         <div className="flex items-center gap-1.5 border-b border-border/60 px-5 py-3">
           <i className="size-2 rounded-full bg-border-strong" />
           <i className="size-2 rounded-full bg-border-strong" />

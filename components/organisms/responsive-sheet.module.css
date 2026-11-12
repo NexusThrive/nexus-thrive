@@ -42,7 +42,7 @@
   flex-direction: column;
   background: var(--surface);
   border-top: 0;
-  border-radius: 28px 28px 0 0;
+  border-radius: var(--radius-sheet) var(--radius-sheet) 0 0;
   box-shadow: var(--nx-shadow-overlay);
   padding-bottom: env(safe-area-inset-bottom, 0px);
   outline: none;
@@ -128,7 +128,7 @@
     width: min(var(--dialog-w-md), calc(100vw - 48px));
     max-height: min(84vh, 720px);
     border: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
-    border-radius: 28px;
+    border-radius: var(--radius-sheet);
     padding-bottom: 0;
     transform: translate(-50%, -50%);
   }
@@ -197,7 +197,7 @@
     bottom: 12px;
     width: min(var(--drawer-w), calc(100vw - 24px));
     border-width: 1px;
-    border-radius: 28px;
+    border-radius: var(--radius-sheet);
   }
   .drawer.floating .head {
     padding-top: 20px;

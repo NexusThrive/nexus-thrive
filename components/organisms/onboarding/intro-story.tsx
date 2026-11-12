@@ -63,7 +63,7 @@ const ROADMAP = [
   { title: "Confirmación", hint: "Revisas y creas tu espacio" },
 ];
 
-const card = "rounded-3xl border border-border/60 bg-card shadow-[0_1px_2px_rgba(10,10,11,.03)]";
+const card = "rounded-3xl border border-border/60 bg-card shadow-xs";
 
 /** Contenido de la presentación (slides 0–2). Ocupa todo el alto disponible. */
 export function IntroStory({ slide }: { slide: number }) {

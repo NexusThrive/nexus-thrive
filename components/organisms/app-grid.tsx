@@ -86,7 +86,7 @@ const tileCoordinates: KeyboardCoordinateGetter = (event, { context: { active, d
 function TileBody({ area, badge, shared = false }: { area: AppArea; badge: number; shared?: boolean }) {
   const Icon = area.icon;
   const square = (
-      <span className="relative grid size-[84px] place-items-center rounded-[22px] border border-border bg-card text-accent-text transition-[transform,background-color,border-color,box-shadow] duration-(--d2) ease-(--nx-ease-out) group-hover:-translate-y-[3px] group-hover:border-accent group-hover:bg-surface-hover motion-reduce:transition-none motion-reduce:group-hover:translate-y-0">
+      <span className="relative grid size-[84px] place-items-center rounded-3xl border border-border bg-card text-accent-text transition-[transform,background-color,border-color,box-shadow] duration-(--d2) ease-(--nx-ease-out) group-hover:-translate-y-[3px] group-hover:border-accent group-hover:bg-surface-hover motion-reduce:transition-none motion-reduce:group-hover:translate-y-0">
         <Icon aria-hidden="true" strokeWidth={1.5} className="size-[34px] transition-transform duration-(--d2) ease-(--nx-ease-out) group-hover:scale-110 motion-reduce:transition-none motion-reduce:group-hover:scale-100" />
         {badge > 0 ? (
           <span aria-hidden="true" className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full border-2 border-background bg-danger px-1 text-2xs font-semibold text-paper">
@@ -132,7 +132,7 @@ function Tile({ area, badge, fav, onToggleFav, consumeDrag }: { area: AppArea; b
           // Después de soltar no se abre la app (el clic del final del arrastre).
           if (consumeDrag()) e.preventDefault();
         }}
-        className="app-tile group grid w-28 select-none justify-items-center gap-3 rounded-[22px] text-center outline-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+        className="app-tile group grid w-28 select-none justify-items-center gap-3 rounded-3xl text-center outline-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
       >
         <TileBody area={area} badge={badge} shared />
         {badge > 0 ? <span className="sr-only">, {badge} por atender</span> : null}
@@ -232,7 +232,7 @@ export function AppGrid({ areas, badges }: { areas: AppArea[]; badges: Record<st
       </ul>
       <DragOverlay dropAnimation={null}>
         {active ? (
-          <div className="grid w-28 scale-105 justify-items-center gap-3 text-center [&>span:first-child]:-translate-y-1 [&>span:first-child]:border-accent [&>span:first-child]:shadow-[var(--nx-shadow-overlay)]">
+          <div className="grid w-28 scale-105 justify-items-center gap-3 text-center [&>span:first-child]:-translate-y-1 [&>span:first-child]:border-accent [&>span:first-child]:shadow-overlay">
             <TileBody area={active} badge={badges[active.label] ?? 0} />
           </div>
         ) : null}

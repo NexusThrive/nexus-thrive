@@ -165,7 +165,7 @@ export function SlideToConfirm({
           Va encima de la etiqueta para BORRARLA con su borde redondo en vez de enturbiarla. */}
       <i
         aria-hidden="true"
-        className="absolute bottom-1 left-1 top-1 z-(--z-raised) rounded-full bg-primary"
+        className="absolute bottom-1 left-1 top-1 z-(--z-raised) rounded-full bg-accent"
         style={{ width: done ? GRIP + travel : x + GRIP, transition: held || reduced ? "none" : "width var(--d3) var(--nx-ease-out)" }}
       />
       <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-14 right-4 grid place-items-center text-ui font-medium text-muted-foreground" style={{ opacity: done ? 0 : say }}>
@@ -180,7 +180,7 @@ export function SlideToConfirm({
           if (e.detail === 0) void confirm();
         }}
         className={cn(
-          "absolute left-1 top-1 z-(--z-raised) h-11 overflow-hidden rounded-full bg-primary text-primary-foreground outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:cursor-not-allowed",
+          "absolute left-1 top-1 z-(--z-raised) h-11 overflow-hidden rounded-full bg-accent text-ink outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:cursor-not-allowed",
           !done && !disabled && "cursor-grab",
           held && "cursor-grabbing",
         )}

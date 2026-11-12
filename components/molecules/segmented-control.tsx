@@ -70,7 +70,7 @@ export function SegmentedControl<T extends string>({
       <span
         ref={indicatorRef}
         aria-hidden="true"
-        className="absolute inset-y-[3px] left-0 z-0 rounded-full bg-surface shadow-[0_1px_2px_rgba(0,0,0,.08),0_0_0_1px_var(--border)] transition-[transform,width] duration-[420ms] ease-[var(--nx-ease-spring)]"
+        className="absolute inset-y-[3px] left-0 z-0 rounded-full bg-surface shadow-xs ring-1 ring-border transition-[transform,width] duration-[420ms] ease-[var(--nx-ease-spring)]"
       />
       {options.map((option) => {
         const active = option.value === value;

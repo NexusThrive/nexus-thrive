@@ -59,7 +59,7 @@ export function BusinessSwitcher({
           )}
         >
           {/* La inicial va por CSS (attr): decora, no es parte del nombre accesible. */}
-          <span aria-hidden="true" data-initial={initialOf(currentName)} className="grid size-7 shrink-0 place-items-center rounded-[4px] bg-primary font-display text-ui font-bold text-primary-foreground before:content-[attr(data-initial)]" />
+          <span aria-hidden="true" data-initial={initialOf(currentName)} className="grid size-7 shrink-0 place-items-center rounded-md bg-primary font-display text-ui font-bold text-primary-foreground before:content-[attr(data-initial)]" />
           <span className="min-w-0 flex-1 truncate text-ui font-semibold">{currentName}</span>
           <ChevronDown aria-hidden="true" className="size-4 shrink-0 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
         </button>
@@ -81,7 +81,7 @@ export function BusinessSwitcher({
               aria-current={current ? "true" : undefined}
               className="min-h-12 items-center gap-3 px-2.5"
             >
-              <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-[4px] bg-primary font-display text-sm font-bold text-primary-foreground">
+              <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-md bg-primary font-display text-sm font-bold text-primary-foreground">
                 {initialOf(business.name)}
               </span>
               <span className="flex min-w-0 flex-1 flex-col leading-tight">
@@ -95,7 +95,7 @@ export function BusinessSwitcher({
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild className="min-h-12 items-center gap-3 px-2.5">
           <Link href="/onboarding?nuevo=1">
-            <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-[4px] border border-dashed border-border-strong">
+            <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-md border border-dashed border-border-strong">
               <Plus className="size-4" />
             </span>
             <span className="flex min-w-0 flex-col leading-tight">

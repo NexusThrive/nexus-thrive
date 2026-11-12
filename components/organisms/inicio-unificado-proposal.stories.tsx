@@ -136,7 +136,7 @@ function MyApps() {
           return (
             <li key={g.label}>
               <a href="#" className="group flex items-center gap-3 rounded-lg border border-border bg-card p-3 outline-none transition-colors hover:border-border-input hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
-                <span className="grid size-10 shrink-0 place-items-center rounded-[12px] bg-surface-muted text-accent-text group-hover:bg-card"><Icon aria-hidden="true" className="size-5" strokeWidth={1.6} /></span>
+                <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-surface-muted text-accent-text group-hover:bg-card"><Icon aria-hidden="true" className="size-5" strokeWidth={1.6} /></span>
                 <span className="min-w-0">
                   <span className="block truncate text-ui font-medium text-foreground">{g.label}</span>
                   <span className="block text-2xs text-muted-foreground">{g.items.length} {g.items.length === 1 ? "sección" : "secciones"}</span>

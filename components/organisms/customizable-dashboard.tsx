@@ -413,7 +413,7 @@ function Item({
                 onMouseDown={(event) => event.stopPropagation()}
                 onKeyDown={main ? resizeKeys : undefined}
                 className={cn(
-                  "absolute hidden size-4 touch-none rounded-[3px] border-2 border-accent bg-surface outline-none transition-transform duration-150 hover:scale-125 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring lg:block",
+                  "absolute hidden size-4 touch-none rounded-xs border-2 border-accent bg-surface outline-none transition-transform duration-150 hover:scale-125 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring lg:block",
                   corner.className,
                 )}
               />

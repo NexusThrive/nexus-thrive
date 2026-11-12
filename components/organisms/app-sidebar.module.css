@@ -78,9 +78,12 @@
   gap: 12px;
   height: 42px;
   padding: 0 13px;
-  border-radius: 4px;
+  border-radius: var(--radius-md);
+  /* Mismo tamaño, peso y tono que las categorías (`.groupRow`): un solo nivel de navegación, una sola tipografía. */
+  font-size: var(--text-sm);
+  font-weight: 500;
   color: var(--sidebar-fg);
-  opacity: 0.7;
+  opacity: 0.78;
   white-space: nowrap;
   transition:
     opacity var(--d2),
@@ -114,7 +117,7 @@
   inset: 0 0 auto;
   height: 42px;
   z-index: 0;
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   background: var(--sidebar-active);
   pointer-events: none;
   opacity: 0;
@@ -194,7 +197,7 @@
   padding: 0 13px;
   align-items: center;
   gap: 12px;
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   color: var(--sidebar-fg-muted);
   font: 500 13px var(--font-sans);
   white-space: nowrap;
@@ -215,7 +218,7 @@
   position: fixed;
   z-index: var(--z-popover);
   padding: 6px 10px;
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   background: var(--foreground);
   color: var(--background);
   font: 500 12px var(--font-sans);
@@ -340,12 +343,12 @@
   width: 100%;
   min-height: 42px;
   padding: 0 10px 0 13px;
-  font-size: 14px;
+  font-size: var(--text-sm);
   border: 0;
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   background: none;
   color: var(--sidebar-fg);
-  opacity: 0.85;
+  opacity: 0.78;
   text-align: left;
   cursor: pointer;
   white-space: nowrap;
@@ -438,7 +441,7 @@
     gap: 10px;
     margin-bottom: 14px;
     padding: 8px;
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
     background: var(--card);
   }
   .bizMark {
@@ -447,7 +450,7 @@
     place-items: center;
     width: 36px;
     height: 36px;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     background: var(--surface-muted);
     color: var(--foreground);
   }
@@ -479,7 +482,7 @@
   /* Ítems más altos (48 px) con su selección igual de alta, y un poco más de aire entre ellos. */
   .side[data-variant="workspace"] .link,
   .side[data-variant="workspace"] .groupRow {
-    border-radius: 12px;
+    border-radius: var(--radius-lg);
   }
   .side[data-variant="workspace"] .link {
     height: 48px;
@@ -502,7 +505,7 @@
     position: absolute;
     inset: 0 calc(var(--pad) * -1) 0 0;
     z-index: -1;
-    border-radius: 12px 0 0 12px;
+    border-radius: var(--radius-lg) 0 0 var(--radius-lg);
     background: transparent;
     transition: background var(--d2);
     pointer-events: none;
@@ -516,7 +519,7 @@
   }
   .side[data-variant="workspace"] .indicator {
     height: 48px;
-    border-radius: 12px 0 0 12px;
+    border-radius: var(--radius-lg) 0 0 var(--radius-lg);
   }
   .side[data-variant="workspace"] .nav,
   .side[data-variant="workspace"] .pinned,
@@ -558,7 +561,7 @@
     margin-top: 0;
   }
   .side[data-variant="workspace"] .indicator {
-    border-radius: 12px 0 0 12px;
+    border-radius: var(--radius-lg) 0 0 var(--radius-lg);
     left: 0;
     right: 0;
     background: var(--card);
@@ -583,7 +586,7 @@
     background: radial-gradient(circle at 0 100%, transparent calc(var(--join) - 0.5px), var(--card) var(--join));
   }
   .side[data-variant="workspace"] .link[aria-current="page"] {
-    font-weight: 500;
+    font-weight: 600;
   }
   @media (max-width: 1023.98px) {
     .side[data-variant="workspace"] .link,
@@ -626,7 +629,7 @@
     width: 32px;
     height: 32px;
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     background: none;
     color: var(--foreground-muted);
     cursor: pointer;

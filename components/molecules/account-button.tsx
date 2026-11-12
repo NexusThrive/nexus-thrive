@@ -15,7 +15,7 @@ const noop = () => () => undefined;
 export function AccountButton({ showName = false, compact = false }: { showName?: boolean; /** Avatar de 28px (barra de módulo). */ compact?: boolean }) {
   const mounted = useSyncExternalStore(noop, () => true, () => false);
   const { user } = useUser();
-  const box = compact ? "size-7 pointer-coarse:size-10 rounded-[4px]" : "size-[34px] pointer-coarse:size-11 rounded-[4px]";
+  const box = compact ? "size-7 pointer-coarse:size-10 rounded-md" : "size-[34px] pointer-coarse:size-11 rounded-md";
   if (!mounted) return <span aria-hidden="true" className={`inline-block ${box} bg-surface-muted`} />;
   // Sin foto propia en la cuenta, su avatar es el blobatar de la persona (como los clientes), encima del de Clerk. El clic pasa al botón.
   const noPhoto = user && !(user as { hasImage?: boolean }).hasImage;
