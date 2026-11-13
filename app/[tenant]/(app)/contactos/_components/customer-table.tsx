@@ -10,6 +10,7 @@ import { GroupIcon } from "@/components/atoms/group-icon";
 import { HighlightText } from "@/components/atoms/highlight-text";
 import type { CustomerGroupView } from "@/lib/business/customers/customer-list";
 import { SwipeCard } from "@/components/molecules/swipe-card";
+import { useShell } from "@/components/providers/shell-context";
 import { ArrowDown, ArrowUp, Archive, ChevronDown, ChevronRight, Banknote, MessageCircle, Pencil, Plus, RotateCcw, X, CalendarClock, History, Search, Users, Wallet } from "lucide-react";
 import {
   archiveCustomerAction,
@@ -194,6 +195,10 @@ export default function CustomerTable({
   groupOptions?: GroupOption[];
 }) {
   const router = useRouter();
+  // «Cobrar» abre el cobro de `/finanzas`, que solo abre el módulo Finanzas (Pagos tiene su propia página, `/finanzas/cobros`): sin Finanzas
+  // la acción llevaría a un 404. Si el contexto no informa los módulos, se conserva la acción.
+  const { activeModules } = useShell();
+  const hasFinance = activeModules ? activeModules.includes("finance") : true;
   // La ficha recibe la búsqueda, el filtro y el orden de esta lista para que su paginador recorra los mismos clientes.
   const listQuery = new URLSearchParams({ ...(query ? { q: query } : {}), ...(status !== "active" ? { status } : {}), ...(sort !== "recent" ? { sort } : {}) }).toString();
   const fichaHref = (id: string) => `/${tenantSlug}/contactos/${id}${listQuery ? `?${listQuery}` : ""}`;
@@ -665,7 +670,7 @@ export default function CustomerTable({
                     <SwipeCard
                       className="rounded-none border-0 bg-background"
                       actions={[
-                        { label: "Cobrar", icon: Banknote, tone: "gold", href: `/${tenantSlug}/finanzas?nuevo=pago&cliente=${row.id}` },
+                        ...(hasFinance ? [{ label: "Cobrar", icon: Banknote, tone: "gold" as const, href: `/${tenantSlug}/finanzas?nuevo=pago&cliente=${row.id}` }] : []),
                         { label: "Recordar", icon: MessageCircle, tone: "ink", href: wa, external: true, disabled: !wa },
                         { label: "Editar", icon: Pencil, tone: "muted", onClick: () => setEditTarget(row) },
                         ...(canRemove
