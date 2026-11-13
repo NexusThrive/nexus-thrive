@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import RecentActivity from "./recent-activity";
 
 const meta = {
-  title: "Organismos/RecentActivity",
+  title: "Organismos/Datos/RecentActivity",
+  id: "organismos-recentactivity",
   component: RecentActivity,
   args: {
     items: [

@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import TabNav from "./tab-nav";
 
 const meta = {
-  title: "Moléculas/TabNav",
+  title: "Moléculas/Navegación/TabNav",
+  id: "moléculas-tabnav",
   component: TabNav,
   args: {
     activeTab: "budget",

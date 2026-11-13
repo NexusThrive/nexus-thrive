@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { buttonVariants } from "@/components/atoms/button-variants";
 import { PageHeader } from "@/components/molecules/page-header";
 import { getStaffContext } from "@/lib/platform/team/access";
 import { getAppBaseUrl } from "@/lib/foundation/app-url";
@@ -114,7 +115,7 @@ export default async function BeneficiosPage({
           <div className="flex items-end">
             <button
               type="submit"
-              className="inline-flex h-10 items-center justify-center rounded-md bg-ink px-5 text-sm font-semibold text-white transition hover:bg-black"
+              className={buttonVariants({ className: "px-5 text-sm" })}
             >
               Emitir acceso pagado
             </button>
@@ -165,7 +166,7 @@ export default async function BeneficiosPage({
           <div className="flex items-end">
             <button
               type="submit"
-              className="inline-flex h-10 items-center justify-center rounded-md bg-ink px-5 text-sm font-semibold text-white transition hover:bg-black"
+              className={buttonVariants({ className: "px-5 text-sm" })}
             >
               Crear código promo
             </button>
@@ -325,7 +326,7 @@ export default async function BeneficiosPage({
                       <div className="flex items-end sm:col-span-2 lg:col-span-3">
                         <button
                           type="submit"
-                          className="inline-flex h-9 items-center justify-center rounded-md bg-ink px-5 text-xs font-semibold text-white transition hover:bg-black"
+                          className={buttonVariants({ size: "sm", className: "px-5" })}
                         >
                           Guardar cambios
                         </button>

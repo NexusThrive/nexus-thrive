@@ -3,7 +3,8 @@ import { withShell } from "../../.storybook/decorators";
 import { RecordBreadcrumbs } from "./record-breadcrumbs";
 
 const meta = {
-  title: "Organismos/Migas de registro",
+  title: "Organismos/Shell/Migas de registro",
+  id: "organismos-migas-de-registro",
   component: RecordBreadcrumbs,
   decorators: [withShell],
   parameters: { layout: "padded", docs: { description: { component: "Migas de un registro: «← Atrás» a su lista y «Clientes › María Pérez». En las fichas reemplaza a la miga por ruta." } } },

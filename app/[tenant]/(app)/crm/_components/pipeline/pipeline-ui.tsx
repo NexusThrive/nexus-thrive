@@ -34,7 +34,7 @@ export function StarsInput({ value, onChange, size = "md", label = "Prioridad" }
           aria-checked={value === n}
           aria-label={`${n} ${n === 1 ? "estrella" : "estrellas"}`}
           onClick={() => onChange(value === n ? n - 1 : n)}
-          className="grid place-items-center rounded outline-none focus-visible:outline-2 focus-visible:outline-ring"
+          className="grid place-items-center rounded-xs outline-none focus-visible:outline-2 focus-visible:outline-ring"
         >
           <svg viewBox="0 0 24 24" aria-hidden="true" className={cls}>
             <path d={STAR} strokeWidth={1.5} strokeLinejoin="round" className={n <= value ? "fill-accent stroke-accent" : "fill-none stroke-border-strong hover:stroke-accent"} />

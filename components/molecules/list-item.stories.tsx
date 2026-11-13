@@ -6,7 +6,8 @@ import { IconTile } from "@/components/atoms/icon-tile";
 import { Amount, ListItem } from "./list-item";
 
 const meta = {
-  title: "Moléculas/ListItem",
+  title: "Moléculas/Contenido/ListItem",
+  id: "moléculas-listitem",
   component: ListItem,
   args: { title: "María Torres", subtitle: "Corte y barba · Nequi" },
   decorators: [(Story) => <div className="max-w-md overflow-hidden rounded-lg border border-border"><Story /></div>],

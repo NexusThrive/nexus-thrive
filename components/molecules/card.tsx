@@ -3,8 +3,8 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * Card NEXUS THRIVE: fondo `--surface`, borde 1 px, radio 6 px, padding 20 px,
- * sin sombra. Altura automática: nunca altura fija con espacio vacío.
+ * Card NEXUS THRIVE: fondo `--surface`, borde 1 px sutil, radio 12 px (`rounded-lg`), padding 20 px,
+ * sin sombra en reposo. Altura automática: nunca altura fija con espacio vacío.
  */
 function Card({
   className,

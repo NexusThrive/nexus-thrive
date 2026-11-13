@@ -35,7 +35,8 @@ const columns: AdaptiveColumn<Sale>[] = [
 ];
 
 const meta = {
-  title: "Organismos/AdaptiveTable",
+  title: "Organismos/Datos/AdaptiveTable",
+  id: "organismos-adaptivetable",
   component: AdaptiveTable<Sale>,
   parameters: { layout: "fullscreen" },
   decorators: [

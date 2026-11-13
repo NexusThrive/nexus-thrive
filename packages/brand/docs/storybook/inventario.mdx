@@ -4,8 +4,30 @@ import { Meta } from "@storybook/addon-docs/blocks";
 
 # Inventario
 
-**Sistema compartido (`components/`), documentado aquí:** 31 átomos, 47 moléculas,
-38 organismos, 6 plantillas y 3 proveedores.
+**Sistema compartido (`components/`):** 37 átomos, 62 moléculas, 7 widgets, 76 organismos, 7 plantillas y 9 proveedores
+(archivos `.tsx`, noviembre de 2026). Cada componente nace con su historia: una prueba lo vigila
+(`tests/architecture/stories-coverage.test.ts`) y los 36 heredados que aún no la tienen están en `stories-baseline.json`,
+una lista que solo baja.
+
+## Cómo está ordenado el catálogo
+
+Por **nivel** y, dentro de cada nivel, por **para qué sirve**. Busca primero aquí antes de crear algo.
+
+| Nivel | Subcategorías |
+| --- | --- |
+| Átomos | Acciones · Formularios · Datos · Presentación · Marca · Movimiento |
+| Moléculas | Formularios · Superposiciones · Avisos y estados · Navegación · Contenido · Calendario |
+| Widgets | Tarjetas de tablero: `Widget`, `KpiCard`, gráficas |
+| Organismos | Superposiciones · Shell · Datos · Inicio · AURI · Finanzas · Agenda · Canales · Onboarding · Acceso · Configuración |
+| Plantillas | Esqueletos de página: `TenantShell`, `AuthLayout`, `OnboardingSplit`, `ModulePlaceholder` |
+| Páginas | Pantallas reales por módulo, con datos de muestra |
+
+Las subcategorías son del catálogo, no de carpetas: los archivos siguen en `components/<nivel>/` para no romper las
+importaciones de otras ramas. Los ids de las historias no cambian al reordenar (cada meta fija su `id`).
+
+**Sin historia a propósito** (no tienen interfaz propia o dependen de algo que Storybook no simula): proveedores
+(`MotionProvider`, `Preferences`, `SmoothScroll`…), `LiveRefresh`, `QrScanner` (cámara), `TopbarCrumbs`,
+`AppEntrySplash` (cookie) y `LinkPendingHint` (solo se ve durante una navegación).
 
 ## Capa de interacción
 

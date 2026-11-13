@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { QrCode } from "./qr-code";
 
 const meta = {
-  title: "Átomos/QrCode",
+  title: "Átomos/Datos/QrCode",
+  id: "átomos-qrcode",
   component: QrCode,
   args: { value: "https://nexusthrive.com/c/demo", label: "Carnet de Camila Ruiz" },
 } satisfies Meta<typeof QrCode>;

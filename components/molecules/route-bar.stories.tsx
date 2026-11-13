@@ -3,7 +3,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { RouteBar } from "./route-bar";
 
 const meta = {
-  title: "Moléculas/RouteBar",
+  title: "Moléculas/Navegación/RouteBar",
+  id: "moléculas-routebar",
   component: RouteBar,
   parameters: {
     docs: {

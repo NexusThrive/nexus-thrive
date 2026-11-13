@@ -80,7 +80,7 @@ export function AgendaTimeline({
                 <span
                   className={cn(
                     "grid size-7 shrink-0 place-items-center rounded-md font-display text-2xs font-bold",
-                    row.done || row.cancelled ? "bg-surface-muted text-foreground" : "bg-primary text-primary-foreground",
+                    row.done || row.cancelled ? "bg-surface-muted text-foreground" : "bg-accent-subtle text-foreground",
                   )}
                 >
                   {row.initials}

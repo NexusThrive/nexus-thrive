@@ -13,7 +13,8 @@ import {
 } from "./dropdown-menu";
 
 const meta = {
-  title: "Moléculas/DropdownMenu",
+  title: "Moléculas/Superposiciones/DropdownMenu",
+  id: "moléculas-dropdownmenu",
   component: DropdownMenu,
   parameters: { layout: "centered" },
 } satisfies Meta<typeof DropdownMenu>;

@@ -187,7 +187,7 @@ export default function AgendaCalendar({
                             e.stopPropagation();
                             go("day", day);
                           }}
-                          className={cn("grid size-6 place-items-center rounded-full font-mono text-xs tabular-nums hover:bg-border", isToday && "bg-ink font-bold text-[#F7F6F3]")}
+                          className={cn("grid size-6 place-items-center rounded-full font-mono text-xs tabular-nums hover:bg-border", isToday && "bg-accent font-bold text-ink")}
                         >
                           {Number(day.slice(8))}
                         </button>
@@ -203,7 +203,7 @@ export default function AgendaCalendar({
                                 e.stopPropagation();
                                 setOpen(b);
                               }}
-                              className={cn("block w-full truncate rounded px-1 py-0.5 text-left text-2xs hover:bg-surface", b.status === "CANCELLED" && "text-muted-foreground line-through")}
+                              className={cn("block w-full truncate rounded-xs px-1 py-0.5 text-left text-2xs hover:bg-surface", b.status === "CANCELLED" && "text-muted-foreground line-through")}
                             >
                               <span className="font-mono">{hhmm(b.start)}</span> {b.serviceName}
                             </button>

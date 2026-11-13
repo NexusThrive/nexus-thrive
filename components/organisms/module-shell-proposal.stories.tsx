@@ -66,7 +66,7 @@ function ClientesContent({ view, onView, section }: { view: "lista" | "tablero";
                 type="button"
                 aria-pressed={view === id}
                 onClick={() => onView(id)}
-                className={cn("inline-flex h-8 items-center gap-1.5 rounded px-3 text-[12.5px] font-medium outline-none focus-visible:outline-2 focus-visible:outline-ring", view === id ? "bg-surface-muted text-foreground" : "text-muted-foreground hover:text-foreground")}
+                className={cn("inline-flex h-8 items-center gap-1.5 rounded-xs px-3 text-[12.5px] font-medium outline-none focus-visible:outline-2 focus-visible:outline-ring", view === id ? "bg-surface-muted text-foreground" : "text-muted-foreground hover:text-foreground")}
               >
                 <Icon aria-hidden="true" className="size-4" />
                 {label}

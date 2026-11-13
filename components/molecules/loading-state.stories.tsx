@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { LoadingState } from "./loading-state";
 
 const meta = {
-  title: "Moléculas/LoadingState",
+  title: "Moléculas/Avisos y estados/LoadingState",
+  id: "moléculas-loadingstate",
   component: LoadingState,
   args: { label: "Cargando clientes…" },
 } satisfies Meta<typeof LoadingState>;

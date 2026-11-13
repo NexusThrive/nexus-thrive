@@ -527,7 +527,7 @@ export default function TenantForm({ onClose }: { onClose: () => void }) {
                     value={moduleName}
                     checked={modules.has(moduleName)}
                     onChange={() => toggleModule(moduleName)}
-                    className="h-4 w-4 rounded border-border-strong accent-primary"
+                    className="h-4 w-4 rounded-xs border-border-strong accent-primary"
                   />
                   {MODULE_LABELS[moduleName]}
                 </label>

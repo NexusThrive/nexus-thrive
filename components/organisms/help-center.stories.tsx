@@ -3,7 +3,8 @@ import { ToastProvider } from "@/components/molecules/toast";
 import { HelpCenter } from "./help-center";
 
 const meta = {
-  title: "Organismos/HelpCenter",
+  title: "Organismos/Inicio/HelpCenter",
+  id: "organismos-helpcenter",
   component: HelpCenter,
   args: { tenantSlug: "gym-norte", businessName: "Gimnasio Norte", activeModules: ["crm", "finance", "bookings"] },
   parameters: {

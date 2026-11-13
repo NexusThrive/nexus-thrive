@@ -6,7 +6,8 @@ import { buildTenantNav } from "@/lib/experience/navigation/tenant-nav";
 import { AppSidebar } from "./app-sidebar";
 
 const meta = {
-  title: "Organismos/AppSidebar",
+  title: "Organismos/Shell/AppSidebar",
+  id: "organismos-appsidebar",
   component: AppSidebar,
   decorators: [withShell],
   parameters: {

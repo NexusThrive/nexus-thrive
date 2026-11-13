@@ -4,7 +4,8 @@ import { Button } from "@/components/atoms/button";
 import { EmptyPageFrame } from "./empty-page-frame";
 
 const meta = {
-  title: "Moléculas/EmptyPageFrame",
+  title: "Moléculas/Avisos y estados/EmptyPageFrame",
+  id: "moléculas-emptypageframe",
   component: EmptyPageFrame,
   // En Storybook no se anota la ruta como vacía: la marca vive en localStorage y alteraría las demás historias.
   args: { remember: false, children: null },

@@ -3,7 +3,8 @@ import { withShell } from "../../.storybook/decorators";
 import { QuickCreateGrid } from "./quick-create-grid";
 
 const meta = {
-  title: "Organismos/QuickCreateGrid",
+  title: "Organismos/Inicio/QuickCreateGrid",
+  id: "organismos-quickcreategrid",
   component: QuickCreateGrid,
   decorators: [withShell, (Story) => <div className="max-w-sm"><Story /></div>],
   parameters: { docs: { description: { component: "Acciones de crear según los módulos activos; entran una a una con rebote." } } },

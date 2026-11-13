@@ -186,7 +186,7 @@ export function MasterPackPreview({
             type="checkbox"
             checked={updatePrices}
             onChange={(event) => setUpdatePrices(event.target.checked)}
-            className="mt-0.5 h-4 w-4 rounded border-border"
+            className="mt-0.5 h-4 w-4 rounded-xs border-border"
           />
           <span>
             Actualizar el precio de los insumos que ya existen. El precio anterior queda en el

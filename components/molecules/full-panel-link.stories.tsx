@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { FullPanelLink } from "./full-panel-link";
 
 const meta = {
-  title: "Moléculas/FullPanelLink",
+  title: "Moléculas/Navegación/FullPanelLink",
+  id: "moléculas-fullpanellink",
   component: FullPanelLink,
   args: { href: "#" },
   parameters: {

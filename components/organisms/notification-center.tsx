@@ -290,7 +290,7 @@ export function NotificationCenter({
           onPointerEnter={() => setHovering(true)}
           onPointerLeave={() => setHovering(false)}
           style={{ transformOrigin: "calc(100% - 20px) 0" }}
-          className="absolute right-0 top-[calc(100%+6px)] z-(--z-popover) w-[min(340px,calc(100vw-24px))] max-sm:fixed max-sm:inset-x-3 max-sm:top-[calc(var(--topbar-height)+env(safe-area-inset-top,0px)+6px)] max-sm:w-auto overflow-hidden rounded-3xl border border-border/60 bg-surface shadow-[var(--nx-shadow-overlay)] motion-safe:animate-[nx-pop_.2s_var(--nx-ease-out)]"
+          className="absolute right-0 top-[calc(100%+6px)] z-(--z-popover) w-[min(340px,calc(100vw-24px))] max-sm:fixed max-sm:inset-x-3 max-sm:top-[calc(var(--topbar-height)+env(safe-area-inset-top,0px)+6px)] max-sm:w-auto overflow-hidden rounded-3xl border border-border/60 bg-surface shadow-overlay motion-safe:animate-[nx-pop_.2s_var(--nx-ease-out)]"
         >
           <span ref={sweepRef} aria-hidden="true" className="pointer-events-none absolute inset-0 bg-accent [clip-path:polygon(0_0,0_0,0_100%,0_100%)]" />
           {(() => {
@@ -329,7 +329,7 @@ export function NotificationCenter({
           ref={panelRef}
           role="dialog"
           aria-label="Notificaciones"
-          className="absolute right-0 top-[calc(100%+6px)] z-(--z-popover) w-[min(360px,calc(100vw-24px))] max-sm:fixed max-sm:inset-x-3 max-sm:top-[calc(var(--topbar-height)+env(safe-area-inset-top,0px)+6px)] max-sm:w-auto nx-morph-panel origin-top-right overflow-hidden rounded-3xl border border-border/60 bg-surface shadow-[var(--nx-shadow-overlay)] motion-safe:animate-[nx-pop_.22s_var(--nx-ease-out)]"
+          className="absolute right-0 top-[calc(100%+6px)] z-(--z-popover) w-[min(360px,calc(100vw-24px))] max-sm:fixed max-sm:inset-x-3 max-sm:top-[calc(var(--topbar-height)+env(safe-area-inset-top,0px)+6px)] max-sm:w-auto nx-morph-panel origin-top-right overflow-hidden rounded-3xl border border-border/60 bg-surface shadow-overlay motion-safe:animate-[nx-pop_.22s_var(--nx-ease-out)]"
         >
           <div className="flex items-center justify-between border-b border-border/50 py-2.5 pl-5 pr-3">
             <b className="font-display text-base font-medium">Notificaciones</b>

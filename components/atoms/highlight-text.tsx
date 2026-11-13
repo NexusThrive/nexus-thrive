@@ -36,7 +36,7 @@ export function HighlightText({ text, terms }: { text: string; terms?: string[] 
     <>
       {parts.map((part, i) =>
         part.on ? (
-          <mark key={i} className="rounded-[2px] bg-accent-subtle px-px text-inherit">{part.text}</mark>
+          <mark key={i} className="rounded-xs bg-accent-subtle px-px text-inherit">{part.text}</mark>
         ) : (
           <Fragment key={i}>{part.text}</Fragment>
         ),

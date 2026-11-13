@@ -103,7 +103,7 @@ export function ReceiptPrinter({
           </div>
           <b className="font-display text-xl font-bold tabular-nums">{data.total}</b>
         </div>
-        <i aria-hidden="true" className="absolute inset-x-[22px] bottom-2.5 h-[7px] rounded-[2px] border border-doc-edge-strong bg-black" />
+        <i aria-hidden="true" className="absolute inset-x-[22px] bottom-2.5 h-[7px] rounded-xs border border-doc-edge-strong bg-black" />
       </div>
       <div ref={outRef} className="relative z-[3] -mt-3.5 h-0 w-[calc(100%-36px)] overflow-hidden">
         <div

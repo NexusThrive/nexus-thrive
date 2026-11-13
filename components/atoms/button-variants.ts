@@ -5,29 +5,40 @@ import { cva } from "class-variance-authority";
  * componentes de servidor y los enlaces con aspecto de botón
  * (`<Link className={buttonVariants({ variant: "outline" })}>`).
  * `nx-press` activa el hundimiento con resorte de MotionProvider.
+ *
+ * Soft Enterprise: radio de control (`rounded-md`, 10 px), Inter 550 a 13 px.
+ * - `primary`: la acción principal, en oro con tinta encima (9,6:1). Una por vista.
+ * - `outline`: superficie blanca, borde sutil y sombra xs; la acción secundaria habitual.
+ * - `secondary`: relleno gris suave, para acciones dentro de una tarjeta.
+ * - `ghost`: sin fondo hasta pasar el cursor (barras, iconos).
+ * - `danger`: borrar o anular, siempre con confirmación.
+ * - `link`: texto en oro legible.
+ * `accent` y `default` son alias de `primary`; `destructive`, de `danger` (compatibilidad).
  */
+const primary = "bg-accent text-ink hover:bg-accent-hover";
+const danger = "bg-danger text-white hover:brightness-110";
+
 export const buttonVariants = cva(
-  "nx-press relative inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-md border border-transparent text-[13px] font-semibold leading-none outline-none transition-[background-color,border-color,filter,box-shadow] duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-45 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "nx-press relative inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-md border border-transparent text-ui font-semibold leading-none outline-none transition-[background-color,border-color,filter,box-shadow] duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-45 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        primary: "bg-primary text-primary-foreground hover:brightness-[1.18]",
-        accent: "bg-accent text-ink hover:bg-accent-hover",
-        outline:
-          "border-border-strong bg-transparent text-foreground hover:border-border-input hover:bg-surface-muted",
+        primary,
+        outline: "border-border bg-surface text-foreground shadow-xs hover:border-border-strong hover:bg-surface-muted",
         secondary: "bg-surface-muted text-foreground hover:bg-surface-hover",
         ghost: "bg-transparent text-foreground hover:bg-surface-muted",
-        danger: "bg-danger text-white hover:brightness-110",
+        danger,
         link: "h-auto px-0 text-accent-text underline-offset-4 hover:underline",
-        // Alias de compatibilidad (shadcn).
-        default: "bg-primary text-primary-foreground hover:brightness-[1.18]",
-        destructive: "bg-danger text-white hover:brightness-110",
+        // Alias de compatibilidad: mismo aspecto que su variante.
+        accent: primary,
+        default: primary,
+        destructive: danger,
       },
       size: {
-        default: "h-[var(--control-h)] px-[18px]",
-        sm: "h-8 px-3 text-[12.5px] pointer-coarse:h-11",
-        lg: "h-12 px-[22px] text-sm",
-        icon: "size-[var(--control-h)] p-0",
+        default: "h-(--control-h) px-4.5",
+        sm: "h-8 px-3 text-xs pointer-coarse:h-11",
+        lg: "h-12 px-5.5 text-sm",
+        icon: "size-(--control-h) p-0",
         "icon-sm": "size-8 p-0 pointer-coarse:size-11",
       },
     },

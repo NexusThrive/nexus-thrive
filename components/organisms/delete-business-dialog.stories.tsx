@@ -14,7 +14,8 @@ function Demo(args: React.ComponentProps<typeof DeleteBusinessDialog>) {
 }
 
 const meta = {
-  title: "Organismos/DeleteBusinessDialog",
+  title: "Organismos/Superposiciones/DeleteBusinessDialog",
+  id: "organismos-deletebusinessdialog",
   component: DeleteBusinessDialog,
   args: { open: false, onClose: () => {}, businessName: "Gimnasio Demo", onConfirm: async (): Promise<{ ok: boolean; message?: string }> => ({ ok: true }) },
   parameters: { docs: { description: { component: "Borrado de raíz: exige escribir el nombre del negocio. Si el servidor rechaza, el diálogo sigue abierto y muestra el motivo." } } },

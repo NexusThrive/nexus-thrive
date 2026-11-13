@@ -34,7 +34,7 @@ function Demo() {
     <div key="inicio" className="grid min-h-[560px] place-items-center">
       <button type="button" onClick={() => go(true)} className="grid w-28 justify-items-center gap-3 text-center">
         <ViewTransition name="nx-app-demo" share="nx-app" default="none">
-          <span className="grid size-[84px] place-items-center rounded-[22px] border border-border bg-card text-accent-text">
+          <span className="grid size-[84px] place-items-center rounded-3xl border border-border bg-card text-accent-text">
             <Target aria-hidden="true" strokeWidth={1.5} className="size-[34px]" />
           </span>
         </ViewTransition>
@@ -45,7 +45,8 @@ function Demo() {
 }
 
 const meta = {
-  title: "Organismos/AppStage",
+  title: "Organismos/Shell/AppStage",
+  id: "organismos-appstage",
   component: Demo,
   parameters: { layout: "fullscreen", docs: { description: { component: "Abrir una app: el icono crece hasta la vista y, al volver, la vista se encoge a su icono (sin estirar las capturas)." } } },
 } satisfies Meta<typeof Demo>;

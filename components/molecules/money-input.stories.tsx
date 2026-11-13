@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { MoneyInput } from "./money-input";
 
 const meta = {
-  title: "Moléculas/MoneyInput",
+  title: "Moléculas/Formularios/MoneyInput",
+  id: "moléculas-moneyinput",
   component: MoneyInput,
   args: { "aria-label": "Valor", placeholder: "0" },
   decorators: [(Story) => <div className="max-w-xs"><Story /></div>],

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Kbd } from "./kbd";
 
-const meta = { title: "Átomos/Kbd", component: Kbd, args: { children: "Ctrl K" } } satisfies Meta<typeof Kbd>;
+const meta = { title: "Átomos/Presentación/Kbd", id: "átomos-kbd", component: Kbd, args: { children: "Ctrl K" } } satisfies Meta<typeof Kbd>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

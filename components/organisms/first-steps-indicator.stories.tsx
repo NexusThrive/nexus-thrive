@@ -10,7 +10,8 @@ const steps = (done: string[]): WelcomeStep[] =>
   ].map((s) => ({ ...s, icon: s.icon as WelcomeStep["icon"], done: done.includes(s.id) }));
 
 const meta = {
-  title: "Organismos/FirstStepsIndicator",
+  title: "Organismos/Inicio/FirstStepsIndicator",
+  id: "organismos-firststepsindicator",
   component: FirstStepsIndicator,
   args: { steps: steps([]) },
   argTypes: { steps: { control: false } },

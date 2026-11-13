@@ -129,7 +129,7 @@ export default function ProjectQuotesWorkspace({
                 <DateInput id="quote-valid-until" name="validUntil" className={inputClass} />
               </label>
               <label htmlFor="quote-show-apu" className="flex items-center gap-2 text-sm text-muted-foreground sm:pb-2.5">
-                <input id="quote-show-apu" name="showApuDetail" type="checkbox" className="h-4 w-4 rounded border-border" />
+                <input id="quote-show-apu" name="showApuDetail" type="checkbox" className="h-4 w-4 rounded-xs border-border" />
                 Mostrar el detalle APU al cliente
               </label>
               <button

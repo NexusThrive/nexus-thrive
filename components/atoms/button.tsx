@@ -11,8 +11,8 @@ import { buttonVariants } from "./button-variants";
 
 /**
  * Botón NEXUS THRIVE: alto `--control-h` (40 px; 34 px en densidad compacta),
- * padding 0 18px, radio 4 px, Inter 600 13 px. Primario = tinta (claro) / oro
- * (oscuro) vía `--primary`; acento = oro, un único CTA por pantalla. Se hunde
+ * padding 0 18px, radio de control 10 px (`rounded-md`), Inter 550 13 px. Primario = oro con tinta encima,
+ * un único CTA por pantalla; `outline` es la superficie blanca de las acciones secundarias. Se hunde
  * al presionarlo y vuelve con un resorte (`data-press`, ver MotionProvider).
  * Estados `loading` / `done` con la N de marca y texto con enfoque.
  */

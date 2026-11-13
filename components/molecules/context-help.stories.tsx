@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { ContextHelp } from "./context-help";
 
 const meta = {
-  title: "Moléculas/ContextHelp",
+  title: "Moléculas/Superposiciones/ContextHelp",
+  id: "moléculas-contexthelp",
   component: ContextHelp,
   args: {
     topic: "el saldo a favor",

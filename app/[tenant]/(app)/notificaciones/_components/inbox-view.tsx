@@ -170,7 +170,7 @@ export default function InboxView({ slug, initial, actions }: { slug: string; in
 function Row({ n, onOpen, onRead, onArchive }: { n: InboxItem; onOpen: () => void; onRead: () => void; onArchive: () => void }) {
   const Icon = ICONS[n.kind];
   return (
-    <li className={cn("nx-rise flex items-center gap-3 rounded-2xl px-4 py-3 transition-colors", n.read ? "bg-surface-muted/60" : "bg-card shadow-[0_1px_2px_rgba(10,10,11,.04)] ring-1 ring-border/60")}>
+    <li className={cn("nx-rise flex items-center gap-3 rounded-2xl px-4 py-3 transition-colors", n.read ? "bg-surface-muted/60" : "bg-card shadow-xs ring-1 ring-border/60")}>
       <button type="button" onClick={onOpen} aria-label={`Abrir: ${n.title}`} className="flex min-w-0 flex-1 items-center gap-3 rounded-xl text-left outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
         <span aria-hidden="true" className={cn("relative grid size-11 shrink-0 place-items-center rounded-full", n.severity === "urgent" ? "bg-danger/10 text-danger" : n.severity === "action" ? "bg-accent-subtle text-accent-text" : "bg-card text-muted-foreground")}>
           <Icon className="size-[18px]" strokeWidth={1.7} />

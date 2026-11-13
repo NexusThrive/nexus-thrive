@@ -28,7 +28,8 @@ function Triggers() {
 }
 
 const meta = {
-  title: "Moléculas/Toast",
+  title: "Moléculas/Avisos y estados/Toast",
+  id: "moléculas-toast",
   component: ToastProvider,
   args: { children: null },
   parameters: {

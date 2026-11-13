@@ -5,7 +5,8 @@ import { ContextHelp } from "./context-help";
 import { Field } from "./field";
 
 const meta = {
-  title: "Moléculas/Field",
+  title: "Moléculas/Formularios/Field",
+  id: "moléculas-field",
   component: Field,
   args: { label: "Celular", hint: "10 dígitos, sin indicativo.", children: (p) => <Input {...p} placeholder="300 123 4567" /> },
   argTypes: { children: { control: false } },

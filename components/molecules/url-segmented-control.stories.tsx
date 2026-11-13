@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { UrlSegmentedControl } from "./url-segmented-control";
 
 const meta = {
-  title: "Moléculas/UrlSegmentedControl",
+  title: "Moléculas/Formularios/UrlSegmentedControl",
+  id: "moléculas-urlsegmentedcontrol",
   component: UrlSegmentedControl,
   args: {
     param: "p",

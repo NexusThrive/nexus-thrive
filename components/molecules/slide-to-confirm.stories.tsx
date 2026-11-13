@@ -29,7 +29,8 @@ function Demo({ fail = false, disabled = false }: { fail?: boolean; disabled?: b
 }
 
 const meta = {
-  title: "Moléculas/SlideToConfirm",
+  title: "Moléculas/Formularios/SlideToConfirm",
+  id: "moléculas-slidetoconfirm",
   component: Demo,
   parameters: {
     docs: {

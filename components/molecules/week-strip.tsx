@@ -80,7 +80,7 @@ export function WeekStrip({
         <span
           ref={indRef}
           aria-hidden="true"
-          className="absolute inset-y-0 left-0 z-0 rounded-md bg-primary transition-[transform,width] duration-[440ms] ease-[cubic-bezier(.34,1.25,.64,1)]"
+          className="absolute inset-y-0 left-0 z-0 rounded-md bg-accent transition-[transform,width] duration-[440ms] ease-[cubic-bezier(.34,1.25,.64,1)]"
         />
         {days.map((day) => {
           const n = counts[day] ?? 0;
@@ -97,14 +97,14 @@ export function WeekStrip({
               }}
               className={cn(
                 "relative z-10 flex flex-col items-center gap-1 rounded-md py-2.5 transition-colors duration-200",
-                on ? "text-primary-foreground" : "text-muted-foreground",
+                on ? "text-ink" : "text-muted-foreground",
               )}
             >
               <small className="text-2xs font-medium uppercase tracking-[0.06em]">{weekdayLabel(day)}</small>
               <b
                 className={cn(
                   "font-display text-lg font-semibold tabular-nums",
-                  on ? "text-primary-foreground" : day === today ? "text-accent-text" : "text-foreground",
+                  on ? "text-ink" : day === today ? "text-accent-text" : "text-foreground",
                 )}
               >
                 {dayNumber(day)}

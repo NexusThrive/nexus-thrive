@@ -64,7 +64,8 @@ const document: QuoteDocument = {
 };
 
 const meta = {
-  title: "Organismos/QuoteDocumentSheet",
+  title: "Organismos/Superposiciones/QuoteDocumentSheet",
+  id: "organismos-quotedocumentsheet",
   component: QuoteDocumentSheet,
   args: { document, quoteLabel: "Cotización" },
   parameters: {

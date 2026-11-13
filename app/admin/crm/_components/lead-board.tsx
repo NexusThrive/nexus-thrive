@@ -133,7 +133,7 @@ export function LeadCard({
       {movable ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button type="button" aria-label={`Mover ${lead.company}`} className="absolute right-1.5 top-1.5 inline-flex size-7 items-center justify-center rounded text-muted-foreground hover:bg-surface-muted hover:text-foreground">
+            <button type="button" aria-label={`Mover ${lead.company}`} className="absolute right-1.5 top-1.5 inline-flex size-7 items-center justify-center rounded-xs text-muted-foreground hover:bg-surface-muted hover:text-foreground">
               <MoreHorizontal aria-hidden="true" className="size-4" />
             </button>
           </DropdownMenuTrigger>
@@ -314,7 +314,7 @@ export default function LeadBoard({
       </div>
       <DragOverlay dropAnimation={{ duration: reduced ? 0 : 200, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }}>
         {dragging ? (
-          <div className="w-[232px] rotate-[1.5deg] rounded-md border border-border-strong bg-surface p-3 shadow-[var(--nx-shadow-overlay)]">
+          <div className="w-[232px] rotate-[1.5deg] rounded-md border border-border-strong bg-surface p-3 shadow-overlay">
             <LeadCardBody lead={dragging} today={today} asLink={false} />
           </div>
         ) : null}

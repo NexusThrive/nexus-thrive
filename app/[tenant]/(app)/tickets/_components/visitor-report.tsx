@@ -59,7 +59,7 @@ export default function VisitorReportView({ report, from, to }: { report: Visito
         <div role="img" aria-label={`Visitantes por día: total ${report.visitors}, máximo ${max} en un día`} className="flex h-40 items-end gap-[2px] border-b border-border">
           {report.byDay.map((d) => (
             <div key={d.day} className="group relative flex h-full min-w-0 flex-1 items-end">
-              <div className="w-full rounded-t-[4px] bg-accent transition-opacity group-hover:opacity-80" style={{ height: d.visitors ? `${Math.max(2, (d.visitors / max) * 100)}%` : 0 }} />
+              <div className="w-full rounded-t-md bg-accent transition-opacity group-hover:opacity-80" style={{ height: d.visitors ? `${Math.max(2, (d.visitors / max) * 100)}%` : 0 }} />
               <span className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 hidden -translate-x-1/2 whitespace-nowrap rounded-md border border-border bg-popover px-2 py-1 text-xs text-foreground shadow-sm group-hover:block">
                 {dayLabel(d.day, { weekday: "short", day: "numeric", month: "short" })}: <b className="font-mono">{d.visitors}</b>
               </span>

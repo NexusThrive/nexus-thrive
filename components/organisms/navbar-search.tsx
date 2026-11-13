@@ -91,7 +91,7 @@ export function NavbarSearch({ className, variant, placeholder = "Buscar cliente
           // preventDefault en mousedown: pulsar un resultado no le quita el foco al campo.
           <div
             onMouseDown={(event) => event.preventDefault()}
-            className="nx-drop-down absolute inset-x-0 top-[calc(100%+6px)] min-w-[320px] z-(--z-popover) overflow-hidden rounded-3xl border border-border/60 bg-surface shadow-[var(--shadow-popover)]"
+            className="nx-drop-down absolute inset-x-0 top-[calc(100%+6px)] min-w-[320px] z-(--z-popover) overflow-hidden rounded-3xl border border-border/60 bg-surface shadow-md"
           >
             <PaletteList query={search.query} hits={search.hits} status={search.status} run={run} className="max-h-[min(420px,calc(100vh-var(--topbar-height)-48px))]" />
           </div>

@@ -1,14 +1,17 @@
 /* ==========================================================================
-   NEXUS THRIVE — Design tokens
-   Origen: el logo (bloque negro sólido, cortes diagonales blancos, esquinas
-   rectas). De ahí salen: negro dominante, oro como único acento, radios casi
-   nulos y bordes en lugar de sombras.
-   Proporción de uso: 60% neutros oscuros/Ink, 30% blanco/Paper, 10% oro.
+   NEXUS THRIVE — Design tokens · Soft Enterprise
+   Identidad: el logo (negro y oro, la N con su corte a 24°). Interfaz: suave
+   y tranquila — fondo cálido muy claro, superficies blancas, bordes sutiles,
+   radios redondeados, profundidad apenas perceptible y el oro como acento de
+   acción, nunca como fondo dominante.
+   Única fuente de valores: los primitivos `--nx-*`. `theme-v4.css` y los
+   semánticos de abajo apuntan a ellos; no se repite ningún valor.
    ========================================================================== */
 
 :root {
   /* --- Marca (primitivos) --- */
   --nx-ink: #000000;
+  --nx-ink-soft: #1c1c20; /* texto de la interfaz: casi negro, más suave que la tinta pura del logo */
   --nx-white: #ffffff;
   --nx-paper: #f7f6f3;
 
@@ -50,13 +53,37 @@
   --text-4xl: 2.5rem;   --lh-4xl: 2.75rem;
   --text-5xl: 3.25rem;  --lh-5xl: 3.5rem;
 
-  /* --- Forma: esquinas casi rectas, como la N del logo --- */
+  /* --- Forma (primitivos): escala suave. Tres niveles de uso:
+     controles (md), contenedores (lg–3xl) y estado (full). --- */
+  --nx-radius-xs: 6px;    /* marcas pequeñas, kbd, resaltados */
+  --nx-radius-sm: 8px;    /* chips cuadrados, miniaturas, opciones de un menú */
+  --nx-radius-md: 10px;   /* controles: botón, campo, avatar */
+  --nx-radius-lg: 12px;   /* tarjetas (`Card`), ventanas flotantes */
+  --nx-radius-xl: 14px;   /* bloques de configuración, paneles internos */
+  --nx-radius-2xl: 16px;  /* menús, avisos, bloques destacados */
+  --nx-radius-3xl: 24px;  /* tarjetas de tablero (Widget), listas flotantes */
+  --nx-radius-sheet: 28px; /* diálogos, hojas inferiores, saludo de Inicio */
+
   --radius-none: 0;
-  --radius-sm: 2px;
-  --radius-md: 4px;
-  --radius-lg: 6px;
-  --radius-xl: 8px;
-  --radius-widget: 24px; /* tarjetas de tablero (Widget): más suaves que el resto de la interfaz */
+  --radius-xs: var(--nx-radius-xs);
+  --radius-sm: var(--nx-radius-sm);
+  --radius-md: var(--nx-radius-md);
+  --radius-lg: var(--nx-radius-lg);
+  --radius-xl: var(--nx-radius-xl);
+  --radius-2xl: var(--nx-radius-2xl);
+  --radius-3xl: var(--nx-radius-3xl);
+  --radius-widget: var(--nx-radius-3xl);
+  --radius-sheet: var(--nx-radius-sheet);
+
+  /* --- Profundidad (primitivos): sombras cálidas y difusas, de menos a más.
+     xs: separa sin notarse · sm: tarjeta al pasar el cursor · md: menús y
+     ayuda · lg: diálogos y paneles. --- */
+  --nx-shadow-xs: 0 1px 2px rgba(28, 24, 14, 0.04);
+  --nx-shadow-sm: 0 1px 2px rgba(28, 24, 14, 0.04), 0 4px 12px rgba(28, 24, 14, 0.05);
+  --nx-shadow-md: 0 2px 6px rgba(28, 24, 14, 0.05), 0 12px 32px rgba(28, 24, 14, 0.09);
+  --nx-shadow-lg: 0 4px 12px rgba(28, 24, 14, 0.06), 0 24px 64px rgba(28, 24, 14, 0.14);
+  /* Halo oro de un campo enfocado (acompaña al borde `--ring`, no lo sustituye). */
+  --nx-shadow-focus: 0 0 0 3px rgba(212, 175, 55, 0.22);
 
   /* --- Espaciado base 4px --- */
   --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
@@ -163,10 +190,13 @@
   --border-input-hover: #a9a7a1;
   --surface-hover: #eae8e2;
 
-  --foreground: var(--nx-graphite-950);
+  --foreground: var(--nx-ink-soft);
   --foreground-muted: var(--nx-graphite-550);
   --foreground-inverse: var(--nx-paper);
 
+  /* `primary` es la tinta de la marca: texto fuerte, logo y rellenos de identidad. La acción principal de la interfaz
+     va en oro (`accent`, tinta encima, 9,6:1) a través de la variante del botón, no cambiando este token: muchos textos
+     usan `text-primary` y en oro perderían contraste. */
   --primary: var(--nx-ink);
   --primary-foreground: var(--nx-paper);
   --primary-hover: var(--nx-graphite-800);
@@ -184,8 +214,8 @@
   --warning-bg: var(--nx-gold-100);
   --warning-fg: var(--nx-gold-700);
 
-  --shadow-popover: 0 8px 24px rgba(0, 0, 0, 0.12);
-  --nx-shadow-overlay: 0 12px 32px rgba(10, 10, 11, 0.14);
+  --shadow-popover: var(--nx-shadow-md);
+  --nx-shadow-overlay: var(--nx-shadow-lg);
   /* Barras con desenfoque (topbar, tab bar) y fondo de modales. */
   --glass: rgba(247, 246, 243, 0.82);
   --overlay: rgba(10, 10, 11, 0.32);
@@ -237,8 +267,12 @@
   --warning-bg: rgba(212, 175, 55, 0.14);
   --warning-fg: var(--nx-gold-300);
 
-  --shadow-popover: 0 8px 24px rgba(0, 0, 0, 0.6);
-  --nx-shadow-overlay: 0 12px 32px rgba(0, 0, 0, 0.6);
+  --nx-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --nx-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.25);
+  --nx-shadow-md: 0 2px 6px rgba(0, 0, 0, 0.35), 0 12px 32px rgba(0, 0, 0, 0.45);
+  --nx-shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.4), 0 24px 64px rgba(0, 0, 0, 0.6);
+  --shadow-popover: var(--nx-shadow-md);
+  --nx-shadow-overlay: var(--nx-shadow-lg);
   --glass: rgba(10, 10, 11, 0.78);
   --overlay: rgba(0, 0, 0, 0.5);
   --overlay-strong: rgba(0, 0, 0, 0.72);

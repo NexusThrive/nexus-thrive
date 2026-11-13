@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { SettingsRow, SettingsSection } from "./settings-section";
 
 const meta = {
-  title: "Moléculas/SettingsSection",
+  title: "Moléculas/Contenido/SettingsSection",
+  id: "moléculas-settingssection",
   component: SettingsSection,
   args: { id: "perfil", title: "Perfil del negocio", description: "Cómo te ven tus clientes en recibos y mensajes.", canManage: true, onEdit: () => undefined, children: null },
   argTypes: { children: { control: false }, onEdit: { control: false } },

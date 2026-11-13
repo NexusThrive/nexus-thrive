@@ -54,15 +54,15 @@ export function MonthCalendar({
               aria-label={day}
               onClick={() => onChange(day)}
               className={cn(
-                "relative aspect-square rounded-[3px] text-ui tabular-nums transition-colors duration-200",
-                selected ? "bg-primary text-primary-foreground" : "hover:bg-surface-muted",
+                "relative aspect-square rounded-xs text-ui tabular-nums transition-colors duration-200",
+                selected ? "bg-accent text-ink" : "hover:bg-surface-muted",
                 !sameMonth(day, value) && !selected && "text-muted-foreground opacity-45",
                 day === today && !selected && "shadow-[inset_0_0_0_1px_var(--nx-gold-600)]",
               )}
             >
               {dayNumber(day)}
               {marked.has(day) ? (
-                <i aria-hidden="true" className="absolute bottom-[5px] left-1/2 size-1 -translate-x-1/2 bg-accent" />
+                <i aria-hidden="true" className="absolute bottom-[5px] left-1/2 size-1 -translate-x-1/2 rounded-full bg-accent" />
               ) : null}
             </button>
           );

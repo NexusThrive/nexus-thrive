@@ -4,7 +4,8 @@ import { TrialIndicator } from "./trial-indicator";
 const inDays = (n: number) => new Date(Date.now() + n * 86_400_000).toISOString();
 
 const meta = {
-  title: "Organismos/TrialIndicator",
+  title: "Organismos/Shell/TrialIndicator",
+  id: "organismos-trialindicator",
   component: TrialIndicator,
   parameters: { layout: "centered" },
   args: { planName: "Signature", planHref: "#plan", daysLeft: 12, endsAt: inDays(12), level: "ok" },

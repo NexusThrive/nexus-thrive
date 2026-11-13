@@ -11,7 +11,8 @@ function OpenPalette() {
 }
 
 const meta = {
-  title: "Organismos/CommandPalette",
+  title: "Organismos/Shell/CommandPalette",
+  id: "organismos-commandpalette",
   component: CommandPalette,
   decorators: [withShell],
   parameters: {

@@ -21,11 +21,11 @@ function PlanCard({ plan, canPrice, canStructure }: { plan: PlanConfig; canPrice
   const id = (k: string) => `${plan.key}-${k}`;
 
   return (
-    <section className={cn("grid gap-4 rounded-lg border bg-surface p-[18px]", p.recommended ? "border-accent shadow-[0_0_0_3px_var(--color-accent-subtle)]" : "border-border")}>
+    <section className={cn("grid gap-4 rounded-lg border bg-surface p-[18px]", p.recommended ? "border-accent shadow-focus" : "border-border")}>
       <header className="flex items-center gap-2">
         <span className="font-mono text-2xs font-semibold uppercase tracking-[0.14em] text-accent-text">{plan.key}</span>
         {p.recommended ? (
-          <span className="inline-flex items-center gap-1 rounded-sm bg-primary px-2 py-0.5 text-2xs font-semibold text-primary-foreground">
+          <span className="inline-flex items-center gap-1 rounded-full bg-accent px-2 py-0.5 text-2xs font-semibold text-ink">
             <Sparkles aria-hidden="true" className="size-3" /> Recomendado
           </span>
         ) : null}

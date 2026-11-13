@@ -22,7 +22,7 @@ export function AuthModeSwitch({ mode }: { mode: AuthMode }) {
       <span
         aria-hidden="true"
         className={cn(
-          "absolute inset-y-[3px] left-[3px] w-[calc(50%-3px)] rounded-sm bg-surface shadow-[0_1px_2px_rgba(0,0,0,.08),0_0_0_1px_var(--border)] transition-transform duration-[460ms] ease-[var(--nx-ease-spring)]",
+          "absolute inset-y-[3px] left-[3px] w-[calc(50%-3px)] rounded-sm bg-surface shadow-xs ring-1 ring-border transition-transform duration-[460ms] ease-[var(--nx-ease-spring)]",
           mode === "sign-up" && "translate-x-full",
         )}
       />

@@ -3,7 +3,8 @@ import { Checkbox } from "./checkbox";
 import { Label } from "./label";
 
 const meta = {
-  title: "Átomos/Label",
+  title: "Átomos/Formularios/Label",
+  id: "átomos-label",
   component: Label,
   args: { children: "Correo del cliente" },
 } satisfies Meta<typeof Label>;

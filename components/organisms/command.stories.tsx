@@ -15,7 +15,8 @@ import {
 } from "./command";
 
 const meta = {
-  title: "Organismos/Command",
+  title: "Organismos/Shell/Command",
+  id: "organismos-command",
   component: Command,
   parameters: {
     docs: { description: { component: "Paleta de comandos (cmdk): búsqueda con teclado entre grupos de opciones. `CommandDialog` la abre como modal." } },

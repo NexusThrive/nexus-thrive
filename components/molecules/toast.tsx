@@ -229,7 +229,7 @@ function Toast({ item, onGone }: { item: ToastItem; onGone: (id: number) => void
   if (item.receipt) {
     const r = item.receipt;
     return (
-      <div ref={ref} onClick={tapClose} className="pointer-events-auto relative cursor-pointer touch-pan-y overflow-hidden rounded-3xl border border-border/60 bg-surface text-ui shadow-[var(--nx-shadow-overlay)]">
+      <div ref={ref} onClick={tapClose} className="pointer-events-auto relative cursor-pointer touch-pan-y overflow-hidden rounded-3xl border border-border/60 bg-surface text-ui shadow-overlay">
         <div className="flex items-center gap-3 px-4 pb-3 pt-3.5">
           <IconTile tone="success" className="size-9 rounded-full [&_svg]:size-[18px]">
             <ReceiptText />
@@ -279,7 +279,7 @@ function Toast({ item, onGone }: { item: ToastItem; onGone: (id: number) => void
     <div
       ref={ref}
       onClick={tapClose}
-      className="pointer-events-auto relative flex cursor-pointer touch-pan-y items-center gap-2.5 overflow-hidden rounded-3xl border border-border/60 bg-surface py-3.5 pl-4 pr-3.5 text-ui shadow-[var(--nx-shadow-overlay)]"
+      className="pointer-events-auto relative flex cursor-pointer touch-pan-y items-center gap-2.5 overflow-hidden rounded-3xl border border-border/60 bg-surface py-3.5 pl-4 pr-3.5 text-ui shadow-overlay"
     >
       <IconTile tone={tone} className="size-9 rounded-full [&_svg]:size-[18px]">
         <Icon />

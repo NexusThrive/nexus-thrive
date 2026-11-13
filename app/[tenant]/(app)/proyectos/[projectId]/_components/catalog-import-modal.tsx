@@ -185,7 +185,7 @@ export default function CatalogImportModal({
                   type="button"
                   aria-label="Limpiar búsqueda"
                   onClick={() => setQuery("")}
-                  className="rounded p-0.5 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                  className="rounded-xs p-0.5 text-muted-foreground transition hover:bg-muted hover:text-foreground"
                 >
                   <X aria-hidden="true" className="h-4 w-4" />
                 </button>
@@ -345,7 +345,7 @@ export default function CatalogImportModal({
                           <div className="flex min-w-0 items-center gap-2">
                             {row.imageId ? (
                               // eslint-disable-next-line @next/next/no-img-element -- foto servida por la API propia
-                              <img src={apuImageUrl(row.imageId)!} alt="" loading="lazy" className="h-8 w-8 shrink-0 rounded border border-border bg-card object-contain" />
+                              <img src={apuImageUrl(row.imageId)!} alt="" loading="lazy" className="h-8 w-8 shrink-0 rounded-xs border border-border bg-card object-contain" />
                             ) : null}
                             <div className="min-w-0">
                               <p className="truncate text-xs text-foreground">

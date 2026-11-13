@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { DynamicStatus } from "./dynamic-status";
 
 const meta = {
-  title: "Moléculas/DynamicStatus",
+  title: "Moléculas/Avisos y estados/DynamicStatus",
+  id: "moléculas-dynamicstatus",
   component: DynamicStatus,
   args: {
     messages: ["Preparando el informe…", "Calculando valor ganado…", "Armando el Excel…"],

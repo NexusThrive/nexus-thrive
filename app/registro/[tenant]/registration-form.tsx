@@ -113,7 +113,7 @@ export default function RegistrationForm({ slug, business, preview = false }: { 
             setConsent(event.target.checked);
             setErrors((current) => ({ ...current, consent: undefined }));
           }}
-          className="mt-0.5 size-4 rounded border-border accent-primary"
+          className="mt-0.5 size-4 rounded-xs border-border accent-primary"
           aria-invalid={Boolean(errors.consent)}
         />
         <span className="text-muted-foreground">

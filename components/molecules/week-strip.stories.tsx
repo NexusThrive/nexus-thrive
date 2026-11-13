@@ -17,7 +17,8 @@ function Demo() {
 }
 
 const meta = {
-  title: "Moléculas/WeekStrip",
+  title: "Moléculas/Calendario/WeekStrip",
+  id: "moléculas-weekstrip",
   component: Demo,
   parameters: { docs: { description: { component: "NAV·04 — el bloque tinta viaja al día elegido (440 ms con rebote); en el celular se cambia de semana deslizando 50 px. Con el mes debajo en escritorio." } } },
 } satisfies Meta<typeof Demo>;

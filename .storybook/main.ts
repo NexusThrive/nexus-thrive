@@ -27,6 +27,8 @@ const config: StorybookConfig = {
       ...(viteConfig.resolve.alias as Record<string, string> | undefined),
       // Clerk exige sesión real; en Storybook basta un avatar de muestra.
       "@clerk/nextjs": path.resolve(import.meta.dirname, "mocks/clerk.tsx"),
+      // Reglas puras que comparten módulo con funciones de servidor arrastran `node:crypto` al navegador (ver el mock).
+      "node:crypto": path.resolve(import.meta.dirname, "mocks/node-crypto.ts"),
       "@nexus/brand": path.resolve(import.meta.dirname, "../packages/brand/src"),
       // Server action de la búsqueda: en Storybook no hay servidor ni base.
       "@/app/[tenant]/(app)/_actions/search": path.resolve(import.meta.dirname, "mocks/search.ts"),

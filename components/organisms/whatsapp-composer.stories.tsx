@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { WhatsAppComposer } from "./whatsapp-composer";
 
 const meta = {
-  title: "Organismos/WhatsAppComposer",
+  title: "Organismos/Canales/WhatsAppComposer",
+  id: "organismos-whatsappcomposer",
   component: WhatsAppComposer,
   args: {
     businessName: "Barbería El Caballero",

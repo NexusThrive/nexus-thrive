@@ -20,7 +20,7 @@ export function ProgressBar({
   const pct = Math.max(0, Math.min(1, value)) * 100;
   return (
     <div
-      className={cn("h-1 w-full bg-border", className)}
+      className={cn("h-1.5 w-full overflow-hidden rounded-full bg-surface-muted", className)}
       role="progressbar"
       aria-valuenow={Math.round(pct)}
       aria-valuemin={0}
@@ -28,7 +28,7 @@ export function ProgressBar({
       aria-label={label}
     >
       <i
-        className={cn("block h-full transition-[width] duration-[var(--d3)] ease-[var(--nx-ease-out)]", tone === "gold" ? "bg-gold-500" : "bg-foreground")}
+        className={cn("block h-full rounded-full transition-[width] duration-[var(--d3)] ease-[var(--nx-ease-out)]", tone === "gold" ? "bg-gold-500" : "bg-foreground")}
         style={{
           width: `${pct}%`,
           clipPath: "polygon(0 0,100% 0,calc(100% - 8px) 100%,0 100%)",

@@ -11,7 +11,8 @@ const LIST: AppNotification[] = [
 ];
 
 const meta = {
-  title: "Organismos/NotificationCenter",
+  title: "Organismos/Shell/NotificationCenter",
+  id: "organismos-notificationcenter",
   component: NotificationCenter,
   decorators: [(Story) => <div className="flex h-[460px] justify-end p-4"><Story /></div>],
   args: { load: async () => LIST, hrefFor: (p: string) => p, storageKey: "sb:notifications" },

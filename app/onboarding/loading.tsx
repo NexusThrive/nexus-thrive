@@ -25,7 +25,7 @@ export default function OnboardingLoading() {
             </span>
             <EyeTracker fit decorative front poke={false} size={96} shape="Ball" eyeScale={1.2} />
             <Skeleton className="h-[72px] w-full max-w-[420px] rounded-3xl" />
-            <Skeleton className="mt-auto h-[260px] w-full max-w-[420px] rounded-[28px]" />
+            <Skeleton className="mt-auto h-[260px] w-full max-w-[420px] rounded-sheet" />
           </div>
           <div className={`${styles.form} gap-6 p-5 sm:p-8`}>
             <div className="grid gap-2">

@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Brand, LogoMark } from "./logo";
 
 const meta = {
-  title: "Átomos/Logo",
+  title: "Átomos/Marca/Logo",
+  id: "átomos-logo",
   component: Brand,
   args: { tone: "on-paper", size: 80, showMark: true },
   argTypes: { tone: { control: "inline-radio", options: ["on-paper", "on-ink", "on-sidebar"] } },

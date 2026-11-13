@@ -84,7 +84,7 @@ export function PlanPicker({
                   className={cn(
                     "flex flex-col items-center justify-center gap-0.5 rounded-2xl border px-3 py-2.5 text-center transition-[border-color,background-color,box-shadow] duration-200",
                     selected
-                      ? "border-accent bg-accent-subtle/60 shadow-[0_0_0_3px_rgba(212,175,55,.18)]"
+                      ? "border-accent bg-accent-subtle/60 shadow-focus"
                       : "border-border-input bg-surface hover:border-border-input-hover",
                   )}
                 >
@@ -136,7 +136,7 @@ export function PlanPicker({
               onClick={() => pickPlan(plan.key)}
               className={cn(
                 "relative flex flex-col rounded-3xl border p-5 text-left transition-[border-color,box-shadow,background-color] duration-300 max-sm:flex-row max-sm:items-center max-sm:gap-3",
-                selected ? "border-accent bg-accent-subtle/60 shadow-[0_0_0_4px_rgba(212,175,55,.22)]" : "border-border/60 bg-card hover:border-accent/50",
+                selected ? "border-accent bg-accent-subtle/60 shadow-focus" : "border-border/60 bg-card hover:border-accent/50",
               )}
             >
               {plan.recommended ? (
@@ -225,7 +225,7 @@ export function PlanPicker({
                   </span>
                   <span
                     aria-hidden="true"
-                    className={cn("grid size-4 shrink-0 place-items-center rounded-[4px] border transition-colors", on ? "border-foreground bg-foreground text-background" : "border-border-input")}
+                    className={cn("grid size-4 shrink-0 place-items-center rounded-md border transition-colors", on ? "border-accent bg-accent text-ink" : "border-border-input")}
                   >
                     {on ? <Check className="size-3" strokeWidth={3} /> : null}
                   </span>

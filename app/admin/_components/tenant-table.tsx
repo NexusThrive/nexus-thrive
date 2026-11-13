@@ -333,7 +333,7 @@ function RowActions({
         <button
           type="button"
           aria-label={`Acciones de ${row.name}`}
-          className="inline-flex size-8 items-center justify-center rounded text-muted-foreground transition hover:bg-surface-muted hover:text-foreground"
+          className="inline-flex size-8 items-center justify-center rounded-xs text-muted-foreground transition hover:bg-surface-muted hover:text-foreground"
         >
           <MoreHorizontal aria-hidden="true" className="h-4 w-4" />
         </button>

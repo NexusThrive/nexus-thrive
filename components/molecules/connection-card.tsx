@@ -76,7 +76,7 @@ export function ConnectionCard({
     >
       <div className="flex flex-1 flex-col gap-3 p-5">
         <header className="flex items-start justify-between gap-3">
-          <span aria-hidden="true" className={cn("grid size-12 shrink-0 place-items-center rounded-2xl text-foreground", on ? "bg-card shadow-[var(--nx-shadow-card)]" : "bg-surface-muted")}>
+          <span aria-hidden="true" className={cn("grid size-12 shrink-0 place-items-center rounded-2xl text-foreground", on ? "bg-card shadow-sm" : "bg-surface-muted")}>
             {logo ? <Image src={logo} alt="" width={28} height={28} unoptimized className="size-7 object-contain" /> : <Icon className="size-5" strokeWidth={1.7} />}
           </span>
           <div className="flex flex-col items-end gap-1">

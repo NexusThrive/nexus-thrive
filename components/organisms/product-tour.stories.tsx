@@ -7,7 +7,8 @@ import { Button } from "@/components/atoms/button";
 import { ProductTour, type TourStep } from "./product-tour";
 
 const meta = {
-  title: "Organismos/ProductTour",
+  title: "Organismos/Inicio/ProductTour",
+  id: "organismos-producttour",
   component: ProductTour,
   parameters: {
     layout: "fullscreen",

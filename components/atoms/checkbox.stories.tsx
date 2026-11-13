@@ -4,7 +4,8 @@ import { Checkbox } from "./checkbox";
 import { Label } from "./label";
 
 const meta = {
-  title: "Átomos/Checkbox",
+  title: "Átomos/Formularios/Checkbox",
+  id: "átomos-checkbox",
   component: Checkbox,
   args: { onCheckedChange: fn() },
 } satisfies Meta<typeof Checkbox>;
