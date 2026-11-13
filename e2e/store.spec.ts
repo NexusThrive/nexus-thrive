@@ -33,17 +33,23 @@ test.describe("Tienda en línea", () => {
     await expect(card("T-0005").getByText("Esperando pago")).toBeVisible();
     await expect(card("T-0005").getByText("Recibido")).toBeVisible();
     await expect(card("T-0003").getByText("De cotización")).toBeVisible();
-    await expect(page.getByText(/Sin existencias suficientes de «Camiseta»/)).toBeVisible();
+    // La advertencia de revisión es una insignia en la tarjeta; su texto completo está en el panel lateral del pedido.
+    await expect(card("T-0004").getByText("Revisar")).toBeVisible();
+    await card("T-0004").getByRole("button", { name: /Ver el pedido .*T-0004/ }).click();
+    const panel = page.getByRole("dialog", { name: "Pedido T-0004" });
+    await expect(panel.getByText(/Sin existencias suficientes de «Camiseta»/)).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(panel).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Cancelar el pedido T-0001" })).toHaveCount(0); // entregado: final
     await expect(page.getByRole("button", { name: "Cancelar el pedido T-0006" })).toHaveCount(0); // cancelado: final
     await card("T-0005").getByRole("button", { name: "Confirmar", exact: true }).click();
-    await expect(page.getByText("Pedido confirmado")).toBeVisible();
+    await expect(page.getByRole("status").filter({ hasText: "Pedido confirmado" })).toBeVisible();
     await page.getByRole("button", { name: "Cancelar el pedido T-0005" }).click();
     const d = page.getByRole("dialog", { name: "¿Cancelar el pedido T-0005?" });
     await expect(d).toBeVisible();
     await d.getByRole("button", { name: "Cancelar pedido" }).click();
-    await expect(page.getByText("Pedido cancelado")).toBeVisible();
-    await page.getByRole("button", { name: /^Listo \(/ }).click();
+    await expect(page.getByRole("status").filter({ hasText: "Pedido cancelado" })).toBeVisible();
+    await page.getByRole("button", { name: /^Listo/ }).click();
     await expect(page.getByText("T-0004")).toHaveCount(0);
     await expect(card("T-0002")).toBeVisible();
     await expectNoAxeViolations(page);
@@ -56,11 +62,12 @@ test.describe("Tienda en línea", () => {
     await card.getByRole("button", { name: "Marcar entregado" }).click();
     const d = page.getByRole("dialog", { name: "Confirmar entrega de T-0002" });
     await d.getByRole("button", { name: "Marcar entregado" }).click(); // segundo toque: confirma
-    await expect(page.getByText("Pedido entregado")).toBeVisible();
+    await expect(page.getByRole("status").filter({ hasText: "Pedido entregado" })).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-    // Un paso que no es el habitual se elige en el selector de la misma tarjeta (otro pedido listo para enviar).
+    // Un paso que no es el habitual se elige en el selector del panel del pedido.
     const received = page.getByRole("listitem").filter({ hasText: "T-0004" }).first();
-    await expect(received.getByLabel("Mover T-0004 a otro paso")).toBeVisible();
+    await received.getByRole("button", { name: /Ver el pedido .*T-0004/ }).click();
+    await expect(page.getByRole("dialog", { name: "Pedido T-0004" }).getByLabel("Mover T-0004 a otro paso")).toBeVisible();
   });
 
   test("sin pedidos explica qué pasará", async ({ page }) => {
@@ -84,7 +91,8 @@ test.describe("Pedidos sin dinero", () => {
 test.describe("Entregas", () => {
   test("enviar con transportadora pide la guía y luego confirma", async ({ page }) => {
     await openStory(page, "páginas-ventas-pedidos--default");
-    await page.getByRole("listitem").filter({ hasText: "T-0002" }).first().getByRole("button", { name: "Enviar", exact: true }).click();
+    await page.getByRole("listitem").filter({ hasText: "T-0002" }).first().getByRole("button", { name: /Ver el pedido .*T-0002/ }).click();
+    await page.getByRole("dialog", { name: "Pedido T-0002" }).getByRole("button", { name: "Enviar", exact: true }).click();
     const d = page.getByRole("dialog", { name: "Enviar T-0002" });
     await d.getByLabel(/Transportadora/).fill("Servientrega");
     await d.getByRole("button", { name: "Marcar enviado" }).click();
@@ -92,7 +100,36 @@ test.describe("Entregas", () => {
     await d.getByLabel(/Número de guía/).fill("SV123");
     await expectNoAxeViolations(page);
     await d.getByRole("button", { name: "Marcar enviado" }).click();
-    await expect(page.getByText("Pedido enviado")).toBeVisible();
+    await expect(page.getByRole("status").filter({ hasText: "Pedido enviado" })).toBeVisible();
+  });
+});
+
+test.describe("Pedidos: búsqueda, páginas y panel lateral", () => {
+  test("el buscador filtra y, con más de una página, hay rango y números de página", async ({ page }) => {
+    await openStory(page, "páginas-ventas-pedidos--con-muchos-pedidos");
+    await expect(page.getByText("Mostrando 1–12 de 30 pedidos")).toBeVisible();
+    await page.getByRole("button", { name: "Página 2" }).click();
+    await expect(page.getByText("Mostrando 13–24 de 30 pedidos")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Página 2" })).toHaveAttribute("aria-current", "page");
+    await page.getByLabel("Buscar pedidos").fill("T-0030");
+    await expect(page.getByText("Mostrando 1–1 de 1 pedido")).toBeVisible();
+    await page.getByLabel("Buscar pedidos").fill("zzz");
+    await expect(page.getByText("Ningún pedido coincide")).toBeVisible();
+    await expectNoAxeViolations(page);
+  });
+
+  test("el panel del pedido muestra recorrido, productos y total, y al cerrar devuelve el foco a su tarjeta", async ({ page }) => {
+    await openStory(page, "páginas-ventas-pedidos--default");
+    const opener = page.getByRole("button", { name: /Ver el pedido .*T-0005/ });
+    await opener.click();
+    const panel = page.getByRole("dialog", { name: "Pedido T-0005" });
+    await expect(panel.getByRole("listitem").filter({ hasText: "Recibido" })).toHaveAttribute("aria-current", "step");
+    await expect(panel.getByRole("heading", { name: "Productos" })).toBeVisible();
+    await expect(panel.getByText("Total del pedido")).toBeVisible();
+    await expectNoAxeViolations(page);
+    await page.keyboard.press("Escape");
+    await expect(panel).toHaveCount(0);
+    await expect(opener).toBeFocused();
   });
 });
 
