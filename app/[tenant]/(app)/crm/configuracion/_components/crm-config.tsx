@@ -8,6 +8,7 @@ import { buttonVariants } from "@/components/atoms/button-variants";
 import { inputClasses } from "@/components/atoms/input";
 import { Field } from "@/components/molecules/field";
 import { useToast } from "@/components/molecules/toast";
+import { PageHeader } from "@/components/molecules/page-header";
 import { useConfirm } from "@/components/organisms/confirm-dialog";
 import { FormDialog } from "@/components/organisms/form-sheet";
 import {
@@ -27,8 +28,10 @@ import type { crmConfig } from "@/lib/business/growth/pipeline-config-db";
 import { cn } from "@/lib/utils";
 
 type Data = Awaited<ReturnType<typeof crmConfig>>;
-const card = "rounded-xl border border-border bg-card p-[22px]";
-const iconBtn = "grid size-8 shrink-0 place-items-center rounded-lg text-muted-foreground outline-none hover:bg-surface-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-40";
+const card = "rounded-(--radius-widget) border border-border/60 bg-card p-6";
+const row = "rounded-2xl bg-surface-muted/60 px-4 py-3";
+const pill = "h-11 shrink-0 rounded-full border border-border/60 bg-transparent px-5";
+const iconBtn = "grid size-9 shrink-0 place-items-center rounded-full text-muted-foreground outline-none hover:bg-surface-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-40";
 
 /**
  * Configuración del CRM. Las etapas se crean, renombran, reordenan y fijan su probabilidad por defecto (la ganada queda al final con
@@ -69,35 +72,32 @@ export default function CrmConfigView({ slug, data, canEdit }: { slug: string; d
       <label className="sr-only" htmlFor={`add-${label}`}>
         {label}
       </label>
-      <input id={`add-${label}`} name="nombre" placeholder={placeholder} disabled={!canEdit} className={cn(inputClasses, "h-9")} />
-      <button type="submit" disabled={!canEdit || pending} className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-9 shrink-0 border border-border")}>
+      <input id={`add-${label}`} name="nombre" placeholder={placeholder} disabled={!canEdit} className={cn(inputClasses, "h-11 rounded-2xl border-border/60")} />
+      <button type="submit" disabled={!canEdit || pending} className={cn(buttonVariants({ variant: "outline" }), pill)}>
         Agregar
       </button>
     </form>
   );
 
   return (
-    <div data-bleed="" className="flex flex-col">
-      <header className="mx-auto grid w-full max-w-[1240px] gap-1 px-5 pb-2 pt-5">
-        <h1 className="text-lg font-medium text-foreground">Configuración</h1>
-        <p className="text-xs text-muted-foreground">{canEdit ? "Las etapas de tu pipeline, por qué se pierden las ventas, las etiquetas y los equipos." : "Solo el dueño o un administrador puede cambiarla."}</p>
-      </header>
-      <div className="mx-auto grid w-full max-w-[1240px] gap-4 px-5 pb-2 pt-2 lg:grid-cols-2">
+    <div data-bleed="" className="grid gap-5 px-6 pb-8 pt-6">
+      <PageHeader title="Configuración" description={canEdit ? "Las etapas de tu pipeline, por qué se pierden las ventas, las etiquetas y los equipos." : "Solo el dueño o un administrador puede cambiarla."} />
+      <div className="grid items-start gap-4 lg:grid-cols-2">
         <section id="etapas" aria-labelledby="cfg-etapas" className={cn(card, "scroll-mt-20 lg:col-span-2")}>
-          <h2 id="cfg-etapas" className="mb-1 text-base font-semibold text-foreground">
+          <h2 id="cfg-etapas" className="mb-1 text-ui font-semibold text-foreground">
             Etapas
           </h2>
           <p className="mb-4 text-xs text-muted-foreground">Al mover una oportunidad a una etapa toma su probabilidad (se puede cambiar después). La etapa ganada va al final con 100 %.</p>
-          <ol className="divide-y divide-border/60">
+          <ol className="grid gap-2">
             {data.stages.map((s) => {
               const i = open.findIndex((x) => x.id === s.id);
               return (
-                <li key={s.id} className="flex flex-wrap items-center gap-3 py-2.5">
+                <li key={s.id} className={cn(row, "flex flex-wrap items-center gap-3")}>
                   <span className="w-6 text-center text-xs text-muted-foreground tabular-nums">{s.position + 1}</span>
                   <label className="sr-only" htmlFor={`st-${s.id}`}>
                     Nombre de la etapa {s.position + 1}
                   </label>
-                  <input id={`st-${s.id}`} {...blurSave(s.name, (v) => run(() => updateStageAction(slug, s.id, { name: v })))} className={cn(inputClasses, "h-9 min-w-40 flex-1")} />
+                  <input id={`st-${s.id}`} {...blurSave(s.name, (v) => run(() => updateStageAction(slug, s.id, { name: v })))} className={cn(inputClasses, "h-11 min-w-40 flex-1 rounded-2xl border-border/60 bg-card")} />
                   <label className="flex items-center gap-2 text-xs text-muted-foreground">
                     Probabilidad
                     <input
@@ -106,7 +106,7 @@ export default function CrmConfigView({ slug, data, canEdit }: { slug: string; d
                       max={100}
                       {...blurSave(String(s.probability), (v) => run(() => updateStageAction(slug, s.id, { probability: Number(v) })))}
                       disabled={!canEdit || s.isWon || pending}
-                      className={cn(inputClasses, "h-9 w-20 tabular-nums")}
+                      className={cn(inputClasses, "h-11 w-20 rounded-2xl border-border/60 bg-card tabular-nums")}
                     />
                     %
                   </label>
@@ -148,28 +148,28 @@ export default function CrmConfigView({ slug, data, canEdit }: { slug: string; d
             <label className="sr-only" htmlFor="new-stage">
               Nueva etapa
             </label>
-            <input id="new-stage" name="etapa" placeholder="Nueva etapa, p. ej. Negociación" disabled={!canEdit} className={cn(inputClasses, "h-9 min-w-48 flex-1")} />
+            <input id="new-stage" name="etapa" placeholder="Nueva etapa, p. ej. Negociación" disabled={!canEdit} className={cn(inputClasses, "h-11 min-w-48 flex-1 rounded-2xl border-border/60")} />
             <label className="sr-only" htmlFor="new-stage-prob">
               Probabilidad de la nueva etapa
             </label>
-            <input id="new-stage-prob" name="prob" type="number" min={0} max={100} defaultValue={50} disabled={!canEdit} className={cn(inputClasses, "h-9 w-20")} />
-            <button type="submit" disabled={!canEdit || pending} className={buttonVariants({ variant: "accent", size: "sm", className: "h-9 font-semibold" })}>
+            <input id="new-stage-prob" name="prob" type="number" min={0} max={100} defaultValue={50} disabled={!canEdit} className={cn(inputClasses, "h-11 w-20 rounded-2xl border-border/60")} />
+            <button type="submit" disabled={!canEdit || pending} className={cn(buttonVariants({ variant: "accent" }), "h-11 rounded-full px-6 text-sm font-semibold")}>
               + Etapa
             </button>
           </form>
         </section>
 
         <section aria-labelledby="cfg-motivos" className={card}>
-          <h2 id="cfg-motivos" className="mb-4 text-base font-semibold text-foreground">
+          <h2 id="cfg-motivos" className="mb-4 text-ui font-semibold text-foreground">
             Motivos de pérdida
           </h2>
-          <ul className="divide-y divide-border/60">
+          <ul className="grid gap-2">
             {data.reasons.map((r) => (
-              <li key={r.id} className="flex items-center gap-2 py-2">
+              <li key={r.id} className={cn(row, "flex items-center gap-2 py-2")}>
                 <label className="sr-only" htmlFor={`rs-${r.id}`}>
                   Motivo
                 </label>
-                <input id={`rs-${r.id}`} {...blurSave(r.name, (v) => run(() => renameReasonAction(slug, r.id, v)))} className={cn(inputClasses, "h-9")} />
+                <input id={`rs-${r.id}`} {...blurSave(r.name, (v) => run(() => renameReasonAction(slug, r.id, v)))} className={cn(inputClasses, "h-10 rounded-xl border-0 bg-card")} />
                 <button type="button" aria-label={`Eliminar motivo ${r.name}`} disabled={!canEdit || pending} onClick={() => run(() => deleteReasonAction(slug, r.id))} className={iconBtn}>
                   <Trash2 aria-hidden="true" className="size-4" />
                 </button>
@@ -180,12 +180,12 @@ export default function CrmConfigView({ slug, data, canEdit }: { slug: string; d
         </section>
 
         <section aria-labelledby="cfg-etiquetas" className={card}>
-          <h2 id="cfg-etiquetas" className="mb-4 text-base font-semibold text-foreground">
+          <h2 id="cfg-etiquetas" className="mb-4 text-ui font-semibold text-foreground">
             Etiquetas
           </h2>
           <ul className="flex flex-wrap gap-2">
             {data.tags.map((t) => (
-              <li key={t.id} className="inline-flex items-center gap-1 rounded-full border border-border-strong py-[3px] pe-1.5 ps-2.5 text-xs text-foreground">
+              <li key={t.id} className="inline-flex items-center gap-1 rounded-full bg-surface-muted py-1.5 pe-2 ps-3.5 text-ui text-foreground">
                 {t.name}
                 <button type="button" aria-label={`Quitar etiqueta ${t.name}`} disabled={!canEdit || pending} onClick={() => run(() => deleteTagAction(slug, t.id))} className="grid size-5 place-items-center rounded-full text-muted-foreground hover:text-foreground">
                   <X aria-hidden="true" className="size-3" />
@@ -199,21 +199,21 @@ export default function CrmConfigView({ slug, data, canEdit }: { slug: string; d
 
         <section aria-labelledby="cfg-equipos" className={card}>
           <div className="mb-4 flex items-center justify-between gap-3">
-            <h2 id="cfg-equipos" className="text-base font-semibold text-foreground">
+            <h2 id="cfg-equipos" className="text-ui font-semibold text-foreground">
               Equipos
             </h2>
-            <button type="button" disabled={!canEdit} onClick={() => setTeam({ id: null, name: "", memberIds: [] })} className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-[34px] border border-border")}>
+            <button type="button" disabled={!canEdit} onClick={() => setTeam({ id: null, name: "", memberIds: [] })} className={cn(buttonVariants({ variant: "outline" }), "h-10 rounded-full border border-border/60 bg-transparent px-4")}>
               Nuevo equipo
             </button>
           </div>
-          <ul className="divide-y divide-border/60">
+          <ul className="grid gap-2">
             {data.teams.map((t) => (
-              <li key={t.id} className="flex items-center gap-3 py-2.5">
+              <li key={t.id} className={cn(row, "flex items-center gap-3")}>
                 <span className="grid min-w-0 flex-1">
                   <span className="truncate text-sm text-foreground">{t.name}</span>
                   <span className="truncate text-xs text-muted-foreground">{t.memberIds.map((m) => data.people.find((p) => p.id === m)?.name).filter(Boolean).join(", ") || "Sin integrantes"}</span>
                 </span>
-                <button type="button" disabled={!canEdit} onClick={() => setTeam(t)} className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "h-8")}>
+                <button type="button" disabled={!canEdit} onClick={() => setTeam(t)} className={cn(buttonVariants({ variant: "ghost" }), "h-9 rounded-full px-4 text-sm")}>
                   Editar
                 </button>
                 <button type="button" aria-label={`Eliminar equipo ${t.name}`} disabled={!canEdit || pending} onClick={async () => (await confirm({ title: `¿Eliminar el equipo «${t.name}»?`, confirmLabel: "Eliminar", tone: "danger" })) && run(() => deleteTeamAction(slug, t.id))} className={iconBtn}>
@@ -221,12 +221,12 @@ export default function CrmConfigView({ slug, data, canEdit }: { slug: string; d
                 </button>
               </li>
             ))}
-            {data.teams.length === 0 ? <li className="py-2 text-sm text-muted-foreground">Sin equipos. Úsalos si varias personas venden y quieres agruparlas.</li> : null}
+            {data.teams.length === 0 ? <li className="rounded-2xl border border-dashed border-border-strong px-4 py-4 text-sm text-muted-foreground">Sin equipos. Úsalos si varias personas venden y quieres agruparlas.</li> : null}
           </ul>
         </section>
 
         <section aria-labelledby="cfg-mas" className={card}>
-          <h2 id="cfg-mas" className="mb-4 text-base font-semibold text-foreground">
+          <h2 id="cfg-mas" className="mb-4 text-ui font-semibold text-foreground">
             Otras herramientas del CRM
           </h2>
           <ul className="grid gap-2 text-sm">
@@ -236,8 +236,8 @@ export default function CrmConfigView({ slug, data, canEdit }: { slug: string; d
               { href: `/${slug}/crm/formularios`, icon: Link2, label: "Formularios web", hint: "Captan oportunidades desde tu sitio" },
             ].map(({ href, icon: Icon, label, hint }) => (
               <li key={href}>
-                <Link href={href} className="flex items-center gap-3 rounded-lg p-2 outline-none hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-ring">
-                  <span aria-hidden="true" className="grid size-[30px] place-items-center rounded-lg bg-surface-muted text-accent-text">
+                <Link href={href} className="flex items-center gap-3 rounded-2xl p-2.5 outline-none hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-ring">
+                  <span aria-hidden="true" className="grid size-10 place-items-center rounded-full bg-surface-muted text-accent-text">
                     <Icon className="size-4" />
                   </span>
                   <span className="grid">

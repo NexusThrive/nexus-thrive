@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Clock, Maximize2, Minimize2, Minus, Package, Pencil, Plus, Search, Store, Trash2, UserRound } from "lucide-react";
+import { ArrowLeft, CalendarDays, Clock, LayoutGrid, Maximize2, Minimize2, Minus, Package, Pencil, Plus, Power, Receipt, Search, Store, Tag, Trash2, UserRound } from "lucide-react";
 import { Alert } from "@/components/molecules/alert";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { inputClasses } from "@/components/atoms/input";
@@ -44,7 +44,7 @@ function Photo({ src }: { src?: string | null }) {
 }
 
 /** Hora de Bogotá, «3:42 p. m.», que avanza sola (se pinta al montar: el servidor no sabe la hora del cajero). */
-function useClock(): string {
+function useClock(): { time: string; date: string } {
   const [now, setNow] = useState<Date | null>(null);
   useEffect(() => {
     const tick = () => setNow(new Date());
@@ -52,7 +52,10 @@ function useClock(): string {
     const timer = window.setInterval(tick, 15_000);
     return () => window.clearInterval(timer);
   }, []);
-  return now ? new Intl.DateTimeFormat("es-CO", { hour: "numeric", minute: "2-digit", timeZone: "America/Bogota" }).format(now) : "";
+  return {
+    time: now ? new Intl.DateTimeFormat("es-CO", { hour: "numeric", minute: "2-digit", timeZone: "America/Bogota" }).format(now) : "",
+    date: now ? new Intl.DateTimeFormat("es-CO", { weekday: "short", day: "numeric", month: "short", timeZone: "America/Bogota" }).format(now).replace(/^./, (c) => c.toUpperCase()).replace(/ de /g, " ") : "",
+  };
 }
 
 /** Pantalla completa del navegador (como F11), para dejar el punto de venta abierto todo el día. */
@@ -90,7 +93,7 @@ export default function Sale({ slug, turn, products, categories, customers, meth
   const router = useRouter();
   const { toast } = useToast();
   const cashier = useCurrentUserName();
-  const clock = useClock();
+  const { time: clock, date: today } = useClock();
   const fullscreen = useFullscreen();
   // Modo pantalla completa del negocio (sin barra superior, a todo el ancho): solo mientras la venta está montada.
   useEffect(() => {
@@ -123,6 +126,8 @@ export default function Sale({ slug, turn, products, categories, customers, meth
   const byId = useMemo(() => new Map(products.map((p) => [p.id, p])), [products]);
   const topCategories = categories.filter((c) => !c.parentId);
   const inCategory = useMemo(() => (categoryId ? new Set([categoryId, ...categories.filter((c) => c.parentId === categoryId).map((c) => c.id)]) : null), [categoryId, categories]);
+  const countOf = (id: string) => products.filter((p) => p.categoryId && (p.categoryId === id || categories.some((c) => c.id === p.categoryId && c.parentId === id))).length;
+  const categoryName = (id?: string | null) => categories.find((c) => c.id === id)?.name ?? "";
   const shown = useMemo(() => {
     const t = q.trim().toLowerCase();
     return products
@@ -211,52 +216,76 @@ export default function Sale({ slug, turn, products, categories, customers, meth
   };
   const customProduct = customizing ? byId.get(customizing) : null;
 
+  const pill = "inline-flex h-11 items-center gap-2 rounded-full bg-card px-4 text-ui text-foreground";
+  const soft = "rounded-2xl bg-surface-muted/60";
+  const itemCount = lines.reduce((n, l) => n + l.quantity, 0);
   return (
-    <div className="grid gap-2 lg:h-[calc(100dvh-16px)] lg:grid-rows-[auto_minmax(0,1fr)]">
+    <div className="grid gap-3 lg:h-[calc(100dvh-16px)] lg:grid-rows-[auto_minmax(0,1fr)]">
       <div className="grid gap-2">
-      <div className="flex flex-wrap items-center gap-2 text-ui">
-        <a href={`/${slug}`} className={buttonVariants({ variant: "ghost", size: "sm" })}><ArrowLeft aria-hidden="true" className="size-4" />Inicio</a>
-        <span className="inline-flex items-center gap-1.5 rounded-md bg-surface-muted px-2.5 py-1 font-medium"><Store aria-hidden="true" className="size-4 text-accent-text" />{turn.terminalName}</span>
-        {cashier ? <span className="inline-flex items-center gap-1.5 text-muted-foreground"><UserRound aria-hidden="true" className="size-4" /><span className="sr-only">Cajero: </span>{cashier}</span> : null}
-        {clock ? <span className="inline-flex items-center gap-1.5 tabular-nums text-muted-foreground"><Clock aria-hidden="true" className="size-4" /><span className="sr-only">Hora: </span>{clock}</span> : null}
-        <span className="text-muted-foreground max-md:hidden">Turno con {formatCurrency(turn.openingAmount)} de apertura</span>
-        <div className="ml-auto flex flex-wrap items-center gap-2">
-          {fullscreen.available ? (
-            <button type="button" aria-pressed={fullscreen.on} onClick={fullscreen.toggle} className={buttonVariants({ variant: "outline", size: "sm" })}>
-              {fullscreen.on ? <Minimize2 aria-hidden="true" className="size-4" /> : <Maximize2 aria-hidden="true" className="size-4" />}
-              {fullscreen.on ? "Salir de pantalla completa" : "Pantalla completa"}
-            </button>
+        {done ? (
+          <Alert tone="success">
+            Venta {done.code ?? `N.º ${done.number}`} · {formatCurrency(done.total)}
+            {done.tip ? ` + propina ${formatCurrency(done.tip)}` : ""}
+            {done.change ? ` · Cambio ${formatCurrency(done.change)}` : ""}
+            {" · "}
+            <a href={`/${slug}/pos/receipt/${done.id}`} target="_blank" rel="noopener noreferrer" className="font-semibold underline underline-offset-2">Imprimir tiquete</a>
+          </Alert>
+        ) : null}
+        {offline.queue.length > 0 ? (
+          <Alert tone="warning">
+            <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              <b>{offline.queue.length} {offline.queue.length === 1 ? "venta sin enviar" : "ventas sin enviar"}</b>
+              <span>{offline.queue.some((q) => q.error) ? "Algunas no pasaron: revísalas." : "Se enviarán solas al volver la conexión."}</span>
+              <button type="button" disabled={offline.sending} onClick={() => void offline.flush()} className="font-semibold underline underline-offset-2 disabled:opacity-60">{offline.sending ? "Enviando…" : "Enviar ahora"}</button>
+            </span>
+            {offline.queue.filter((q) => q.error).map((q) => (
+              <span key={q.id} className="mt-1 flex flex-wrap items-center gap-2 text-ui"><span>{q.label}: {q.error}</span><button type="button" onClick={() => offline.discard(q.id)} className="font-semibold underline underline-offset-2">Descartar</button></span>
+            ))}
+          </Alert>
+        ) : null}
+      </div>
+
+      <div className="grid min-h-0 gap-4 lg:grid-cols-[minmax(0,1fr)_420px]">
+        {/* Catálogo */}
+        <section aria-label="Productos" className="flex min-h-0 min-w-0 flex-col gap-4 rounded-(--radius-widget) bg-surface-muted/60 p-4">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <a href={`/${slug}`} aria-label="Volver al inicio" title="Inicio" className="grid size-11 place-items-center rounded-full bg-card text-foreground outline-none transition-colors hover:bg-accent-subtle focus-visible:outline-2 focus-visible:outline-ring">
+              <ArrowLeft aria-hidden="true" className="size-5" />
+            </a>
+            <span className={pill}><Store aria-hidden="true" className="size-4 text-accent-text" />{turn.terminalName}</span>
+            {today ? <span className={cn(pill, "max-md:hidden")}><CalendarDays aria-hidden="true" className="size-4 text-accent-text" /><span className="sr-only">Fecha: </span>{today}</span> : null}
+            {clock ? <span className={cn(pill, "tabular-nums max-sm:hidden")}><Clock aria-hidden="true" className="size-4 text-accent-text" /><span className="sr-only">Hora: </span>{clock}</span> : null}
+            {cashier ? <span className={cn(pill, "text-muted-foreground max-lg:hidden")}><UserRound aria-hidden="true" className="size-4" /><span className="sr-only">Cajero: </span>{cashier}</span> : null}
+            <div className="ml-auto flex flex-wrap items-center gap-2">
+              {fullscreen.available ? (
+                <button type="button" aria-pressed={fullscreen.on} aria-label={fullscreen.on ? "Salir de pantalla completa" : "Pantalla completa"} title={fullscreen.on ? "Salir de pantalla completa" : "Pantalla completa"} onClick={fullscreen.toggle} className="grid size-11 place-items-center rounded-full bg-card outline-none transition-colors hover:bg-accent-subtle focus-visible:outline-2 focus-visible:outline-ring">
+                  {fullscreen.on ? <Minimize2 aria-hidden="true" className="size-4" /> : <Maximize2 aria-hidden="true" className="size-4" />}
+                </button>
+              ) : null}
+              <button type="button" onClick={() => setReturning(true)} className={cn(pill, "outline-none transition-colors hover:bg-accent-subtle focus-visible:outline-2 focus-visible:outline-ring")}>Devolución</button>
+              <button type="button" onClick={() => setClosing(true)} className={cn(pill, "text-danger outline-none transition-colors hover:bg-danger/10 focus-visible:outline-2 focus-visible:outline-ring")}>
+                <Power aria-hidden="true" className="size-4" /> Cerrar turno
+              </button>
+            </div>
+          </div>
+
+          {topCategories.length > 0 ? (
+            <div role="group" aria-label="Categorías" className="flex gap-2.5 overflow-x-auto pb-1 [scrollbar-width:none]">
+              {[{ id: "", name: "Todo", count: products.length }, ...topCategories.map((c) => ({ id: c.id, name: c.name, count: countOf(c.id) }))].map((c) => (
+                <button key={c.id || "todas"} type="button" aria-pressed={categoryId === c.id} onClick={() => setCategoryId(c.id)} className={cn("flex min-w-32 shrink-0 flex-col items-start gap-2 rounded-3xl border p-3 text-left outline-none transition-colors focus-visible:outline-2 focus-visible:outline-ring", categoryId === c.id ? "border-accent bg-accent-subtle" : "border-transparent bg-card hover:bg-accent-subtle/40")}>
+                  <span aria-hidden="true" className={cn("grid size-9 place-items-center rounded-full", categoryId === c.id ? "bg-accent text-ink" : "bg-surface-muted text-muted-foreground")}>
+                    {c.id ? <Tag className="size-4" /> : <LayoutGrid className="size-4" />}
+                  </span>
+                  <span className="grid">
+                    <span className="text-ui font-semibold text-foreground">{c.name}</span>
+                    <span className="text-xs text-muted-foreground">{c.count} {c.count === 1 ? "artículo" : "artículos"}</span>
+                  </span>
+                </button>
+              ))}
+            </div>
           ) : null}
-          <button type="button" onClick={() => setReturning(true)} className={buttonVariants({ variant: "outline", size: "sm" })}>Devolución</button>
-          <button type="button" onClick={() => setClosing(true)} className={buttonVariants({ variant: "outline", size: "sm" })}>Cerrar turno</button>
-        </div>
-      </div>
-      {done ? (
-        <Alert tone="success">
-          Venta {done.code ?? `N.º ${done.number}`} · {formatCurrency(done.total)}
-          {done.tip ? ` + propina ${formatCurrency(done.tip)}` : ""}
-          {done.change ? ` · Cambio ${formatCurrency(done.change)}` : ""}
-          {" · "}
-          <a href={`/${slug}/pos/receipt/${done.id}`} target="_blank" rel="noopener noreferrer" className="font-semibold underline underline-offset-2">Imprimir tiquete</a>
-        </Alert>
-      ) : null}
-      {offline.queue.length > 0 ? (
-        <Alert tone="warning">
-          <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            <b>{offline.queue.length} {offline.queue.length === 1 ? "venta sin enviar" : "ventas sin enviar"}</b>
-            <span>{offline.queue.some((q) => q.error) ? "Algunas no pasaron: revísalas." : "Se enviarán solas al volver la conexión."}</span>
-            <button type="button" disabled={offline.sending} onClick={() => void offline.flush()} className="font-semibold underline underline-offset-2 disabled:opacity-60">{offline.sending ? "Enviando…" : "Enviar ahora"}</button>
-          </span>
-          {offline.queue.filter((q) => q.error).map((q) => (
-            <span key={q.id} className="mt-1 flex flex-wrap items-center gap-2 text-ui"><span>{q.label}: {q.error}</span><button type="button" onClick={() => offline.discard(q.id)} className="font-semibold underline underline-offset-2">Descartar</button></span>
-          ))}
-        </Alert>
-      ) : null}
-      </div>
-      <div className="grid min-h-0 gap-3 lg:grid-cols-[minmax(0,1fr)_400px]">
-        <section aria-label="Productos" className="flex min-h-0 min-w-0 flex-col gap-3">
+
           <div className="relative">
-            <Search aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <input
               aria-label="Buscar producto o escanear código"
               value={q}
@@ -273,62 +302,79 @@ export default function Sale({ slug, turn, products, categories, customers, meth
                 } else setError(r.message);
               }}
               placeholder="Buscar producto o escanear código de barras"
-              className={cn(inputClasses, "pl-9")}
+              className={cn(inputClasses, "h-12 rounded-full border-transparent bg-card pl-5 pr-14")}
             />
+            <span aria-hidden="true" className="pointer-events-none absolute right-2 top-1/2 grid size-9 -translate-y-1/2 place-items-center rounded-full bg-surface-muted text-muted-foreground">
+              <Search className="size-4" />
+            </span>
           </div>
-          {topCategories.length > 0 ? (
-            <div role="group" aria-label="Categorías" className="flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none]">
-              {[{ id: "", name: "Todas" }, ...topCategories].map((c) => (
-                <button key={c.id || "todas"} type="button" aria-pressed={categoryId === c.id} onClick={() => setCategoryId(c.id)} className={cn("shrink-0 rounded-full border px-3 py-1 text-ui outline-none transition-colors focus-visible:outline-2 focus-visible:outline-ring pointer-coarse:min-h-11", categoryId === c.id ? "border-accent bg-accent-subtle font-medium text-accent-text" : "border-border-input text-foreground/80 hover:border-border-input-hover")}>
-                  {c.name}
-                </button>
-              ))}
-            </div>
-          ) : null}
+
           {shown.length === 0 ? (
-            <p className="rounded-lg border border-dashed border-border px-4 py-8 text-center text-ui text-muted-foreground">{products.length === 0 ? "Aún no hay productos para vender. Créalos en el catálogo." : "Ningún producto coincide con la búsqueda."}</p>
+            <p className="rounded-3xl border border-dashed border-border-strong px-4 py-10 text-center text-ui text-muted-foreground">{products.length === 0 ? "Aún no hay productos para vender. Créalos en el catálogo." : "Ningún producto coincide con la búsqueda."}</p>
           ) : (
-            <ul className="grid min-h-0 flex-1 grid-cols-2 content-start gap-2 overflow-y-auto sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-              {shown.map((p) => (
-                <li key={p.id}>
-                  <button type="button" onClick={() => add(p.id)} disabled={p.stock !== null && p.stock <= 0} className="grid w-full overflow-hidden rounded-lg border border-border bg-surface text-left outline-none transition-colors hover:border-border-strong focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-45">
-                    <span className="relative block aspect-[4/3] w-full overflow-hidden bg-surface-muted"><Photo src={p.imageUrl} /></span>
-                    <span className="grid gap-0.5 p-2.5">
-                      <span className="line-clamp-2 text-ui font-medium leading-snug">{p.name}</span>
-                      <span className="font-mono text-xs text-muted-foreground">{formatCurrency(tierPrice(p.price, pricing[p.id]?.list, undefined, 1))}{p.stock !== null ? ` · ${p.stock} u.` : ""}</span>
-                    </span>
-                  </button>
-                </li>
-              ))}
+            <ul className="grid min-h-0 flex-1 grid-cols-2 content-start gap-3 overflow-y-auto sm:grid-cols-3 xl:grid-cols-4">
+              {shown.map((p) => {
+                const out = p.stock !== null && p.stock <= 0;
+                return (
+                  <li key={p.id}>
+                    <button type="button" onClick={() => add(p.id)} disabled={out} className="grid w-full gap-2.5 rounded-3xl bg-card p-2.5 text-left outline-none transition-colors hover:bg-accent-subtle/40 focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-50">
+                      <span className="relative block aspect-[4/3] w-full overflow-hidden rounded-2xl bg-surface-muted"><Photo src={p.imageUrl} /></span>
+                      <span className="line-clamp-2 px-1 text-ui font-medium leading-snug">{p.name}</span>
+                      <span className="flex items-center justify-between gap-2 px-1 pb-0.5">
+                        {out ? (
+                          <span className="rounded-full bg-danger/10 px-2.5 py-0.5 text-2xs font-medium text-danger">Agotado</span>
+                        ) : categoryName(p.categoryId) ? (
+                          <span className="min-w-0 truncate rounded-full bg-accent-subtle px-2.5 py-0.5 text-2xs font-medium text-accent-text">{categoryName(p.categoryId)}</span>
+                        ) : (
+                          <span />
+                        )}
+                        <span className="shrink-0 font-display text-sm font-semibold tabular-nums">{formatCurrency(tierPrice(p.price, pricing[p.id]?.list, undefined, 1))}</span>
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </section>
 
-        <section aria-label="Venta" className="flex min-h-0 min-w-0 flex-col gap-3 rounded-lg border border-border bg-surface p-4">
-          <Select aria-label="Cliente (opcional)" value={customerId} onChange={(e) => setCustomerId(e.target.value)}>
+        {/* Ticket de la venta */}
+        <section aria-label="Venta" className="flex min-h-0 min-w-0 flex-col gap-3 rounded-(--radius-widget) border border-border/60 bg-card p-4">
+          <div className="flex items-center gap-3">
+            <span aria-hidden="true" className="grid size-11 shrink-0 place-items-center rounded-full bg-surface-muted text-accent-text"><Receipt className="size-5" strokeWidth={1.7} /></span>
+            <div className="min-w-0 flex-1">
+              <p className="text-ui font-semibold">Venta actual</p>
+              <p className="text-xs text-muted-foreground">{itemCount === 0 ? "Sin artículos todavía" : `${itemCount} ${itemCount === 1 ? "artículo" : "artículos"}`}</p>
+            </div>
+          </div>
+          <Select aria-label="Cliente (opcional)" value={customerId} onChange={(e) => setCustomerId(e.target.value)} className="h-11 rounded-full">
             <option value="">Venta sin cliente</option>
             {customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </Select>
           <div className="min-h-0 flex-1 overflow-y-auto">
-            {lines.length === 0 ? <p className="text-ui text-muted-foreground">Toca un producto para agregarlo.</p> : (
+            {lines.length === 0 ? (
+              <div className="grid h-full min-h-32 place-items-center rounded-3xl border border-dashed border-border-strong px-4 text-center text-ui text-muted-foreground">Toca un producto para agregarlo.</div>
+            ) : (
               <ul className="grid gap-2">
                 {lines.map((l) => {
                   const p = byId.get(l.productId)!;
                   return (
-                    <li key={l.productId} className="grid gap-1 border-b border-border pb-2 text-ui">
-                      <div className="flex items-center gap-2">
-                        <span className="relative block size-9 shrink-0 overflow-hidden rounded-md"><Photo src={p.imageUrl} /></span>
-                        <span className="min-w-0 flex-1"><span className="block truncate font-medium">{p.name}</span><span className="block font-mono text-xs text-muted-foreground">{formatCurrency(priceOf(l))}</span></span>
-                        <button type="button" aria-label={`Menos ${p.name}`} onClick={() => patch(l.productId, { quantity: l.quantity - 1 })} className={buttonVariants({ variant: "outline", size: "icon" })}><Minus aria-hidden="true" className="size-3.5" /></button>
-                        <b className="w-6 text-center font-mono">{l.quantity}</b>
-                        <button type="button" aria-label={`Más ${p.name}`} onClick={() => patch(l.productId, { quantity: l.quantity + 1 })} className={buttonVariants({ variant: "outline", size: "icon" })}><Plus aria-hidden="true" className="size-3.5" /></button>
-                        <button type="button" aria-label={`Quitar ${p.name}`} onClick={() => patch(l.productId, { quantity: 0 })} className={buttonVariants({ variant: "ghost", size: "icon" })}><Trash2 aria-hidden="true" className="size-3.5" /></button>
+                    <li key={l.productId} className={cn(soft, "grid gap-2 p-3 text-ui")}>
+                      <div className="flex items-center gap-2.5">
+                        <span className="relative block size-11 shrink-0 overflow-hidden rounded-xl"><Photo src={p.imageUrl} /></span>
+                        <span className="min-w-0 flex-1"><span className="block truncate font-medium">{p.name}</span><span className="block text-xs tabular-nums text-muted-foreground">{formatCurrency(priceOf(l))}</span></span>
+                        <span className="inline-flex items-center rounded-full bg-card p-0.5">
+                          <button type="button" aria-label={`Menos ${p.name}`} onClick={() => patch(l.productId, { quantity: l.quantity - 1 })} className="grid size-8 place-items-center rounded-full outline-none hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-ring"><Minus aria-hidden="true" className="size-3.5" /></button>
+                          <b className="w-7 text-center font-display tabular-nums">{l.quantity}</b>
+                          <button type="button" aria-label={`Más ${p.name}`} onClick={() => patch(l.productId, { quantity: l.quantity + 1 })} className="grid size-8 place-items-center rounded-full outline-none hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-ring"><Plus aria-hidden="true" className="size-3.5" /></button>
+                        </span>
+                        <button type="button" aria-label={`Quitar ${p.name}`} onClick={() => patch(l.productId, { quantity: 0 })} className="grid size-9 place-items-center rounded-full text-muted-foreground outline-none hover:bg-danger/10 hover:text-danger focus-visible:outline-2 focus-visible:outline-ring"><Trash2 aria-hidden="true" className="size-4" /></button>
                       </div>
-                      {l.note ? <p className="ps-11 text-xs text-muted-foreground">{l.note}</p> : null}
-                      <div className="flex items-center gap-3 ps-11">
+                      {l.note ? <p className="ps-14 text-xs text-muted-foreground">{l.note}</p> : null}
+                      <div className="flex flex-wrap items-center gap-3 ps-14">
                         <label className="flex items-center gap-2 text-xs text-muted-foreground">
                           Descuento %
-                          <input aria-label={`Descuento de ${p.name}`} inputMode="decimal" value={l.discountPct || ""} onChange={(e) => patch(l.productId, { discountPct: Math.min(100, Number(e.target.value.replace(",", ".")) || 0) })} className={`${inputClasses} h-7 w-16 px-2 text-right`} />
+                          <input aria-label={`Descuento de ${p.name}`} inputMode="decimal" value={l.discountPct || ""} onChange={(e) => patch(l.productId, { discountPct: Math.min(100, Number(e.target.value.replace(",", ".")) || 0) })} className={cn(inputClasses, "h-8 w-16 rounded-full border-border/60 bg-card px-2 text-right")} />
                         </label>
                         {p.customizable ? (
                           <button type="button" aria-label={`Personalizar ${p.name}`} onClick={() => openCustomize(l)} className="inline-flex items-center gap-1 text-xs font-medium text-accent-text underline-offset-2 hover:underline focus-visible:outline-2 focus-visible:outline-ring"><Pencil aria-hidden="true" className="size-3" />{l.note || l.unitPrice != null ? "Editar a medida" : "Personalizar"}</button>
@@ -340,34 +386,34 @@ export default function Sale({ slug, turn, products, categories, customers, meth
               </ul>
             )}
           </div>
-          <div className="grid gap-3 border-t border-border pt-3">
-            <dl className="grid gap-1 text-ui">
-              <div className="flex justify-between"><dt>Subtotal</dt><dd className="font-mono tabular-nums">{formatCurrency(totals.subtotal - totals.discountTotal)}</dd></div>
-              <div className="flex justify-between"><dt>Impuestos</dt><dd className="font-mono tabular-nums">{formatCurrency(totals.taxTotal)}</dd></div>
+          <div className="grid gap-3 border-t border-dashed border-border-strong pt-3">
+            <dl className="grid gap-1.5 text-ui">
+              <div className="flex justify-between"><dt className="text-muted-foreground">Subtotal</dt><dd className="tabular-nums">{formatCurrency(totals.subtotal - totals.discountTotal)}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">Impuestos</dt><dd className="tabular-nums">{formatCurrency(totals.taxTotal)}</dd></div>
               <div className="flex items-center justify-between gap-2">
-                <dt><label htmlFor="pos-tip">Propina %</label></dt>
-                <dd className="flex items-center gap-2"><input id="pos-tip" inputMode="decimal" value={tipPct || ""} onChange={(e) => setTipPct(Math.max(0, Math.min(100, Number(e.target.value.replace(",", ".")) || 0)))} className={`${inputClasses} h-7 w-16 px-2 text-right`} />{tip ? <span className="font-mono tabular-nums">{formatCurrency(tip)}</span> : null}</dd>
+                <dt className="text-muted-foreground"><label htmlFor="pos-tip">Propina %</label></dt>
+                <dd className="flex items-center gap-2"><input id="pos-tip" inputMode="decimal" value={tipPct || ""} onChange={(e) => setTipPct(Math.max(0, Math.min(100, Number(e.target.value.replace(",", ".")) || 0)))} className={cn(inputClasses, "h-8 w-16 rounded-full border-border/60 bg-card px-2 text-right")} />{tip ? <span className="tabular-nums">{formatCurrency(tip)}</span> : null}</dd>
               </div>
-              <div className="flex justify-between border-t border-border pt-1.5 text-base font-semibold"><dt>Total a cobrar</dt><dd className="font-mono tabular-nums">{formatCurrency(due)}</dd></div>
+              <div className="flex items-baseline justify-between border-t border-dashed border-border-strong pt-2.5"><dt className="font-display text-sm font-semibold uppercase tracking-wide">Total</dt><dd className="font-display text-2xl font-semibold tabular-nums">{formatCurrency(due)}</dd></div>
             </dl>
             <div className="grid gap-2">
               {pays.map((p, i) => (
                 <div key={i} className="flex gap-2">
-                  <Select aria-label={`Medio de pago ${i + 1}`} value={p.methodId} onChange={(e) => setPays((ps) => ps.map((x, j) => (j === i ? { ...x, methodId: e.target.value } : x)))} className="w-44">
+                  <Select aria-label={`Medio de pago ${i + 1}`} value={p.methodId} onChange={(e) => setPays((ps) => ps.map((x, j) => (j === i ? { ...x, methodId: e.target.value } : x)))} className="h-11 w-44 rounded-full">
                     {methods.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
                   </Select>
-                  <MoneyInput aria-label={`Valor del pago ${i + 1}`} value={parseMoney(p.amount)} onValueChange={(v) => setPays((ps) => ps.map((x, j) => (j === i ? { ...x, amount: v == null ? "" : String(v) } : x)))} placeholder={i === 0 ? formatMoneyInput(due) : ""} />
+                  <MoneyInput aria-label={`Valor del pago ${i + 1}`} className="h-11 rounded-full" value={parseMoney(p.amount)} onValueChange={(v) => setPays((ps) => ps.map((x, j) => (j === i ? { ...x, amount: v == null ? "" : String(v) } : x)))} placeholder={i === 0 ? formatMoneyInput(due) : ""} />
                 </div>
               ))}
-              {pays.map((p, i) => (methodOf(p.methodId)?.instructions ? <p key={`i${i}`} className="rounded-md bg-surface-muted px-3 py-2 text-xs text-muted-foreground">{methodOf(p.methodId)!.instructions}</p> : null))}
-              <button type="button" onClick={() => setPays((ps) => [...ps, { methodId: (methods.find((m) => m.kind === "TRANSFER") ?? methods[0])?.id ?? "", amount: "" }])} className={buttonVariants({ variant: "ghost", size: "sm", className: "justify-self-start" })}>Agregar otro pago</button>
+              {pays.map((p, i) => (methodOf(p.methodId)?.instructions ? <p key={`i${i}`} className="rounded-2xl bg-surface-muted px-3 py-2 text-xs text-muted-foreground">{methodOf(p.methodId)!.instructions}</p> : null))}
+              <button type="button" onClick={() => setPays((ps) => [...ps, { methodId: (methods.find((m) => m.kind === "TRANSFER") ?? methods[0])?.id ?? "", amount: "" }])} className="inline-flex h-10 items-center gap-1.5 justify-self-start rounded-full border border-border/60 px-4 text-ui font-medium outline-none transition-colors hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-ring"><Plus aria-hidden="true" className="size-3.5" />Agregar otro pago</button>
               {needsCustomer ? <p className="text-xs text-danger">Para vender a crédito elige el cliente: lo que debe queda en su cartera.</p> : null}
               {"error" in settled && lines.length > 0 && payNums.some((x) => x.amount > 0) ? <p className="text-xs text-muted-foreground">{settled.error}</p> : null}
               {!("error" in settled) && settled.change > 0 ? <p className="text-ui font-medium">Cambio: {formatCurrency(settled.change)}</p> : null}
             </div>
             {error ? <Alert tone="danger">{error}</Alert> : null}
-            <button type="button" disabled={!canCharge} onClick={charge} className={buttonVariants({ size: "lg" })}>
-              {pending ? "Cobrando…" : <>Cobrar <kbd className="ms-1 rounded border border-current/30 px-1.5 text-xs font-normal opacity-80">F4</kbd></>}
+            <button type="button" disabled={!canCharge} onClick={charge} className={cn(buttonVariants({ variant: "accent", size: "lg" }), "h-14 rounded-2xl text-base font-semibold")}>
+              {pending ? "Cobrando…" : <>Cobrar {formatCurrency(due)} <kbd className="ms-1 rounded-md border border-current/30 px-1.5 text-xs font-normal opacity-80">F4</kbd></>}
             </button>
           </div>
         </section>

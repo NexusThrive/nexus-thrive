@@ -29,7 +29,7 @@ const SHADOW = [
   { dx: 0, dy: 0, opacity: 1 },
 ] as const;
 
-/* Tiempos (ms). La intro se muestra SIEMPRE en cada carga/recarga y se
+/* Tiempos (ms). La intro se muestra una vez por sesión (ver `AppEntrySplash`) y se
    adapta: el trazo dura lo que tarde la página (mín/máx), así una carga
    rápida da una intro rápida. `failsafe` es la red de seguridad: pase lo
    que pase, el splash se retira y nunca se queda pegado. */

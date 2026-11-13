@@ -61,12 +61,15 @@ export function NotificationCenter({
   hrefFor,
   storageKey,
   onDismiss,
+  onArrivals,
 }: {
   load: () => Promise<AppNotification[]>;
   hrefFor: (path: string) => string;
   storageKey: string;
   /** Descartar (deslizando o con ×). Sin esto, no se pueden borrar. */
   onDismiss?: (id: string) => Promise<void> | void;
+  /** Lo que llegó desde la última carga (para sacar el aviso de escritorio). */
+  onArrivals?: (items: AppNotification[]) => void;
 }) {
   const [items, setItems] = useState<AppNotification[]>([]);
   const lastSeen = useSyncExternalStore(subscribeSeen, () => readSeen(storageKey), () => null);
@@ -112,12 +115,13 @@ export function NotificationCenter({
       const arrived = newArrivals(known.current, next, lastSeenRef.current);
       known.current = new Set(next.map((n) => n.id));
       setItems(next);
+      if (arrived.length) onArrivals?.(arrived);
       // Si ya salió el aviso inmediato de esta acción, la lista real solo actualiza el contador.
       if (arrived.length && Date.now() - localAt.current > ARRIVAL_DELAY_MS + 3000) setIncoming(arrived);
     } catch {
       // sin red: se mantiene la última lista
     }
-  }, [load]);
+  }, [load, onArrivals]);
 
   // Una acción que pudo generar una notificación (un cobro, un gasto…) la trae unos segundos
   // después: así no salta encima de lo que la persona acaba de hacer.
@@ -266,14 +270,14 @@ export function NotificationCenter({
           setPanel(true);
           setOpen(true);
         }}
-        className="relative grid size-8 pointer-coarse:size-10 place-items-center rounded-md transition-colors hover:bg-surface-muted"
+        className="relative grid size-10 place-items-center rounded-full bg-card transition-colors hover:bg-accent-subtle"
       >
-        <Bell ref={bellRef} aria-hidden="true" className="size-4 origin-top" strokeWidth={1.6} />
+        <Bell ref={bellRef} aria-hidden="true" className="size-[18px] origin-top" strokeWidth={1.6} />
         {unread ? (
           <i
             ref={countRef}
             aria-hidden="true"
-            className="pointer-events-none absolute right-1 top-1 size-2 rounded-full bg-accent"
+            className="pointer-events-none absolute right-2 top-2 size-2 rounded-full bg-accent ring-2 ring-card"
           />
         ) : null}
       </button>
@@ -286,16 +290,16 @@ export function NotificationCenter({
           onPointerEnter={() => setHovering(true)}
           onPointerLeave={() => setHovering(false)}
           style={{ transformOrigin: "calc(100% - 20px) 0" }}
-          className="absolute right-0 top-[calc(100%+6px)] z-(--z-popover) w-[min(340px,calc(100vw-24px))] max-sm:fixed max-sm:inset-x-3 max-sm:top-[calc(var(--topbar-height)+env(safe-area-inset-top,0px)+6px)] max-sm:w-auto overflow-hidden rounded-lg border border-border bg-surface shadow-[var(--nx-shadow-overlay)] motion-safe:animate-[nx-pop_.2s_var(--nx-ease-out)]"
+          className="absolute right-0 top-[calc(100%+6px)] z-(--z-popover) w-[min(340px,calc(100vw-24px))] max-sm:fixed max-sm:inset-x-3 max-sm:top-[calc(var(--topbar-height)+env(safe-area-inset-top,0px)+6px)] max-sm:w-auto overflow-hidden rounded-3xl border border-border/60 bg-surface shadow-[var(--nx-shadow-overlay)] motion-safe:animate-[nx-pop_.2s_var(--nx-ease-out)]"
         >
           <span ref={sweepRef} aria-hidden="true" className="pointer-events-none absolute inset-0 bg-accent [clip-path:polygon(0_0,0_0,0_100%,0_100%)]" />
           {(() => {
             const n = incoming[0]!;
             const Icon = ICONS[n.kind];
             return (
-              <div className="flex items-center gap-2.5 py-2.5 pl-3.5 pr-1.5 text-ui">
+              <div className="flex items-center gap-2.5 py-3 pl-4 pr-2 text-ui">
                 <Link href={hrefFor(n.href)} onClick={() => setIncoming([])} className="flex min-w-0 flex-1 items-center gap-2.5 rounded-sm focus-visible:outline-2 focus-visible:outline-ring">
-                  <span className={cn("grid size-[30px] shrink-0 place-items-center rounded-md", n.kind === "expense" || n.kind === "membership" ? "bg-accent-subtle text-accent-text" : "bg-surface-muted")}>
+                  <span className={cn("grid size-10 shrink-0 place-items-center rounded-full", n.kind === "expense" || n.kind === "membership" ? "bg-accent-subtle text-accent-text" : "bg-surface-muted")}>
                     <Icon aria-hidden="true" className="size-4" strokeWidth={1.7} />
                   </span>
                   <span className="min-w-0 flex-1">
@@ -310,7 +314,7 @@ export function NotificationCenter({
                   type="button"
                   aria-label="Cerrar aviso"
                   onClick={hideIncoming}
-                  className="grid size-8 pointer-coarse:size-11 shrink-0 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-surface-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
+                  className="grid size-9 pointer-coarse:size-11 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-surface-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
                 >
                   <X aria-hidden="true" className="size-3.5" />
                 </button>
@@ -325,20 +329,20 @@ export function NotificationCenter({
           ref={panelRef}
           role="dialog"
           aria-label="Notificaciones"
-          className="absolute right-0 top-[calc(100%+6px)] z-(--z-popover) w-[min(360px,calc(100vw-24px))] max-sm:fixed max-sm:inset-x-3 max-sm:top-[calc(var(--topbar-height)+env(safe-area-inset-top,0px)+6px)] max-sm:w-auto nx-morph-panel origin-top-right overflow-hidden rounded-lg border border-border bg-surface shadow-[var(--nx-shadow-overlay)] motion-safe:animate-[nx-pop_.22s_var(--nx-ease-out)]"
+          className="absolute right-0 top-[calc(100%+6px)] z-(--z-popover) w-[min(360px,calc(100vw-24px))] max-sm:fixed max-sm:inset-x-3 max-sm:top-[calc(var(--topbar-height)+env(safe-area-inset-top,0px)+6px)] max-sm:w-auto nx-morph-panel origin-top-right overflow-hidden rounded-3xl border border-border/60 bg-surface shadow-[var(--nx-shadow-overlay)] motion-safe:animate-[nx-pop_.22s_var(--nx-ease-out)]"
         >
-          <div className="flex items-center justify-between border-b border-border py-1.5 pl-3.5 pr-1.5">
-            <b className="text-sm font-semibold">Notificaciones</b>
+          <div className="flex items-center justify-between border-b border-border/50 py-2.5 pl-5 pr-3">
+            <b className="font-display text-base font-medium">Notificaciones</b>
             <button
               type="button"
               disabled={!unread}
               onClick={markRead}
-              className="rounded-md px-2 py-1 text-xs font-medium text-accent-text transition-colors hover:bg-surface-muted disabled:opacity-40"
+              className="rounded-full px-3 py-1.5 text-xs font-medium text-accent-text transition-colors hover:bg-accent-subtle disabled:opacity-40"
             >
               Marcar leídas
             </button>
           </div>
-          <div role="tablist" aria-label="Estado de las notificaciones" className="flex gap-1 border-b border-border px-2 py-1.5">
+          <div role="tablist" aria-label="Estado de las notificaciones" className="flex gap-1.5 border-b border-border/50 px-4 py-2.5">
             {(["pending", "read"] as const).map((id) => {
               const count = items.filter((n) => (!lastSeen || n.at > lastSeen) === (id === "pending")).length;
               return (
@@ -348,7 +352,7 @@ export function NotificationCenter({
                   role="tab"
                   aria-selected={view === id}
                   onClick={() => setTab(id)}
-                  className={cn("rounded-md px-2.5 py-1 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-ring", view === id ? "bg-surface-muted text-foreground" : "text-muted-foreground hover:text-foreground")}
+                  className={cn("rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-ring", view === id ? "bg-accent-subtle text-foreground" : "text-muted-foreground hover:text-foreground")}
                 >
                   {id === "pending" ? "Pendientes" : "Leídas"} <span className="font-mono text-2xs opacity-70">{count}</span>
                 </button>
@@ -366,9 +370,9 @@ export function NotificationCenter({
                       href={hrefFor(n.href)}
                       draggable={false}
                       onClick={closePanel}
-                      className="flex items-center gap-2.5 py-2.5 pl-3.5 pr-8 text-ui transition-colors hover:bg-surface-muted"
+                      className="flex items-center gap-2.5 py-3 pl-4 pr-9 text-ui transition-colors hover:bg-surface-muted"
                     >
-                      <span className={cn("grid size-[30px] shrink-0 place-items-center rounded-md", n.kind === "expense" || n.kind === "membership" ? "bg-accent-subtle text-accent-text" : "bg-surface-muted")}>
+                      <span className={cn("grid size-10 shrink-0 place-items-center rounded-full", n.kind === "expense" || n.kind === "membership" ? "bg-accent-subtle text-accent-text" : "bg-surface-muted")}>
                         <Icon aria-hidden="true" className="size-4" strokeWidth={1.7} />
                       </span>
                       <span className="min-w-0 flex-1">
@@ -379,13 +383,13 @@ export function NotificationCenter({
                         </small>
                       </span>
                     </Link>
-                    {isNew ? <i aria-hidden="true" className="pointer-events-none absolute right-3.5 top-1/2 size-1.5 -translate-y-1/2 -skew-x-[24deg] bg-accent group-hover:hidden" /> : null}
+                    {isNew ? <i aria-hidden="true" className="pointer-events-none absolute right-3.5 top-1/2 size-2 -translate-y-1/2 rounded-full bg-accent group-hover:hidden" /> : null}
                   </DismissRow>
                 );
               })}
             </ul>
           ) : (
-            <p className="px-4 py-8 text-center text-ui text-muted-foreground">
+            <p className="px-5 py-10 text-center text-ui text-muted-foreground">
               {items.length === 0
                 ? "Nada nuevo hoy. Aquí verás cobros, citas y vencimientos."
                 : view === "pending"
@@ -417,7 +421,7 @@ function DismissRow({ children, unread, onDismiss }: { children: React.ReactNode
   return (
     <li
       data-unread={unread || undefined}
-      className="group relative overflow-hidden border-b border-border last:border-b-0"
+      className="group relative mx-2 my-0.5 overflow-hidden rounded-2xl"
       onClickCapture={(e) => {
         if (moved.current) {
           e.preventDefault();
@@ -461,7 +465,7 @@ function DismissRow({ children, unread, onDismiss }: { children: React.ReactNode
       >
         {children}
         {onDismiss ? (
-          <button type="button" aria-label="Descartar notificación" onClick={() => out(1)} className="absolute right-1.5 top-1/2 hidden size-6 -translate-y-1/2 place-items-center rounded text-muted-foreground hover:bg-surface-muted hover:text-foreground group-hover:grid focus-visible:grid">
+          <button type="button" aria-label="Descartar notificación" onClick={() => out(1)} className="absolute right-2 top-1/2 hidden size-7 -translate-y-1/2 place-items-center rounded-full text-muted-foreground hover:bg-surface-muted hover:text-foreground group-hover:grid focus-visible:grid">
             <X aria-hidden="true" className="size-3.5" />
           </button>
         ) : null}

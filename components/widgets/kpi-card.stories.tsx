@@ -4,7 +4,7 @@ import { Delta } from "@/components/atoms/delta";
 import { KpiCard } from "./kpi-card";
 
 const meta = {
-  title: "Moléculas/KpiCard",
+  title: "Widgets/KpiCard",
   component: KpiCard,
   args: { label: "Obras activas", value: 12, hint: "3 en ejecución" },
   argTypes: { icon: { control: false } },

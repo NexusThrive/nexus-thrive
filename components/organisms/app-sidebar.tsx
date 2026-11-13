@@ -1,8 +1,10 @@
 "use client";
 
-import { Fragment, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
+import { Fragment, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { ChevronDown, PanelLeft } from "lucide-react";
+import { LinkPendingHint } from "@/components/atoms/link-pending-hint";
+import { N_PATH } from "@nexus/brand/BrandLogo";
 import { usePreferences } from "@/components/providers/preferences";
 import { useShell } from "@/components/providers/shell-context";
 import { shortLabel } from "@/lib/experience/navigation/short-label";
@@ -57,8 +59,9 @@ function writeClosed(next: Record<string, boolean>) {
  * Blanca en claro e Ink en oscuro. El fondo del ítem activo se desliza entre
  * enlaces con un corte oro a la izquierda; contraer la barra se recuerda.
  */
-export function AppSidebar() {
-  const { groups, activeKey, hrefFor, onNavigate } = useShell();
+export function AppSidebar({ variant }: { /** `workspace`: la barra del negocio (gris claro, sin líneas, con el bloque del negocio arriba y sin navbar de marca). */ variant?: "workspace" }) {
+  const { groups, activeKey, hrefFor, onNavigate, brandName, brandSub } = useShell();
+  const workspace = variant === "workspace";
   const { rail, setPreference } = usePreferences();
   const sideRef = useRef<HTMLElement>(null);
   const navRef = useRef<HTMLElement>(null);
@@ -73,6 +76,29 @@ export function AppSidebar() {
   const mainGroups = groups.filter((group) => !group.pinned);
   const pinnedGroups = groups.filter((group) => group.pinned);
   const toggle = (label: string, collapsed: boolean) => writeClosed({ ...closed, [label]: !collapsed });
+
+  // Marca en el menú qué lado tiene más por ver (`data-more="up|down|both"`): el CSS difumina ese borde, sin barra ni flecha.
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+    const update = () => {
+      const up = nav.scrollTop > 8;
+      const down = nav.scrollHeight - nav.clientHeight - nav.scrollTop > 8;
+      if (up && down) nav.dataset.more = "both";
+      else if (down) nav.dataset.more = "down";
+      else if (up) nav.dataset.more = "up";
+      else delete nav.dataset.more;
+    };
+    update();
+    nav.addEventListener("scroll", update, { passive: true });
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(update);
+    observer?.observe(nav);
+    for (const child of Array.from(nav.children)) observer?.observe(child);
+    return () => {
+      nav.removeEventListener("scroll", update);
+      observer?.disconnect();
+    };
+  }, [groups, closed]);
 
   useLayoutEffect(() => {
     const pairs = [
@@ -115,6 +141,7 @@ export function AppSidebar() {
     <aside
       ref={sideRef}
       data-tour="nav"
+      data-variant={variant}
       className={styles.side}
       aria-label="Navegación principal"
       data-peek={peek ? "" : undefined}
@@ -138,6 +165,22 @@ export function AppSidebar() {
         if (event.key === "Escape") setPeek(false);
       }}
     >
+      {workspace ? (
+        <div className={styles.biz}>
+          <span className={styles.bizMark} aria-hidden="true">
+            <svg viewBox="387.6 239.9 744.4 606" shapeRendering="geometricPrecision">
+              <path d={N_PATH} fill="currentColor" />
+            </svg>
+          </span>
+          <span className={`${styles.label} ${styles.bizText}`}>
+            <strong>{brandName}</strong>
+            <small>{brandSub}</small>
+          </span>
+          <button type="button" className={styles.bizToggle} onClick={() => setPreference("rail", !rail)} aria-label={rail ? "Expandir barra lateral" : "Contraer barra lateral"} aria-pressed={rail}>
+            <PanelLeft aria-hidden="true" className="size-4" />
+          </button>
+        </div>
+      ) : null}
       <nav ref={navRef} className={styles.nav} onPointerOver={showTip} onPointerLeave={() => setTip(null)}>
         <span ref={indicatorRef} className={styles.indicator} aria-hidden="true" />
         {mainGroups.map((group, g) => {
@@ -187,6 +230,7 @@ export function AppSidebar() {
                       <Icon aria-hidden="true" strokeWidth={1.6} />
                       <span className={styles.label}>{item.label}</span>
                       <span className={styles.short} aria-hidden="true">{shortLabel(item.label)}</span>
+                      <LinkPendingHint />
                     </Link>
                   );
                 })}
@@ -217,6 +261,7 @@ export function AppSidebar() {
                   <Icon aria-hidden="true" strokeWidth={1.6} />
                   <span className={styles.label}>{item.label}</span>
                       <span className={styles.short} aria-hidden="true">{shortLabel(item.label)}</span>
+                      <LinkPendingHint />
                 </Link>
               );
             })}

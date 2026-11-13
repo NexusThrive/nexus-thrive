@@ -6,7 +6,7 @@ import { Plus } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { Chip, ChipRow } from "@/components/atoms/chip";
 import { EmptyState } from "@/components/molecules/empty-state";
-import { KpiCard } from "@/components/molecules/kpi-card";
+import { KpiCard } from "@/components/widgets/kpi-card";
 import { SegmentedControl } from "@/components/molecules/segmented-control";
 import { useToast } from "@/components/molecules/toast";
 import { followUpState, isActiveStage, LEAD_STAGES, pipelineSummary, stageMeta, type LeadStageValue } from "@/lib/platform/crm/crm-rules";

@@ -110,6 +110,10 @@ const nextConfig: NextConfig = {
   experimental: {
     serverActions: { bodySizeLimit: "20mb" },
     proxyClientMaxBodySize: "20mb",
+    // Volver a una sección ya visitada en los últimos 30 s reutiliza la respuesta que el navegador ya tiene (memoria del navegador, no
+    // service worker ni caché HTTP: no queda nada en disco ni se comparte). Las acciones con `revalidatePath` la invalidan. No subir
+    // mucho: una pantalla con datos de otra persona o ya viejos sería peor que una espera corta.
+    staleTimes: { dynamic: 30 },
   },
 };
 

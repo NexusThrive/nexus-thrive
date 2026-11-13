@@ -124,6 +124,11 @@ body {
   --color-graphite-200: var(--nx-graphite-200);
   --color-graphite-100: var(--nx-graphite-100);
 
+  /* Pesos más suaves en toda la interfaz (como el tablero de Inicio): la semibold y la negrita de Tailwind bajan un escalón.
+     Inter es variable y toma el valor exacto; Montserrat solo trae 500, 600 y 700 y toma el más cercano. */
+  --font-weight-semibold: 550;
+  --font-weight-bold: 620;
+
   --font-stunt: var(--font-stunt), "Segoe UI", system-ui, sans-serif;
 
   --animate-accordion-down: accordion-down 0.2s ease-out;
@@ -274,29 +279,28 @@ body {
   }
 }
 
-/* --- Skeleton: brillo que cruza con el ángulo de la N --- */
+/* --- Skeleton: gris suave con un barrido tenue de brillo --- */
+@layer components {
 .nx-sk {
   position: relative;
   overflow: hidden;
-  background: var(--border);
-  border-radius: var(--radius-sm);
+  /* Gris suave y esquinas redondeadas (una línea de texto queda en píldora); el brillo es un barrido tenue, sin ángulos. */
+  background: var(--surface-muted);
+  border-radius: 12px;
 }
 .nx-sk::after {
   content: "";
   position: absolute;
-  top: 0;
-  bottom: 0;
-  left: -40%;
-  width: 30%;
-  background: var(--surface);
-  opacity: 0.7;
-  transform: skewX(-24deg);
-  animation: nx-sw 1.4s ease-in-out infinite;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--card) 75%, transparent), transparent);
+  animation: nx-sk-sweep 1.7s ease-in-out infinite;
 }
-@keyframes nx-sw {
+@keyframes nx-sk-sweep {
   to {
-    left: 120%;
+    transform: translateX(100%);
   }
+}
 }
 
 /* --- Panel que enfoca: contenido en blur mientras llegan datos --- */

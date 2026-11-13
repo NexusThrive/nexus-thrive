@@ -1,22 +1,17 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { loadActiveTenant } from "@/lib/core/tenancy/context";
-import { memberDirectory } from "@/lib/core/tenancy/membership";
 import { createTenantDb } from "@/lib/core/tenancy/db";
 import FinanceActions from "./_components/finance-actions";
 import SearchInput from "@/components/molecules/search-input";
 import FilterSelect from "@/components/molecules/filter-select";
 import MoneyList from "./_components/money-list";
 import type { MoneyItem } from "./_components/money-detail-sheet";
-import CashPanel from "./_components/cash-panel";
-import { cashHistory, listCashBoxes, sessionMovements } from "@/lib/business/sales/finance-db";
-import { canManage } from "@/lib/core/auth/roles";
+import { listCashBoxes } from "@/lib/business/sales/finance-db";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
-import { EXPENSE_CATEGORIES, PAYMENT_METHODS, PAYMENT_STATUSES } from "@/lib/foundation/kernel/payment-vocabulary";
+import { EXPENSE_CATEGORIES } from "@/lib/foundation/kernel/payment-vocabulary";
 import { PageHeader } from "@/components/molecules/page-header";
 import { UrlSegmentedControl } from "@/components/molecules/url-segmented-control";
-import { BalanceCard } from "@/components/organisms/balance-card";
-import { MovementsList } from "@/components/organisms/movements-list";
-import PettyCashCard from "./_components/petty-cash-card";
+import FinanceOverview from "./_components/finance-overview";
 
 const PAGE_SIZE = 10;
 
@@ -48,17 +43,13 @@ export default async function FinancePage({
   const { tenant: tenantSlug } = await params;
   const sp = await searchParams;
 
-  // --- Filtros de pagos (prefijo `p`) -------------------------------
-  const pq = firstString(sp.pq).trim();
-  const pmethodRaw = firstString(sp.pmethod);
-  const pmethod = PAYMENT_METHODS.some((option) => option.value === pmethodRaw)
-    ? (pmethodRaw as (typeof PAYMENT_METHODS)[number]["value"])
-    : undefined;
-  const pstatusRaw = firstString(sp.pstatus);
-  const pstatus = PAYMENT_STATUSES.some((option) => option.value === pstatusRaw)
-    ? (pstatusRaw as (typeof PAYMENT_STATUSES)[number]["value"])
-    : undefined;
-  const ppage = firstNumber(sp.ppage);
+  // Cobros y Caja menor tienen su propia página (con su lugar en el menú); los enlaces viejos con ?tab= siguen funcionando.
+  const oldTab = firstString(sp.tab);
+  if (oldTab === "cobros" || oldTab === "caja") {
+    const rest = new URLSearchParams();
+    for (const [k, v] of Object.entries(sp)) if (k !== "tab" && v !== undefined) rest.set(k, firstString(v));
+    redirect(`/${tenantSlug}/finanzas/${oldTab === "caja" ? "caja" : "cobros"}${rest.size ? `?${rest}` : ""}`);
+  }
 
   // --- Filtros de gastos (prefijo `g`) --------------------------------
   const gq = firstString(sp.gq).trim();
@@ -76,20 +67,17 @@ export default async function FinancePage({
     notFound();
   }
 
+  // La membresía y el permiso se comprueban antes de leer cualquier dato del negocio.
+  const pageCtx = await requireTenantContext(tenantSlug, "/finanzas");
+  if (!pageCtx) notFound();
+
   const tenantDb = createTenantDb(tenantRecord.id);
 
-  const [metrics, series, movements, paymentResult, expenseResult, activeCustomers] =
+  const [metrics, series, movements, expenseResult, activeCustomers] =
     await Promise.all([
       tenantDb.finance.getMetrics(),
       tenantDb.finance.getSeries(period),
       tenantDb.finance.getMovements(30),
-      tenantDb.finance.listPayments({
-        q: pq,
-        method: pmethod,
-        status: pstatus,
-        page: ppage,
-        limit: PAGE_SIZE,
-      }),
       tenantDb.finance.listExpenses({
         q: gq,
         category: gcat,
@@ -105,15 +93,10 @@ export default async function FinancePage({
     timeZone: "America/Bogota",
   }).format(new Date());
 
-  const paymentTotalPages = Math.max(
-    1,
-    Math.ceil(paymentResult.total / PAGE_SIZE),
-  );
   const expenseTotalPages = Math.max(
     1,
     Math.ceil(expenseResult.total / PAGE_SIZE),
   );
-  const safePaymentPage = Math.min(ppage, paymentTotalPages);
   const safeExpensePage = Math.min(gpage, expenseTotalPages);
 
   const customerOptions = activeCustomers.rows.map((row) => ({
@@ -125,31 +108,10 @@ export default async function FinancePage({
 
   const periodLabel = period === 7 ? "últimos 7 días" : "últimos 30 días";
 
-  const tab = (["resumen", "cobros", "gastos", "caja"] as const).find((t) => t === firstString(sp.tab)) ?? "resumen";
-  const [cashBoxes, cashHist, members, ctx] = await Promise.all([
-    listCashBoxes(tenantRecord.id),
-    tab === "caja" ? cashHistory(tenantRecord.id, 10) : Promise.resolve([]),
-    memberDirectory(tenantRecord.id),
-    requireTenantContext(tenantSlug, "/finanzas"),
-  ]);
+  const tab = (["resumen", "gastos"] as const).find((t) => t === firstString(sp.tab)) ?? "resumen";
+  const cashBoxes = await listCashBoxes(tenantRecord.id);
   const openBox = cashBoxes.find((b) => b.openSession) ?? null;
-  const cashMoves = tab === "caja" && openBox?.openSession ? await sessionMovements(tenantRecord.id, openBox.openSession.id) : [];
   const business = { name: tenantRecord.name, subtitle: tenantRecord.city ?? undefined };
-  const paymentItems: MoneyItem[] = paymentResult.rows.map((r) => ({
-    kind: "PAYMENT",
-    id: r.id,
-    amount: r.amount,
-    // Sin cliente registrado: el concepto dice qué se vendió o a quién se cobró.
-    title: r.customerName ?? r.description ?? "Venta de mostrador",
-    concept: r.description ?? "Pago de servicio",
-    method: r.provider,
-    status: r.status,
-    receiptNumber: r.receiptNumber,
-    date: r.createdAt,
-    phone: r.customerPhone,
-    voidReason: r.voidReason,
-    notes: r.notes,
-  }));
   const expenseItems: MoneyItem[] = expenseResult.rows.map((r) => ({
     kind: "EXPENSE",
     id: r.id,
@@ -165,10 +127,10 @@ export default async function FinancePage({
   }));
 
   return (
-    <div className="grid gap-6" suppressHydrationWarning>
+    <div data-bleed="" className="grid gap-5 px-6 pb-8 pt-6" suppressHydrationWarning>
       <PageHeader
         title="Finanzas"
-        description={<>Cobros, gastos y caja menor de{" "}
+        description={<>Resumen y gastos de{" "}
           <span className="font-medium text-foreground/80">{tenantRecord.name}</span>.</>}
         actions={
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap">
@@ -185,71 +147,45 @@ export default async function FinancePage({
         }
       />
 
-      <div className="overflow-x-auto [scrollbar-width:none]">
-        <UrlSegmentedControl
-          param="tab"
-          ariaLabel="Secciones de finanzas"
-          value={tab}
-          defaultValue="resumen"
-          options={[
-            { value: "resumen", label: "Resumen" },
-            { value: "cobros", label: "Cobros", count: paymentResult.total },
-            { value: "gastos", label: "Gastos", count: expenseResult.total },
-            { value: "caja", label: "Caja menor" },
-          ]}
-          className="w-full [&>button]:min-w-0 [&>button]:flex-1 sm:w-auto sm:[&>button]:flex-none"
-        />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="max-w-full overflow-x-auto [scrollbar-width:none]">
+          <UrlSegmentedControl
+            param="tab"
+            ariaLabel="Secciones de finanzas"
+            value={tab}
+            defaultValue="resumen"
+            options={[
+              { value: "resumen", label: "Resumen" },
+              { value: "gastos", label: "Gastos", count: expenseResult.total },
+            ]}
+            className="w-full [&>button]:min-w-0 [&>button]:flex-1 sm:w-auto sm:[&>button]:flex-none"
+          />
+        </div>
+        {tab === "resumen" ? (
+          <UrlSegmentedControl
+            param="p"
+            ariaLabel="Periodo"
+            value={period === 7 ? "7d" : "30d"}
+            defaultValue="30d"
+            options={[
+              { value: "7d", label: "7 días" },
+              { value: "30d", label: "30 días" },
+            ]}
+            className="w-full [&>button]:flex-1 sm:w-auto sm:[&>button]:flex-none"
+          />
+        ) : null}
       </div>
 
       {tab === "resumen" ? (
-        <div className="grid gap-3.5">
-          <div className="flex sm:justify-end">
-            <UrlSegmentedControl
-              param="p"
-              ariaLabel="Periodo"
-              value={period === 7 ? "7d" : "30d"}
-              defaultValue="30d"
-              options={[
-                { value: "7d", label: "7 días" },
-                { value: "30d", label: "30 días" },
-              ]}
-              className="w-full [&>button]:flex-1 sm:w-auto sm:[&>button]:flex-none"
-            />
-          </div>
-          <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
-            <BalanceCard label={`Balance · ${periodLabel}`} balance={series.current.balance} income={series.current.income} expenses={series.current.expenses} />
-            <PettyCashCard
-              spent={series.current.expenses}
-              income={series.current.income}
-              periodLabel={periodLabel}
-              byMethod={metrics.byMethod}
-              monthLabel={monthLabel}
-              cash={openBox?.openSession ? { box: openBox.name, amount: openBox.openSession.expected, href: `/${tenantSlug}/finanzas?tab=caja` } : { box: cashBoxes[0]?.name ?? null, amount: null, href: `/${tenantSlug}/finanzas?tab=caja` }}
-            />
-          </div>
-          <MovementsList items={movements} />
-        </div>
-      ) : null}
-
-      {tab === "cobros" ? (
-        <section aria-label="Cobros" className="grid gap-3">
-          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-            <SearchInput paramKey="pq" pageParam="ppage" ariaLabel="Buscar pagos" placeholder="Buscar por cliente, recibo o concepto…" defaultValue={pq} />
-            <FilterSelect paramKey="pmethod" pageParam="ppage" allLabel="Todos los métodos" options={PAYMENT_METHODS} value={pmethod ?? ""} />
-            <FilterSelect paramKey="pstatus" pageParam="ppage" allLabel="Todos los estados" options={PAYMENT_STATUSES} value={pstatus ?? ""} />
-          </div>
-          <MoneyList
-            slug={tenantSlug}
-            items={paymentItems}
-            business={business}
-            page={safePaymentPage}
-            totalPages={paymentTotalPages}
-            pageParam="ppage"
-            totalLabel={`${paymentResult.total} ${paymentResult.total === 1 ? "cobro" : "cobros"}`}
-            emptyAction={pq ? undefined : { label: "Registrar pago", quick: "payment" }}
-            empty={pq ? { title: `Sin coincidencias para «${pq}»`, description: "Prueba con otro término o limpia los filtros." } : { title: "Aún no hay cobros", description: "Registra tu primer cobro con «Registrar pago»." }}
-          />
-        </section>
+        <FinanceOverview
+          slug={tenantSlug}
+          periodLabel={periodLabel}
+          series={series}
+          byMethod={metrics.byMethod}
+          monthLabel={monthLabel}
+          movements={movements}
+          cash={{ box: openBox?.name ?? cashBoxes[0]?.name ?? null, amount: openBox?.openSession ? openBox.openSession.expected : null }}
+        />
       ) : null}
 
       {tab === "gastos" ? (
@@ -272,16 +208,6 @@ export default async function FinancePage({
         </section>
       ) : null}
 
-      {tab === "caja" ? (
-        <CashPanel
-          slug={tenantSlug}
-          boxes={cashBoxes}
-          moves={cashMoves}
-          history={cashHist}
-          members={members.map((m) => ({ id: m.id, name: m.name ?? m.email }))}
-          canManage={!!ctx && canManage(ctx.role)}
-        />
-      ) : null}
     </div>
   );
 }

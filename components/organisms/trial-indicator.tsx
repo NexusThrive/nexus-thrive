@@ -36,8 +36,8 @@ export function TrialIndicator({
           data-tour="trial"
           aria-label={`Prueba de Nexus: ${daysLeft} ${dayWord} restantes. Ver detalle`}
           className={cn(
-            "inline-flex h-8 pointer-coarse:h-11 items-center gap-1.5 rounded-md border px-2.5 text-xs font-semibold transition-colors",
-            soon ? "border-accent bg-accent text-accent-foreground hover:bg-accent-hover" : "border-border bg-surface-muted text-foreground hover:bg-surface-hover",
+            "inline-flex h-8 pointer-coarse:h-11 items-center gap-1.5 rounded-full px-2 text-sm underline-offset-4 outline-none transition-colors hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+            soon ? "font-semibold text-accent-text" : "font-medium text-muted-foreground hover:text-foreground",
           )}
         >
           <Hourglass aria-hidden="true" className="size-3.5" />

@@ -33,6 +33,7 @@ const config: StorybookConfig = {
       // Mini-modales de «Crear»: datos de muestra, sin servidor ni base.
       "@/app/[tenant]/(app)/_actions/quick-create": path.resolve(import.meta.dirname, "mocks/quick-create.ts"),
       "@/app/[tenant]/(app)/finanzas/actions": path.resolve(import.meta.dirname, "mocks/finance-actions.ts"),
+      "@/app/[tenant]/(app)/finanzas/money-actions": path.resolve(import.meta.dirname, "mocks/money-actions.ts"),
       "@/app/[tenant]/(app)/contactos/nuevo/actions": path.resolve(import.meta.dirname, "mocks/nuevo-cliente-actions.ts"),
       "@/app/[tenant]/(app)/crm/configuracion/actions": path.resolve(import.meta.dirname, "mocks/crm-config-actions.ts"),
       "@/app/[tenant]/(app)/crm/pipeline-actions": path.resolve(import.meta.dirname, "mocks/pipeline-actions.ts"),

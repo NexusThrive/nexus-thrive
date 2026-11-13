@@ -37,17 +37,17 @@ export default function MoneyList({
 }) {
   const quick = useQuickCreate();
   const [open, setOpen] = useState<MoneyItem | null>(null);
-  if (!items.length) return <EmptyState className="rounded-lg border border-border bg-surface" title={empty.title} description={empty.description} action={emptyAction ? <button type="button" onClick={() => quick.open(emptyAction.quick)} className={buttonVariants()}><Plus aria-hidden="true" className="size-4" /> {emptyAction.label}</button> : undefined} />;
+  if (!items.length) return <EmptyState mark="center" remember={false} className="rounded-(--radius-widget) border border-border/60 bg-card" title={empty.title} description={empty.description} action={emptyAction ? <button type="button" onClick={() => quick.open(emptyAction.quick)} className={cn(buttonVariants({ variant: "accent" }), "h-11 rounded-full px-6 text-sm font-semibold")}><Plus aria-hidden="true" className="size-4" /> {emptyAction.label}</button> : undefined} />;
   return (
     <div className="grid gap-3">
-      <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface">
+      <ul className="grid gap-2 rounded-(--radius-widget) border border-border/60 bg-card p-4">
         {items.map((it) => {
           const voided = it.kind === "PAYMENT" ? it.status === "VOIDED" : it.voided;
           const Icon = it.kind === "PAYMENT" ? ArrowDownRight : ArrowUpRight;
           return (
             <li key={it.id}>
-              <button type="button" onClick={() => setOpen(it)} className="grid w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-surface-muted">
-                <span className={cn("grid size-9 place-items-center rounded-md", it.kind === "PAYMENT" ? "bg-success-subtle text-success" : "bg-danger-subtle text-danger", voided && "bg-surface-muted text-muted-foreground")}>
+              <button type="button" onClick={() => setOpen(it)} className="grid w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3.5 rounded-2xl bg-surface-muted/60 px-4 py-3.5 text-left outline-none transition-colors hover:bg-accent-subtle focus-visible:outline-2 focus-visible:outline-ring">
+                <span className={cn("grid size-10 place-items-center rounded-full", it.kind === "PAYMENT" ? "bg-success-subtle text-success" : "bg-danger-subtle text-danger", voided && "bg-surface-muted text-muted-foreground")}>
                   <Icon aria-hidden="true" className="size-4" />
                 </span>
                 <span className="grid min-w-0">

@@ -75,13 +75,13 @@ const GROUP_ICONS: Record<GroupName, LucideIcon> = {
 };
 /** Pantallas que el menú reducido de un rubro con control de acceso (gimnasio) no muestra: el seguimiento de ventas y, de Mi sitio web, los pedidos de la tienda. */
 /** Pantallas que piden un permiso: sin él, el enlace no se muestra (la página igual lo comprueba en el servidor). Sin rol, se muestra todo. */
-const NAV_PERMISSION: Record<string, BusinessPermission> = { "/finanzas": "money.handle", "/ventas/cobros": "money.handle", "/finanzas/dinero": "money.handle", "/finanzas/cartera": "money.handle", "/ventas/pedidos": "orders.work" };
+const NAV_PERMISSION: Record<string, BusinessPermission> = { "/finanzas": "money.handle", "/finanzas/cobros": "money.handle", "/finanzas/caja": "money.handle", "/ventas/cobros": "money.handle", "/finanzas/dinero": "money.handle", "/finanzas/cartera": "money.handle", "/ventas/pedidos": "orders.work" };
 const allowedFor = (role: string | undefined, href: string): boolean => {
   const permission = NAV_PERMISSION[href.split("?")[0] ?? ""];
   return !role || !permission || can(role, permission);
 };
 
-const LEAN_HIDDEN: readonly string[] = ["/crm", "/crm/informes", "/crm/configuracion", "/crm/tareas", "/crm/formularios", "/proyectos/entregables"];
+const LEAN_HIDDEN: readonly string[] = ["/crm", "/crm/informes", "/crm/configuracion", "/crm/tareas", "/crm/formularios", "/proyectos/entregables", "/finanzas/cobros", "/finanzas/caja"];
 /** Grupo de cada función: su categoría en el registro (la misma que ve en «Funciones»). */
 const MODULE_GROUP: Partial<Record<string, GroupName>> = Object.fromEntries(CAPABILITIES.map((c) => [c.id, c.category]));
 
@@ -109,9 +109,10 @@ export function buildTenantNav(vertical: VerticalValue, activeModules: readonly 
   // El grupo de cada entrada: el de su ruta si lo tiene (p. ej. CRM dentro del módulo de clientes), si no el de su función.
   const groupOf = (m: ModuleValue, href: string): GroupName => NAV_CATEGORY.get(href.split("?")[0] ?? "") ?? MODULE_GROUP[m] ?? "Clientes y agenda";
   const forGroup = (label: GroupName): NavItem[] =>
+    // En Finanzas, la pantalla principal va primero (Cobros viene de la función «Pagos», que se lista antes en el catálogo).
     enabled
       .filter((m) => m !== "dashboard")
-      .flatMap((m) => items(m).filter((item) => groupOf(m, item.href) === label).filter((item) => !(m === "payments" && active.has("finance") && item.href.startsWith("/finanzas")) && !(m === "website" && item.href === "/ventas/pedidos" && active.has("orders"))));
+      .flatMap((m) => items(m).filter((item) => groupOf(m, item.href) === label).filter((item) => !(m === "website" && item.href === "/ventas/pedidos" && active.has("orders")))).sort((a, b) => Number(b.href === "/finanzas") - Number(a.href === "/finanzas"));
   const gym = lean;
   const expenses: NavItem[] = active.has("finance") && !gym && allowedFor(role, "/finanzas") ? [{ key: "/finanzas?tab=gastos", module: "finance", href: "/finanzas?tab=gastos", icon: Receipt, label: "Gastos" }] : [];
   return [
@@ -139,6 +140,8 @@ export function tenantRelativePath(pathname: string | null, tenantSlug: string):
 
 /** ¿El ítem con `href` está activo en `relativePath`? */
 export function isNavActive(href: string, relativePath: string): boolean {
+  // Inicio (la raíz del negocio) es el mismo dashboard que /resumen: «Resumen» se marca en las dos.
+  if (href === "/resumen" && relativePath === "/") return true;
   return href === "" ? relativePath === "/" : relativePath === href || relativePath.startsWith(`${href}/`);
 }
 

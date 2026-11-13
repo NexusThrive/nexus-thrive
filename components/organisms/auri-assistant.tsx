@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { usePathname } from "next/navigation";
-import { ArrowUp, LifeBuoy } from "lucide-react";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useMinWidth } from "@/lib/experience/hooks/use-min-width";
+import { setIntroSignal } from "@/lib/experience/assistant/intro-signal";
+import { ArrowUp, CalendarDays, LifeBuoy, MessageCircle, RotateCcw, Sparkles, TrendingUp, Wallet, type LucideIcon } from "lucide-react";
 import { EyeTracker } from "@/components/atoms/eye-tracker";
-import { Alert } from "@/components/molecules/alert";
-import { Chip, ChipRow } from "@/components/atoms/chip";
 import { useAuriGreeting } from "@/components/molecules/use-auri-greeting";
 import { useCurrentUserName } from "@/components/providers/current-user";
 import { AuriHomeIntroCard } from "@/components/organisms/auri-home-intro";
@@ -23,7 +23,12 @@ import { cn } from "@/lib/utils";
  */
 type Message = { id: number; from: "user" | "auri"; text: string };
 
-const SUGGESTIONS = ["¿Cómo van las ventas de hoy?", "Clientes con saldo por cobrar", "Citas de mañana", "Responder un mensaje de WhatsApp"];
+const SUGGESTIONS: { text: string; icon: LucideIcon }[] = [
+  { text: "¿Cómo van las ventas de hoy?", icon: TrendingUp },
+  { text: "Clientes con saldo por cobrar", icon: Wallet },
+  { text: "Citas de mañana", icon: CalendarDays },
+  { text: "Responder un mensaje de WhatsApp", icon: MessageCircle },
+];
 
 /** Respuesta provisional: honesta sobre lo que todavía no puede hacer. Aquí entrará el modelo. */
 async function reply(): Promise<string> {
@@ -47,14 +52,51 @@ export function AuriAssistant({
   const name = useCurrentUserName();
   const steps = useMemo(() => homeIntroSteps(name), [name]);
   // Recorrido de la primera visita al Inicio: AURI crece en su esquina y explica el panel (una vez por navegador y negocio).
-  const [intro, setIntro] = useState<number | null>(null);
   const atHome = isHomePath(pathname ?? "", tenantSlug);
+  // Venir del onboarding (`?bienvenida=1`): AURI llega volando desde la pantalla de creación (View Transition `nx-auri`) y empieza el
+  // recorrido de una vez, sin esperar ni pasar por la intro de la N.
+  const welcome = useSearchParams()?.get("bienvenida") === "1";
+  const [intro, setIntro] = useState<number | null>(() => (welcome && atHome ? 0 : null));
   useEffect(() => {
-    if (!atHome || introSeen(window.localStorage, tenantSlug)) return;
+    if (!welcome) return;
+    // La marca se quita de la dirección (para que recargar o volver no repita la bienvenida); si ya vio el recorrido, no se repite.
+    const url = new URL(window.location.href);
+    url.searchParams.delete("bienvenida");
+    window.history.replaceState(window.history.state, "", url);
+    if (!introSeen(window.localStorage, tenantSlug)) return;
+    const id = window.setTimeout(() => setIntro(null), 0);
+    return () => window.clearTimeout(id);
+  }, [welcome, tenantSlug]);
+  useEffect(() => {
+    if (welcome || !atHome || introSeen(window.localStorage, tenantSlug)) return;
     // Deja pasar la intro de la N y las entradas del Inicio antes de presentarse.
     const id = window.setTimeout(() => setIntro(0), 3200);
     return () => window.clearTimeout(id);
-  }, [atHome, tenantSlug]);
+  }, [atHome, welcome, tenantSlug]);
+  // En escritorio, la AURI que explica es la grande del Inicio (la de la esquina se oculta); en celular, la de la esquina. El recorrido le
+  // pasa su cara a la grande por `intro-signal`, y la tarjeta con el texto se pega a ella.
+  const desktop = useMinWidth(820);
+  const onHeroStage = atHome && desktop;
+  const [anchor, setAnchor] = useState<{ top: number; left: number } | null>(null);
+  useEffect(() => {
+    if (intro === null || !onHeroStage) {
+      const id = window.setTimeout(() => setAnchor(null), 0);
+      return () => window.clearTimeout(id);
+    }
+    const place = () => {
+      const hero = document.querySelector<HTMLElement>("[data-auri-hero]");
+      if (!hero) return;
+      const r = hero.getBoundingClientRect();
+      const width = Math.min(340, window.innerWidth - 32);
+      setAnchor({ top: Math.round(r.bottom + 8), left: Math.max(16, Math.round(r.right - width)) });
+    };
+    const id = window.setTimeout(place, 0);
+    window.addEventListener("resize", place);
+    return () => {
+      window.clearTimeout(id);
+      window.removeEventListener("resize", place);
+    };
+  }, [intro, onHeroStage]);
   const endIntro = () => {
     markIntroSeen(window.localStorage, tenantSlug);
     setIntro(null);
@@ -79,6 +121,15 @@ export function AuriAssistant({
       window.clearTimeout(off);
     };
   }, [introStep]);
+  // La cara del recorrido para la AURI grande del Inicio (escritorio).
+  useEffect(() => {
+    if (intro === null || !onHeroStage) {
+      setIntroSignal(null);
+      return;
+    }
+    setIntroSignal({ mood: introStep?.mood ?? "joy", gaze: introStep?.gaze ?? null, speaking: introSpeaking });
+    return () => setIntroSignal(null);
+  }, [intro, onHeroStage, introStep, introSpeaking]);
   const [open, setOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -133,7 +184,7 @@ export function AuriAssistant({
         void send(draft);
       }}
     >
-      <div className="flex items-end gap-2">
+      <div className="flex items-end gap-2 rounded-3xl border border-border/60 bg-surface-muted/60 p-1.5 transition-colors focus-within:border-accent focus-within:bg-card">
         <textarea
           aria-label="Escribe tu mensaje a AURI AI"
           rows={1}
@@ -148,14 +199,14 @@ export function AuriAssistant({
               void send(draft);
             }
           }}
-          className="field-sizing-content max-h-32 min-h-11 w-full resize-none rounded-lg border border-border-input bg-background px-3 py-2.5 text-ui text-foreground outline-none transition-colors placeholder:text-muted-foreground hover:border-border-input-hover focus-visible:border-ring focus-visible:outline-2 focus-visible:outline-ring/30"
+          className="field-sizing-content max-h-32 min-h-11 w-full resize-none rounded-2xl bg-transparent px-4 py-2.5 text-ui text-foreground outline-none placeholder:text-muted-foreground"
         />
         <button
           type="submit"
           disabled={!draft.trim() || thinking}
           aria-label="Enviar mensaje"
           data-press=""
-          className="grid size-11 shrink-0 place-items-center rounded-lg bg-accent text-accent-foreground outline-none transition-colors hover:bg-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:cursor-not-allowed disabled:opacity-45"
+          className="grid size-11 shrink-0 place-items-center rounded-full bg-accent text-accent-foreground outline-none transition-colors hover:bg-accent-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:cursor-not-allowed disabled:opacity-45"
         >
           <ArrowUp aria-hidden="true" className="size-5" strokeWidth={2.2} />
         </button>
@@ -191,29 +242,36 @@ export function AuriAssistant({
             aria-label="Abrir el chat con AURI AI"
             data-press=""
             {...hello.bind}
-            className={cn("fixed bottom-[calc(76px+env(safe-area-inset-bottom,0px))] right-4 z-(--z-sticky) grid select-none place-items-center rounded-full shadow-(--shadow-popover) outline-none transition-[transform,width,height] duration-500 ease-out hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none md:bottom-6 md:right-6", intro !== null ? "size-24" : "size-14 pointer-coarse:size-16")}
+            className={cn("fixed bottom-[calc(76px+env(safe-area-inset-bottom,0px))] right-4 z-(--z-sticky) grid select-none place-items-center rounded-full shadow-(--shadow-popover) outline-none transition-[transform,width,height] duration-500 ease-out hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none md:bottom-6 md:right-6", intro !== null ? "size-24" : "size-14 pointer-coarse:size-16", atHome && "min-[820px]:hidden")}
           >
-            <EyeTracker
-              fit
-              decorative
-              poke={false}
-              size={intro !== null ? 92 : 56}
-              shape="Ball"
-              eyeScale={1.2}
-              joy={hello.joy}
-              mood={introStep?.mood ?? (thinking ? "think" : "neutral")}
-              gaze={introStep?.gaze ?? null}
-              speaking={introSpeaking}
-              say={intro !== null ? null : hello.say}
-              sayAt="tl"
-            />
+              <div className="grid size-full place-items-center">
+                <EyeTracker
+                  fit
+                  decorative
+                  poke={false}
+                  size={intro !== null ? 92 : 56}
+                  shape="Ball"
+                  eyeScale={1.2}
+                  joy={hello.joy}
+                  mood={introStep?.mood ?? (thinking ? "think" : "neutral")}
+                  gaze={introStep?.gaze ?? null}
+                  speaking={introSpeaking}
+                  say={intro !== null ? null : hello.say}
+                  sayAt="tl"
+                />
+              </div>
             {/* punto de «en línea»: la asistente está disponible */}
             <span aria-hidden="true" className="absolute right-0.5 top-0.5 size-3 rounded-full border-2 border-background bg-success" />
           </button>
         }
       >
         <div role="log" aria-live="polite" aria-label="Conversación con AURI AI" className="grid min-h-[40dvh] content-start gap-3">
-          <Alert tone="info">Vista previa: AURI AI todavía no está conectada a los datos de tu negocio ni a WhatsApp.</Alert>
+          <p className="flex items-start gap-2.5 rounded-2xl bg-accent-subtle/60 px-4 py-3 text-xs text-foreground">
+            <Sparkles aria-hidden="true" className="mt-0.5 size-3.5 shrink-0 text-accent-text" />
+            <span>
+              <b className="font-semibold">Vista previa.</b> AURI AI todavía no está conectada a los datos de tu negocio ni a WhatsApp.
+            </span>
+          </p>
 
           <Bubble from="auri">
             Hola, soy AURI, la asistente de {businessName}. Pronto podré contarte cómo van tus ventas, buscar clientes, revisar tus citas y atender tu WhatsApp. Por ahora puedes probar la conversación.
@@ -226,7 +284,7 @@ export function AuriAssistant({
           ))}
 
           {thinking ? (
-            <div className="flex items-center gap-1 justify-self-start rounded-2xl rounded-tl-md bg-surface-muted px-4 py-3" role="status" aria-label="AURI AI está escribiendo">
+            <div className="flex items-center gap-1 justify-self-start rounded-3xl rounded-tl-lg bg-surface-muted/60 px-5 py-3.5" role="status" aria-label="AURI AI está escribiendo">
               {[0, 1, 2].map((dot) => (
                 <span key={dot} aria-hidden="true" className="size-1.5 animate-pulse rounded-full bg-muted-foreground" style={{ animationDelay: `${dot * 160}ms` }} />
               ))}
@@ -234,46 +292,53 @@ export function AuriAssistant({
           ) : null}
 
           {messages.length === 0 ? (
-            <div className="grid gap-2 pt-1">
-              <p className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">Prueba con</p>
-              <ChipRow className="flex-wrap">
-                {SUGGESTIONS.map((suggestion) => (
-                  <Chip key={suggestion} onClick={() => void send(suggestion)} className="h-auto min-h-8 whitespace-normal py-1.5 text-left">
-                    {suggestion}
-                  </Chip>
+            <div className="grid gap-2.5 pt-1">
+              <p className="text-xs font-medium text-muted-foreground">Prueba con</p>
+              <ul className="grid gap-2 sm:grid-cols-2">
+                {SUGGESTIONS.map(({ text, icon: Icon }) => (
+                  <li key={text}>
+                    <button type="button" onClick={() => void send(text)} className="flex h-full w-full items-center gap-3 rounded-2xl bg-surface-muted/60 p-3 text-left text-ui font-medium text-foreground outline-none transition-colors hover:bg-accent-subtle focus-visible:outline-2 focus-visible:outline-ring">
+                      <span aria-hidden="true" className="grid size-9 shrink-0 place-items-center rounded-full bg-card text-accent-text">
+                        <Icon className="size-4" strokeWidth={1.8} />
+                      </span>
+                      {text}
+                    </button>
+                  </li>
                 ))}
-              </ChipRow>
+              </ul>
             </div>
           ) : null}
 
-          <button
-            type="button"
-            onClick={() => {
-              setOpen(false);
-              setHelpOpen(true);
-            }}
-            className="mt-2 inline-flex items-center gap-1.5 justify-self-start text-ui font-medium text-accent-text underline-offset-2 outline-none hover:underline focus-visible:outline-2 focus-visible:outline-ring"
-          >
-            <LifeBuoy aria-hidden="true" className="size-4" /> ¿Necesitas ayuda de soporte? Abre el Centro de ayuda
-          </button>
-          {atHome ? (
+          <div className="flex flex-wrap gap-2 pt-1">
             <button
               type="button"
               onClick={() => {
                 setOpen(false);
-                setIntro(0);
+                setHelpOpen(true);
               }}
-              className="inline-flex items-center gap-1.5 justify-self-start text-ui font-medium text-accent-text underline-offset-2 outline-none hover:underline focus-visible:outline-2 focus-visible:outline-ring"
+              className="inline-flex h-10 items-center gap-2 rounded-full border border-border/60 px-4 text-ui font-medium text-foreground outline-none transition-colors hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-ring"
             >
-              Ver otra vez el recorrido del Inicio
+              <LifeBuoy aria-hidden="true" className="size-4 text-accent-text" /> Centro de ayuda
             </button>
-          ) : null}
+            {atHome ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setOpen(false);
+                  setIntro(0);
+                }}
+                className="inline-flex h-10 items-center gap-2 rounded-full border border-border/60 px-4 text-ui font-medium text-foreground outline-none transition-colors hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-ring"
+              >
+                <RotateCcw aria-hidden="true" className="size-4 text-accent-text" /> Ver otra vez el recorrido
+              </button>
+            ) : null}
+          </div>
           <div ref={endRef} />
         </div>
       </ResponsiveSheet>
 
       {intro !== null && !open ? (
-        <AuriHomeIntroCard steps={steps} index={intro} onNext={() => setIntro((i) => (i === null ? i : Math.min(steps.length - 1, i + 1)))} onSkip={endIntro} />
+        <AuriHomeIntroCard anchor={onHeroStage ? anchor : null} steps={steps} index={intro} onNext={() => setIntro((i) => (i === null ? i : Math.min(steps.length - 1, i + 1)))} onSkip={endIntro} />
       ) : null}
 
       {/* El Centro de ayuda ya no tiene botón propio: se abre desde el chat. */}
@@ -295,8 +360,8 @@ function Bubble({ from, children }: { from: "user" | "auri"; children: React.Rea
   return (
     <div
       className={cn(
-        "max-w-[88%] whitespace-pre-wrap break-words rounded-2xl px-4 py-2.5 text-ui leading-relaxed",
-        from === "auri" ? "justify-self-start rounded-tl-md bg-surface-muted text-foreground" : "justify-self-end rounded-tr-md bg-accent text-accent-foreground",
+        "max-w-[88%] whitespace-pre-wrap break-words rounded-3xl px-5 py-3 text-ui leading-relaxed",
+        from === "auri" ? "justify-self-start rounded-tl-lg bg-surface-muted/60 text-foreground" : "justify-self-end rounded-tr-lg bg-accent font-medium text-accent-foreground",
       )}
     >
       {children}

@@ -77,17 +77,17 @@ export default function CustomerToolbar({
     <>
       {/* `suppressHydrationWarning`: Proton Pass marca con `data-protonpass-form` los contenedores con campos antes de que
           React hidrate; no es nuestro HTML (mismo criterio que la barra superior). */}
-      <div suppressHydrationWarning className="grid items-center gap-x-4 gap-y-3 px-5 py-4 min-[1100px]:grid-cols-[1fr_minmax(0,543px)_1fr]">
+      <div suppressHydrationWarning className="grid items-center gap-x-5 gap-y-4 px-6 py-6 min-[1100px]:grid-cols-[1fr_minmax(0,620px)_1fr]">
         {/* Izquierda: alta, título y ⋮ */}
         <div className="flex min-w-0 items-center gap-3 justify-self-start">
-          <Link href={`/${tenantSlug}/contactos/nuevo`} className={buttonVariants({ variant: "accent", size: "sm", className: "h-[34px]" })}>
-            <Plus aria-hidden="true" className="size-4" />
+          <Link href={`/${tenantSlug}/contactos/nuevo`} className={cn(buttonVariants({ variant: "accent", size: "lg" }), "h-12 rounded-full px-6 text-base")}>
+            <Plus aria-hidden="true" className="size-5" strokeWidth={2.2} />
             Nuevo
           </Link>
-          <h1 className="truncate text-lg font-medium text-foreground">{terms.customers}</h1>
+          <h1 className="truncate font-display text-2xl font-semibold text-foreground">{terms.customers}</h1>
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
-              <button type="button" aria-label="Más acciones" className={buttonVariants({ variant: "ghost", size: "icon", className: "size-[34px]" })}>
+              <button type="button" aria-label="Más acciones" className={cn(buttonVariants({ variant: "ghost", size: "icon" }), "size-11 rounded-full")}>
                 <MoreVertical aria-hidden="true" className="size-4" />
               </button>
             </DropdownMenuTrigger>
@@ -104,8 +104,8 @@ export default function CustomerToolbar({
 
         {selectedCount > 0 ? (
           /* Con filas seleccionadas, el centro muestra la selección y sus acciones (como en Odoo). */
-          <div className="flex h-[34px] w-full items-center gap-2 justify-self-center max-w-[543px]">
-            <div className="flex h-full min-w-0 flex-1 items-center justify-between gap-2 rounded-lg border border-accent bg-card px-3 ring-2 ring-accent/25">
+          <div className="flex h-12 w-full items-center gap-2 justify-self-center max-w-[620px]">
+            <div className="flex h-full min-w-0 flex-1 items-center justify-between gap-2 rounded-full border border-accent bg-card px-5 ring-2 ring-accent/25">
               <span className="truncate text-sm font-medium text-foreground" aria-live="polite">
                 {selectedCount} {selectedCount === 1 ? "seleccionado" : "seleccionados"}
               </span>
@@ -120,7 +120,7 @@ export default function CustomerToolbar({
             </div>
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
-                <button type="button" className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-[34px] border border-border bg-card")}>
+                <button type="button" className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-12 rounded-full border border-border bg-card px-5 text-sm")}>
                   <Settings aria-hidden="true" className="size-4" />
                   Acciones
                 </button>
@@ -155,12 +155,12 @@ export default function CustomerToolbar({
             </DropdownMenu>
           </div>
         ) : (
-        <CustomerSearchBar tenantSlug={tenantSlug} schema={schema} favorites={favorites} className="h-[34px] w-full max-w-[543px] justify-self-center" />
+        <CustomerSearchBar tenantSlug={tenantSlug} schema={schema} favorites={favorites} className="w-full max-w-[620px] justify-self-center" />
         )}
 
         {/* Derecha: paginación y vistas */}
         <div className="flex flex-wrap items-center justify-start gap-2 justify-self-start min-[1100px]:flex-nowrap min-[1100px]:justify-self-end">
-          <p aria-live="polite" className="whitespace-nowrap text-sm text-foreground/80">
+          <p aria-live="polite" className="whitespace-nowrap text-base text-foreground/80">
             {total === 0 ? "0" : `${from}-${to} / ${total}`}
             <span className="sr-only"> {label}</span>
           </p>
@@ -170,7 +170,7 @@ export default function CustomerToolbar({
               aria-label="Página anterior"
               disabled={page <= 1 || isPending}
               onClick={() => goToPage(page - 1)}
-              className="grid h-[34px] w-[34px] place-items-center rounded-lg border border-border text-foreground outline-none hover:bg-surface-muted disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-ring"
+              className="grid size-11 place-items-center rounded-full border border-border/60 text-foreground outline-none hover:bg-surface-muted disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-ring"
             >
               <ChevronLeft aria-hidden="true" className="size-4" />
             </button>
@@ -179,14 +179,14 @@ export default function CustomerToolbar({
               aria-label="Página siguiente"
               disabled={page >= totalPages || isPending}
               onClick={() => goToPage(page + 1)}
-              className="grid h-8 w-8 place-items-center rounded-lg border border-border text-foreground outline-none hover:bg-surface-muted disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-ring"
+              className="grid size-11 place-items-center rounded-full border border-border/60 text-foreground outline-none hover:bg-surface-muted disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-ring"
             >
               <ChevronRight aria-hidden="true" className="size-4" />
             </button>
           </div>
           {/* Vistas: solo la lista existe; las demás aparecen desactivadas hasta que se construyan. */}
-          <div role="group" aria-label="Vista" className="flex h-[34px] items-center rounded-lg border border-border p-0.5">
-            <button type="button" aria-pressed="true" aria-label="Vista de lista" className="grid h-[28px] w-8 place-items-center rounded-md bg-surface-muted text-accent-text outline-none focus-visible:outline-2 focus-visible:outline-ring">
+          <div role="group" aria-label="Vista" className="flex h-11 items-center rounded-full border border-border/60 p-1">
+            <button type="button" aria-pressed="true" aria-label="Vista de lista" className="grid h-9 w-10 place-items-center rounded-full bg-surface-muted text-accent-text outline-none focus-visible:outline-2 focus-visible:outline-ring">
               <List aria-hidden="true" className="size-4" />
             </button>
             {[
@@ -194,7 +194,7 @@ export default function CustomerToolbar({
               { label: "Vista de mapa", Icon: Map },
               { label: "Vista de actividades", Icon: CalendarClock },
             ].map(({ label: viewLabel, Icon }) => (
-              <button key={viewLabel} type="button" disabled aria-label={`${viewLabel} (próximamente)`} className={cn("grid h-[28px] w-8 place-items-center rounded-md text-muted-foreground/40")}>
+              <button key={viewLabel} type="button" disabled aria-label={`${viewLabel} (próximamente)`} className={cn("grid h-9 w-10 place-items-center rounded-full text-muted-foreground/40")}>
                 <Icon aria-hidden="true" className="size-4" />
               </button>
             ))}

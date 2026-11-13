@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/atoms/button";
 import { Badge } from "@/components/atoms/badge";
-import { KpiCard } from "@/components/molecules/kpi-card";
+import { KpiCard } from "@/components/widgets/kpi-card";
 import { EmptyState } from "@/components/molecules/empty-state";
 import {
   exportBomCsvAction,

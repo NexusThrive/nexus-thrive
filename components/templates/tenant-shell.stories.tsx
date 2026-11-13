@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Building2, HandCoins, Wallet } from "lucide-react";
 import { Button } from "@/components/atoms/button";
-import { KpiCard } from "@/components/molecules/kpi-card";
+import { EmptyState } from "@/components/molecules/empty-state";
+import { KpiCard } from "@/components/widgets/kpi-card";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { VerticalTermsProvider } from "@/app/[tenant]/(app)/vertical-terms-context";
 import { getVerticalTerms } from "@/lib/core/sectors/terms";
@@ -50,6 +51,17 @@ export const Mobile: Story = { globals: { viewport: { value: "mobile1" } } };
 export const DesktopSistema: Story = { parameters: { nextjs: { navigation: { pathname: "/constructora/settings" } } } };
 
 /** Página larga (hay barra de scroll) con un modal: abrirlo no debe mover la navbar ni el contenido. */
+/** Una vista a todo el ancho con poco contenido (estado vacío): el panel no debe tener scroll de sobra. */
+export const VistaVacia: Story = {
+  args: {
+    children: (
+      <div data-bleed="" className="flex flex-col">
+        <EmptyState mark="page" remember={false} icon={<Building2 />} title="Aún no hay nada aquí" description="Cuando haya datos, aparecerán en esta vista." />
+      </div>
+    ),
+  },
+};
+
 export const WithModal: Story = {
   args: {
     children: (

@@ -9,8 +9,8 @@ const R = 36;
 const C = 2 * Math.PI * R;
 const cop = (n: number) => `$ ${Math.round(n).toLocaleString("es-CO")}`;
 
-/** Oro para el mayor; el resto, tinta que se aclara (un solo tono con matices). */
-const shade = (i: number) => (i === 0 ? { fill: "var(--nx-gold-500)", opacity: 1 } : { fill: "var(--foreground)", opacity: Math.max(0.16, 0.7 - (i - 1) * 0.16) });
+/** Oro para el mayor; el resto, grafito suave que se aclara (sin negro). */
+const shade = (i: number) => (i === 0 ? { fill: "var(--nx-gold-500)", opacity: 1 } : { fill: "var(--nx-graphite-400)", opacity: Math.max(0.3, 0.85 - (i - 1) * 0.2) });
 
 /**
  * Dona de reparto (p. ej. ingresos por método de pago). Los arcos se dibujan
@@ -88,7 +88,7 @@ export function DonutChart({ parts, ariaLabel }: { parts: { label: string; total
             onPointerLeave={() => setActive(null)}
             className={cn("flex items-center gap-2 rounded-sm px-1.5 py-0.5 transition-colors", active === i && "bg-surface-muted")}
           >
-            <i aria-hidden="true" className="size-2.5 shrink-0" style={{ background: shade(i).fill, opacity: shade(i).opacity }} />
+            <i aria-hidden="true" className="size-2.5 shrink-0 rounded-full" style={{ background: shade(i).fill, opacity: shade(i).opacity }} />
             <span className="min-w-0 flex-1 truncate text-muted-foreground">{p.label}</span>
             <b className="font-semibold tabular-nums">{Math.round((p.total / total) * 100)} %</b>
           </li>

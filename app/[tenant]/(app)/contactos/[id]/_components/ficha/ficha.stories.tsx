@@ -45,7 +45,6 @@ function Ficha({ completa, tab }: { completa: boolean; tab: FichaTab }) {
                 ]
               : []
           }
-          emptyTab={tab === "citas" ? { text: "Aún no tiene citas.", action: { label: "Agendar primera cita", href: "/demo/bookings" } } : { text: "Aún no tiene ventas ni facturas.", action: { label: "Crear primera venta", href: "/demo/ventas/cotizaciones" } }}
           activity={[
             ...(completa
               ? [

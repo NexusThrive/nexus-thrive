@@ -204,7 +204,7 @@ export function AddressAutocomplete({
   return (
     <div className="flex flex-col gap-2">
       <div className="relative">
-        <MapPinned aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <MapPinned aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <input
           ref={inputRef}
           id={id}
@@ -222,7 +222,7 @@ export function AddressAutocomplete({
           onChange={(event) => handleInput(event.target.value)}
           onKeyDown={handleKeyDown}
           onBlur={() => window.setTimeout(() => setOpen(false), 120)}
-          className={cn(inputClasses, "pl-9", busy && "pr-9")}
+          className={cn(inputClasses, "h-12 rounded-2xl border-border/60 bg-card pl-11", busy && "pr-9")}
         />
         {busy ? (
           <Loader2 aria-hidden="true" className="absolute right-3 top-1/2 size-4 -translate-y-1/2 animate-spin text-muted-foreground" />

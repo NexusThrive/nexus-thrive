@@ -15,6 +15,7 @@ export default function CrmSearchBar({ slug, schema, favorites, className }: { s
   const counts = useCallback((state: SearchState) => crmFilterCountsAction(slug, state), [slug]);
   return (
     <AdvancedSearch
+      pill
       className={className}
       etiqueta="Buscar oportunidades"
       esquema={schema}

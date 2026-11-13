@@ -15,12 +15,18 @@ export default function FichaGroups({
   customerName,
   current,
   options,
+  part = "all",
+  addClassName,
 }: {
   tenantSlug: string;
   customerId: string;
   customerName: string;
   current: { id: string; name: string; icon: string }[];
   options: GroupOption[];
+  /** `chips`: solo los grupos del cliente; `add`: solo el botón «Grupo» (con su diálogo); `all`: ambos, como antes. */
+  part?: "all" | "chips" | "add";
+  /** Clases del botón «Grupo» cuando se pinta solo (`part="add"`). */
+  addClassName?: string;
 }) {
   const router = useRouter();
   const { toast } = useToast();
@@ -36,10 +42,10 @@ export default function FichaGroups({
       if (result.ok) router.refresh();
     });
 
-  return (
-    <div className="flex flex-wrap items-center gap-2" aria-label="Grupos">
+  const chips = (
+    <>
       {current.map((g) => (
-        <span key={g.id} className="inline-flex items-center gap-1.5 rounded-full border border-border-strong py-0.5 pe-1 ps-2.5 text-xs text-foreground">
+        <span key={g.id} className="inline-flex items-center gap-1.5 rounded-full bg-surface-muted py-1 pe-1.5 ps-3 text-xs text-foreground">
           <span className="text-accent-text"><GroupIcon name={g.icon} className="size-3" /></span>
           {g.name}
           <button
@@ -53,12 +59,16 @@ export default function FichaGroups({
           </button>
         </span>
       ))}
+    </>
+  );
+  const add = (
+    <>
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-1 text-xs font-medium text-accent-text underline-offset-2 outline-none hover:underline focus-visible:outline-2 focus-visible:outline-ring"
+        className={addClassName ?? "inline-flex items-center gap-1 text-xs font-medium text-accent-text underline-offset-2 outline-none hover:underline focus-visible:outline-2 focus-visible:outline-ring"}
       >
-        <Plus aria-hidden="true" className="size-3" /> Grupo
+        <Plus aria-hidden="true" className={addClassName ? "size-4" : "size-3"} /> Grupo
       </button>
       <AssignGroupDialog
         open={open}
@@ -69,6 +79,14 @@ export default function FichaGroups({
         mode="add"
         onDone={() => router.refresh()}
       />
+    </>
+  );
+  if (part === "chips") return current.length ? <div className="flex flex-wrap items-center justify-center gap-2" aria-label="Grupos">{chips}</div> : null;
+  if (part === "add") return add;
+  return (
+    <div className="flex flex-wrap items-center gap-2" aria-label="Grupos">
+      {chips}
+      {add}
     </div>
   );
 }

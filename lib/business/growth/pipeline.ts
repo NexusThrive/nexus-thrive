@@ -133,3 +133,28 @@ export function parseMoney(text: string): number | null {
   if (!Number.isFinite(n)) return null;
   return Math.round(unit === "m" ? n * 1_000_000 : unit === "mil" || unit === "k" ? n * 1_000 : n);
 }
+
+/** Filtros de siempre del tablero (los de la barra: mis oportunidades, texto, responsable, etiqueta, prioridad, cierre, valor y cliente). */
+export type CardFilters = { me?: string | null; mine?: boolean; q?: string; ownerId?: string; tag?: string; priority?: number; closeFrom?: string; closeTo?: string; valueMin?: number; valueMax?: number; customerId?: string };
+
+type FilterableCard = { name: string; value: number; tags: string[]; priority: number; expectedClose: string | null; customer: { id: string; name: string } | null; owner: { id: string; name: string } | null };
+
+/**
+ * Aplica los filtros a las tarjetas ya cargadas. Es una función pura: la página carga el tablero **una sola vez** y filtra aquí (antes se
+ * cargaba dos veces, una con filtros y otra sin ellos, para tener «todo» en la búsqueda avanzada).
+ */
+export function filterPipelineCards<T extends FilterableCard>(cards: readonly T[], filters: CardFilters): T[] {
+  let out = [...cards];
+  const q = filters.q?.trim().toLocaleLowerCase("es");
+  if (filters.mine && filters.me) out = out.filter((c) => !c.owner || c.owner.id === filters.me);
+  if (q) out = out.filter((c) => [c.name, c.customer?.name ?? "", c.owner?.name ?? "", ...c.tags].some((t) => t.toLocaleLowerCase("es").includes(q)));
+  if (filters.ownerId) out = out.filter((c) => c.owner?.id === filters.ownerId);
+  if (filters.tag) out = out.filter((c) => c.tags.includes(filters.tag!));
+  if (filters.priority != null) out = out.filter((c) => c.priority >= filters.priority!);
+  if (filters.closeFrom) out = out.filter((c) => c.expectedClose != null && c.expectedClose >= filters.closeFrom!);
+  if (filters.closeTo) out = out.filter((c) => c.expectedClose != null && c.expectedClose <= filters.closeTo!);
+  if (filters.valueMin != null) out = out.filter((c) => c.value >= filters.valueMin!);
+  if (filters.valueMax != null) out = out.filter((c) => c.value <= filters.valueMax!);
+  if (filters.customerId) out = out.filter((c) => c.customer?.id === filters.customerId);
+  return out;
+}

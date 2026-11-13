@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { startTransition, useEffect, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { CreationCinematic, type CinematicStatus } from "./creation-cinematic";
+import { OnboardingScene } from "./onboarding-scene";
 
 const meta = {
   title: "Organismos/Onboarding/CreationCinematic",
@@ -40,4 +41,18 @@ export const Recorrido: Story = {
   },
 
   render: (args) => <Walkthrough {...args} />
+};
+
+/** AURI viaja de su cuadro en el onboarding al centro de la pantalla de creación (View Transition compartida `nx-auri`). */
+export const ViajeDeAuri: StoryObj<typeof CreationCinematic> = {
+  render: function Viaje() {
+    const [creating, setCreating] = useState(false);
+    return (
+      <div style={{ width: 560, minHeight: 560, display: "flex", flexDirection: "column", padding: 32, borderRadius: 32, background: "color-mix(in srgb, var(--accent) 10%, var(--card))" }}>
+        <OnboardingScene mode="preview" step="confirm" auriHandoff={creating} preview={{ name: "GymTop", slug: "gymtop", vertical: "gym", city: "Medellín", tenantType: "COMPANY", modules: [] }} />
+        <button type="button" onClick={() => startTransition(() => setCreating(true))} style={{ marginTop: 16 }}>Crear mi negocio</button>
+        {creating ? <CreationCinematic status="creating" planName="Elite" businessName="GymTop" firstName="Santiago" onEnter={() => {}} onBack={() => setCreating(false)} /> : null}
+      </div>
+    );
+  },
 };

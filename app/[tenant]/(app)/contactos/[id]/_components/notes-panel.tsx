@@ -1,127 +1,72 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
-import { Send } from "lucide-react";
-import { NLoader } from "@/components/atoms/n-loader";
+import { useState } from "react";
+import { Plus, StickyNote } from "lucide-react";
+import { buttonVariants } from "@/components/atoms/button-variants";
+import { EmptyState } from "@/components/molecules/empty-state";
 import type { Customer360Note } from "@/lib/core/tenancy/db";
 import { formatDateTime } from "@/lib/foundation/format";
-import { cn } from "@/lib/cn";
-import { NOTE_MAX_LENGTH } from "@/lib/business/customers/customer-notes";
-import { createCustomerNoteAction } from "../actions";
-import { buttonVariants } from "@/components/atoms/button-variants";
-import { labelClasses } from "@/components/atoms/input";
+import { cn } from "@/lib/utils";
+import NoteDialog from "./note-dialog";
 
-const INITIAL_STATE = { status: "idle" as const };
+const cta = cn(buttonVariants({ variant: "accent" }), "h-11 rounded-full px-6 text-sm font-semibold");
 
 /**
- * Pestaña Notas: formulario vía Server Action (`useActionState`) + lista
- * de notas existentes. El cliente nunca muta de forma directa.
- *
- * El textarea es NO controlado: tras `ok` se resetea por DOM (external
- * system) en un efecto, sin setState síncrono (evita cascadas de render).
+ * Pestaña Notas: cuántas hay, el botón «Nueva nota» (abre el modal) y las notas como tarjetas suaves, de la más nueva a la más vieja. Sin
+ * notas, un estado vacío centrado que invita a escribir la primera.
  */
-export default function NotesPanel({
-  tenantSlug,
-  customerId,
-  initialNotes,
-}: {
-  tenantSlug: string;
-  customerId: string;
-  initialNotes: Customer360Note[];
-}) {
-  const [state, formAction, isPending] = useActionState(
-    createCustomerNoteAction,
-    INITIAL_STATE,
-  );
-  const formRef = useRef<HTMLFormElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+export default function NotesPanel({ tenantSlug, customerId, customerName, initialNotes }: { tenantSlug: string; customerId: string; customerName: string; initialNotes: Customer360Note[] }) {
+  const [open, setOpen] = useState(false);
+  const dialog = <NoteDialog open={open} onOpenChange={setOpen} tenantSlug={tenantSlug} customerId={customerId} customerName={customerName} />;
 
-  // Al confirmar el guardado, limpia el textarea y devuelve el foco.
-  useEffect(() => {
-    if (state.status === "ok") {
-      formRef.current?.reset();
-      textareaRef.current?.focus();
-    }
-  }, [state.status]);
-
-  return (
-    <div className="grid gap-6 lg:grid-cols-3">
-      <form ref={formRef} action={formAction} className="space-y-3 lg:col-span-1">
-        <input type="hidden" name="tenantSlug" value={tenantSlug} />
-        <input type="hidden" name="customerId" value={customerId} />
-
-        <label
-          htmlFor="note-content"
-          className={labelClasses}
-        >
-          Nueva nota
-        </label>
-        <textarea
-          ref={textareaRef}
-          id="note-content"
-          name="content"
-          rows={4}
-          maxLength={NOTE_MAX_LENGTH}
-          placeholder="Observación interna sobre este cliente…"
-          className="w-full rounded-lg border border-input bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-gold-500 focus:outline-none focus:ring-2 focus:ring-gold-600/20"
+  if (initialNotes.length === 0) {
+    return (
+      <>
+        <EmptyState
+          remember={false}
+          mark="center"
+          icon={<StickyNote />}
+          title="Aún no hay notas"
+          description={`Anota lo que debe recordar tu equipo sobre ${customerName.trim().split(/\s+/)[0]}: gustos, acuerdos o avisos.`}
+          action={
+            <button type="button" onClick={() => setOpen(true)} className={cta}>
+              <Plus aria-hidden="true" className="size-4" />
+              Escribir primera nota
+            </button>
+          }
         />
-        <div className="flex items-center justify-between gap-3">
-          <p
-            className={cn(
-              "text-xs",
-              state.status === "error" ? "text-destructive" : "text-muted-foreground",
-            )}
-            aria-live="polite"
-          >
-            {isPending
-              ? "Guardando…"
-              : state.status === "ok"
-                ? state.message
-                : state.status === "error"
-                  ? state.message
-                  : `Máximo ${NOTE_MAX_LENGTH} caracteres`}
-          </p>
-          <button
-            type="submit"
-            disabled={isPending}
-            className={`${buttonVariants()} shrink-0`}
-          >
-            {isPending ? (
-              <NLoader size={16} className="text-current" />
-            ) : (
-              <Send aria-hidden="true" className="h-4 w-4" />
-            )}
-            Guardar nota
-          </button>
-        </div>
-      </form>
-
-      <div className="space-y-3 lg:col-span-2">
-        {initialNotes.length === 0 ? (
-          <div className="rounded-lg border border-border bg-card p-8 text-center text-sm text-muted-foreground">
-            Todavía no hay notas sobre este cliente.
-          </div>
-        ) : (
-          initialNotes.map((note) => (
-            <article
-              key={note.id}
-              className="rounded-lg border border-border bg-card p-4"
-            >
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-sm font-medium text-foreground">
-                  {note.authorName ?? "Equipo"}
-                </p>
-                <time className="text-xs text-muted-foreground">
-                  {formatDateTime(note.createdAt)}
-                </time>
-              </div>
-              <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">
-                {note.content}
-              </p>
-            </article>
-          ))
-        )}
+        {dialog}
+      </>
+    );
+  }
+  return (
+    <div className="grid gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-ui text-muted-foreground">
+          {initialNotes.length} {initialNotes.length === 1 ? "nota interna" : "notas internas"}
+        </p>
+        <button type="button" onClick={() => setOpen(true)} className={cta}>
+          <Plus aria-hidden="true" className="size-4" />
+          Nueva nota
+        </button>
       </div>
+      <ul className="grid gap-2.5">
+        {initialNotes.map((note) => (
+          <li key={note.id} className="grid gap-2 rounded-3xl bg-surface-muted/60 p-5">
+            <div className="flex items-center justify-between gap-3">
+              <p className="flex items-center gap-2.5 text-ui font-medium text-foreground">
+                <span aria-hidden="true" className="grid size-8 place-items-center rounded-full bg-card text-xs font-semibold text-accent-text">
+                  {(note.authorName ?? "Equipo").trim().charAt(0).toUpperCase()}
+                </span>
+                {note.authorName ?? "Equipo"}
+              </p>
+              <time className="text-xs text-muted-foreground">{formatDateTime(note.createdAt)}</time>
+            </div>
+            <p className="whitespace-pre-wrap text-ui leading-relaxed text-foreground/85">{note.content}</p>
+          </li>
+        ))}
+      </ul>
+      {dialog}
     </div>
   );
 }

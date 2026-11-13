@@ -49,16 +49,17 @@ export function ForgetEmptyOnNavigate() {
 function fit(el: HTMLElement) {
   const main = el.closest("main");
   const pad = main ? Number.parseFloat(getComputedStyle(main).paddingBottom) || 0 : 0;
-  const top = el.getBoundingClientRect().top + window.scrollY;
   el.style.marginBottom = pad > 0 ? `-${pad}px` : "";
-  let height = Math.max(320, Math.floor(window.innerHeight - top));
-  el.style.minHeight = `${height}px`;
-  // Si algo más (un borde, una tarjeta que lo envuelve, una nota debajo) aún deja scroll, se encoge lo que sobra.
+  // Con el panel del negocio (PC) el alto disponible llega hasta el borde inferior de ESE panel, no de la ventana: medido contra la ventana,
+  // el marco se pasaba por el margen del panel y dejaba scroll.
+  const scroller = el.closest<HTMLElement>("[data-scroll-panel]");
+  const bottom = scroller ? scroller.getBoundingClientRect().bottom : window.innerHeight;
+  const top = el.getBoundingClientRect().top;
+  el.style.minHeight = `${Math.max(320, Math.floor(bottom - top))}px`;
+  if (scroller) return;
+  // Sin panel (móvil, fuera del armazón): si algo más aún deja scroll en la ventana, se encoge lo que sobra.
   const overflow = document.documentElement.scrollHeight - window.innerHeight;
-  if (overflow > 0) {
-    height = Math.max(320, height - overflow);
-    el.style.minHeight = `${height}px`;
-  }
+  if (overflow > 0) el.style.minHeight = `${Math.max(320, Math.floor(bottom - top) - overflow)}px`;
 }
 
 /**

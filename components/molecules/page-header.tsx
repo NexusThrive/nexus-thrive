@@ -22,7 +22,7 @@ export function Eyebrow({ children, className }: { children: ReactNode; classNam
 }
 
 /**
- * Encabezado de página: antetítulo, título Montserrat 700 (22→28 px según
+ * Encabezado de página: antetítulo, título Montserrat 500 (22→28 px según
  * ancho), descripción y acciones alineadas abajo a la derecha (debajo en
  * móvil). `title` admite un RevealText para la entrada letra por letra.
  */
@@ -46,7 +46,7 @@ export function PageHeader({
     <header className={cn("mb-3 flex flex-wrap sm:mb-4 items-end justify-between gap-x-4 gap-y-3", className)}>
       <div className="nx-rise min-w-0">
         {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
-        <h1 className="font-display text-[clamp(22px,3.4vw,28px)] font-bold leading-[1.15] tracking-[-0.02em] text-foreground">
+        <h1 className="font-display text-[clamp(22px,3.4vw,28px)] font-medium leading-[1.15] tracking-[-0.02em] text-foreground">
           {title}
         </h1>
         {description ? <p className={cn("mt-1 max-w-[62ch] text-sm text-muted-foreground", descriptionClassName)}>{description}</p> : null}
@@ -75,7 +75,7 @@ export function SectionTitle({
 }) {
   return (
     <div className={cn("mb-3 mt-[26px] flex items-center justify-between gap-2.5", className)}>
-      <h2 className="font-display text-[17px] font-semibold text-foreground">{title}</h2>
+      <h2 className="font-display text-[17px] font-medium text-foreground">{title}</h2>
       {action}
     </div>
   );

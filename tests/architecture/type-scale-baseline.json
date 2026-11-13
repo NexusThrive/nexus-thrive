@@ -50,7 +50,7 @@
   "components/atoms/avatar.tsx": 1,
   "components/molecules/auth-mode-switch.tsx": 1,
   "components/molecules/auth-mount-fallback.tsx": 1,
-  "components/molecules/charts/chart-widget.tsx": 1,
+  "components/widgets/charts/chart-widget.tsx": 1,
   "components/molecules/date-input.tsx": 1,
   "components/molecules/month-calendar.tsx": 1,
   "components/molecules/page-header.tsx": 1,

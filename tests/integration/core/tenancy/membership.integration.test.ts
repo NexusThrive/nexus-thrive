@@ -95,7 +95,9 @@ describe.skipIf(!enabled)("membresía al entrar a un negocio (integración)", ()
   // SEC-06: una ruta solo se sirve con un módulo activo que la habilite.
   test("las rutas de módulos apagados no se sirven", async () => {
     expect(await isRouteEnabled(tenantId, "/contactos/123")).toBe(true);
-    expect(await isRouteEnabled(tenantId, "/finanzas")).toBe(true); // la abre Pagos
+    // Cobros tiene su propia página y la abre Pagos; el panorama de `/finanzas` es de Finanzas (un negocio con solo Pagos no lo abre).
+    expect(await isRouteEnabled(tenantId, "/finanzas/cobros")).toBe(true);
+    expect(await isRouteEnabled(tenantId, "/finanzas")).toBe(false);
     expect(await isRouteEnabled(tenantId, "/proyectos")).toBe(false);
     expect(await isRouteEnabled(tenantId, "/memberships")).toBe(false);
     expect(await isRouteEnabled(tenantId, "/settings")).toBe(true);

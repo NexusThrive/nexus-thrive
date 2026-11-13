@@ -8,7 +8,29 @@
   background: var(--background);
   color: var(--foreground);
 }
-/* Nexus Workspace: sin barra lateral fija. La navegación vive en la barra superior (launcher) y en la fila contextual. */
+/* Ancho de la barra lateral: riel de 88 px en tableta, completa (248 px) desde 1024 px y riel de 76 px si la persona la contrae. */
+@media (min-width: 768px) {
+  .root {
+    --sw: 88px;
+    background: var(--surface-muted);
+  }
+}
+@media (min-width: 1024px) {
+  .root {
+    --sw: 248px;
+  }
+  :global(html[data-rail]) .root {
+    --sw: 76px;
+  }
+}
+/* Pantalla completa (punto de venta): sin barra lateral. */
+:global(html[data-kiosk]) .root {
+  --sw: 0px;
+  background: var(--background);
+}
+:global(html[data-kiosk]) [data-tour="nav"] {
+  display: none;
+}
 
 .main {
   min-width: 0;
@@ -16,6 +38,58 @@
   padding-top: calc(var(--topbar-height) + env(safe-area-inset-top, 0px));
   margin-left: var(--sw);
   transition: margin-left var(--d3) var(--nx-ease-out);
+}
+
+/* El contenido flota en un panel blanco con esquinas redondeadas sobre el gris del marco (sin líneas que lo separen de la barra lateral).
+   En PC el scroll es del panel: la barra lateral y la superior no se mueven. Dentro del panel la barra superior no ocupa espacio
+   (`--topbar-height: 0`), así lo pegajoso (cabeceras de tabla, índices) se ancla al borde del panel. */
+@media (min-width: 768px) {
+  .root {
+    height: 100dvh;
+    overflow: hidden;
+  }
+  .main {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+  }
+  .panel {
+    --topbar-height: 0px;
+    flex: 1 1 auto;
+    min-height: 0;
+    margin: 0 12px 12px 0;
+    /* Contiene a los elementos absolutos del contenido (campos ocultos, avisos): sin esto se posicionaban respecto a la página y alargaban el `html`. */
+    position: relative;
+    /* Las cuatro esquinas siempre redondas. El ítem activo de la barra lateral se une al tramo recto del borde izquierdo (ver app-sidebar.module.css). */
+    border-radius: 28px;
+    background: var(--card);
+    overflow-x: clip;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    /* El desplazamiento lo lleva `SmoothScroll` por tiempo: sin anclaje del navegador, que lo reajustaba por su cuenta y producía saltos. */
+    overflow-anchor: none;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+  }
+  .panel > .view {
+    min-height: 100%;
+  }
+  /* Pantalla completa (punto de venta): vuelve el scroll de la ventana. */
+  :global(html[data-kiosk]) .root {
+    height: auto;
+    overflow: visible;
+  }
+  :global(html[data-kiosk]) .main {
+    display: block;
+    height: auto;
+  }
+  :global(html[data-kiosk]) .panel {
+    --topbar-height: 60px;
+    margin: 0;
+    border-radius: 0;
+    background: none;
+    overflow: visible;
+  }
 }
 
 .view {
@@ -38,6 +112,12 @@
   max-width: none;
   padding-inline: 0;
   padding-top: 0;
+}
+/* En PC el panel ya trae su margen: una vista a todo el ancho que cabe en pantalla no debe dejar scroll por un relleno de más. */
+@media (min-width: 768px) {
+  .view:has([data-bleed]) {
+    padding-bottom: 0;
+  }
 }
 @media (min-width: 1024px) {
   .view {

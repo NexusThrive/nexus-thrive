@@ -12,8 +12,12 @@ body {
   font-family: var(--font-sans);
   font-size: var(--text-base);
   line-height: var(--lh-base);
+  /* Letra suave en toda la app: suavizado en gris (Chrome, Safari y Firefox en Mac), kerning y sin negritas ni cursivas falsas. */
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  font-kerning: normal;
+  font-synthesis: none;
 }
 
 /* Cifras tabulares: imprescindible en finanzas, caja menor y presupuestos */
@@ -22,12 +26,12 @@ table, .tabular, input[type="number"] { font-variant-numeric: tabular-nums; }
 /* --- Títulos: Montserrat, en minúsculas normales (sentence case) --- */
 h1, h2, h3, h4, .font-display {
   font-family: var(--font-display);
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-weight: 500;
+  letter-spacing: -0.015em;
   margin: 0;
   text-wrap: balance;
 }
-h1 { font-size: var(--text-4xl); line-height: var(--lh-4xl); font-weight: 700; }
+h1 { font-size: var(--text-4xl); line-height: var(--lh-4xl); font-weight: 500; }
 h2 { font-size: var(--text-3xl); line-height: var(--lh-3xl); }
 h3 { font-size: var(--text-2xl); line-height: var(--lh-2xl); }
 h4 { font-size: var(--text-xl);  line-height: var(--lh-xl); }
@@ -141,4 +145,44 @@ code, kbd, pre { font-family: var(--font-mono); font-size: 0.9em; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
+
+/* --- Casillas nativas (`<input type="checkbox">`): mismas esquinas suaves y relleno de oro que el componente `Checkbox`.
+   El tamaño por defecto va con `:where` (especificidad cero): cualquier clase `size-*` lo reemplaza. --- */
+:where(input[type="checkbox"]) {
+  inline-size: 1.125rem;
+  block-size: 1.125rem;
+}
+input[type="checkbox"] {
+  -webkit-appearance: none;
+  appearance: none;
+  display: inline-grid;
+  flex: none;
+  place-content: center;
+  margin: 0;
+  vertical-align: middle;
+  cursor: pointer;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 30%;
+  background-color: var(--card);
+  transition: background-color 200ms var(--ease, ease), border-color 200ms var(--ease, ease);
+}
+input[type="checkbox"]::after {
+  content: "";
+  inline-size: 55%;
+  block-size: 28%;
+  border: solid var(--nx-ink);
+  border-width: 0 0 2px 2px;
+  transform: translateY(-10%) rotate(-45deg) scale(0);
+  transition: transform 220ms var(--nx-ease-out, ease-out);
+}
+input[type="checkbox"]:hover:not(:disabled) { border-color: var(--border-input-hover, var(--border-strong)); }
+input[type="checkbox"]:checked,
+input[type="checkbox"]:indeterminate { background-color: var(--accent); border-color: var(--accent); }
+input[type="checkbox"]:checked::after { transform: translateY(-10%) rotate(-45deg) scale(1); }
+input[type="checkbox"]:indeterminate::after { border-width: 0 0 2px 0; inline-size: 50%; block-size: 0; transform: scale(1); }
+input[type="checkbox"]:focus-visible { border-radius: 30%; }
+input[type="checkbox"]:disabled { cursor: not-allowed; opacity: 0.5; }
+@media (prefers-reduced-motion: reduce) {
+  input[type="checkbox"], input[type="checkbox"]::after { transition: none; }
 }

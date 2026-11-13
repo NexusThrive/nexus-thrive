@@ -1,159 +1,189 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowUpRight, CalendarDays, CircleDollarSign } from "lucide-react";
-import { N_PATH } from "@nexus/brand/BrandLogo";
 import { CountUp } from "@/components/atoms/count-up";
+import { EyeTracker, type EyeMood } from "@/components/atoms/eye-tracker";
 import { IconTile } from "@/components/atoms/icon-tile";
-import { RevealText } from "@/components/atoms/reveal-text";
 import { Sparkline } from "@/components/atoms/sparkline";
-import { Wordmark } from "@/components/atoms/wordmark";
 import type { AuthMode } from "@/components/molecules/auth-mode-switch";
-import { Eyebrow } from "@/components/molecules/page-header";
-import { EASE_IN_OUT, motionOff } from "@/lib/experience/motion/index";
+import { motionOff } from "@/lib/experience/motion/index";
 import { cn } from "@/lib/utils";
 import styles from "./auth-brand-panel.module.css";
 
-const COPY: Record<AuthMode, { eyebrow: string; title: string; text: string }> = {
-  "sign-in": {
-    eyebrow: "Bienvenido de nuevo",
-    title: "Tu negocio te espera donde lo dejaste.",
-    text: "Clientes, agenda, finanzas y WhatsApp en un solo sistema operativo.",
-  },
-  "sign-up": {
-    eyebrow: "Empieza hoy",
-    title: "Crea tu negocio en NEXUS THRIVE.",
-    text: "Configura tu espacio en minutos y crece con orden desde el primer día.",
-  },
+/** Lo que AURI dice en cada paso, la cara que pone y qué tarjeta abre (si abre una). */
+type Step = { text: string; mood: EyeMood; open?: "income" | "payment" | "agenda" | "step1" | "step2" | "step3" };
+
+const SCRIPT: Record<AuthMode, Step[]> = {
+  "sign-in": [
+    { text: "¡Hola de nuevo! Qué bueno verte por aquí.", mood: "joy" },
+    { text: "Mira cómo va tu día hasta ahora…", mood: "curious", open: "income" },
+    { text: "¡Acaba de entrar un pago de Laura Gómez!", mood: "surprise", open: "payment" },
+    { text: "Y tienes 3 citas hoy. La primera es a las 10:30.", mood: "think", open: "agenda" },
+    { text: "Inicia sesión y seguimos justo donde lo dejaste.", mood: "wink" },
+  ],
+  "sign-up": [
+    { text: "¡Hola! Soy AURI y te ayudo a empezar.", mood: "joy" },
+    { text: "Primero, crea tu cuenta. Son 15 días gratis y sin tarjeta.", mood: "wink", open: "step1" },
+    { text: "Después agregas tu negocio y tus servicios.", mood: "curious", open: "step2" },
+    { text: "Y yo conecto tu WhatsApp para que empieces a vender.", mood: "surprise", open: "step3" },
+    { text: "¿Listo? Regístrate y arrancamos.", mood: "joy" },
+  ],
 };
 
-const STEPS = ["Crea tu cuenta", "Agrega tu negocio y servicios", "Conecta WhatsApp y empieza a vender"];
+const TYPE_MS = 28;
+const HOLD_MS = 1300;
 
 /**
- * Panel de marca del acceso (solo desde 1024 px): la N gigante en contorno con
- * un tramo oro que la recorre, el titular que entra letra por letra y una
- * vista previa del producto que cambia con el modo — ingresos que cuentan y
- * tarjetas flotando al iniciar sesión; los tres pasos que se marcan solos al
- * crear la cuenta.
+ * El guion de AURI: escribe cada frase letra a letra (hablando), pone su cara, y al terminar la frase abre la tarjeta que corresponde. Se
+ * reinicia al cambiar entre iniciar sesión y registrarse, y se queda en la última frase (sin repetirse en bucle). Con movimiento reducido
+ * muestra todo de una vez.
+ */
+function useAuriScript(mode: AuthMode) {
+  const steps = SCRIPT[mode];
+  const [state, setState] = useState({ mode, index: 0, typed: 0, done: false });
+  // Al cambiar de modo el guion vuelve al principio (se ajusta durante el render, sin efecto).
+  if (state.mode !== mode) setState({ mode, index: 0, typed: 0, done: false });
+
+  useEffect(() => {
+    let cancelled = false;
+    const timers: number[] = [];
+    const later = (fn: () => void, ms: number) => timers.push(window.setTimeout(() => !cancelled && fn(), ms));
+    if (motionOff()) {
+      // Movimiento reducido: todo de una vez, con la última frase a la vista.
+      later(() => setState({ mode, index: steps.length - 1, typed: steps.at(-1)!.text.length, done: true }), 0);
+      return () => {
+        cancelled = true;
+        timers.forEach(window.clearTimeout);
+      };
+    }
+    const play = (index: number) => {
+      const text = steps[index]!.text;
+      setState({ mode, index, typed: 0, done: false });
+      for (let k = 1; k <= text.length; k++) later(() => setState((s) => (s.mode === mode && s.index === index ? { ...s, typed: k } : s)), 350 + k * TYPE_MS);
+      const end = 350 + text.length * TYPE_MS;
+      later(() => setState((s) => (s.mode === mode && s.index === index ? { ...s, done: true } : s)), end);
+      if (index < steps.length - 1) later(() => play(index + 1), end + HOLD_MS);
+    };
+    play(0);
+    return () => {
+      cancelled = true;
+      timers.forEach(window.clearTimeout);
+    };
+  }, [mode, steps]);
+
+  const step = steps[Math.min(state.index, steps.length - 1)]!;
+  // Las tarjetas que ya se abrieron (cada una queda abierta cuando AURI termina la frase que la presenta).
+  const opened = new Set<string>();
+  steps.forEach((s, i) => {
+    if (s.open && (i < state.index || (i === state.index && state.typed >= 1))) opened.add(s.open);
+  });
+  return { text: step.text.slice(0, state.typed), mood: step.mood, speaking: !state.done, opened, index: state.index };
+}
+
+/**
+ * Panel de marca del acceso (solo desde 1024 px): AURI, grande y con vida, te habla según estés iniciando sesión o registrándote, cambia
+ * de cara con lo que dice y va abriendo las tarjetas de lo que verás dentro (ingresos, un pago, las citas; o los tres pasos para empezar).
  */
 export function AuthBrandPanel({ mode }: { mode: AuthMode }) {
-  const copy = COPY[mode];
-  const traceRef = useRef<SVGPathElement>(null);
-  const [checked, setChecked] = useState(0);
-
-  useEffect(() => {
-    const trace = traceRef.current;
-    if (!trace) return;
-    if (motionOff()) {
-      trace.style.strokeDasharray = "none";
-      return;
-    }
-    const up = mode === "sign-up";
-    trace.animate(
-      [
-        { strokeDasharray: "0 1", strokeDashoffset: up ? 0 : 0.5 },
-        { strokeDasharray: ".34 .66", strokeDashoffset: up ? -0.66 : -0.16 },
-      ],
-      { duration: 1600, easing: EASE_IN_OUT, fill: "forwards" },
-    );
-  }, [mode]);
-
-  useEffect(() => {
-    if (mode !== "sign-up") return;
-    const instant = motionOff();
-    const timers = STEPS.map((_, i) => window.setTimeout(() => setChecked(i + 1), instant ? 0 : 500 + i * 520));
-    return () => {
-      timers.forEach(window.clearTimeout);
-      setChecked(0);
-    };
-  }, [mode]);
+  const { text, mood, speaking, opened } = useAuriScript(mode);
+  const signIn = mode === "sign-in";
 
   return (
     <aside className={styles.panel} aria-label="NEXUS THRIVE">
-      <Wordmark size={30} />
-      <div className={styles.art} aria-hidden="true">
-        <svg viewBox="394.83 239.93 734.96 634.25">
-          <path className={styles.outline} d={N_PATH} />
-          <path ref={traceRef} className={styles.trace} pathLength={1} d={N_PATH} />
-        </svg>
-      </div>
+     {/* Un cuadro redondeado, despegado de las esquinas, con su propio fondo animado; adentro, AURI. */}
+     <div className={styles.frame}>
+      <span className={styles.fx} aria-hidden="true">
+        <i className={styles.blobA} />
+        <i className={styles.blobB} />
+        <i className={styles.dots} />
+      </span>
+      <h1 className="sr-only">{signIn ? "Bienvenido de nuevo a NEXUS THRIVE" : "Crea tu negocio en NEXUS THRIVE"}</h1>
 
-      <div className={styles.copy}>
-        <Eyebrow className="mb-0">
-          <RevealText key={`e-${mode}`} parts={[copy.eyebrow]} />
-        </Eyebrow>
-        <RevealText key={`t-${mode}`} as="h1" parts={[copy.title]} />
-        <p key={`p-${mode}`} className="nx-rise">{copy.text}</p>
-      </div>
+      <div className={styles.hero} aria-hidden="true">
+        <div className={styles.auri}>
+          <span className={styles.halo2} />
+          <span className={styles.halo1} />
+          <EyeTracker fit decorative poke={false} follow={60} size={152} shape="Ball" eyeScale={1.2} mood={mood} speaking={speaking} />
+        </div>
 
-      <div className={styles.stage} aria-hidden="true">
-        {mode === "sign-in" ? (
-          <div key="in" className={cn(styles.preview, styles.enter)}>
-            <div className={cn(styles.card, styles.float, "w-[78%]")}>
-              <div className="flex items-center gap-3">
-                <div className="min-w-0 flex-1 leading-tight">
-                  <small className="text-xs text-muted-foreground">Ingresos de hoy</small>
-                  <p className="font-display text-[26px] font-bold tabular-nums tracking-[-0.015em]">
-                    <CountUp value={2480000} duration={1100} format="cop" />
-                  </p>
+        <p className={styles.bubble}>
+          <span>{text}</span>
+          <span className={cn(styles.caret, !speaking && styles.caretIdle)} />
+        </p>
+
+        <div className={styles.cards}>
+          {signIn ? (
+            <>
+              {opened.has("income") ? (
+                <div key="income" className={cn(styles.card, styles.open)}>
+                  <div className="flex items-center gap-3">
+                    <div className="min-w-0 flex-1 leading-tight">
+                      <small className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <span className="size-1.5 rounded-full bg-success" />
+                        Ingresos de hoy
+                      </small>
+                      <p className="font-display text-[26px] font-semibold tabular-nums tracking-[-0.015em]">
+                        <CountUp value={2480000} duration={1100} format="cop" />
+                      </p>
+                    </div>
+                    <span className="inline-flex items-center gap-0.5 text-xs font-semibold text-success">
+                      <ArrowUpRight className="size-4" />
+                      12%
+                    </span>
+                  </div>
+                  <Sparkline values={[8, 12, 10, 20, 16, 26, 22, 32, 28, 36, 34]} color="var(--nx-gold-600)" className="mt-1.5 h-[38px]" />
                 </div>
-                <span className="inline-flex items-center gap-0.5 text-xs font-semibold text-success">
-                  <ArrowUpRight className="size-4" />
-                  12%
-                </span>
+              ) : null}
+              <div className={styles.row}>
+                {opened.has("payment") ? (
+                  <div key="payment" className={cn(styles.card, styles.open)}>
+                    <div className="flex items-center gap-3">
+                      <IconTile tone="success" size="sm"><CircleDollarSign /></IconTile>
+                      <div className="min-w-0 leading-tight">
+                        <b className="block font-semibold">Pago recibido</b>
+                        <small className="text-xs text-muted-foreground">Laura Gómez · $ 180.000</small>
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+                {opened.has("agenda") ? (
+                  <div key="agenda" className={cn(styles.card, styles.open)}>
+                    <div className="flex items-center gap-3">
+                      <IconTile tone="gold" size="sm"><CalendarDays /></IconTile>
+                      <div className="min-w-0 leading-tight">
+                        <b className="block font-semibold">3 citas hoy</b>
+                        <small className="text-xs text-muted-foreground">Próxima 10:30</small>
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
               </div>
-              <Sparkline values={[8, 12, 10, 20, 16, 26, 22, 32, 28, 36, 34]} color="var(--nx-gold-600)" className="mt-1.5 h-[42px]" />
-            </div>
-            <div className={cn(styles.card, styles.float, styles.float2, "ml-[22%] w-[72%]")}>
-              <div className="flex items-center gap-3">
-                <IconTile tone="success" size="sm"><CircleDollarSign /></IconTile>
-                <div className="min-w-0 leading-tight">
-                  <b className="block font-semibold">Pago recibido</b>
-                  <small className="text-xs text-muted-foreground">Laura Gómez · $ 180.000</small>
-                </div>
-              </div>
-            </div>
-            <div className={cn(styles.card, styles.float, styles.float3, "ml-[6%] w-[52%]")}>
-              <div className="flex items-center gap-3">
-                <IconTile tone="gold" size="sm"><CalendarDays /></IconTile>
-                <div className="min-w-0 leading-tight">
-                  <b className="block font-semibold">3 citas hoy</b>
-                  <small className="text-xs text-muted-foreground">Próxima 10:30</small>
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div key="up" className={cn(styles.preview, styles.enter)}>
-            <div className={cn(styles.card, styles.float, "w-[84%]")}>
+            </>
+          ) : (
+            <div className={cn(styles.card, opened.size > 0 && styles.open)} style={{ opacity: opened.size > 0 ? undefined : 0 }}>
               <small className="text-xs text-muted-foreground">Tu negocio en tres pasos</small>
               <ul className={styles.checks}>
-                {STEPS.map((step, i) => (
-                  <li key={step} data-on={i < checked ? "" : undefined}>
+                {[
+                  ["step1", "Crea tu cuenta"],
+                  ["step2", "Agrega tu negocio y servicios"],
+                  ["step3", "Conecta WhatsApp y empieza a vender"],
+                ].map(([key, label]) => (
+                  <li key={key} data-on={opened.has(key!) ? "" : undefined}>
                     <span className={styles.box}>
                       <svg viewBox="0 0 12 12"><path pathLength={20} d="M2.5 6.2l2.4 2.4 4.6-5" /></svg>
                     </span>
-                    {step}
+                    {label}
                   </li>
                 ))}
               </ul>
             </div>
-            <div className={cn(styles.float, styles.float2, "ml-[10%] flex flex-wrap items-center gap-1.5 text-[12.5px]")}>
-              {["Clientes", "Agenda", "Finanzas"].map((label, i) => (
-                <span key={label} className="inline-flex items-center gap-1.5 rounded-sm border border-border bg-surface px-2.5 py-1">
-                  <b className="font-mono text-[11px] font-semibold text-accent-text">0{i + 1}</b>
-                  {label}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
-      <div className="flex justify-between gap-3 text-xs text-muted-foreground">
-        <span>© {new Date().getFullYear()} NEXUS THRIVE</span>
-        <span>nexusthrive.com.co</span>
-      </div>
+      
+     </div>
     </aside>
   );
 }

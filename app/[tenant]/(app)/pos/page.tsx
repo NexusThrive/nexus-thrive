@@ -18,7 +18,7 @@ export default async function PosPage({ params }: { params: Promise<{ tenant: st
   const header = <PageHeader title="Punto de venta" description="Abre tu turno, vende y cierra con arqueo." />;
   if (!can(ctx.role, "money.handle")) {
     return (
-      <div className="grid gap-5">
+      <div data-bleed="" className="grid gap-5 px-6 pb-8 pt-6">
         {header}
         <PermissionNotice permission="money.handle" action="usar el punto de venta" />
       </div>
@@ -33,7 +33,7 @@ export default async function PosPage({ params }: { params: Promise<{ tenant: st
     offeredPaymentMethods(ctx.tenantId),
   ]);
   return (
-    <div className="grid gap-5">
+    <div data-bleed={turn ? undefined : ""} className={turn ? "grid gap-5" : "grid gap-5 px-6 pb-8 pt-6"}>
       {/* Con el turno abierto no hay encabezado de página: la barra de la venta ya dice la caja, quién atiende y la hora. */}
       {turn ? null : header}
       <PosView

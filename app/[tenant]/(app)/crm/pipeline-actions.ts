@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { can } from "@/lib/core/auth/permissions";
 import { logTenantAction } from "@/lib/core/tenancy/audit";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
-import { OPPORTUNITY_FILE, searchCustomersForPicker } from "@/lib/business/growth/pipeline-read";
+import { OPPORTUNITY_FILE, getOpportunityDetail, searchCustomersForPicker, type OpportunityDetail } from "@/lib/business/growth/pipeline-read";
 import { addAttachment, checkAttachment } from "@/lib/business/sales/finance-db";
 import { addOpportunityFileEvent } from "@/lib/business/growth/pipeline-db";
 import {
@@ -51,6 +51,15 @@ export async function quickCreateAction(slug: string, input: QuickInput): Promis
   await logTenantAction(ctx, "BIZ_OPPORTUNITY", { action: "create_opportunity", id: r.id });
   refresh(slug);
   return { ok: true, id: r.id, message: "Oportunidad creada" };
+}
+
+/** Detalle de una oportunidad para el panel lateral del tablero (solo lectura): se busca por `tenantId`, nunca por el identificador solo. */
+export async function previewOpportunityAction(slug: string, id: string): Promise<PipelineResult<{ detail: OpportunityDetail }>> {
+  const ctx = await requireTenantContext(slug, "/crm");
+  if (!ctx) return NO_ACCESS;
+  const detail = await getOpportunityDetail(ctx.tenantId, id);
+  if (!detail) return { ok: false, message: "La oportunidad ya no existe." };
+  return { ok: true, detail };
 }
 
 export async function moveStageAction(slug: string, id: string, stageId: string): Promise<PipelineResult<{ orderId?: string | null }>> {

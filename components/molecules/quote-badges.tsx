@@ -29,7 +29,7 @@ const CATEGORY_VARIANTS: Record<
   SUBCONTRATO: "secondary",
 };
 
-/** Badge de estado de presupuesto: punto cuadrado + texto en tinta. */
+/** Badge de estado de presupuesto: glifo de estado (`StatusDot`) + texto en tinta. */
 export function QuoteStatusBadge({
   status,
 }: {

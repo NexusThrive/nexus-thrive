@@ -52,6 +52,16 @@
   scrollbar-width: thin;
   scrollbar-color: var(--sidebar-border) transparent;
 }
+/* Hay más menú arriba o abajo: ese borde se difumina (la señal es visual, sin barra ni flecha). */
+.nav[data-more="down"] {
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 44px), transparent);
+}
+.nav[data-more="up"] {
+  mask-image: linear-gradient(to bottom, transparent, #000 44px);
+}
+.nav[data-more="both"] {
+  mask-image: linear-gradient(to bottom, transparent, #000 44px, #000 calc(100% - 44px), transparent);
+}
 .groupItems {
   display: flex;
   flex-direction: column;
@@ -86,6 +96,13 @@
 .link:focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: -2px;
+}
+/* Un nombre largo nunca pasa del borde de su ítem: se recorta con «…» (el nombre completo sigue siendo el del enlace). */
+.link .label {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .link svg {
   width: 18px;
@@ -389,5 +406,237 @@
 @media (pointer: coarse) {
   .groupRow {
     min-height: 44px;
+  }
+}
+
+
+/* Variante «workspace» (el negocio): gris claro sin líneas, bloque del negocio arriba y píldora blanca en el ítem activo. La separación con el
+   contenido la hace el panel blanco que flota a su derecha (ver tenant-shell.module.css), no un borde. */
+.biz,
+.bizToggle {
+  display: none;
+}
+@media (min-width: 768px) {
+  .side[data-variant="workspace"] {
+    --sidebar-bg: var(--surface-muted);
+    --sidebar-fg: var(--foreground);
+    --sidebar-fg-muted: var(--foreground-muted);
+    /* El blanco puro es de la selección (y del panel): el hover es un tono a medio camino para que no se funda con el ítem activo. */
+    --sidebar-hover: color-mix(in srgb, var(--card) 55%, var(--surface-muted));
+    --sidebar-active: var(--card);
+    inset: 0 auto 0 0;
+    /* Una capa por encima de la barra superior: al abrirse el vistazo (riel) la barra lateral ensancha por encima de ella, no por debajo. */
+    z-index: calc(var(--z-topbar) + 1);
+    border-right: 0;
+    padding-top: calc(12px + env(safe-area-inset-top, 0px));
+  }
+  .side[data-variant="workspace"] .biz {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    padding: 8px;
+    border-radius: 12px;
+    background: var(--card);
+  }
+  .bizMark {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--surface-muted);
+    color: var(--foreground);
+  }
+  .bizMark svg {
+    width: 20px;
+    height: auto;
+  }
+  .bizText {
+    min-width: 0;
+    flex: 1;
+    line-height: 1.2;
+    overflow: hidden;
+  }
+  .bizText strong,
+  .bizText small {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .bizText strong {
+    font: 600 14px var(--font-sans);
+    color: var(--foreground);
+  }
+  .bizText small {
+    font: 400 11px var(--font-sans);
+    color: var(--foreground-muted);
+  }
+  /* Ítems más altos (48 px) con su selección igual de alta, y un poco más de aire entre ellos. */
+  .side[data-variant="workspace"] .link,
+  .side[data-variant="workspace"] .groupRow {
+    border-radius: 12px;
+  }
+  .side[data-variant="workspace"] .link {
+    height: 48px;
+  }
+  /* El hover ocupa lo mismo que la selección: llega hasta el borde del panel (como el indicador del ítem activo), con la esquina
+     izquierda redonda y el lado derecho recto. Antes pintaba solo el ancho del enlace y, al seleccionarlo, «crecía» de golpe. El fondo
+     va en un pseudoelemento detrás del contenido; el ítem activo conserva su indicador y no lo lleva. */
+  .side[data-variant="workspace"] .link,
+  .side[data-variant="workspace"] .groupRow {
+    position: relative;
+    isolation: isolate;
+  }
+  .side[data-variant="workspace"] .link:hover,
+  .side[data-variant="workspace"] .groupRow:hover {
+    background: none;
+  }
+  .side[data-variant="workspace"] .link::before,
+  .side[data-variant="workspace"] .groupRow::before {
+    content: "";
+    position: absolute;
+    inset: 0 calc(var(--pad) * -1) 0 0;
+    z-index: -1;
+    border-radius: 12px 0 0 12px;
+    background: transparent;
+    transition: background var(--d2);
+    pointer-events: none;
+  }
+  .side[data-variant="workspace"] .link:not([aria-current="page"]):hover::before,
+  .side[data-variant="workspace"] .groupRow:hover::before {
+    background: var(--sidebar-hover);
+  }
+  .side[data-variant="workspace"] .groupRow {
+    min-height: 48px;
+  }
+  .side[data-variant="workspace"] .indicator {
+    height: 48px;
+    border-radius: 12px 0 0 12px;
+  }
+  .side[data-variant="workspace"] .nav,
+  .side[data-variant="workspace"] .pinned,
+  .side[data-variant="workspace"] .groupItems {
+    gap: 4px;
+  }
+  /* El ítem activo se une al panel de su derecha: la píldora llega hasta el borde de la barra (donde empieza el panel blanco), con la
+     esquina izquierda redonda y el lado derecho recto; arriba y abajo, dos curvas cóncavas la funden con el panel. Es el mismo elemento
+     que se desliza al cambiar de sección (`.indicator`), así que la conexión viaja con la selección. */
+  .side[data-variant="workspace"] {
+    --pad: 12px;
+    --join: 12px;
+    --corner: 28px; /* radio del panel (tenant-shell.module.css): la unión debe caer en su tramo recto */
+    /* Aire abajo para que el último ítem no quede sobre la curva inferior del panel (que sube 12 px del borde y se curva 28 px). */
+    padding-bottom: calc(var(--corner) + 12px + env(safe-area-inset-bottom, 0px));
+  }
+  .side[data-variant="workspace"][data-peek] {
+    --pad: 14px;
+  }
+  .side[data-variant="workspace"] .nav,
+  .side[data-variant="workspace"] .pinned {
+    margin-right: calc(var(--pad) * -1);
+    padding: var(--join) var(--pad) var(--join) 0;
+  }
+  /* El primer ítem arranca debajo de la curva superior del panel: así su unión cae sobre el borde recto, no sobre la esquina. */
+  .side[data-variant="workspace"] .biz {
+    margin-bottom: calc(var(--corner) + 8px);
+  }
+  /* Con grupos abiertos el menú se desplaza: sin barra de scroll visible, que robaba ancho justo donde el ítem activo se une al panel y
+     deformaba la «burbuja». El desplazamiento sigue funcionando con rueda, trackpad, táctil y teclado. */
+  .side[data-variant="workspace"] .nav {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .side[data-variant="workspace"] .nav::-webkit-scrollbar {
+    display: none;
+  }
+  .side[data-variant="workspace"] .foot {
+    margin-top: 0;
+  }
+  .side[data-variant="workspace"] .indicator {
+    border-radius: 12px 0 0 12px;
+    left: 0;
+    right: 0;
+    background: var(--card);
+  }
+  .side[data-variant="workspace"] .indicator::before,
+  .side[data-variant="workspace"] .indicator::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    left: auto;
+    width: var(--join);
+    height: var(--join);
+    background: none;
+  }
+  .side[data-variant="workspace"] .indicator::before {
+    top: calc(var(--join) * -1);
+    bottom: auto;
+    background: radial-gradient(circle at 0 0, transparent calc(var(--join) - 0.5px), var(--card) var(--join));
+  }
+  .side[data-variant="workspace"] .indicator::after {
+    top: 100%;
+    background: radial-gradient(circle at 0 100%, transparent calc(var(--join) - 0.5px), var(--card) var(--join));
+  }
+  .side[data-variant="workspace"] .link[aria-current="page"] {
+    font-weight: 500;
+  }
+  @media (max-width: 1023.98px) {
+    .side[data-variant="workspace"] .link,
+    .side[data-variant="workspace"] .indicator {
+      height: 58px;
+    }
+  }
+  .side[data-variant="workspace"] .foot {
+    border-top: 0;
+    padding-top: 0;
+  }
+  .side[data-variant="workspace"] .foot .collapse {
+    display: none;
+  }
+  :global(html[data-rail]) .side[data-variant="workspace"] .foot .collapse {
+    display: flex;
+  }
+  .side[data-variant="workspace"] .groupLabel {
+    font: 500 12px var(--font-sans);
+    letter-spacing: 0;
+    text-transform: none;
+  }
+}
+@media (min-width: 1024px) {
+  :global(html:not([data-rail])) .side[data-variant="workspace"] .biz {
+    justify-content: flex-start;
+  }
+  /* Barra completa: 14 px de relleno a la derecha (no 12 como en el riel); el indicador debe cubrirlo entero para tocar el panel. */
+  :global(html:not([data-rail])) .side[data-variant="workspace"] {
+    --pad: 14px;
+  }
+  /* Con la barra completa el vistazo no la ensancha: sin sombra, que dibujaba una línea entre el ítem unido y el panel. */
+  :global(html:not([data-rail])) .side[data-variant="workspace"][data-peek] {
+    box-shadow: none;
+  }
+  :global(html:not([data-rail])) .side[data-variant="workspace"] .bizToggle {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: none;
+    color: var(--foreground-muted);
+    cursor: pointer;
+  }
+  :global(html:not([data-rail])) .side[data-variant="workspace"] .bizToggle:hover {
+    background: var(--surface-muted);
+    color: var(--foreground);
+  }
+  .side[data-variant="workspace"] .bizToggle:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
   }
 }

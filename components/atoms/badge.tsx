@@ -5,13 +5,13 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 /**
- * Badge NEXUS THRIVE: radio 2 px, padding 2px 8px, Inter 500 12 px, fondo
- * `--surface-muted` y borde. Los estados llevan un punto cuadrado de 6 px
- * (`tone`) en lugar de una píldora de color; `pulse` lo hace latir (avisos
+ * Badge NEXUS THRIVE: píldora (`rounded-full`), padding 2px 10px, Inter 500 12 px, fondo
+ * `--surface-muted` y borde. Los estados llevan un glifo de 10 px (`tone`: ✓ × ! ● –) junto
+ * al texto, para no depender solo del color; `pulse` lo hace latir (avisos
  * que esperan acción). `gold` es para avisos y `solid` para destacar.
  */
 const badgeVariants = cva(
-  "inline-flex w-fit shrink-0 items-center gap-1.5 whitespace-nowrap rounded-sm border px-2 py-0.5 text-xs/[18px] font-medium",
+  "inline-flex w-fit shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-0.5 text-xs/[18px] font-medium",
   {
     variants: {
       variant: {

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Package, Repeat, Undo2 } from "lucide-react";
+import { buttonVariants } from "@/components/atoms/button-variants";
 import { EmptyState } from "@/components/molecules/empty-state";
+import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/lib/foundation/format";
 import type { CustomerPurchases } from "@/lib/business/customers/purchases-db";
 
@@ -12,10 +14,11 @@ export default function PurchasesPanel({ purchases, saleHref }: { purchases: Cus
     return (
       <EmptyState
         remember={false}
+        mark="center"
         title="Aún no ha comprado"
         description="Cuando compre en el punto de venta o en un pedido, aquí verás qué productos lleva, cada cuánto vuelve y qué ofrecerle."
         icon={<Package />}
-        action={saleHref ? <Link href={saleHref} className="inline-flex h-[34px] items-center rounded-lg border border-border px-3 text-ui font-medium hover:bg-surface-muted">Crear primera venta</Link> : undefined}
+        action={saleHref ? <Link href={saleHref} className={cn(buttonVariants({ variant: "accent" }), "h-11 rounded-full px-6")}>Crear primera venta</Link> : undefined}
       />
     );
   }

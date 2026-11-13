@@ -103,6 +103,13 @@ function Toast({ item, onGone }: { item: ToastItem; onGone: (id: number) => void
   const ref = React.useRef<HTMLDivElement>(null);
   const barRef = React.useRef<HTMLElement>(null);
   const gone = React.useRef(false);
+  /** Hubo arrastre: el clic que lo sigue no cierra el aviso. */
+  const dragged = React.useRef(false);
+  /** Un toque sobre el aviso lo cierra (los botones y enlaces hacen lo suyo). */
+  const tapClose = (e: React.MouseEvent) => {
+    if (dragged.current || (e.target as Element).closest("button,a")) return;
+    dismiss();
+  };
   const { icon: Icon, tone } = ICONS[item.variant];
 
   const dismiss = React.useCallback(
@@ -169,11 +176,13 @@ function Toast({ item, onGone }: { item: ToastItem; onGone: (id: number) => void
       if ((e.target as Element).closest("button")) return;
       x0 = e.clientX;
       dx = 0;
+      dragged.current = false;
       el.setPointerCapture?.(e.pointerId);
     };
     const move = (e: PointerEvent) => {
       if (x0 == null) return;
       dx = e.clientX - x0;
+      if (Math.abs(dx) > 6) dragged.current = true;
       el.style.transform = `translateX(${dx}px)`;
       el.style.opacity = String(1 - Math.min(0.7, Math.abs(dx) / 260));
     };
@@ -220,9 +229,9 @@ function Toast({ item, onGone }: { item: ToastItem; onGone: (id: number) => void
   if (item.receipt) {
     const r = item.receipt;
     return (
-      <div ref={ref} className="pointer-events-auto relative touch-pan-y overflow-hidden rounded-lg border border-border bg-surface text-ui shadow-[var(--nx-shadow-overlay)]">
-        <div className="flex items-center gap-2.5 px-3.5 pb-2.5 pt-3">
-          <IconTile tone="success" className="size-[26px] [&_svg]:size-4">
+      <div ref={ref} onClick={tapClose} className="pointer-events-auto relative cursor-pointer touch-pan-y overflow-hidden rounded-3xl border border-border/60 bg-surface text-ui shadow-[var(--nx-shadow-overlay)]">
+        <div className="flex items-center gap-3 px-4 pb-3 pt-3.5">
+          <IconTile tone="success" className="size-9 rounded-full [&_svg]:size-[18px]">
             <ReceiptText />
           </IconTile>
           <p className="min-w-0 flex-1 font-semibold text-foreground">{item.title}</p>
@@ -230,13 +239,13 @@ function Toast({ item, onGone }: { item: ToastItem; onGone: (id: number) => void
             type="button"
             aria-label="Cerrar comprobante"
             onClick={() => dismiss()}
-            className="-m-1 shrink-0 rounded p-1 text-muted-foreground transition-colors hover:bg-surface-muted hover:text-foreground"
+            className="grid size-8 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-surface-muted hover:text-foreground"
           >
             <X aria-hidden="true" className="size-3.5" />
           </button>
         </div>
         {/* El recibo: corte punteado, total grande, concepto y cliente, número. */}
-        <div className="mx-3.5 grid gap-1 border-t border-dashed border-border pb-3 pt-2.5">
+        <div className="mx-4 grid gap-1 border-t border-dashed border-border/60 pb-4 pt-3">
           <p className="text-2xl font-semibold tracking-tight text-foreground tabular-nums">{r.total}</p>
           <p className="truncate text-xs text-muted-foreground">
             {r.concept} · {r.client}
@@ -244,7 +253,7 @@ function Toast({ item, onGone }: { item: ToastItem; onGone: (id: number) => void
           <p className="text-2xs font-medium uppercase tracking-[0.08em] text-muted-foreground">Recibo {r.reference}</p>
         </div>
         {item.actions?.length ? (
-          <div className="flex justify-end gap-1 border-t border-border px-2.5 py-1.5">
+          <div className="flex justify-end gap-1 border-t border-border/50 px-3 py-2">
             {item.actions.map(({ label, onClick, icon: ActionIcon }) => (
               <button
                 key={label}
@@ -253,7 +262,7 @@ function Toast({ item, onGone }: { item: ToastItem; onGone: (id: number) => void
                   await onClick();
                   dismiss();
                 }}
-                className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-ui font-semibold text-accent-text outline-none hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-ring"
+                className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-ui font-semibold text-accent-text outline-none transition-colors hover:bg-accent-subtle focus-visible:outline-2 focus-visible:outline-ring"
               >
                 {ActionIcon ? <ActionIcon aria-hidden="true" className="size-3.5" /> : null}
                 {label}
@@ -261,7 +270,7 @@ function Toast({ item, onGone }: { item: ToastItem; onGone: (id: number) => void
             ))}
           </div>
         ) : null}
-        <i ref={barRef} aria-hidden="true" className="absolute inset-x-0 bottom-0 h-0.5 origin-left bg-accent" />
+        <i ref={barRef} aria-hidden="true" className="absolute inset-x-5 bottom-1.5 h-1 origin-left rounded-full bg-accent/60" />
       </div>
     );
   }
@@ -269,9 +278,10 @@ function Toast({ item, onGone }: { item: ToastItem; onGone: (id: number) => void
   return (
     <div
       ref={ref}
-      className="pointer-events-auto relative flex touch-pan-y items-center gap-2.5 overflow-hidden rounded-lg border border-border bg-surface py-3 pl-3.5 pr-3 text-ui shadow-[var(--nx-shadow-overlay)]"
+      onClick={tapClose}
+      className="pointer-events-auto relative flex cursor-pointer touch-pan-y items-center gap-2.5 overflow-hidden rounded-3xl border border-border/60 bg-surface py-3.5 pl-4 pr-3.5 text-ui shadow-[var(--nx-shadow-overlay)]"
     >
-      <IconTile tone={tone} className="size-[26px] [&_svg]:size-4">
+      <IconTile tone={tone} className="size-9 rounded-full [&_svg]:size-[18px]">
         <Icon />
       </IconTile>
       <div className="min-w-0 flex-1">
@@ -285,7 +295,7 @@ function Toast({ item, onGone }: { item: ToastItem; onGone: (id: number) => void
             item.undo?.();
             dismiss();
           }}
-          className="p-1.5 text-ui font-semibold text-accent-text"
+          className="rounded-full px-3.5 py-1.5 text-ui font-semibold text-accent-text transition-colors hover:bg-accent-subtle"
         >
           Deshacer
         </button>
@@ -294,7 +304,7 @@ function Toast({ item, onGone }: { item: ToastItem; onGone: (id: number) => void
           type="button"
           aria-label="Cerrar notificación"
           onClick={() => dismiss()}
-          className="-m-1 shrink-0 rounded p-1 text-muted-foreground transition-colors hover:bg-surface-muted hover:text-foreground"
+          className="grid size-8 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-surface-muted hover:text-foreground"
         >
           <X aria-hidden="true" className="size-3.5" />
         </button>
@@ -302,7 +312,7 @@ function Toast({ item, onGone }: { item: ToastItem; onGone: (id: number) => void
       <i
         ref={barRef}
         aria-hidden="true"
-        className={cn("absolute inset-x-0 bottom-0 h-0.5 origin-left bg-accent")}
+        className={cn("absolute inset-x-5 bottom-1.5 h-1 origin-left rounded-full bg-accent/60")}
       />
     </div>
   );

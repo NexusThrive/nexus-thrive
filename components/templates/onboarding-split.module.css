@@ -1,0 +1,82 @@
+/* El lado izquierdo del onboarding: la tarjeta de AURI con una malla difuminada dorada y una malla de puntos (igual que el acceso). */
+.stage {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 32px 36px;
+  border-radius: 32px;
+  background:
+    radial-gradient(70% 55% at 15% 8%, color-mix(in srgb, var(--accent) 45%, transparent), transparent 70%),
+    radial-gradient(60% 50% at 95% 30%, color-mix(in srgb, var(--nx-gold-600) 28%, transparent), transparent 72%),
+    radial-gradient(70% 55% at 40% 105%, color-mix(in srgb, var(--accent) 38%, transparent), transparent 70%),
+    color-mix(in srgb, var(--accent) 10%, var(--card));
+}
+.fx {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.blobA,
+.blobB {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(60px);
+  will-change: transform;
+}
+.blobA {
+  top: -12%;
+  right: -14%;
+  width: 62%;
+  aspect-ratio: 1;
+  background: color-mix(in srgb, var(--card) 70%, transparent);
+  animation: drift-a 16s ease-in-out infinite alternate;
+}
+.blobB {
+  bottom: -18%;
+  left: -16%;
+  width: 56%;
+  aspect-ratio: 1;
+  background: color-mix(in srgb, var(--nx-gold-600) 22%, transparent);
+  animation: drift-b 19s ease-in-out infinite alternate;
+}
+@keyframes drift-a {
+  to {
+    transform: translate3d(-14%, 12%, 0) scale(1.08);
+  }
+}
+@keyframes drift-b {
+  to {
+    transform: translate3d(16%, -10%, 0) scale(1.1);
+  }
+}
+.dots {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, color-mix(in srgb, var(--foreground) 16%, transparent) 1px, transparent 1.4px);
+  background-size: 22px 22px;
+  mask-image: radial-gradient(70% 60% at 50% 45%, #000, transparent 85%);
+}
+
+/* El cuadro del formulario (lado derecho): redondeado, en gris-crema suave. */
+.form {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+  border-radius: 32px;
+  background: color-mix(in srgb, var(--surface-muted) 78%, var(--card));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blobA,
+  .blobB {
+    animation: none;
+  }
+}

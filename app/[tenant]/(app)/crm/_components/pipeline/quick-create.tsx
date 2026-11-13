@@ -4,11 +4,12 @@ import { parseMoney } from "@/lib/business/sales/money";
 import { MoneyInput } from "@/components/molecules/money-input";
 import { useEffect, useId, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronDown, Search, X } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { CustomerAvatar } from "@/components/atoms/customer-avatar";
 import { Select } from "@/components/atoms/select";
 import { useToast } from "@/components/molecules/toast";
+import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { quickCreateAction, searchContactsAction } from "@/app/[tenant]/(app)/crm/pipeline-actions";
 import type { PickerCustomer } from "@/lib/business/growth/pipeline-read";
 import { validateQuick, type ActivityKind } from "@/lib/business/growth/pipeline";
@@ -16,7 +17,7 @@ import { cn } from "@/lib/utils";
 import { StarsInput } from "./pipeline-ui";
 
 const field =
-  "h-9 w-full min-w-0 rounded-lg border border-border bg-background px-2.5 text-ui text-foreground outline-none placeholder:text-muted-foreground focus:border-accent focus:shadow-[0_0_0_3px_color-mix(in_oklab,var(--accent)_15%,transparent)] aria-[invalid=true]:border-danger";
+  "h-11 w-full min-w-0 rounded-2xl border border-border/60 bg-background px-4 text-ui text-foreground outline-none placeholder:text-muted-foreground transition-colors focus:border-accent focus:shadow-[0_0_0_3px_color-mix(in_oklab,var(--accent)_16%,transparent)]";
 
 type Contact = { kind: "existing"; customer: PickerCustomer } | { kind: "new"; name: string } | null;
 
@@ -34,7 +35,7 @@ function Highlight({ text, query }: { text: string; query: string }) {
 }
 
 /**
- * Creación rápida (tarjeta al inicio de la columna Nuevo). El contacto busca clientes que ya existen: elegir uno llena el correo y el
+ * Creación rápida (un modal: contacto, oportunidad y siguiente paso, con etiquetas visibles). El contacto busca clientes que ya existen: elegir uno llena el correo y el
  * teléfono y liga la oportunidad a él; «Crear …» lo crea al añadir (sin duplicar: se busca antes por teléfono o correo). Solo el
  * nombre es obligatorio. Enter añade y cierra, Mayús+Enter añade y deja el formulario para la siguiente, Esc cancela.
  */
@@ -134,22 +135,52 @@ export function QuickCreate({ slug, stageId, preset = null, onClose }: { slug: s
     });
   };
 
+  const formId = `${listId}-form`;
+  const label = "text-xs font-medium text-muted-foreground";
   return (
-    <div
-      ref={boxRef}
-      role="form"
-      aria-label="Nueva oportunidad"
-      onKeyDown={(e) => {
-        if (e.key === "Escape" && !open) {
-          e.preventDefault();
-          onClose();
-        }
-      }}
-      className="flex flex-col gap-2.5 rounded-xl border border-accent bg-card p-3.5 shadow-[0_0_0_3px_color-mix(in_oklab,var(--accent)_12%,transparent)]"
+    <ResponsiveSheet
+      open
+      onOpenChange={(next) => !next && onClose()}
+      title="Nueva oportunidad"
+      description="Anota a quién le vendes, cuánto vale y el siguiente paso."
+      size="md"
+      initialFocus="field"
+      footer={
+        <>
+          <button type="button" disabled={pending} onClick={() => submit("more")} className={cn(buttonVariants({ variant: "outline" }), "h-11 rounded-full border-border/60 bg-transparent px-5")}>
+            Más opciones
+          </button>
+          <button type="button" disabled={pending} onClick={() => submit("again")} className={cn(buttonVariants({ variant: "outline" }), "h-11 rounded-full border-border/60 bg-transparent px-5")}>
+            Añadir y crear otra
+          </button>
+          <button type="submit" form={formId} disabled={pending} className={cn(buttonVariants({ variant: "accent" }), "h-11 rounded-full px-6 text-sm font-semibold")}>
+            {pending ? "Añadiendo…" : "Añadir"}
+          </button>
+        </>
+      }
     >
-      {/* Contacto: busca o crea */}
+      <div
+        ref={boxRef}
+        role="group"
+        aria-label="Nueva oportunidad"
+        onKeyDown={(e) => {
+          if (e.key === "Escape" && open) {
+            e.preventDefault();
+            e.stopPropagation();
+            setOpen(false);
+          }
+        }}
+        className="grid gap-6"
+      >
+        {/* 1 · Contacto: busca a un cliente que ya existe o crea uno nuevo */}
+        <section aria-labelledby={`${listId}-contacto`} className="grid gap-3">
+          <h3 id={`${listId}-contacto`} className="text-ui font-semibold text-foreground">
+            Contacto
+          </h3>
+          <div className="grid gap-1.5">
+            <span className={label}>Busca o crea un contacto</span>
       <div className="relative">
-        <Search aria-hidden="true" className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+        <Search aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <input
           ref={contactRef}
           role="combobox"
@@ -159,7 +190,7 @@ export function QuickCreate({ slug, stageId, preset = null, onClose }: { slug: s
           aria-autocomplete="list"
           aria-activedescendant={open && options[active] ? `${listId}-${active}` : undefined}
           value={query}
-          placeholder="Contacto · busca o crea uno nuevo"
+          placeholder="Busca o crea un contacto"
           onChange={(e) => search(e.target.value)}
           onFocus={() => query.trim() && setOpen(true)}
           onBlur={() => setOpen(false)}
@@ -179,12 +210,12 @@ export function QuickCreate({ slug, stageId, preset = null, onClose }: { slug: s
               setOpen(false);
             }
           }}
-          className={cn(field, "px-8", open && "border-accent")}
+          className={cn(field, "rounded-full pl-11 pr-10", open && "border-accent")}
         />
-        <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+        <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         {open && options.length ? (
-          <ul id={listId} role="listbox" aria-label="Clientes" className="absolute inset-x-0 top-[42px] z-(--z-raised) rounded-[10px] border border-border-strong bg-popover p-1.5 shadow-[var(--nx-shadow-overlay)]">
-            {results.length ? <li role="presentation" className="px-2 pb-1 pt-1.5 text-2xs font-semibold uppercase tracking-[0.09em] text-muted-foreground">Clientes</li> : null}
+          <ul id={listId} role="listbox" aria-label="Clientes" className="absolute inset-x-0 top-[52px] z-(--z-raised) rounded-3xl border border-border/60 bg-popover p-2 shadow-[var(--nx-shadow-overlay)]">
+            {results.length ? <li role="presentation" className="px-3 pb-1 pt-2 text-xs font-medium text-muted-foreground">Clientes</li> : null}
             {options.map((opt, i) =>
               opt.kind === "existing" ? (
                 <li
@@ -195,9 +226,9 @@ export function QuickCreate({ slug, stageId, preset = null, onClose }: { slug: s
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => choose(opt)}
                   onMouseEnter={() => setActive(i)}
-                  className={cn("flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5", i === active && "bg-surface-muted")}
+                  className={cn("flex cursor-pointer items-center gap-3 rounded-2xl px-3 py-2", i === active && "bg-surface-muted")}
                 >
-                  <span aria-hidden="true" className={cn("grid size-[26px] shrink-0 place-items-center overflow-hidden rounded-md", i === 0 ? "bg-accent-subtle" : "bg-surface-muted")}>
+                  <span aria-hidden="true" className={cn("grid size-9 shrink-0 place-items-center overflow-hidden rounded-full", i === 0 ? "bg-accent-subtle" : "bg-surface-muted")}>
                     <CustomerAvatar identity={opt.customer} className="size-full" />
                   </span>
                   <span className="grid min-w-0">
@@ -221,9 +252,9 @@ export function QuickCreate({ slug, stageId, preset = null, onClose }: { slug: s
                     onMouseDown={(e) => e.preventDefault()}
                     onClick={() => choose(opt)}
                     onMouseEnter={() => setActive(i)}
-                    className={cn("flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 text-ui font-medium text-accent-text", i === active && "bg-surface-muted")}
+                    className={cn("flex cursor-pointer items-center gap-3 rounded-2xl px-3 py-2 text-ui font-medium text-accent-text", i === active && "bg-surface-muted")}
                   >
-                    <span aria-hidden="true" className="grid size-[26px] shrink-0 place-items-center rounded-md border border-dashed border-accent/50">
+                    <span aria-hidden="true" className="grid size-9 shrink-0 place-items-center rounded-full border border-dashed border-accent/50">
                       +
                     </span>
                     Crear «{opt.name}» como cliente nuevo
@@ -235,66 +266,86 @@ export function QuickCreate({ slug, stageId, preset = null, onClose }: { slug: s
         ) : null}
       </div>
 
-      <form
-        noValidate
-        onSubmit={(e) => {
-          e.preventDefault();
-          submit("close");
-        }}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" && e.shiftKey && !(e.target instanceof HTMLTextAreaElement)) {
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="grid gap-1.5">
+              <span className={label}>Correo</span>
+              <input type="email" aria-invalid={errors.email ? true : undefined} value={email} onChange={(e) => setEmail(e.target.value)} placeholder="nombre@correo.com" className={field} />
+            </label>
+            <label className="grid gap-1.5">
+              <span className={label}>Teléfono</span>
+              <input type="tel" aria-invalid={errors.phone ? true : undefined} value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+57 300 123 4567" className={field} />
+            </label>
+          </div>
+        </section>
+
+        {/* 2 · La oportunidad */}
+        <form
+          id={formId}
+          noValidate
+          onSubmit={(e) => {
             e.preventDefault();
-            submit("again");
-          }
-        }}
-        className="contents"
-      >
-        <input
-          ref={nameRef}
-          aria-label="Nombre de la oportunidad"
-          aria-required="true"
-          aria-invalid={errors.name ? true : undefined}
-          aria-describedby={errors.name ? `${listId}-err` : undefined}
-          value={name}
-          onChange={(e) => {
-            setName(e.target.value);
-            if (errors.name) setErrors((x) => ({ ...x, name: "" }));
+            submit("close");
           }}
-          placeholder="Nombre de la oportunidad *"
-          className={cn(field, "h-10 text-sm font-medium")}
-        />
-        {errors.name ? (
-          <p id={`${listId}-err`} role="alert" className="-mt-1 text-xs text-danger">
-            {errors.name}
-          </p>
-        ) : null}
-        <div className="flex gap-2">
-          <input type="email" aria-label="Correo" aria-invalid={errors.email ? true : undefined} value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Correo" className={field} />
-          <input type="tel" aria-label="Teléfono" aria-invalid={errors.phone ? true : undefined} value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+57 Teléfono" className={field} />
-        </div>
-        <div className="flex items-center gap-2">
-          <MoneyInput aria-label="Valor estimado" aria-invalid={errors.value ? true : undefined} value={parseMoney(value)} onValueChange={(v) => setValue(v == null ? "" : String(v))} placeholder="Valor estimado" className={field} />
-          <StarsInput value={priority} onChange={setPriority} />
-        </div>
-        <Select aria-label="Próxima actividad" value={activity} onChange={(e) => setActivity(e.target.value as ActivityKind | "NONE")} className="h-9 text-ui">
-          <option value="CALL">Próxima actividad: Llamar</option>
-          <option value="MEETING">Reunión</option>
-          <option value="PROPOSAL">Enviar propuesta</option>
-          <option value="NONE">Sin actividad</option>
-        </Select>
-        <div className="flex items-center gap-2 pt-0.5">
-          <button type="submit" disabled={pending} className={buttonVariants({ variant: "accent", size: "sm", className: "h-[34px] font-semibold" })}>
-            {pending ? "Añadiendo…" : "Añadir"}
-          </button>
-          <button type="button" disabled={pending} onClick={() => submit("more")} className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-[34px] border border-border bg-transparent")}>
-            Más opciones
-          </button>
-          <button type="button" aria-label="Cancelar" onClick={onClose} className="ms-auto grid size-[34px] place-items-center rounded-lg border border-border text-foreground outline-none hover:border-accent focus-visible:outline-2 focus-visible:outline-ring">
-            <X aria-hidden="true" className="size-3.5" />
-          </button>
-        </div>
-      </form>
-      <p className="text-2xs text-muted-foreground">Enter para añadir · Esc para cancelar</p>
-    </div>
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && e.shiftKey && !(e.target instanceof HTMLTextAreaElement)) {
+              e.preventDefault();
+              submit("again");
+            }
+          }}
+          className="grid gap-3"
+          aria-labelledby={`${listId}-op`}
+        >
+          <h3 id={`${listId}-op`} className="text-ui font-semibold text-foreground">
+            Oportunidad
+          </h3>
+          <label className="grid gap-1.5">
+            <span className={label}>
+              Nombre <span aria-hidden="true">*</span>
+            </span>
+            <input
+              ref={nameRef}
+              aria-required="true"
+              aria-invalid={errors.name ? true : undefined}
+              aria-describedby={errors.name ? `${listId}-err` : undefined}
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+                if (errors.name) setErrors((x) => ({ ...x, name: "" }));
+              }}
+              placeholder="Ej. Uniformes para el colegio"
+              className={cn(field, "h-12 text-base font-medium")}
+            />
+            {errors.name ? (
+              <p id={`${listId}-err`} role="alert" className="text-xs text-danger">
+                {errors.name}
+              </p>
+            ) : null}
+          </label>
+          <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+            <label className="grid gap-1.5">
+              <span className={label}>Valor estimado</span>
+              <MoneyInput aria-invalid={errors.value ? true : undefined} value={parseMoney(value)} onValueChange={(v) => setValue(v == null ? "" : String(v))} placeholder="0" className={field} />
+            </label>
+            <div className="grid gap-1.5">
+              <span className={label}>Prioridad</span>
+              <span className="flex h-11 items-center rounded-2xl border border-border/60 bg-background px-4">
+                <StarsInput value={priority} onChange={setPriority} />
+              </span>
+            </div>
+          </div>
+          <label className="grid gap-1.5">
+            <span className={label}>Próxima actividad</span>
+            <Select value={activity} onChange={(e) => setActivity(e.target.value as ActivityKind | "NONE")} className="h-11 rounded-2xl text-ui">
+              <option value="CALL">Llamar</option>
+              <option value="MEETING">Reunión</option>
+              <option value="PROPOSAL">Enviar propuesta</option>
+              <option value="NONE">Sin actividad</option>
+            </Select>
+          </label>
+        </form>
+        <p className="text-xs text-muted-foreground">Enter añade · Mayús + Enter añade y deja el formulario listo para otra · Esc cancela</p>
+      </div>
+    </ResponsiveSheet>
   );
 }

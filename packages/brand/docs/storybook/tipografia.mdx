@@ -4,25 +4,50 @@ import { Meta, Typeset } from "@storybook/addon-docs/blocks";
 
 # Tipografía
 
-| Familia | Uso | Clase |
+Letra **suave**: títulos en peso medio, negrita solo para cifras y nombres propios, y
+suavizado en gris en toda la app.
+
+| Familia | Uso | Pesos | Clase |
+| --- | --- | --- | --- |
+| **Montserrat** | Títulos, cifras grandes, la marca | 500 · 600 · 700 (solo trae esos tres) | `font-display` |
+| **Inter** | Interfaz, formularios, tablas | Variable: toma el valor exacto | `font-sans` (por defecto) |
+| **JetBrains Mono** | Códigos, IDs, atajos, contadores | 400 · 500 | `font-mono` |
+| **Public Stunt** | Portadas y piezas de marca, no la interfaz (revisar su licencia antes de usarla en público) | 400 · itálica | `font-stunt` |
+
+## Pesos: un escalón más suave
+
+`base.css` pone los títulos (`h1`–`h4`, `PageHeader`, `CardTitle`) en Montserrat **500**, con
+`letter-spacing: -0.015em`. Y en Tailwind, dos clases bajan un escalón en toda la interfaz sin
+tocar cada componente:
+
+| Clase | Peso | Antes |
 | --- | --- | --- |
-| **Montserrat** 600–700 | Títulos, cifras grandes, la marca | `font-display` |
-| **Inter** 400–600 | Interfaz, formularios, tablas | `font-sans` (por defecto) |
-| **JetBrains Mono** 400–500 | Códigos, IDs, atajos, contadores | `font-mono` |
-| **Public Stunt** | Portadas y piezas de marca, no la interfaz (revisar su licencia antes de usarla en público) | `font-stunt` |
+| `font-medium` | 500 | 500 |
+| `font-semibold` | **550** | 600 |
+| `font-bold` | **620** | 700 |
+
+Inter es variable y respeta 550 y 620. Montserrat no: toma el peso disponible más cercano
+(600 y 700). Por eso, si un título parece pesado, mira primero si es Montserrat.
+
+`font-synthesis: none` evita negritas y cursivas falsas; `font-kerning: normal` y
+`-webkit-font-smoothing: antialiased` completan la suavidad.
 
 ## Escala
 
 | Uso | Tamaño | Peso |
 | --- | --- | --- |
-| Título de página | 22–28 px Montserrat | 600 |
-| Título de panel o diálogo | 18 px Montserrat | 600 |
+| Saludo de Inicio | 48 px Montserrat (el nombre en 600 y oro) | 500 |
+| Título de página | 22–28 px Montserrat | 500 |
+| Título de panel o diálogo | 18 px Montserrat | 500 |
+| Título de tarjeta o widget | 13 px Inter | 550 |
 | Cuerpo | 13–14 px Inter | 400 |
 | Etiqueta de campo | 13 px Inter | 500 |
 | Descripción y ayuda | 12 px Inter, `text-muted-foreground` | 400 |
 | Antetítulo (`eyebrow`) | 11 px mayúsculas, tracking amplio | 600 |
 
 Tokens: `--text-xs` 12 · `sm` 14 · `base` 16 · `lg` 18 · `xl` 20 · `2xl` 24 · `3xl` 30 · `4xl` 40 · `5xl` 52 px.
+Para texto operativo (tablas, listas, menús) existe `text-ui` (13 px) y para metadatos `text-2xs`
+(11 px). Sin `text-[Npx]` nuevos: una prueba congela la escala.
 Texto corrido hasta `--content-prose` (72 caracteres).
 
 Las cifras siempre con `tabular-nums` para que no bailen al cambiar. Las mayúsculas con
@@ -30,11 +55,15 @@ tracking amplio son solo para la marca y los antetítulos (`Eyebrow`).
 
 ## Montserrat (títulos)
 
-<Typeset fontFamily="var(--font-montserrat), Montserrat" fontWeight={700} fontSizes={[48, 34, 28, 22, 17, 15]} sampleText="Tu negocio te espera donde lo dejaste" />
+<Typeset fontFamily="var(--font-montserrat), Montserrat" fontWeight={500} fontSizes={[48, 34, 28, 22, 17, 15]} sampleText="Tu negocio te espera donde lo dejaste" />
 
 ## Inter (interfaz)
 
-<Typeset fontFamily="var(--font-inter), Inter" fontSizes={[16, 14, 13, 12, 11]} sampleText="Clientes, agenda, finanzas y WhatsApp en un solo sistema" />
+<Typeset fontFamily="var(--font-inter), Inter" fontWeight={400} fontSizes={[16, 14, 13, 12, 11]} sampleText="Clientes, agenda, finanzas y WhatsApp en un solo sistema" />
+
+## Inter en 550 (semibold)
+
+<Typeset fontFamily="var(--font-inter), Inter" fontWeight={550} fontSizes={[16, 14, 13]} sampleText="$ 4.860.000 · 12 cobros esta semana" />
 
 ## JetBrains Mono (datos)
 

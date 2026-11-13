@@ -18,7 +18,7 @@ export default async function NewProductPage({ params, searchParams }: { params:
   if (!ctx) notFound();
   if (!canManage(ctx.role)) {
     return (
-      <div className="grid gap-5">
+      <div data-bleed="" className="grid gap-5 px-6 pb-8 pt-6">
         <PageHeader title="Nuevo producto" />
         <PermissionNotice permission="business.manage" action="crear productos" />
       </div>

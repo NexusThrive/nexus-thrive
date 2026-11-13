@@ -254,7 +254,7 @@ icono: la animación nunca es la única señal.
 | Vaul | Descartada | `ResponsiveSheet` ya es hoja arrastrable en móvil |
 | Base UI | Descartada | Radix ya cubre los primitivos |
 | React Grid Layout | Descartada por ahora | El inicio personalizable necesita orden y visibilidad, no una cuadrícula 2D redimensionable |
-| View Transitions (React `<ViewTransition>`) | Solo la barra superior | Piezas compartidas entre la barra de Inicio, la de módulo y la de Sistema (`DESIGN.md` §4, regla 6). Los modales siguen con su morfeo propio (§4) |
+| View Transitions (React `<ViewTransition>`) | La barra superior, abrir una app y AURI al crear el negocio | Piezas compartidas entre la barra de Inicio, la de módulo y la de Sistema (`DESIGN.md` §4, regla 6); AURI viaja del onboarding a la pantalla de creación (`nx-auri`). Los modales siguen con su morfeo propio (§4) |
 | Impeccable | No instalado | Instala hooks que editan archivos y su licencia no está declarada; ver `CLAUDE.md` |
 
 ## 10. Inicio personalizable (modo de edición)

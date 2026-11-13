@@ -29,7 +29,7 @@ export const Variants: Story = {
   ),
 };
 
-/** Los estados llevan un punto cuadrado de 6 px (`tone`), no una píldora de color. */
+/** Los estados llevan un glifo de 10 px (`tone`: ✓ × ! ● –) junto al texto: la forma distingue el estado aunque no se vea el color. */
 export const WithStatusDot: Story = {
   render: () => (
     <div className="flex flex-wrap gap-2">

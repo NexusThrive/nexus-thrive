@@ -57,7 +57,7 @@ export default function CustomerActions({
         </a>
       ) : null}
       <Link
-        href={`/${tenantSlug}/finanzas?tab=cobros&nuevo=pago&cliente=${customerId}`}
+        href={`/${tenantSlug}/finanzas/cobros?nuevo=pago&cliente=${customerId}`}
         className={buttonVariants({ variant: "outline", className: "w-full sm:w-auto" })}
       >
         <Plus aria-hidden="true" className="size-4" />

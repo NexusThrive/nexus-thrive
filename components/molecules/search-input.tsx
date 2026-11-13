@@ -83,7 +83,7 @@ export default function SearchInput({
     <div className="relative w-full min-w-[200px] sm:max-w-xs sm:flex-1">
       <Search
         aria-hidden="true"
-        className="pointer-events-none absolute left-3 top-1/2 size-[18px] -translate-y-1/2 text-muted-foreground"
+        className="pointer-events-none absolute left-4 top-1/2 size-[18px] -translate-y-1/2 text-muted-foreground"
       />
       <input
         ref={inputRef}
@@ -93,7 +93,7 @@ export default function SearchInput({
         placeholder={placeholder}
         value={value}
         onChange={(event) => setValue(event.target.value)}
-        className={cn(inputClasses, "pl-[38px] pr-9 [&::-webkit-search-cancel-button]:hidden")}
+        className={cn(inputClasses, "h-11 rounded-full pl-[42px] pr-10 [&::-webkit-search-cancel-button]:hidden")}
       />
       <span className="absolute right-2.5 top-1/2 -translate-y-1/2">
         {isPending ? (
@@ -103,7 +103,7 @@ export default function SearchInput({
             type="button"
             aria-label="Limpiar búsqueda"
             onClick={() => setValue("")}
-            className="rounded-sm p-0.5 text-muted-foreground transition-colors hover:bg-surface-muted hover:text-foreground"
+            className="rounded-full p-1 text-muted-foreground transition-colors hover:bg-surface-muted hover:text-foreground"
           >
             <X aria-hidden="true" className="h-4 w-4" />
           </button>

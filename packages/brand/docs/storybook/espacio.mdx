@@ -4,9 +4,10 @@ import { Meta } from "@storybook/addon-docs/blocks";
 
 # Espacio y forma
 
-Esquinas casi rectas, como la N del logo, y una escala de espacio de 4 en 4. Los valores
-viven en `packages/brand/css/tokens.css` (y su espejo `tokens.json`); nunca un número suelto
-en un componente.
+Una escala de espacio de 4 en 4 y **tres niveles de forma**: esquinas cortas para lo que se
+opera (botones, campos), píldoras para lo que indica estado, y superficies grandes y suaves
+para lo que contiene. Los valores viven en `packages/brand/css/tokens.css` (y su espejo
+`tokens.json`); nunca un número suelto en un componente.
 
 ## Espacio (base 4 px)
 
@@ -27,14 +28,18 @@ en un componente.
   ))}
 </div>
 
-## Radios
+## Forma
+
+### 1 · Esquinas cortas (tokens `--radius-*`)
+
+Lo que se opera: acciones, campos, tarjetas de datos, avatares.
 
 | Token | Valor | Para |
 | --- | --- | --- |
 | `--radius-sm` | 2 px | Foco, marcas pequeñas |
-| `--radius-md` | 4 px | Botones, campos, chips |
-| `--radius-lg` | 6 px | Tarjetas, ventanas flotantes |
-| `--radius-xl` | 8 px | Diálogos |
+| `--radius-md` | 4 px | Botones, avatares |
+| `--radius-lg` | 6 px | Tarjetas (`Card`), ventanas flotantes |
+| `--radius-xl` | 8 px | Campos (`Input`, `Select`) |
 
 <div style={{ display: "flex", gap: 16, margin: "16px 0 32px" }}>
   {[2, 4, 6, 8].map((r) => (
@@ -43,6 +48,32 @@ en un componente.
     </div>
   ))}
 </div>
+
+### 2 · Píldora (`rounded-full`)
+
+Lo que indica estado o elige entre pocas opciones: `Badge`, `Chip`, `SegmentedControl`,
+`Switch`, botones circulares de un icono. Es la forma más usada del sistema.
+
+### 3 · Superficie suave
+
+Lo que contiene y no se opera: tarjetas de tablero, hojas y marcos.
+
+| Valor | Para |
+| --- | --- |
+| `--radius-widget` · 24 px | `Widget`, las tarjetas de Inicio |
+| 28 px | Saludo de Inicio; hoja inferior y diálogo de `ResponsiveSheet` |
+| 12 px | `Skeleton` (`.nx-sk`): una línea de texto queda en píldora |
+| 30 % | Casillas de marcar (`Checkbox` y `<input type="checkbox">`) |
+
+<div style={{ display: "flex", gap: 16, margin: "16px 0 32px", alignItems: "center" }}>
+  <div style={{ width: 96, height: 64, border: "1px solid var(--border)", borderRadius: "var(--radius-widget)", background: "var(--card)", display: "grid", placeItems: "center", fontSize: 11, color: "var(--foreground-muted)" }}>24 px</div>
+  <div style={{ width: 96, height: 64, border: "1px solid var(--border)", borderRadius: 28, background: "var(--card)", display: "grid", placeItems: "center", fontSize: 11, color: "var(--foreground-muted)" }}>28 px</div>
+  <div style={{ width: 96, height: 28, borderRadius: 9999, background: "var(--surface-muted)", display: "grid", placeItems: "center", fontSize: 11, color: "var(--foreground-muted)" }}>píldora</div>
+</div>
+
+**Regla:** si un componente nuevo necesita una esquina, usa el nivel que le corresponde; no
+inventes un cuarto valor. Las barras de scroll son de 6 px redondeadas y las define
+`globals.css`, no cada componente.
 
 ## Tamaños
 

@@ -7,7 +7,7 @@ import { openObligation } from "@/lib/business/sales/obligations";
 import { db } from "@/prisma/db";
 import { createOpportunity, loseOpportunity, winOpportunity } from "./opportunities-db";
 import { validateLoss } from "./opportunities";
-import { ACTIVITY_LABEL, DEFAULT_LOST_REASONS, DEFAULT_STAGES, LEGACY_STAGE_INDEX, bogotaDay, isActivityKind, parseMoney, sortCards, validateQuick, type ActivityKind } from "./pipeline";
+import { ACTIVITY_LABEL, DEFAULT_LOST_REASONS, DEFAULT_STAGES, LEGACY_STAGE_INDEX, bogotaDay, filterPipelineCards, isActivityKind, parseMoney, sortCards, validateQuick, type ActivityKind } from "./pipeline";
 
 /**
  * Pipeline del CRM (pantallas 8 y 9). Todo por `tenantId`. Reutiliza el repositorio de oportunidades (crear, ganar, perder) y las
@@ -120,9 +120,9 @@ async function nextActivities(tenantId: string, ids: string[]): Promise<Map<stri
 /** El tablero: etapas, tarjetas abiertas y ganadas (con filtros), resumen de perdidas, responsables, etiquetas y motivos. */
 export async function loadPipeline(tenantId: string, filters: PipelineFilters = {}): Promise<Pipeline> {
   const stages = await ensureStages(tenantId);
-  const [rows, lostRows, team, tagRows, reasons] = await Promise.all([
+  const [rows, lostAgg, team, tagRows, reasons] = await Promise.all([
     db.orm.public.Opportunity.where({ tenantId }).where((o) => o.status.in(["OPEN", "WON"])).orderBy((o) => o.createdAt.desc()).limit(500).all(),
-    db.orm.public.Opportunity.where({ tenantId, status: "LOST" }).select("estimatedValue").limit(5000).all(),
+    db.orm.public.Opportunity.where({ tenantId, status: "LOST" }).aggregate((a) => ({ n: a.count(), total: a.sum("estimatedValue") })),
     db.orm.public.User.where({ tenantId, active: true }).select("id", "name", "email").all(),
     db.orm.public.CrmTag.where({ tenantId }).orderBy((t) => t.name.asc()).select("name").all(),
     db.orm.public.CrmLostReason.where({ tenantId }).orderBy((r) => r.position.asc()).select("id", "name").all(),
@@ -163,24 +163,14 @@ export async function loadPipeline(tenantId: string, filters: PipelineFilters = 
     };
   });
 
-  const q = filters.q?.trim().toLocaleLowerCase("es");
-  if (filters.mine && filters.me) cards = cards.filter((c) => !c.owner || c.owner.id === filters.me);
-  if (q) cards = cards.filter((c) => [c.name, c.customer?.name ?? "", c.owner?.name ?? "", ...c.tags].some((t) => t.toLocaleLowerCase("es").includes(q)));
-  if (filters.ownerId) cards = cards.filter((c) => c.owner?.id === filters.ownerId);
-  if (filters.tag) cards = cards.filter((c) => c.tags.includes(filters.tag!));
-  if (filters.priority != null) cards = cards.filter((c) => c.priority >= filters.priority!);
-  if (filters.closeFrom) cards = cards.filter((c) => c.expectedClose != null && c.expectedClose >= filters.closeFrom!);
-  if (filters.closeTo) cards = cards.filter((c) => c.expectedClose != null && c.expectedClose <= filters.closeTo!);
-  if (filters.valueMin != null) cards = cards.filter((c) => c.value >= filters.valueMin!);
-  if (filters.valueMax != null) cards = cards.filter((c) => c.value <= filters.valueMax!);
-  if (filters.customerId) cards = cards.filter((c) => c.customer?.id === filters.customerId);
+  cards = filterPipelineCards(cards, filters);
 
   const usedTags = new Set(rows.flatMap((r) => r.tags ?? []));
   for (const t of tagRows) usedTags.add(t.name);
   return {
     stages,
     cards: sortCards(cards),
-    lost: { count: lostRows.length, total: Math.round(lostRows.reduce((s, r) => s + (r.estimatedValue == null ? 0 : toNumber(r.estimatedValue)), 0)) },
+    lost: { count: Number(lostAgg?.n ?? 0), total: Math.round(lostAgg?.total == null ? 0 : toNumber(lostAgg.total)) },
     owners: team.map((u) => ({ id: u.id, name: nameOf(u) })),
     tags: [...usedTags].sort((a, b) => a.localeCompare(b, "es")),
     reasons: reasons.map((r) => ({ id: r.id, name: r.name })),

@@ -4,8 +4,9 @@ import { Meta } from "@storybook/addon-docs/blocks";
 
 # Capas y elevación
 
-Bordes en lugar de sombras: solo lleva sombra lo que **flota sobre otra cosa** (diálogos,
-paneles, menús, avisos). Cada capa tiene un token; en un componente nunca va un `z-index`
+Bordes casi invisibles en lugar de sombras: solo lleva sombra lo que **flota sobre otra cosa**
+(diálogos, paneles, menús, avisos). Las tarjetas de tablero (`Widget`) y el panel blanco del
+negocio no llevan sombra: los separa el color de fondo, no una línea. Cada capa tiene un token; en un componente nunca va un `z-index`
 numérico (una prueba lo vigila).
 
 ## Capas (`z-index`)
@@ -16,8 +17,10 @@ numérico (una prueba lo vigila).
 | Fijo | `--z-sticky` | 40 | Barra superior |
 | Barra móvil | `--z-tabbar` | 45 | Barra inferior del celular |
 | Barra lateral | `--z-sidebar` | 50 | Navegación |
+| Barra superior | `--z-topbar` | 55 | Navbar global, sobre la barra lateral |
 | Fondo | `--z-overlay` | 70 | Velo detrás de diálogos |
 | Modal | `--z-modal` | 71 | Diálogo, panel lateral, hoja inferior |
+| Aviso sobre un panel | `--z-alert-overlay` · `--z-alert` | 72 · 73 | «¿Guardar los cambios?»: su fondo cubre también el panel de abajo |
 | Flotante | `--z-popover` | 80 | Tooltip, menú, ayuda "?": **siempre encima del modal que los contiene** |
 | Aviso | `--z-banner` | 85 | Conexión, barra de ruta |
 | Notificación | `--z-toast` | 90 | Toasts |

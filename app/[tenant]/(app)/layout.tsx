@@ -16,6 +16,7 @@ import { CurrentUserProvider } from "@/components/providers/current-user";
 import { cookies } from "next/headers";
 import { auth } from "@clerk/nextjs/server";
 import { createTenantDb } from "@/lib/core/tenancy/db";
+import { SessionScope } from "@/components/providers/session-scope";
 import { AppEntrySplash, SPLASH_COOKIE } from "@/components/organisms/app-entry-splash";
 
 /**
@@ -76,8 +77,9 @@ export default async function AppLayout({
 
   return (
     <VerticalTermsProvider terms={terms}>
+      {userId ? <SessionScope userId={userId} tenantId={tenantRecord.id} /> : null}
       <CurrentUserProvider firstName={me?.name?.trim().split(/\s+/)[0] || null}>
-      {showSplash ? <AppEntrySplash /> : null}
+      <AppEntrySplash show={showSplash} />
       <TenantShell
         tenantSlug={tenantRecord.slug}
         tenantName={tenantRecord.name}

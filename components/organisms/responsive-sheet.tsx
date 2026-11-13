@@ -354,7 +354,7 @@ export function ResponsiveSheet({
           </div>
           <header className={styles.head} {...dragHandlers}>
             <div className="min-w-0">
-              <DialogPrimitive.Title className="font-display text-lg font-semibold text-foreground">
+              <DialogPrimitive.Title className="font-display text-xl font-medium tracking-tight text-foreground">
                 {title}
               </DialogPrimitive.Title>
               {description ? (
@@ -366,7 +366,7 @@ export function ResponsiveSheet({
             <DialogPrimitive.Close
               aria-label="Cerrar"
               disabled={busy}
-              className="grid size-10 shrink-0 place-items-center rounded-md text-foreground transition-colors hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-40"
+              className="grid size-10 shrink-0 place-items-center rounded-full bg-surface-muted text-foreground transition-colors hover:bg-accent-subtle disabled:cursor-not-allowed disabled:opacity-40"
             >
               <X aria-hidden="true" className="size-[18px]" />
             </DialogPrimitive.Close>

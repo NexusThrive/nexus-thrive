@@ -40,6 +40,8 @@ import {
   SlidersHorizontal,
   Store,
   Tags,
+  Landmark,
+  Bell,
 } from "lucide-react";
 import type { VerticalValue } from "@/lib/core/sectors/verticals";
 import type { VerticalTerms } from "@/lib/core/sectors/lexicon";
@@ -131,12 +133,12 @@ export const CAPABILITIES = [
     included: true,
     nav: [
       { href: "/contactos", icon: Users, label: (terms) => terms.customers },
-      // La app CRM: Pipeline, Informes y Configuración («Ventas» se confundía con la app Ventas y cobros). Tareas, Entregables y Formularios web siguen con su ruta y su
+      // La app CRM: Pipeline, Informes, Tareas y Configuración («Ventas» se confundía con la app Ventas y cobros). Entregables y Formularios web siguen con su ruta y su
       // acceso, y se abren desde Configuración del CRM (y las actividades del pipeline también son tareas).
       { href: "/crm", icon: Target, label: () => "Pipeline", category: "CRM" },
       { href: "/crm/informes", icon: BarChart3, label: () => "Informes", category: "CRM" },
+      { href: "/crm/tareas", icon: CheckSquare, label: () => "Tareas", category: "CRM" },
       { href: "/crm/configuracion", icon: Settings2, label: () => "Configuración", category: "CRM" },
-      { href: "/crm/tareas", icon: CheckSquare, label: () => "Tareas", category: "CRM", menu: false },
       { href: "/proyectos/entregables", icon: FileCheck2, label: () => "Entregables", category: "CRM", menu: false },
       { href: "/crm/formularios", icon: Link2, label: () => "Formularios web", category: "CRM", menu: false },
     ],
@@ -171,7 +173,8 @@ export const CAPABILITIES = [
     priceUsd: 0,
     general: true,
     nav: [
-      { href: "/finanzas?tab=cobros", icon: Banknote, label: () => "Cobros" },
+      // Cobros tiene su página y vive en el grupo de Finanzas del menú (aunque la función sea «Pagos»).
+      { href: "/finanzas/cobros", icon: Banknote, label: () => "Cobros", category: "Finanzas y contabilidad" },
     ],
   },
   {
@@ -224,7 +227,8 @@ export const CAPABILITIES = [
     priceUsd: 0,
     included: true,
     nav: [
-      { href: "/finanzas", icon: Wallet, label: () => "Finanzas" },
+      { href: "/finanzas", icon: Wallet, label: () => "Panorama" },
+      { href: "/finanzas/caja", icon: Landmark, label: () => "Caja menor" },
       { href: "/finanzas/dinero", icon: Banknote, label: () => "¿Dónde está mi dinero?" },
     ],
   },
@@ -240,7 +244,11 @@ export const CAPABILITIES = [
     status: "READY",
     priceUsd: 0,
     included: true,
-    nav: [{ href: "/resumen", icon: LayoutDashboard, label: () => "Resumen" }],
+    // «Notificaciones» va justo debajo de Resumen y es para todos los roles (cada persona ve su propio buzón).
+    nav: [
+      { href: "/resumen", icon: LayoutDashboard, label: () => "Resumen" },
+      { href: "/notificaciones", icon: Bell, label: () => "Notificaciones" },
+    ],
   },
   {
     id: "whatsapp",

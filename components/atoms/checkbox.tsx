@@ -6,8 +6,8 @@ import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 import { cn } from "@/lib/utils";
 
 /**
- * Casilla NEXUS THRIVE: 18 px, radio 2 px, borde `--border-input`. Al marcarla
- * se rellena de `--primary` y la palomita crece con un resorte (CSS puro).
+ * Casilla NEXUS THRIVE: 20 px, esquinas suaves (6 px), borde gris. Al marcarla
+ * se rellena de oro (`--accent`) y la palomita, en tinta, crece con un resorte (CSS puro).
  */
 function Checkbox({
   className,
@@ -17,7 +17,7 @@ function Checkbox({
     <CheckboxPrimitive.Root
       data-slot="checkbox"
       className={cn(
-        "peer grid size-[18px] shrink-0 place-items-center rounded-sm border-[1.5px] border-border-input bg-surface text-primary-foreground outline-none transition-[background-color,border-color] duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-danger data-[state=checked]:border-primary data-[state=checked]:bg-primary",
+        "peer grid size-5 shrink-0 place-items-center rounded-md border-[1.5px] border-border-strong bg-card text-ink outline-none transition-[background-color,border-color] duration-200 hover:border-border-input-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-danger data-[state=checked]:border-accent data-[state=checked]:bg-accent",
         className,
       )}
       {...props}

@@ -17,6 +17,9 @@ import { Field } from "@/components/molecules/field";
 import { cn } from "@/lib/utils";
 import { AddressAutocomplete } from "./address-autocomplete";
 
+/** Campo del paso: alto (48 px), esquinas redondeadas y fondo blanco sobre el cuadro gris-crema. */
+const field = "h-12 rounded-2xl border-border/60 bg-card px-4";
+
 type FieldProps = {
   /** Rubros habilitados para registrarse (catálogo del Operations Center). */
   verticals: { value: VerticalValue; label: string }[];
@@ -36,9 +39,22 @@ type FieldProps = {
 function IconInput({ icon: Icon, className, ...props }: React.ComponentProps<"input"> & { icon: typeof MapPin }) {
   return (
     <div className="relative">
-      <Icon aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-      <input {...props} className={cn(inputClasses, "pl-9", className)} />
+      <Icon aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+      <input {...props} className={cn(inputClasses, field, "pl-11", className)} />
     </div>
+  );
+}
+
+/** Un grupo del formulario: título corto y una línea que dice para qué sirve. */
+function Block({ title, text, children }: { title: string; text: string; children: React.ReactNode }) {
+  return (
+    <section className="grid gap-4">
+      <div>
+        <h2 className="font-display text-[15px] font-semibold">{title}</h2>
+        <p className="text-xs text-muted-foreground">{text}</p>
+      </div>
+      {children}
+    </section>
   );
 }
 
@@ -76,14 +92,15 @@ export default function AdaptiveBusinessForm({ verticals, draft, onPatch: patch,
       : undefined;
 
   return (
-    <div className="grid grid-cols-1 gap-5">
+    <div className="grid grid-cols-1 gap-7">
+      <Block title="Tu negocio" text="Cómo se llama y cómo lo conocen.">
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         <Field label="Nombre comercial" required error={err("name") ?? (taken && !slugTouched ? "Ya existe un negocio con ese nombre. Cambia el nombre o elige otro enlace." : undefined)}>
           {(control) => (
             <input
               {...control}
               autoFocus
-              className={inputClasses}
+              className={cn(inputClasses, field)}
               value={draft.name}
               onChange={(event) => {
                 const name = event.target.value;
@@ -100,7 +117,7 @@ export default function AdaptiveBusinessForm({ verticals, draft, onPatch: patch,
             {(control) => (
               <input
                 {...control}
-                className={inputClasses}
+                className={cn(inputClasses, field)}
                 value={draft.legalName}
                 onChange={(event) => patch({ legalName: event.target.value })}
                 placeholder="Razón social"
@@ -110,7 +127,9 @@ export default function AdaptiveBusinessForm({ verticals, draft, onPatch: patch,
           </Field>
         )}
       </div>
+      </Block>
 
+      <Block title="Tu enlace" text="La dirección donde entrarás a tu espacio.">
       <Field
         label="Tu enlace en NEXUS"
         required
@@ -118,7 +137,7 @@ export default function AdaptiveBusinessForm({ verticals, draft, onPatch: patch,
         hint="Sin espacios ni mayúsculas: letras, números y guiones."
       >
         {(control) => (
-          <div className={cn(inputClasses, "flex items-center gap-2 px-3 focus-within:border-ring focus-within:shadow-[0_0_0_3px_rgba(212,175,55,0.18)]")}>
+          <div className={cn(inputClasses, field, "flex items-center gap-2 focus-within:border-accent focus-within:shadow-[0_0_0_4px_rgba(212,175,55,0.18)]")}>
             <Link2 aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
             <span className="shrink-0 text-sm text-muted-foreground">nexusthrive.com.co/</span>
             <input
@@ -148,9 +167,12 @@ export default function AdaptiveBusinessForm({ verticals, draft, onPatch: patch,
         </button>
       ) : null}
 
+      </Block>
+
+      <Block title="Sobre tu operación" text="Para dejarte listo lo que usa tu rubro.">
       <Field label="Rubro principal" required error={err("vertical")}>
         {(control) => (
-          <Select {...control} value={draft.vertical ?? ""} onChange={(event) => patch({ vertical: (event.target.value || null) as VerticalValue | null })}>
+          <Select {...control} className="h-12 rounded-2xl" value={draft.vertical ?? ""} onChange={(event) => patch({ vertical: (event.target.value || null) as VerticalValue | null })}>
             <option value="">Elige tu rubro</option>
             {verticals.map(({ value, label }) => (
               <option key={value} value={value}>
@@ -177,10 +199,10 @@ export default function AdaptiveBusinessForm({ verticals, draft, onPatch: patch,
                   data-press=""
                   onClick={() => patch({ teamSize: size })}
                   className={cn(
-                    "rounded-md border px-3 py-2 text-center text-[12.5px] font-medium leading-tight transition-[border-color,background-color,box-shadow] duration-200",
+                    "grid min-h-12 place-items-center rounded-2xl border px-3 py-2 text-center text-[12.5px] font-medium leading-tight transition-[border-color,background-color,box-shadow] duration-200",
                     selected
-                      ? "border-accent bg-accent-subtle/60 shadow-[0_0_0_3px_rgba(212,175,55,.18)]"
-                      : "border-border-input bg-surface hover:border-border-input-hover",
+                      ? "border-accent bg-accent-subtle/60 shadow-[0_0_0_4px_rgba(212,175,55,.18)]"
+                      : "border-border/60 bg-card hover:border-accent/50",
                   )}
                 >
                   {TEAM_SIZE_LABELS[size]}
@@ -192,6 +214,9 @@ export default function AdaptiveBusinessForm({ verticals, draft, onPatch: patch,
         </div>
       )}
 
+      </Block>
+
+      <Block title="Datos opcionales" text="Los puedes completar después, cuando los necesites.">
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         <Field label="NIT / RUT" hint="Opcional: puedes agregarlo cuando factures." error={err("taxId")} className="sm:col-span-2">
           {(control) => (
@@ -238,6 +263,7 @@ export default function AdaptiveBusinessForm({ verticals, draft, onPatch: patch,
           )}
         </Field>
       </div>
+    </Block>
     </div>
   );
 }

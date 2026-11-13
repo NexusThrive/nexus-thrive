@@ -36,7 +36,7 @@ const cards: PipelineCard[] = [
 const SCHEMA = toSchema(crmSearchDefs({ me: owner.id, owners: [owner], stages, tags: ["Distribuidor", "Evento", "Mayorista"] }));
 
 /** El pipeline como se ve en la app: barra del módulo CRM y el tablero con datos de muestra. Acciones de muestra. */
-function Pipeline({ quick, empty, vista }: { quick: boolean; empty: boolean; vista: "tablero" | "lista" | "grafico" }) {
+function Pipeline({ quick, empty, vista, hidden = false }: { quick: boolean; empty: boolean; vista: "tablero" | "lista" | "grafico"; hidden?: boolean }) {
   return (
     <AppShellProvider value={{ brandName: "Simpleapp", brandSub: "simpleapp", groups, activeKey: "/crm", title: "Ventas", hrefFor: (href) => `/demo${href}`, quickActions: [], openSearch: () => {} }}>
       <AppTopbar />
@@ -46,7 +46,7 @@ function Pipeline({ quick, empty, vista }: { quick: boolean; empty: boolean; vis
           slug="demo"
           view={vista}
           stages={stages}
-          cards={empty ? [] : cards}
+          cards={empty || hidden ? [] : cards}
           lost={empty ? { count: 0, total: 0 } : { count: 4, total: 6_300_000 }}
           lostRows={[]}
           activities={[]}
@@ -78,3 +78,5 @@ export const CreacionRapida: Story = { parameters: { nextjs: { navigation: { pat
 export const Lista: Story = { args: { vista: "lista" } };
 export const Grafico: Story = { args: { vista: "grafico" } };
 export const SinOportunidades: Story = { args: { empty: true } };
+/** Hay oportunidades, pero «Mis oportunidades» u otro filtro las oculta: el tablero lo dice y ofrece «Ver todas». */
+export const FiltroSinCoincidencias: Story = { args: { hidden: true } };

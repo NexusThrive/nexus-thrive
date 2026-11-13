@@ -53,7 +53,7 @@ export default function FilterSelect({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         disabled={isPending}
-        className={cn(fullWidth ? "w-full" : "w-full sm:w-auto", isPending && "pr-9")}
+        className={cn("h-11 rounded-full", fullWidth ? "w-full" : "w-full sm:w-auto", isPending && "pr-9")}
       >
         <option value="">{allLabel}</option>
         {options.map((option) => (

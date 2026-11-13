@@ -7,6 +7,7 @@ import { kindsForVertical, validateProduct, type ProductDraft } from "@/lib/busi
 import { sellProduct } from "@/lib/business/sales/money-service";
 import { validateStockMove, type StockKind } from "@/lib/business/inventory/inventory";
 import { getProduct, moveStock, saveProduct, stockHistory } from "@/lib/business/catalog/products-db";
+import { syncCategoriesFromText } from "@/lib/business/catalog/categories-db";
 import { canHandleCash, canManage } from "@/lib/core/auth/roles";
 import { PAYMENT_METHODS } from "@/lib/foundation/kernel/payment-vocabulary";
 import { requireTenantContext } from "@/lib/core/tenancy/context";
@@ -50,6 +51,8 @@ export async function saveProductAction(slug: string, id: string | null, d: Prod
     },
     ctx.memberId,
   );
+  // La categoría escrita como texto se vuelve categoría de verdad aquí (antes se hacía en cada vista del catálogo: una escritura al renderizar).
+  await syncCategoriesFromText(ctx.tenantId);
   refresh(slug);
   return { ok: true, id: productId, message: id ? "Guardado" : "Creado" };
 }

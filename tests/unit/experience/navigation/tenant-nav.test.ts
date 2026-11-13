@@ -9,13 +9,13 @@ import { quickCreateActions, quickSheetFor } from "@/lib/experience/navigation/q
 describe("buildTenantNav", () => {
   it("siempre muestra Resumen aunque el módulo de panel no esté activo", () => {
     const groups = buildTenantNav("construction", ["construction"]);
-    expect(groups[0].items.map((i) => i.label)).toEqual(["Resumen"]);
+    expect(groups[0].items.map((i) => i.label)).toEqual(["Resumen", "Notificaciones"]);
   });
 
   it("solo muestra funciones activas y siempre Funciones y Configuración", () => {
     const groups = buildTenantNav("retail", ["dashboard", "crm"]);
     expect(groups.map((g) => g.label)).toEqual(["General", "Clientes y agenda", "CRM", "Sistema"]);
-    expect(groups.flatMap((g) => g.items).map((i) => i.href)).toEqual(["/resumen", "/contactos", "/crm", "/crm/informes", "/crm/configuracion", "/functions", "/data", "/integrations", "/settings"]);
+    expect(groups.flatMap((g) => g.items).map((i) => i.href)).toEqual(["/resumen", "/notificaciones", "/contactos", "/crm", "/crm/informes", "/crm/tareas", "/crm/configuracion", "/functions", "/data", "/integrations", "/settings"]);
   });
 
   it("agrupa por trabajo, con todas las categorías desplegables, y omite los grupos vacíos", () => {
@@ -31,7 +31,7 @@ describe("buildTenantNav", () => {
     const gastos = groups.find((g) => g.label === "Compras y gastos")!;
     expect(gastos.collapsible).toBe(true);
     expect(gastos.items.map((i) => i.label)).toEqual(["Gastos"]);
-    expect(groups.find((g) => g.label === "Finanzas y contabilidad")?.items.map((i) => i.label)).toEqual(["Finanzas", "¿Dónde está mi dinero?", "Cartera", "Contabilidad", "Impuestos y numeración"]);
+    expect(groups.find((g) => g.label === "Finanzas y contabilidad")?.items.map((i) => i.label)).toEqual(["Panorama", "Cobros", "Caja menor", "¿Dónde está mi dinero?", "Cartera", "Contabilidad", "Impuestos y numeración"]);
     // Toda categoría es una opción desplegable con su icono; Inicio (General) y Sistema no.
     expect(groups.find((g) => g.label === "Clientes y agenda")?.collapsible).toBe(true);
     expect(groups.find((g) => g.label === "Clientes y agenda")?.icon).toBeDefined();
@@ -49,7 +49,7 @@ describe("buildTenantNav", () => {
   it("el gimnasio trae un menú reducido: sin Funciones, datos, integraciones, Gastos ni tienda", () => {
     const groups = buildTenantNav("gym", ["dashboard", "crm", "memberships", "finance", "website"]);
     const items = groups.flatMap((g) => g.items);
-    expect(items.map((i) => i.href)).toEqual(["/resumen", "/contactos", "/memberships", "/checkin", "/finanzas", "/finanzas/dinero", "/presencia/sitio", "/settings"]);
+    expect(items.map((i) => i.href)).toEqual(["/resumen", "/notificaciones", "/contactos", "/memberships", "/checkin", "/finanzas", "/finanzas/dinero", "/presencia/sitio", "/settings"]);
     expect(items.find((i) => i.href === "/presencia/sitio")?.label).toBe("Panel de registro de cliente");
     for (const hidden of ["/ventas/pedidos", "/crm", "/crm/informes", "/crm/configuracion", "/crm/tareas", "/crm/formularios", "/proyectos/entregables"]) expect(items.map((i) => i.href)).not.toContain(hidden);
   });
@@ -64,7 +64,7 @@ describe("buildTenantNav", () => {
     const labels = buildTenantNav("construction", ["construction"])
       .flatMap((g) => g.items)
       .map((i) => i.label);
-    expect(labels).toEqual(["Resumen", "Obras", "Cotizaciones", "Catálogo APU", "Funciones", "Importar y exportar", "Integraciones", "Configuración"]);
+    expect(labels).toEqual(["Resumen", "Notificaciones", "Obras", "Cotizaciones", "Catálogo APU", "Funciones", "Importar y exportar", "Integraciones", "Configuración"]);
   });
 });
 
@@ -138,8 +138,9 @@ describe("modulesForRoute", () => {
     expect(modulesForRoute("/proyectos/catalogo-apu")).toEqual(["construction"]);
   });
 
-  it("Finanzas la habilitan Finanzas y Pagos", () => {
-    expect([...(modulesForRoute("/finanzas") ?? [])].sort()).toEqual(["finance", "payments"]);
+  it("Finanzas la habilita Finanzas y Cobros, Pagos", () => {
+    expect([...(modulesForRoute("/finanzas") ?? [])].sort()).toEqual(["finance"]);
+    expect([...(modulesForRoute("/finanzas/cobros") ?? [])].sort()).toEqual(["payments"]);
   });
 
   it("no confunde prefijos parecidos", () => {
@@ -199,7 +200,7 @@ describe("reparto del menú por trabajo (etapa A6)", () => {
   it("CRM tiene Ventas, Informes y Configuración (tareas, entregables y formularios conservan su ruta); Clientes queda con los contactos", () => {
     const groups = buildTenantNav("retail", ["dashboard", "crm"]);
     const crm = groups.find((g) => g.label === "CRM")!;
-    expect(crm.items.map((i) => i.href)).toEqual(["/crm", "/crm/informes", "/crm/configuracion"]);
+    expect(crm.items.map((i) => i.href)).toEqual(["/crm", "/crm/informes", "/crm/tareas", "/crm/configuracion"]);
     expect(groups.find((g) => g.label === "Clientes y agenda")!.items.map((i) => i.href)).toEqual(["/contactos"]);
   });
   it("cotizaciones y pedidos van en Ventas, no en obras", () => {

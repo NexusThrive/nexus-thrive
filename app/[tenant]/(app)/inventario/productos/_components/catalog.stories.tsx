@@ -5,6 +5,10 @@ import type { AttributeRow } from "@/lib/business/catalog/attributes-db";
 import type { CategoryRow } from "@/lib/business/catalog/category-tree";
 import { EMPTY_PRODUCT_DRAFT } from "@/lib/business/catalog/product-form";
 import type { ProductRow } from "@/lib/business/catalog/products-db";
+import { TenantShell } from "@/components/templates/tenant-shell";
+import { VerticalTermsProvider } from "@/app/[tenant]/(app)/vertical-terms-context";
+import { getVerticalTerms } from "@/lib/core/sectors/terms";
+import { PageHeader } from "@/components/molecules/page-header";
 import CatalogView from "./catalog-view";
 import ProductForm from "./product-form";
 import { ProductPreview } from "./product-preview";
@@ -68,7 +72,7 @@ export const FormularioNuevo: StoryObj<typeof ProductForm> = {
     const form = within(canvasElement);
     await userEvent.click(form.getByRole("button", { name: "Crear producto" }));
     // Sin nombre ni precio, el servidor no se llama: el formulario avisa en el campo (validación del servidor simulada en el mock).
-    await expect(form.getByRole("tab", { name: "Información general" })).toHaveAttribute("aria-selected", "true");
+    await expect(await form.findByRole("region", { name: "Información del producto" })).toBeVisible();
   },
 };
 
@@ -80,4 +84,23 @@ export const FormularioEditar: StoryObj<typeof ProductForm> = {
       </div>
     </ToastProvider>
   ),
+};
+
+const shell = (children: React.ReactNode) => (
+  <ToastProvider>
+    <VerticalTermsProvider terms={getVerticalTerms("retail")}>
+      <TenantShell tenantSlug="demo" tenantName="Demo" vertical="retail" activeModules={["dashboard", "inventory", "finance"]}>
+        {children}
+      </TenantShell>
+    </VerticalTermsProvider>
+  </ToastProvider>
+);
+
+/** Dentro del armazón real: el catálogo vacío no debe dejar scroll en el panel. */
+export const VacioEnArmazon: Story = { args: { products: [] }, render: (args) => shell(<div data-bleed="" className="grid gap-5 px-6 pb-8 pt-6"><PageHeader title="Catálogo" description="Productos y servicios: precios, inventario y ventas." /><CatalogView {...args} /></div>), parameters: { layout: "fullscreen" } };
+
+/** Dentro del armazón real: el alta de producto termina donde termina el formulario, sin un hueco enorme debajo. */
+export const FormularioEnArmazon: StoryObj<typeof ProductForm> = {
+  render: () => shell(<ProductForm slug="demo" productId={null} initial={EMPTY_PRODUCT_DRAFT} kinds={["PRODUCT", "SERVICE"]} categories={categories} attributes={attributes} variantNames={[]} stock={null} imageUrl={null} />),
+  parameters: { layout: "fullscreen" },
 };

@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { Activity, Building2, CircleDollarSign, Clock } from "lucide-react";
 import { Delta } from "@/components/atoms/delta";
 import { Alert } from "@/components/molecules/alert";
-import { KpiCard } from "@/components/molecules/kpi-card";
+import { KpiCard } from "@/components/widgets/kpi-card";
 import type { ExecutiveKpis as ExecutiveKpisData } from "@/lib/platform/admin/db";
 
 /**
