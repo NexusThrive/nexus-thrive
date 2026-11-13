@@ -324,7 +324,7 @@ Reglas:
 - **Armazón del negocio en PC (variante `workspace`):** `AppSidebar variant="workspace"` y `AppTopbar variant="workspace"`. Marco gris claro
   (`surface-muted`) **sin líneas divisorias**: la separación la hace el contenido, que va en un panel blanco (`card`) con esquinas redondeadas que flota
   a la derecha de la barra lateral (`.panel` en `tenant-shell.module.css`). La barra lateral lleva arriba el bloque del negocio con la **N en negro**
-  y el botón de contraer; el ítem activo es una píldora blanca sin sombra ni corte oro. La barra superior (sin celda de marca ni lanzador) lleva el título
+  y el botón de contraer; el ítem activo es una píldora blanca sin sombra ni corte oro. **Menú con scroll:** la barra de desplazamiento va oculta (robaba ancho justo donde el ítem activo se une al panel), así que cuando hay más menú arriba o abajo ese borde se tapa con un degradado y una flecha (`data-more` en `.nav`); desaparecen solos al llegar al extremo. La barra superior (sin celda de marca ni lanzador) lleva el título
   de la pantalla, el buscador en píldora blanca (`NavbarSearch variant="pill"`), «Crear» de icono, conversaciones y agenda (solo si esas funciones están
   encendidas), avisos y la cuenta con su nombre y rol; **sin cambio de tema ni de negocio** mientras el blanco sea el único tema y cada cuenta use un solo
   negocio. Inicio usa este mismo armazón (ya no es una pantalla aparte). Sin rellenos negros: los botones principales y los acentos van en oro. Inicio

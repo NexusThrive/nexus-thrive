@@ -52,15 +52,39 @@
   scrollbar-width: thin;
   scrollbar-color: var(--sidebar-border) transparent;
 }
-/* Hay más menú arriba o abajo: ese borde se difumina (la señal es visual, sin barra ni flecha). */
-.nav[data-more="down"] {
-  mask-image: linear-gradient(to bottom, #000 calc(100% - 44px), transparent);
+/* Hay más menú arriba o abajo (`data-more`, lo marca el componente): ese borde se tapa con un degradado y una flecha, para que se vea que el
+   menú se desplaza aunque no haya barra (en el armazón del negocio se oculta: robaba ancho justo donde el ítem activo se une al panel).
+   Son pegajosos —se quedan en el borde visible mientras se recorre— y no atrapan el puntero; el degradado va hacia el color de la barra. Con
+   `margin` negativo no suman altura: el menú no se mueve al aparecer ni al desaparecer. Desaparecen solos al llegar a ese extremo. */
+.nav[data-more="down"]::after,
+.nav[data-more="both"]::after,
+.nav[data-more="up"]::before,
+.nav[data-more="both"]::before {
+  content: "";
+  position: sticky;
+  z-index: 2;
+  flex: none;
+  align-self: stretch;
+  height: 40px;
+  /* Hasta el borde de la barra, también donde el ítem activo se une al panel (`--pad` solo existe en esa variante). */
+  margin-right: calc(var(--pad, 0px) * -1);
+  pointer-events: none;
 }
-.nav[data-more="up"] {
-  mask-image: linear-gradient(to bottom, transparent, #000 44px);
+.nav[data-more="down"]::after,
+.nav[data-more="both"]::after {
+  bottom: 0;
+  margin-top: -42px; /* alto 40 + el hueco (gap) de 2 px del menú */
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a8a92' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center bottom 6px / 18px 18px no-repeat,
+    linear-gradient(to bottom, transparent, var(--sidebar-bg) 72%);
 }
-.nav[data-more="both"] {
-  mask-image: linear-gradient(to bottom, transparent, #000 44px, #000 calc(100% - 44px), transparent);
+.nav[data-more="up"]::before,
+.nav[data-more="both"]::before {
+  top: 0;
+  margin-bottom: -42px;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a8a92' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m18 15-6-6-6 6'/%3E%3C/svg%3E") center top 6px / 18px 18px no-repeat,
+    linear-gradient(to top, transparent, var(--sidebar-bg) 72%);
 }
 .groupItems {
   display: flex;
