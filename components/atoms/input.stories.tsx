@@ -3,7 +3,8 @@ import { Input } from "./input";
 import { Label } from "./label";
 
 const meta = {
-  title: "Átomos/Input",
+  title: "Átomos/Formularios/Input",
+  id: "átomos-input",
   component: Input,
   args: { placeholder: "Nombre de la obra" },
   argTypes: { type: { control: "select", options: ["text", "email", "number", "date", "file"] } },

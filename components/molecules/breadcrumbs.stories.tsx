@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Breadcrumbs } from "./breadcrumbs";
 
 const meta = {
-  title: "Moléculas/Breadcrumbs",
+  title: "Moléculas/Navegación/Breadcrumbs",
+  id: "moléculas-breadcrumbs",
   component: Breadcrumbs,
   parameters: { docs: { description: { component: "Ruta de navegación: `<nav>` con lista ordenada. Los pasos con `href` son enlaces, los demás (categorías) solo texto, y el último es la página actual (`aria-current`). Con menos de dos pasos no se pinta." } } },
 } satisfies Meta<typeof Breadcrumbs>;

@@ -10,7 +10,8 @@ import { AuriAssistant } from "./auri-assistant";
  * Centro de ayuda se abre desde el pie del chat.
  */
 const meta = {
-  title: "Organismos/AuriAssistant",
+  title: "Organismos/AURI/AuriAssistant",
+  id: "organismos-auriassistant",
   component: AuriAssistant,
   args: { tenantSlug: "gym-norte", businessName: "Gimnasio Norte", activeModules: ["crm", "finance", "bookings"] },
   // Fuera del Inicio, para que el recorrido de la primera visita no aparezca en las demás historias.

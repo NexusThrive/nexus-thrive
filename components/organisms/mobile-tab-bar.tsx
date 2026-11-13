@@ -121,7 +121,7 @@ export function MobileTabBar({ accountExtra }: { accountExtra?: React.ReactNode 
           aria-expanded={quickActions.length ? createOpen : undefined}
           onClick={() => (quickActions.length ? setCreateOpen(true) : openSearch())}
           data-press=""
-          className="mb-1.5 grid size-14 place-items-center justify-self-center rounded-[6px] bg-primary text-primary-foreground shadow-[0_6px_18px_rgba(0,0,0,.22)]"
+          className="mb-1.5 grid size-14 place-items-center justify-self-center rounded-full bg-accent text-ink shadow-md"
         >
           {quickActions.length ? (
           <Plus

@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { UploadProgress } from "./upload-progress";
 
 const meta = {
-  title: "Moléculas/UploadProgress",
+  title: "Moléculas/Formularios/UploadProgress",
+  id: "moléculas-uploadprogress",
   component: UploadProgress,
   args: { progress: 0.46, filename: "BASE DE DATOS APU 2026 - MASTER PACK COL.xlsx" },
   argTypes: { progress: { control: { type: "range", min: 0, max: 1, step: 0.01 } } },

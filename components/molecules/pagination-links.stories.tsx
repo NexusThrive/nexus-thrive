@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import PaginationLinks from "./pagination-links";
 
 const meta = {
-  title: "Moléculas/PaginationLinks",
+  title: "Moléculas/Navegación/PaginationLinks",
+  id: "moléculas-paginationlinks",
   component: PaginationLinks,
   args: { paramKey: "page", page: 2, totalPages: 7, totalLabel: "164 actividades" },
   parameters: {

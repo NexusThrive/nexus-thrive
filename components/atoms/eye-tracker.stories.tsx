@@ -7,7 +7,8 @@ import { EyeTracker } from "./eye-tracker";
  * (mover el puntero no re-renderiza), se detiene fuera de pantalla y respeta el movimiento reducido.
  */
 const meta = {
-  title: "Átomos/EyeTracker",
+  title: "Átomos/Marca/EyeTracker",
+  id: "átomos-eyetracker",
   component: EyeTracker,
   parameters: { layout: "centered" },
   args: { size: 120, shape: "Ball", eyes: "Slant" },

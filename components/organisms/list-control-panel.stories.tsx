@@ -26,7 +26,8 @@ function Demo({ initial = "lista", withFilters = true }: { initial?: View; withF
 }
 
 const meta = {
-  title: "Organismos/Panel de control de lista",
+  title: "Organismos/Datos/Panel de control de lista",
+  id: "organismos-panel-de-control-de-lista",
   component: ListControlPanel,
   decorators: [withShell],
   parameters: { layout: "padded", docs: { description: { component: "Panel de control de una lista: migas por registro, acciones, búsqueda, filtros, selector de vistas y paginador. Base de Odoo, con diseño de Nexus. Cada pantalla lo llena con sus controles." } } },

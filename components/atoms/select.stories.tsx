@@ -8,7 +8,8 @@ import { Select } from "./select";
 const methods = ["Nequi", "Efectivo", "Tarjeta", "Transferencia"];
 
 const meta = {
-  title: "Átomos/Select",
+  title: "Átomos/Formularios/Select",
+  id: "átomos-select",
   component: Select,
   args: {
     "aria-label": "Medio de pago",

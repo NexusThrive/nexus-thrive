@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { StepRail } from "./step-rail";
 
 const meta = {
-  title: "Moléculas/StepRail",
+  title: "Moléculas/Navegación/StepRail",
+  id: "moléculas-steprail",
   component: StepRail,
   args: { steps: ["Perfil", "Tu negocio", "Plan y módulos", "Confirmación"], current: 2 },
   decorators: [(Story) => <div className="w-64 bg-ink p-8"><Story /></div>],

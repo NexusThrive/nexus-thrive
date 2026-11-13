@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Alert } from "./alert";
 
 const meta = {
-  title: "Moléculas/Alert",
+  title: "Moléculas/Avisos y estados/Alert",
+  id: "moléculas-alert",
   component: Alert,
   args: { tone: "danger", title: "Contraseña incorrecta", children: "Inténtalo de nuevo o restablécela." },
   argTypes: { tone: { control: "inline-radio", options: ["danger", "success", "warning", "info"] } },

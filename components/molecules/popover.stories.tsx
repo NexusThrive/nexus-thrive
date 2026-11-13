@@ -5,7 +5,8 @@ import { Field } from "./field";
 import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "./popover";
 
 const meta = {
-  title: "Moléculas/Popover",
+  title: "Moléculas/Superposiciones/Popover",
+  id: "moléculas-popover",
   component: Popover,
   parameters: {
     docs: {

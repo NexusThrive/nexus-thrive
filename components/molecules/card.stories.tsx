@@ -11,7 +11,8 @@ import {
 } from "./card";
 
 const meta = {
-  title: "Moléculas/Card",
+  title: "Moléculas/Contenido/Card",
+  id: "moléculas-card",
   component: Card,
   decorators: [(Story) => <div className="max-w-md"><Story /></div>],
 } satisfies Meta<typeof Card>;

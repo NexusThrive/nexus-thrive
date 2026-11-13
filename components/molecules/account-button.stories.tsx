@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { AccountButton } from "./account-button";
 
 const meta = {
-  title: "Moléculas/AccountButton",
+  title: "Moléculas/Contenido/AccountButton",
+  id: "moléculas-accountbutton",
   component: AccountButton,
   args: { showName: false, compact: false },
   parameters: {

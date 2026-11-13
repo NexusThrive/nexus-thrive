@@ -31,7 +31,8 @@ const footer = (
 );
 
 const meta = {
-  title: "Organismos/ResponsiveSheet",
+  title: "Organismos/Superposiciones/ResponsiveSheet",
+  id: "organismos-responsivesheet",
   component: ResponsiveSheet,
   args: {
     title: "Nuevo cliente",

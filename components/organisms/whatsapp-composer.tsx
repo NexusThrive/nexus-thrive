@@ -147,7 +147,7 @@ export function WhatsAppComposer({
                 <p className="m-auto max-w-[36ch] text-center text-ui text-muted-foreground">Elige una plantilla o escribe un mensaje para {first}. Se abre WhatsApp con el texto listo.</p>
               ) : null}
               {sent.map((m, i) => (
-                <div key={`${m.at}-${i}`} className="max-w-[min(78%,440px)] self-end rounded-md bg-primary px-3 py-2 text-sm leading-snug text-primary-foreground">
+                <div key={`${m.at}-${i}`} className="max-w-[min(78%,440px)] self-end rounded-lg rounded-br-xs bg-accent-subtle px-3 py-2 text-sm leading-snug text-foreground">
                   {m.text}
                   <small className="mt-0.5 block text-right text-2xs opacity-65">Enviado · {time.format(new Date(m.at))}</small>
                 </div>

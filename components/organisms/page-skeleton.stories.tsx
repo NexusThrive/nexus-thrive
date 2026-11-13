@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { PageSkeleton } from "./page-skeleton";
 
 const meta = {
-  title: "Organismos/PageSkeleton",
+  title: "Organismos/Inicio/PageSkeleton",
+  id: "organismos-pageskeleton",
   component: PageSkeleton,
   args: { variant: "table" },
   argTypes: { variant: { control: "inline-radio", options: ["dashboard", "table", "detail", "form", "profile"] } },

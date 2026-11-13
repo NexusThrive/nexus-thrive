@@ -202,7 +202,7 @@ function Select({
           onKeyDown={onKeyDown}
           className={cn(
             fieldClasses,
-            "group flex h-[var(--control-h)] min-w-0 cursor-pointer items-center gap-2 text-left data-[state=open]:border-ring data-[state=open]:shadow-[0_0_0_3px_rgba(212,175,55,0.18)] data-[placeholder]:text-muted-foreground",
+            "group flex h-(--control-h) min-w-0 cursor-pointer items-center gap-2 text-left data-[state=open]:border-ring data-[state=open]:shadow-focus data-[placeholder]:text-muted-foreground",
             className,
           )}
         >

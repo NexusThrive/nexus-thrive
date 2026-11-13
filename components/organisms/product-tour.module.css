@@ -2,7 +2,7 @@
 .spot {
   position: fixed;
   z-index: var(--z-modal);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   pointer-events: none;
   box-shadow:
     0 0 0 2px var(--accent),
@@ -34,7 +34,7 @@
 .dot {
   height: 3px;
   width: 10px;
-  border-radius: 2px;
+  border-radius: var(--radius-xs);
   background: var(--border);
   transition:
     width 320ms var(--nx-ease-out),

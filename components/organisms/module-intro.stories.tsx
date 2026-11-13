@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { ModuleIntro } from "./module-intro";
 
 const meta = {
-  title: "Organismos/ModuleIntro",
+  title: "Organismos/Inicio/ModuleIntro",
+  id: "organismos-moduleintro",
   component: ModuleIntro,
   args: {
     moduleKey: `storybook-${Date.now()}`,

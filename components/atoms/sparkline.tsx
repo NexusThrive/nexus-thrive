@@ -101,7 +101,7 @@ export function Sparkline({
       el.style.left = left;
       el.dataset.on = "";
     }
-    if (dotRef.current) dotRef.current.style.opacity = "0"; // el cuadro del último punto cede al cursor
+    if (dotRef.current) dotRef.current.style.opacity = "0"; // el punto final cede al cursor
     if (cursorRef.current) cursorRef.current.style.top = `${(y / H) * 100}%`;
     onScrubRef.current?.(values[i]! + (values[i + 1]! - values[i]!) * t);
   }
@@ -148,7 +148,7 @@ export function Sparkline({
       <span
         ref={dotRef}
         aria-hidden="true"
-        className="absolute size-1.5 -translate-x-1/2 -translate-y-1/2 bg-[var(--nx-gold-500)] transition-opacity duration-200"
+        className="absolute size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold-500 transition-opacity duration-200"
         style={{ left: `${(last[0] / W) * 100}%`, top: `${(last[1] / H) * 100}%` }}
       />
       <span
@@ -159,7 +159,7 @@ export function Sparkline({
       <span
         ref={cursorRef}
         aria-hidden="true"
-        className="pointer-events-none absolute left-full top-1/2 size-2 -translate-x-1/2 -translate-y-1/2 scale-50 bg-[var(--nx-gold-500)] opacity-0 shadow-[0_0_0_3px_var(--card)] transition-[opacity,transform] duration-150 ease-out motion-reduce:transition-none data-[on]:scale-100 data-[on]:opacity-100"
+        className="pointer-events-none absolute left-full top-1/2 size-2 -translate-x-1/2 -translate-y-1/2 scale-50 rounded-full bg-gold-500 opacity-0 shadow-[0_0_0_3px_var(--card)] transition-[opacity,transform] duration-150 ease-out motion-reduce:transition-none data-[on]:scale-100 data-[on]:opacity-100"
       />
     </div>
   );

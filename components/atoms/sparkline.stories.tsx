@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Sparkline } from "./sparkline";
 
 const meta = {
-  title: "Átomos/Sparkline",
+  title: "Átomos/Datos/Sparkline",
+  id: "átomos-sparkline",
   component: Sparkline,
   args: { values: [12, 18, 14, 22, 19, 27, 24, 31, 28, 36, 33, 41] },
   decorators: [(Story) => <div className="w-56"><Story /></div>],

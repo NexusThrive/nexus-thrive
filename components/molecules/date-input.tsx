@@ -137,7 +137,7 @@ export function DateInput({ value, defaultValue = "", onChange, name = "", min, 
                     onClick={() => pick(day)}
                     className={cn(
                       "relative grid aspect-square min-h-9 place-items-center rounded-sm text-ui tabular-nums transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring disabled:cursor-not-allowed disabled:opacity-30 pointer-coarse:min-h-11",
-                      selected ? "bg-primary text-primary-foreground" : "hover:bg-surface-muted",
+                      selected ? "bg-accent text-ink" : "hover:bg-surface-muted",
                       !sameMonth(day, view) && !selected && "text-muted-foreground opacity-45",
                       day === today && !selected && "shadow-[inset_0_0_0_1px_var(--nx-gold-600)]",
                     )}
@@ -157,7 +157,7 @@ export function DateInput({ value, defaultValue = "", onChange, name = "", min, 
                   onClick={() => (mode === "months" ? chooseMonth(item.value) : chooseYear(item.value))}
                   className={cn(
                     "min-h-11 rounded-sm text-ui capitalize tabular-nums transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring",
-                    item.active ? "bg-primary text-primary-foreground" : "hover:bg-surface-muted",
+                    item.active ? "bg-accent text-ink" : "hover:bg-surface-muted",
                   )}
                 >
                   {item.label}

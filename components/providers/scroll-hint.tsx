@@ -48,7 +48,7 @@ export function ScrollHint({ label = "Ir al final" }: { label?: string }) {
           onClick={goToEnd}
           aria-label={label}
           title={label}
-          className="nx-rise pointer-events-auto absolute bottom-5 grid size-11 place-items-center rounded-full border border-border/60 bg-card text-foreground shadow-[var(--nx-shadow-overlay)] outline-none transition-colors hover:bg-accent-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          className="nx-rise pointer-events-auto absolute bottom-5 grid size-11 place-items-center rounded-full border border-border/60 bg-card text-foreground shadow-overlay outline-none transition-colors hover:bg-accent-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
           <ChevronDown aria-hidden="true" className="size-5" strokeWidth={2} />
         </button>

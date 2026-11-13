@@ -90,7 +90,7 @@ export default function CustomerSearch() {
             type="button"
             aria-label="Limpiar búsqueda"
             onClick={() => setValue("")}
-            className="rounded p-0.5 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+            className="rounded-xs p-0.5 text-muted-foreground transition hover:bg-muted hover:text-foreground"
           >
             <X aria-hidden="true" className="h-4 w-4" />
           </button>

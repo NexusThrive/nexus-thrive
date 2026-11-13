@@ -77,7 +77,7 @@ export function AppSidebar({ variant }: { /** `workspace`: la barra del negocio 
   const pinnedGroups = groups.filter((group) => group.pinned);
   const toggle = (label: string, collapsed: boolean) => writeClosed({ ...closed, [label]: !collapsed });
 
-  // Marca en el menú qué lado tiene más por ver (`data-more="up|down|both"`): el CSS difumina ese borde, sin barra ni flecha.
+  // Marca en el menú qué lado tiene más por ver (`data-more="up|down|both"`): el CSS lo tapa con un degradado y una flecha (la barra va oculta en el armazón del negocio).
   useEffect(() => {
     const nav = navRef.current;
     if (!nav) return;

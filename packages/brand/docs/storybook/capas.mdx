@@ -28,25 +28,35 @@ numérico (una prueba lo vigila).
 
 En Tailwind: `z-(--z-popover)`. En CSS: `z-index: var(--z-modal)`.
 
-## Sombras
+## Profundidad
+
+Sombras **cálidas y difusas** en cuatro niveles, de una sola fuente (`--nx-shadow-*`). En reposo casi nada flota: las
+superficies se separan por color y por un borde sutil; la sombra crece con la elevación.
 
 <div style={{ display: "flex", gap: 24, margin: "16px 0 32px", flexWrap: "wrap" }}>
   {[
-    ["Tarjeta (sin sombra)", "none"],
-    ["--shadow-popover", "var(--shadow-popover)"],
-    ["--nx-shadow-overlay", "var(--nx-shadow-overlay)"],
-  ].map(([label, shadow]) => (
-    <div key={label} style={{ width: 180, height: 96, background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 6, boxShadow: shadow, display: "grid", placeItems: "center", fontSize: 12, color: "var(--foreground-muted)", fontFamily: "var(--font-jetbrains), monospace" }}>
-      {label}
+    ["shadow-xs", "var(--nx-shadow-xs)", "Campos, botón outline"],
+    ["shadow-sm", "var(--nx-shadow-sm)", "Tarjeta al pasar el cursor"],
+    ["shadow-md", "var(--nx-shadow-md)", "Menús, ayuda «?»"],
+    ["shadow-lg", "var(--nx-shadow-lg)", "Diálogos y paneles"],
+  ].map(([label, shadow, uso]) => (
+    <div key={label} style={{ width: 180, height: 104, background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "var(--radius-lg)", boxShadow: shadow, display: "grid", placeItems: "center", alignContent: "center", gap: 4, fontSize: 12, color: "var(--foreground-muted)" }}>
+      <code>{label}</code>
+      <span>{uso}</span>
     </div>
   ))}
 </div>
 
-| Token | Para |
-| --- | --- |
-| `--shadow-popover` | Menús, ventanas flotantes, ayuda "?" |
-| `--nx-shadow-overlay` | Diálogos y paneles |
-| `--overlay` | Velo detrás de un diálogo (más oscuro en tema oscuro) |
+| Utilidad | Token | Para |
+| --- | --- | --- |
+| `shadow-xs` | `--nx-shadow-xs` | Campos y botón `outline`: los despega apenas del fondo |
+| `shadow-sm` | `--nx-shadow-sm` | Tarjeta interactiva al pasar el cursor |
+| `shadow-md` | `--nx-shadow-md` · `--shadow-popover` | Menús, ventanas flotantes, ayuda «?» |
+| `shadow-lg` · `shadow-overlay` | `--nx-shadow-lg` · `--nx-shadow-overlay` | Diálogos, paneles laterales, avisos flotantes |
+| `shadow-focus` | `--nx-shadow-focus` | Halo oro de un campo enfocado (acompaña al anillo de foco) |
+| — | `--overlay` | Velo detrás de un diálogo (más oscuro en tema oscuro) |
+
+Sin `shadow-[…]` sueltas en los componentes.
 
 ## Foco
 
@@ -55,7 +65,7 @@ En Tailwind: `z-(--z-popover)`. En CSS: `z-index: var(--z-modal)`.
 visible.
 
 <div style={{ display: "flex", gap: 16, margin: "16px 0" }}>
-  <button type="button" style={{ height: 40, padding: "0 18px", borderRadius: 4, border: "1px solid var(--border-input)", background: "var(--surface)", color: "var(--foreground)", outline: "2px solid var(--ring)", outlineOffset: 2, fontSize: 13, fontWeight: 600 }}>
+  <button type="button" style={{ height: 40, padding: "0 18px", borderRadius: "var(--radius-md)", border: "1px solid var(--border-input)", background: "var(--surface)", color: "var(--foreground)", outline: "2px solid var(--ring)", outlineOffset: 2, fontSize: 13, fontWeight: 600 }}>
     Así se ve el foco
   </button>
 </div>

@@ -215,7 +215,7 @@ export default function AdvancedSearch({ etiqueta, esquema, favoritos, conteos, 
   );
   const chip = "flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md bg-surface-muted px-2 py-[3px] text-xs text-foreground";
   const removeButton = (label: string, onClick: () => void) => (
-    <button type="button" aria-label={`Quitar ${label}`} onClick={onClick} className="grid size-4 place-items-center rounded text-muted-foreground outline-none hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
+    <button type="button" aria-label={`Quitar ${label}`} onClick={onClick} className="grid size-4 place-items-center rounded-xs text-muted-foreground outline-none hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
       <X aria-hidden="true" className="size-3" />
     </button>
   );

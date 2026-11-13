@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Badge, StatusDot } from "./badge";
 
 const meta = {
-  title: "Átomos/Badge",
+  title: "Átomos/Presentación/Badge",
+  id: "átomos-badge",
   component: Badge,
   args: { children: "Contratada" },
   argTypes: {

@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { BrandSpinner, NMark } from "./n-mark";
 
 const meta = {
-  title: "Átomos/NMark",
+  title: "Átomos/Marca/NMark",
+  id: "átomos-nmark",
   component: NMark,
   args: { size: 40, state: "loop", progress: 0.4 },
   argTypes: {

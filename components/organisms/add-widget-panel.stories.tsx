@@ -7,7 +7,8 @@ import { CHART_CATALOG, type ChartType } from "@/lib/experience/dashboard/chart-
 import { AddWidgetPanel, type BlockOption } from "./add-widget-panel";
 
 const meta = {
-  title: "Organismos/AddWidgetPanel",
+  title: "Organismos/Inicio/AddWidgetPanel",
+  id: "organismos-addwidgetpanel",
   component: AddWidgetPanel,
   parameters: {
     docs: { description: { component: "Panel lateral «Elementos del inicio»: todo lo que se puede poner en el inicio, en un solo lugar. **Bloques** son los del sistema (cifras, accesos, actividad): los ocultos se agregan con un toque. **Gráficos** son el catálogo con vista previa. Lo que ya está puesto sale atenuado y no se puede elegir (se quita desde su tarjeta); lo que aún no existe va marcado «Pronto». Se compone con `ResponsiveSheet`." } },

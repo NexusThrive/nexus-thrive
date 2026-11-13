@@ -147,7 +147,7 @@ export default function FichaActivity({
               {/* Fichas como en la referencia, todas en gris suave; la reciente lleva un punto de oro junto a su hora. */}
               <ol className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))" }}>
                 {group.items.map((item) => (
-                  <li key={item.id} className={cn("grid min-h-[120px] content-between gap-3 rounded-3xl p-4", "bg-surface-muted/60 text-foreground")}>
+                  <li key={item.id} className={cn("grid content-start gap-2 rounded-2xl p-4", "bg-surface-muted/60 text-foreground")}>
                     <p className="flex items-center gap-1.5 text-xs tabular-nums text-muted-foreground">
                       {item.fresh ? <span aria-hidden="true" className="size-2 rounded-full bg-accent" /> : null}
                       {time.format(new Date(item.date))}

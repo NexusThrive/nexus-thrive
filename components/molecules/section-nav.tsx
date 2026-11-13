@@ -54,7 +54,7 @@ export function SectionNav<T extends string>({
             onClick={() => onChange(item.id)}
             className={cn(
               "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-sm border px-3 text-ui font-medium transition-colors",
-              item.id === value ? "border-primary bg-primary text-primary-foreground" : "border-border-input text-muted-foreground",
+              item.id === value ? "border-accent bg-accent text-ink" : "border-border-input text-muted-foreground",
             )}
           >
             <item.icon aria-hidden="true" className="size-4" strokeWidth={1.7} />

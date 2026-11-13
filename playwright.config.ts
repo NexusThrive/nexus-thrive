@@ -11,6 +11,8 @@ import { defineConfig, devices } from "@playwright/test";
 const PORT = Number(process.env.E2E_PORT ?? 6007);
 /** Pruebas responsive (principio 08): solo corren en el proyecto `responsive`. */
 const RESPONSIVE = /responsive\.spec\.ts/;
+/** Recorrido de todo el catálogo (cientos de historias): aparte del e2e habitual; `pnpm test:catalogo`. */
+const CATALOGO = /catalogo-historias\.spec\.ts/;
 
 export default defineConfig({
   testDir: "./e2e",
@@ -23,10 +25,12 @@ export default defineConfig({
     trace: "retain-on-failure",
   },
   projects: [
-    { name: "escritorio", testIgnore: RESPONSIVE, use: { ...devices["Desktop Chrome"], viewport: { width: 1280, height: 800 } } },
-    { name: "movil", testIgnore: RESPONSIVE, use: { ...devices["Pixel 7"] } },
+    { name: "escritorio", testIgnore: [RESPONSIVE, CATALOGO], use: { ...devices["Desktop Chrome"], viewport: { width: 1280, height: 800 } } },
+    { name: "movil", testIgnore: [RESPONSIVE, CATALOGO], use: { ...devices["Pixel 7"] } },
     // Rejilla de viewports de referencia (e2e/viewports.ts): cada prueba fija su propio viewport y su modo táctil.
     { name: "responsive", testMatch: RESPONSIVE, use: { ...devices["Desktop Chrome"] } },
+    // Solo con CATALOGO=1 (`pnpm test:catalogo`): cada historia se abre y debe pintar sin errores.
+    ...(process.env.CATALOGO ? [{ name: "catalogo", testMatch: CATALOGO, use: { ...devices["Desktop Chrome"], viewport: { width: 1280, height: 800 } } }] : []),
   ],
   webServer: {
     command: `pnpm exec vite preview --outDir storybook-static --port ${PORT} --strictPort --host 127.0.0.1`,

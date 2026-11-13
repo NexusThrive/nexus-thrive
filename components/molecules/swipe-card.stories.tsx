@@ -3,7 +3,8 @@ import { Archive, Banknote, MessageCircle, Pencil } from "lucide-react";
 import { SwipeCard } from "./swipe-card";
 
 const meta = {
-  title: "Moléculas/SwipeCard",
+  title: "Moléculas/Contenido/SwipeCard",
+  id: "moléculas-swipecard",
   component: SwipeCard,
   globals: { viewport: { value: "mobile1" } },
   args: {

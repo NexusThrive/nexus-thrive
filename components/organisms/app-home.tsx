@@ -239,7 +239,7 @@ export function AppHome({ trial = null, summary: input, parts, userName = null, 
         {/* Saludo: el protagonista de Inicio. Fondo cálido de oro, esquinas muy suaves y texto ligero; con lo que pasa hoy y el negocio. */}
         <section
           aria-labelledby="home-saludo"
-          className="relative isolate grid items-center gap-6 overflow-hidden rounded-[28px] bg-accent-subtle/40 px-6 py-7 min-[820px]:grid-cols-[minmax(0,1fr)_auto] min-[820px]:px-9 min-[820px]:py-9"
+          className="relative isolate grid items-center gap-6 overflow-hidden rounded-sheet bg-accent-subtle/40 px-6 py-7 min-[820px]:grid-cols-[minmax(0,1fr)_auto] min-[820px]:px-9 min-[820px]:py-9"
           style={{ backgroundImage: "radial-gradient(90% 130% at 100% 10%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 75%), radial-gradient(70% 100% at 0% 100%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 75%)" }}
         >
           <div className="grid gap-5">

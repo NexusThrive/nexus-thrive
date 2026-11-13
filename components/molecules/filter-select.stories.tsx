@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import FilterSelect from "./filter-select";
 
 const meta = {
-  title: "Moléculas/FilterSelect",
+  title: "Moléculas/Formularios/FilterSelect",
+  id: "moléculas-filterselect",
   component: FilterSelect,
   args: {
     paramKey: "status",

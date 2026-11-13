@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { BootSteps } from "./boot-steps";
 
 const meta = {
-  title: "Moléculas/BootSteps",
+  title: "Moléculas/Avisos y estados/BootSteps",
+  id: "moléculas-bootsteps",
   component: BootSteps,
   args: {
     steps: ["Leer el libro", "Importar capítulos", "Importar insumos y fotos", "Verificar costos directos"],

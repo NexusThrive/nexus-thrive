@@ -159,7 +159,7 @@ function LookaheadTaskForm({
         <input id="la-notes" name="notes" maxLength={300} className={inputClass} />
       </label>
       <label htmlFor="la-restricted" className="flex items-center gap-2 text-sm text-muted-foreground">
-        <input id="la-restricted" name="isRestricted" type="checkbox" className="h-4 w-4 rounded border-border" />
+        <input id="la-restricted" name="isRestricted" type="checkbox" className="h-4 w-4 rounded-xs border-border" />
         Tiene una restricción por liberar
       </label>
       <div className="flex items-center justify-end gap-2 md:col-span-2">
@@ -274,7 +274,7 @@ function CommitmentEvaluation({
         </Select>
         <input name="failureNotes" maxLength={300} placeholder="Nota" aria-label="Nota de no cumplimiento" className="h-8 w-36 rounded-lg border border-border bg-card px-2 text-xs" />
         <Button type="submit" size="sm" disabled={pending}>Guardar</Button>
-        <button type="button" onClick={() => setFailing(false)} aria-label="Cancelar" className="rounded p-1 text-muted-foreground hover:bg-muted">
+        <button type="button" onClick={() => setFailing(false)} aria-label="Cancelar" className="rounded-xs p-1 text-muted-foreground hover:bg-muted">
           <X aria-hidden="true" className="h-4 w-4" />
         </button>
         <FormMessage state={state} />

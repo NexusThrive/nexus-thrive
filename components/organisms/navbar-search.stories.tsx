@@ -4,7 +4,8 @@ import { CommandPalette } from "./command-palette";
 import { NavbarSearch } from "./navbar-search";
 
 const meta = {
-  title: "Organismos/NavbarSearch",
+  title: "Organismos/Shell/NavbarSearch",
+  id: "organismos-navbarsearch",
   component: NavbarSearch,
   decorators: [withShell],
   parameters: {

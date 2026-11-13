@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { NLoader } from "./n-loader";
 
 const meta = {
-  title: "Átomos/NLoader",
+  title: "Átomos/Marca/NLoader",
+  id: "átomos-nloader",
   component: NLoader,
   args: { size: 64 },
   parameters: { docs: { description: { component: "Indicador de carga de marca: el trazo recorre el contorno de la N. `loop` cuando no se sabe cuánto falta; `prog` con `progress` (0–1) cuando sí; `done` al terminar." } } },

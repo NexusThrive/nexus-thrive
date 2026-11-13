@@ -58,7 +58,7 @@ export function ErrorState({
         <span aria-hidden="true" className="relative mb-4 grid size-28 place-items-center">
           <span className="absolute inset-0 rounded-full bg-danger-subtle/40" />
           <span className="absolute inset-3 rounded-full bg-danger-subtle/70" />
-          <span className="relative grid size-14 place-items-center rounded-full bg-card text-danger shadow-[0_1px_2px_rgba(0,0,0,0.06)]">
+          <span className="relative grid size-14 place-items-center rounded-full bg-card text-danger shadow-xs">
             <AlertTriangle className="size-6" strokeWidth={1.8} />
           </span>
         </span>

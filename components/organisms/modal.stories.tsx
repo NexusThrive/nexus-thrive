@@ -7,7 +7,8 @@ import { Label } from "@/components/atoms/label";
 import Modal from "./modal";
 
 const meta = {
-  title: "Organismos/Modal",
+  title: "Organismos/Superposiciones/Modal",
+  id: "organismos-modal",
   component: Modal,
   args: {
     open: true,

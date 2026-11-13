@@ -3,7 +3,8 @@ import { withShell } from "../../.storybook/decorators";
 import { MobileTabBar } from "./mobile-tab-bar";
 
 const meta = {
-  title: "Organismos/MobileTabBar",
+  title: "Organismos/Shell/MobileTabBar",
+  id: "organismos-mobiletabbar",
   component: MobileTabBar,
   decorators: [withShell],
   globals: { viewport: { value: "mobile1" } },

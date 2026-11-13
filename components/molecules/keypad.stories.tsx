@@ -14,7 +14,8 @@ function Demo() {
 }
 
 const meta = {
-  title: "Moléculas/Keypad",
+  title: "Moléculas/Formularios/Keypad",
+  id: "moléculas-keypad",
   component: Demo,
   parameters: { docs: { description: { component: "CTL·07 — cada tecla hace saltar la cifra (resorte 700 · 15). Para cobrar con una mano." } } },
 } satisfies Meta<typeof Demo>;

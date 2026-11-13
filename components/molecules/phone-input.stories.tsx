@@ -8,7 +8,8 @@ function Demo() {
 }
 
 const meta = {
-  title: "Moléculas/PhoneInput",
+  title: "Moléculas/Formularios/PhoneInput",
+  id: "moléculas-phoneinput",
   component: PhoneInput,
   args: { value: "", onChange: () => {} },
 } satisfies Meta<typeof PhoneInput>;

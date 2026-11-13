@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { PermissionNotice } from "./permission-notice";
 
 const meta = {
-  title: "Moléculas/PermissionNotice",
+  title: "Moléculas/Avisos y estados/PermissionNotice",
+  id: "moléculas-permissionnotice",
   component: PermissionNotice,
   parameters: { layout: "padded" },
   args: { permission: "business.manage", action: "manejar los impuestos y la numeración" },

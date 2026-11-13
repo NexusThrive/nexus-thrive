@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { ProgressBar } from "./progress-bar";
 
 const meta = {
-  title: "Átomos/ProgressBar",
+  title: "Átomos/Datos/ProgressBar",
+  id: "átomos-progressbar",
   component: ProgressBar,
   args: { value: 0.42, label: "Avance físico" },
   argTypes: {

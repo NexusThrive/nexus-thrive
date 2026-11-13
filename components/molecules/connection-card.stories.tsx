@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { ConnectionCard } from "./connection-card";
 
 const meta = {
-  title: "Moléculas/ConnectionCard",
+  title: "Moléculas/Contenido/ConnectionCard",
+  id: "moléculas-connectioncard",
   component: ConnectionCard,
   parameters: { layout: "centered" },
   decorators: [

@@ -4,9 +4,7 @@ import { Meta } from "@storybook/addon-docs/blocks";
 
 # Espacio y forma
 
-Una escala de espacio de 4 en 4 y **tres niveles de forma**: esquinas cortas para lo que se
-opera (botones, campos), píldoras para lo que indica estado, y superficies grandes y suaves
-para lo que contiene. Los valores viven en `packages/brand/css/tokens.css` (y su espejo
+Una escala de espacio de 4 en 4 y radios suaves en **tres niveles**: controles, contenedores y estado. Los valores viven en `packages/brand/css/tokens.css` (y su espejo
 `tokens.json`); nunca un número suelto en un componente.
 
 ## Espacio (base 4 px)
@@ -30,50 +28,34 @@ para lo que contiene. Los valores viven en `packages/brand/css/tokens.css` (y su
 
 ## Forma
 
-### 1 · Esquinas cortas (tokens `--radius-*`)
+Radios suaves con **una sola fuente**: los primitivos `--nx-radius-*` de `tokens.css`. Tailwind los usa como `rounded-*`. Tres
+niveles de uso: **controles** (lo que se opera), **contenedores** (lo que agrupa) y **estado** (píldora).
 
-Lo que se opera: acciones, campos, tarjetas de datos, avatares.
+| Utilidad | Token | Valor | Para |
+| --- | --- | --- | --- |
+| `rounded-xs` | `--radius-xs` | 6 px | Marcas pequeñas, `kbd`, resaltado de búsqueda |
+| `rounded-sm` | `--radius-sm` | 8 px | Opciones de menú, miniaturas |
+| `rounded-md` | `--radius-md` | 10 px | **Controles**: `Button`, `Input`, `Select`, `Avatar` |
+| `rounded-lg` | `--radius-lg` | 12 px | `Card`, ventanas flotantes, skeleton |
+| `rounded-xl` | `--radius-xl` | 14 px | Bloques de configuración, paneles internos |
+| `rounded-2xl` | `--radius-2xl` | 16 px | Menús, avisos, tarjeta dentro de un Widget |
+| `rounded-3xl` | `--radius-3xl` · `--radius-widget` | 24 px | `Widget`, listas flotantes |
+| `rounded-sheet` | `--radius-sheet` | 28 px | Diálogos, hojas inferiores, saludo de Inicio |
+| `rounded-full` | — | píldora | **Estado**: `Badge`, `Chip`, `SegmentedControl`, `Switch`, botón de un icono |
 
-| Token | Valor | Para |
-| --- | --- | --- |
-| `--radius-sm` | 2 px | Foco, marcas pequeñas |
-| `--radius-md` | 4 px | Botones, avatares |
-| `--radius-lg` | 6 px | Tarjetas (`Card`), ventanas flotantes |
-| `--radius-xl` | 8 px | Campos (`Input`, `Select`) |
-
-<div style={{ display: "flex", gap: 16, margin: "16px 0 32px" }}>
-  {[2, 4, 6, 8].map((r) => (
-    <div key={r} style={{ width: 72, height: 48, border: "1px solid var(--border-strong)", borderRadius: r, display: "grid", placeItems: "center", fontSize: 11, color: "var(--foreground-muted)" }}>
-      {r} px
+<div style={{ display: "flex", gap: 16, margin: "16px 0 32px", flexWrap: "wrap", alignItems: "end" }}>
+  {["xs", "sm", "md", "lg", "xl", "2xl", "3xl", "sheet"].map((r) => (
+    <div key={r} style={{ display: "grid", gap: 6, justifyItems: "center", fontSize: 11, color: "var(--foreground-muted)" }}>
+      <div style={{ width: 84, height: 60, border: "1px solid var(--border)", background: "var(--surface)", boxShadow: "var(--nx-shadow-xs)", borderRadius: `var(--radius-${r})` }} />
+      {r}
     </div>
   ))}
 </div>
 
-### 2 · Píldora (`rounded-full`)
-
-Lo que indica estado o elige entre pocas opciones: `Badge`, `Chip`, `SegmentedControl`,
-`Switch`, botones circulares de un icono. Es la forma más usada del sistema.
-
-### 3 · Superficie suave
-
-Lo que contiene y no se opera: tarjetas de tablero, hojas y marcos.
-
-| Valor | Para |
-| --- | --- |
-| `--radius-widget` · 24 px | `Widget`, las tarjetas de Inicio |
-| 28 px | Saludo de Inicio; hoja inferior y diálogo de `ResponsiveSheet` |
-| 12 px | `Skeleton` (`.nx-sk`): una línea de texto queda en píldora |
-| 30 % | Casillas de marcar (`Checkbox` y `<input type="checkbox">`) |
-
-<div style={{ display: "flex", gap: 16, margin: "16px 0 32px", alignItems: "center" }}>
-  <div style={{ width: 96, height: 64, border: "1px solid var(--border)", borderRadius: "var(--radius-widget)", background: "var(--card)", display: "grid", placeItems: "center", fontSize: 11, color: "var(--foreground-muted)" }}>24 px</div>
-  <div style={{ width: 96, height: 64, border: "1px solid var(--border)", borderRadius: 28, background: "var(--card)", display: "grid", placeItems: "center", fontSize: 11, color: "var(--foreground-muted)" }}>28 px</div>
-  <div style={{ width: 96, height: 28, borderRadius: 9999, background: "var(--surface-muted)", display: "grid", placeItems: "center", fontSize: 11, color: "var(--foreground-muted)" }}>píldora</div>
-</div>
-
-**Regla:** si un componente nuevo necesita una esquina, usa el nivel que le corresponde; no
-inventes un cuarto valor. Las barras de scroll son de 6 px redondeadas y las define
-`globals.css`, no cada componente.
+**Radios concéntricos:** dentro de un contenedor con relleno, la esquina interior es menor que la exterior (un Widget de 24 px
+lleva tarjetas internas de 16 px). **Regla:** sin `rounded-[Npx]` ni `rounded` plano; si una pieza necesita una esquina, usa
+el nivel que le corresponde. Excepciones de una sola pieza (ilustraciones como la tarjeta NFC, los ojos de AURI, los paneles de
+marca de la autenticación) quedan en su CSS module.
 
 ## Tamaños
 

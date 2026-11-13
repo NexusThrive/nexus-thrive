@@ -67,7 +67,7 @@ export function PriorityBoard({ groups }: { groups: PriorityGroup[] }) {
               <span
                 className={cn(
                   "grid h-6 min-w-6 place-items-center rounded-sm px-1.5 font-mono text-xs font-semibold",
-                  g.items.length ? "bg-primary text-primary-foreground" : "bg-surface-muted text-muted-foreground",
+                  g.items.length ? "bg-accent text-ink" : "bg-surface-muted text-muted-foreground",
                 )}
               >
                 {g.items.length}

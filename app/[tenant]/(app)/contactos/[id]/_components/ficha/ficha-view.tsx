@@ -167,7 +167,7 @@ export default function FichaView(props: {
           </Widget>
 
           {inTiles.length ? (
-            <nav aria-label="Resumen del cliente" className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))" }}>
+            <nav aria-label="Resumen del cliente" className="grid gap-3" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))" }}>
               {inTiles.map((s) => (
                 <Link
                   key={s.label}

@@ -202,7 +202,7 @@ export default function InboxView({
                   className={cn(
                     "max-w-[85%] rounded-lg px-3 py-2 text-ui",
                     m.direction === "IN" && "self-start bg-surface-muted",
-                    m.direction === "OUT" && "self-end bg-ink text-[#F7F6F3]",
+                    m.direction === "OUT" && "self-end bg-accent-subtle text-foreground",
                     m.direction === "NOTE" && "self-center border border-dashed border-accent/60 bg-accent-subtle/40",
                   )}
                 >

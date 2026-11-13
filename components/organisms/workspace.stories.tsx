@@ -18,7 +18,8 @@ function Shell({ children }: { children: ReactElement }) {
 }
 
 const navMeta = {
-  title: "Organismos/Workspace/Navegación contextual",
+  title: "Organismos/Shell/Navegación contextual",
+  id: "organismos-workspace-navegación-contextual",
   component: WorkspaceNav,
   decorators: [withShell],
   parameters: { layout: "fullscreen", docs: { description: { component: "Secciones del espacio activo (el grupo de la página actual), en una fila debajo de la barra superior. Reemplaza a la barra lateral fija en escritorio." } } },

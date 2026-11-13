@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { HighlightText } from "./highlight-text";
 
 const meta = {
-  title: "Átomos/HighlightText",
+  title: "Átomos/Presentación/HighlightText",
+  id: "átomos-highlighttext",
   component: HighlightText,
   args: { text: "Camila Torres · Corte y barba", terms: ["camila"] },
   argTypes: { terms: { control: "object" } },

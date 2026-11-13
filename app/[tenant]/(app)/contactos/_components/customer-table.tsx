@@ -65,7 +65,7 @@ function Face({ row, className }: { row: CustomerRow; className: string }) {
 /** Aviso de membresía: solo para gimnasios con el módulo y sin plan vigente. */
 function MembershipAlert({ className = "" }: { className?: string }) {
   return (
-    <span className={`inline-flex items-center gap-1 rounded bg-destructive/10 px-1.5 py-0.5 text-2xs font-semibold uppercase text-destructive ${className}`}>
+    <span className={`inline-flex items-center gap-1 rounded-xs bg-destructive/10 px-1.5 py-0.5 text-2xs font-semibold uppercase text-destructive ${className}`}>
       <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-destructive" />
       Sin membresía
     </span>
@@ -395,7 +395,7 @@ export default function CustomerTable({
             aria-label={`Seleccionar a ${row.name}`}
             checked={selected.has(row.id)}
             onChange={() => toggleRow(row.id)}
-            className="size-3.5 cursor-pointer rounded accent-gold-600"
+            className="size-3.5 cursor-pointer rounded-xs accent-gold-600"
           />
         </td>
       ) : null}
@@ -412,7 +412,7 @@ export default function CustomerTable({
             <HighlightText text={row.name} terms={searchTerms} />
           </Link>
           {isArchivedView ? (
-            <span className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-2xs font-semibold uppercase text-muted-foreground">Archivado</span>
+            <span className="shrink-0 rounded-xs bg-muted px-1.5 py-0.5 text-2xs font-semibold uppercase text-muted-foreground">Archivado</span>
           ) : null}
           {showMembership && !row.hasMembership ? <MembershipAlert /> : null}
         </p>
@@ -491,7 +491,7 @@ export default function CustomerTable({
             type="button"
             aria-label="Cerrar aviso"
             onClick={() => setNotice(null)}
-            className="rounded p-0.5 opacity-70 transition hover:opacity-100"
+            className="rounded-xs p-0.5 opacity-70 transition hover:opacity-100"
           >
             <X aria-hidden="true" className="h-4 w-4" />
           </button>
@@ -552,7 +552,7 @@ export default function CustomerTable({
                           }
                         }}
                         onChange={toggleAllOnPage}
-                        className="size-3.5 cursor-pointer rounded accent-gold-600"
+                        className="size-3.5 cursor-pointer rounded-xs accent-gold-600"
                       />
                     </th>
                   ) : null}
@@ -607,7 +607,7 @@ export default function CustomerTable({
                         aria-label={`Seleccionar a ${row.name}`}
                         checked={selected.has(row.id)}
                         onChange={() => toggleRow(row.id)}
-                        className="mt-2 h-4 w-4 cursor-pointer rounded accent-gold-600"
+                        className="mt-2 h-4 w-4 cursor-pointer rounded-xs accent-gold-600"
                       />
                     ) : null}
                     <span aria-hidden="true" className="flex h-10 w-10 shrink-0 overflow-hidden rounded-sm bg-accent-subtle">
@@ -616,7 +616,7 @@ export default function CustomerTable({
                     <div className="min-w-0 flex-1">
                       <p className="flex flex-wrap items-center gap-2 font-medium text-foreground">
                         {row.name}
-                        <span className="rounded bg-muted px-1.5 py-0.5 text-2xs font-semibold uppercase text-muted-foreground">Archivado</span>
+                        <span className="rounded-xs bg-muted px-1.5 py-0.5 text-2xs font-semibold uppercase text-muted-foreground">Archivado</span>
                       </p>
                       <p className="mt-0.5 text-xs text-muted-foreground">
                         {row.phone || "Sin teléfono"} · {row.createdAt}

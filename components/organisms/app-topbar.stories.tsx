@@ -11,7 +11,8 @@ import { BusinessSwitcher } from "./business-switcher";
 import { NavbarSearch } from "./navbar-search";
 
 const meta = {
-  title: "Organismos/AppTopbar",
+  title: "Organismos/Shell/AppTopbar",
+  id: "organismos-apptopbar",
   component: AppTopbar,
   decorators: [withShell],
   parameters: {

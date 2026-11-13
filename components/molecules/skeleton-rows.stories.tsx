@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { SkeletonRows } from "./skeleton-rows";
 
 const meta = {
-  title: "Moléculas/SkeletonRows",
+  title: "Moléculas/Avisos y estados/SkeletonRows",
+  id: "moléculas-skeletonrows",
   component: SkeletonRows,
   args: { rows: 4, label: "Cargando archivos" },
   decorators: [(Story) => <div className="max-w-md rounded-lg border border-border bg-surface p-5"><Story /></div>],

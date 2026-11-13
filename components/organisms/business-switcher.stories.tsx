@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { BusinessSwitcher } from "./business-switcher";
 
 const meta = {
-  title: "Organismos/BusinessSwitcher",
+  title: "Organismos/Shell/BusinessSwitcher",
+  id: "organismos-businessswitcher",
   component: BusinessSwitcher,
   args: {
     currentSlug: "gym-norte",

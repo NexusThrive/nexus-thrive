@@ -4,7 +4,8 @@ import { Label } from "./label";
 import { Switch } from "./switch";
 
 const meta = {
-  title: "Átomos/Switch",
+  title: "Átomos/Formularios/Switch",
+  id: "átomos-switch",
   component: Switch,
   args: { onCheckedChange: fn() },
 } satisfies Meta<typeof Switch>;

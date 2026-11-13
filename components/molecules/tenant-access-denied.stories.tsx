@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { TenantAccessDenied } from "./tenant-access-denied";
 
 const meta = {
-  title: "Moléculas/TenantAccessDenied",
+  title: "Moléculas/Avisos y estados/TenantAccessDenied",
+  id: "moléculas-tenantaccessdenied",
   component: TenantAccessDenied,
   parameters: { layout: "fullscreen" },
   args: { tenantName: "Northline Market", email: "santiagocastellar2203@gmail.com", name: "Santiago Castellar Garcia" },

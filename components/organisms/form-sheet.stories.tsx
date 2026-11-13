@@ -65,7 +65,8 @@ function Demo({ variant }: { variant: "dialog" | "drawer" }) {
 }
 
 const meta = {
-  title: "Organismos/FormSheet",
+  title: "Organismos/Superposiciones/FormSheet",
+  id: "organismos-formsheet",
   component: FormDialog,
   parameters: {
     docs: {

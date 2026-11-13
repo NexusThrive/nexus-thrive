@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { AuthModeSwitch } from "./auth-mode-switch";
 
 const meta = {
-  title: "Moléculas/AuthModeSwitch",
+  title: "Moléculas/Formularios/AuthModeSwitch",
+  id: "moléculas-authmodeswitch",
   component: AuthModeSwitch,
   args: { mode: "sign-in" },
   argTypes: { mode: { control: "inline-radio", options: ["sign-in", "sign-up"] } },

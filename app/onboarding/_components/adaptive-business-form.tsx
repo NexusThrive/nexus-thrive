@@ -137,7 +137,7 @@ export default function AdaptiveBusinessForm({ verticals, draft, onPatch: patch,
         hint="Sin espacios ni mayúsculas: letras, números y guiones."
       >
         {(control) => (
-          <div className={cn(inputClasses, field, "flex items-center gap-2 focus-within:border-accent focus-within:shadow-[0_0_0_4px_rgba(212,175,55,0.18)]")}>
+          <div className={cn(inputClasses, field, "flex items-center gap-2 focus-within:border-accent focus-within:shadow-focus")}>
             <Link2 aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
             <span className="shrink-0 text-sm text-muted-foreground">nexusthrive.com.co/</span>
             <input
@@ -201,7 +201,7 @@ export default function AdaptiveBusinessForm({ verticals, draft, onPatch: patch,
                   className={cn(
                     "grid min-h-12 place-items-center rounded-2xl border px-3 py-2 text-center text-[12.5px] font-medium leading-tight transition-[border-color,background-color,box-shadow] duration-200",
                     selected
-                      ? "border-accent bg-accent-subtle/60 shadow-[0_0_0_4px_rgba(212,175,55,.18)]"
+                      ? "border-accent bg-accent-subtle/60 shadow-focus"
                       : "border-border/60 bg-card hover:border-accent/50",
                   )}
                 >

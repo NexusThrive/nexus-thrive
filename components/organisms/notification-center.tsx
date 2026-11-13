@@ -26,8 +26,11 @@ function when(iso: string): string {
   return rel.format(Math.round(min / 60), "hour");
 }
 
-// En vivo: una alta nueva (p. ej. del registro público) llega a la campana en pocos segundos.
-const POLL_MS = 10_000;
+// En vivo: una alta nueva (p. ej. del registro público) llega a la campana en menos de un minuto. Cada consulta arma los avisos con
+// una docena de lecturas, así que no se hace más seguido; lo que genera una acción de la propia persona llega por su evento, sin esperar.
+const POLL_MS = 30_000;
+/** Entre dos consultas pasivas (temporizador, volver a la pestaña, dar foco) pasa al menos esto: cambiar de pestaña dispara las dos señales. */
+const PASSIVE_GAP_MS = 8_000;
 /** Tras la acción que la genera, la notificación sale pasados unos segundos (no de inmediato). */
 const ARRIVAL_DELAY_MS = 5000;
 const SEEN_EVENT = "nx:notifications-seen";
@@ -200,13 +203,18 @@ export function NotificationCenter({
   }, [incoming, hovering, hideIncoming]);
 
   useEffect(() => {
-    const first = window.setTimeout(refresh, 0);
-    const id = window.setInterval(() => {
-      if (document.visibilityState === "visible") void refresh();
-    }, POLL_MS);
-    const onVisible = () => {
-      if (document.visibilityState === "visible") void refresh();
+    let lastPassive = 0;
+    const passive = () => {
+      if (document.visibilityState !== "visible" || Date.now() - lastPassive < PASSIVE_GAP_MS) return;
+      lastPassive = Date.now();
+      void refresh();
     };
+    const first = window.setTimeout(() => {
+      lastPassive = Date.now();
+      void refresh();
+    }, 0);
+    const id = window.setInterval(passive, POLL_MS);
+    const onVisible = passive;
     document.addEventListener("visibilitychange", onVisible);
     window.addEventListener("focus", onVisible);
     return () => {
@@ -290,7 +298,7 @@ export function NotificationCenter({
           onPointerEnter={() => setHovering(true)}
           onPointerLeave={() => setHovering(false)}
           style={{ transformOrigin: "calc(100% - 20px) 0" }}
-          className="absolute right-0 top-[calc(100%+6px)] z-(--z-popover) w-[min(340px,calc(100vw-24px))] max-sm:fixed max-sm:inset-x-3 max-sm:top-[calc(var(--topbar-height)+env(safe-area-inset-top,0px)+6px)] max-sm:w-auto overflow-hidden rounded-3xl border border-border/60 bg-surface shadow-[var(--nx-shadow-overlay)] motion-safe:animate-[nx-pop_.2s_var(--nx-ease-out)]"
+          className="absolute right-0 top-[calc(100%+6px)] z-(--z-popover) w-[min(340px,calc(100vw-24px))] max-sm:fixed max-sm:inset-x-3 max-sm:top-[calc(var(--topbar-height)+env(safe-area-inset-top,0px)+6px)] max-sm:w-auto overflow-hidden rounded-3xl border border-border/60 bg-surface shadow-overlay motion-safe:animate-[nx-pop_.2s_var(--nx-ease-out)]"
         >
           <span ref={sweepRef} aria-hidden="true" className="pointer-events-none absolute inset-0 bg-accent [clip-path:polygon(0_0,0_0,0_100%,0_100%)]" />
           {(() => {
@@ -329,7 +337,7 @@ export function NotificationCenter({
           ref={panelRef}
           role="dialog"
           aria-label="Notificaciones"
-          className="absolute right-0 top-[calc(100%+6px)] z-(--z-popover) w-[min(360px,calc(100vw-24px))] max-sm:fixed max-sm:inset-x-3 max-sm:top-[calc(var(--topbar-height)+env(safe-area-inset-top,0px)+6px)] max-sm:w-auto nx-morph-panel origin-top-right overflow-hidden rounded-3xl border border-border/60 bg-surface shadow-[var(--nx-shadow-overlay)] motion-safe:animate-[nx-pop_.22s_var(--nx-ease-out)]"
+          className="absolute right-0 top-[calc(100%+6px)] z-(--z-popover) w-[min(360px,calc(100vw-24px))] max-sm:fixed max-sm:inset-x-3 max-sm:top-[calc(var(--topbar-height)+env(safe-area-inset-top,0px)+6px)] max-sm:w-auto nx-morph-panel origin-top-right overflow-hidden rounded-3xl border border-border/60 bg-surface shadow-overlay motion-safe:animate-[nx-pop_.22s_var(--nx-ease-out)]"
         >
           <div className="flex items-center justify-between border-b border-border/50 py-2.5 pl-5 pr-3">
             <b className="font-display text-base font-medium">Notificaciones</b>

@@ -150,7 +150,7 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
         }}
       />
     ) : (
-      <button type="button" disabled={!editable} onClick={() => setEditing(k)} className="w-fit rounded text-left outline-none focus-visible:outline-2 focus-visible:outline-ring enabled:hover:text-accent-text">
+      <button type="button" disabled={!editable} onClick={() => setEditing(k)} className="w-fit rounded-xs text-left outline-none focus-visible:outline-2 focus-visible:outline-ring enabled:hover:text-accent-text">
         {render}
       </button>
     );
@@ -401,7 +401,7 @@ export default function OpportunityDetail({ slug, o, now, backHref, pager }: { s
                       ))}
                     </Select>
                   ) : (
-                    <button type="button" disabled={!editable} onClick={() => setEditing("owner")} className="flex items-center gap-2.5 rounded outline-none focus-visible:outline-2 focus-visible:outline-ring enabled:hover:text-accent-text">
+                    <button type="button" disabled={!editable} onClick={() => setEditing("owner")} className="flex items-center gap-2.5 rounded-xs outline-none focus-visible:outline-2 focus-visible:outline-ring enabled:hover:text-accent-text">
                       {o.owner ? <Initials name={o.owner.name} id={o.owner.id} size={28} /> : null}
                       {o.owner?.name ?? <span className="text-muted-foreground">Sin responsable</span>}
                     </button>

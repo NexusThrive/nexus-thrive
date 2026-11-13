@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { LoadingToast } from "./loading-toast";
 
 const meta = {
-  title: "Moléculas/LoadingToast",
+  title: "Moléculas/Avisos y estados/LoadingToast",
+  id: "moléculas-loadingtoast",
   component: LoadingToast,
   args: { open: true, progress: 0.55, label: "Exportando presupuesto…", doneLabel: "Exportado" },
   argTypes: { progress: { control: { type: "range", min: 0, max: 1, step: 0.01 } } },

@@ -80,7 +80,7 @@ function WidgetSkeleton({ lines = 2, tall = false, className = "" }: { lines?: n
 function AppsSkeleton({ label }: { label: string }) {
   return (
     <div data-bleed="" role="status" aria-busy="true" aria-label={label} className="mx-auto flex max-w-[1680px] flex-col gap-4 px-5 pb-16 pt-6 md:px-6">
-      <div className="relative grid items-center gap-6 overflow-hidden rounded-[28px] bg-accent-subtle/40 px-6 py-7 min-[820px]:grid-cols-[minmax(0,1fr)_auto] min-[820px]:px-9 min-[820px]:py-9">
+      <div className="relative grid items-center gap-6 overflow-hidden rounded-sheet bg-accent-subtle/40 px-6 py-7 min-[820px]:grid-cols-[minmax(0,1fr)_auto] min-[820px]:px-9 min-[820px]:py-9">
         <div className="grid gap-5">
           <Skeleton className="h-12 w-80 max-w-full bg-card/70" />
           <Skeleton className="h-12 w-52 max-w-full bg-card/70" />

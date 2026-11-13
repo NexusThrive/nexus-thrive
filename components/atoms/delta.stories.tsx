@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
 import { Delta } from "./delta";
 
-const meta = { title: "Átomos/Delta", component: Delta, args: { value: 12 } } satisfies Meta<typeof Delta>;
+const meta = { title: "Átomos/Datos/Delta", id: "átomos-delta", component: Delta, args: { value: 12 } } satisfies Meta<typeof Delta>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

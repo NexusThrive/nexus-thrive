@@ -61,7 +61,7 @@
     /* Contiene a los elementos absolutos del contenido (campos ocultos, avisos): sin esto se posicionaban respecto a la página y alargaban el `html`. */
     position: relative;
     /* Las cuatro esquinas siempre redondas. El ítem activo de la barra lateral se une al tramo recto del borde izquierdo (ver app-sidebar.module.css). */
-    border-radius: 28px;
+    border-radius: var(--radius-sheet);
     background: var(--card);
     overflow-x: clip;
     overflow-y: auto;
