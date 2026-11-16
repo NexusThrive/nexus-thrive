@@ -19,7 +19,7 @@ export async function listPlatformUsers(opts: { q?: string } = {}): Promise<{ us
     db.orm.public.AccountLimit.all(),
     db.orm.public.TenantInvite.where({ role: "OWNER" }).where((i) => i.acceptedAt.isNull()).where((i) => i.revokedAt.isNull()).all(),
   ]);
-  const tenants = await db.orm.public.Tenant.select("id", "name", "slug", "active").all();
+  const tenants = await db.orm.public.Tenant.select("id", "name", "slug", "active", "ownerEmail", "managedProvisioning").all();
   const byTenant = new Map(tenants.map((t) => [t.id, t]));
   const limitOf = new Map(limits.map((l) => [l.email, l]));
   const people = new Map<string, PlatformUser>();
@@ -49,6 +49,14 @@ export async function listPlatformUsers(opts: { q?: string } = {}): Promise<{ us
     }
   }
   for (const l of limits) person(l.email, null); // con límite fijado pero sin negocios todavía
+  for (const t of tenants) {
+    if (!t.managedProvisioning || !t.ownerEmail) continue;
+    const p = person(t.ownerEmail, null);
+    if (!p.orgs.some((o) => o.tenantId === t.id)) {
+      p.orgs.push({ tenantId: t.id, name: t.name, slug: t.slug, role: "OWNER (previsto)", active: false, tenantActive: t.active });
+      p.owned++;
+    }
+  }
   const q = (opts.q ?? "").trim().toLowerCase();
   const all = [...people.values()]
     .filter((u) => !q || u.email.includes(q) || (u.name ?? "").toLowerCase().includes(q) || u.orgs.some((o) => o.name.toLowerCase().includes(q)))
@@ -59,13 +67,15 @@ export async function listPlatformUsers(opts: { q?: string } = {}): Promise<{ us
 /** Negocios que la persona ya tiene como dueña (más invitaciones de dueño abiertas). */
 export async function ownedCountOf(email: string): Promise<number> {
   const key = normalizeEmail(email);
-  const [owners, invites] = await Promise.all([
+  const [owners, invites, managed] = await Promise.all([
     db.orm.public.User.where({ email: key, role: "OWNER", active: true }).all(),
     db.orm.public.TenantInvite.where({ email: key, role: "OWNER" }).where((i) => i.acceptedAt.isNull()).where((i) => i.revokedAt.isNull()).all(),
+    db.orm.public.Tenant.where({ ownerEmail: key, managedProvisioning: true }).select("id").all(),
   ]);
   const now = Date.now();
   const ids = new Set(owners.filter((o) => !o.removedAt).map((o) => o.tenantId));
   for (const i of invites) if (Date.parse(String(i.expiresAt)) >= now) ids.add(i.tenantId);
+  for (const t of managed) ids.add(t.id);
   return ids.size;
 }
 

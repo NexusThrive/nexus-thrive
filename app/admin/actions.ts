@@ -9,12 +9,12 @@ import { headers } from "next/headers";
 import { requireStaff } from "@/lib/platform/team/access";
 import type { PermissionKey } from "@/lib/platform/team/permissions";
 import { revalidatePath } from "next/cache";
-import { organizationLimitProblem } from "@/lib/platform/admin/users-db";
+import { createManagedBusiness, provisioningErrorMessage } from "@/lib/platform/admin/managed-business";
+import { managedBusinessInput } from "@/lib/platform/admin/managed-validation";
 import { createAdminDb, type AuditLogInput } from "@/lib/platform/admin/db";
 import { validateSlug, type SlugValidation } from "@/lib/core/tenancy/catalogs";
 import {
   validateSuspendTenant,
-  validateTenantForm,
   validateTenantId,
   validateToggleModule,
   type TenantFieldErrors,
@@ -114,66 +114,26 @@ export async function createTenantAction(
     return ACCESS_DENIED;
   }
 
-  const validation = validateTenantForm(formData);
-  if (!validation.ok) {
-    return {
-      status: "error",
-      errors: validation.errors,
-      values: validation.values,
-    };
+  const parsed = managedBusinessInput.safeParse({ name: formData.get("name"), slug: formData.get("slug"), ownerEmail: formData.get("ownerEmail"), provisioningKey: formData.get("provisioningKey") });
+  if (!parsed.success) {
+    const errors: TenantFieldErrors = {};
+    for (const issue of parsed.error.issues) {
+      const key = issue.path[0];
+      errors[key === "name" || key === "slug" || key === "ownerEmail" ? key : "form"] = issue.message;
+    }
+    return { status: "error", errors, message: errors.form };
   }
-
-  const { name, slug, vertical, modules, tenantType, legalName, taxId, teamSize, address, ownerEmail } =
-    validation.values;
-  const adminDb = createAdminDb();
-
-  if (await adminDb.slugExists(slug)) {
-    return {
-      status: "error",
-      errors: { slug: "Ese slug ya está en uso." },
-      values: validation.values,
-    };
+  if (["vertical", "tenantType", "modules", "active", "onboardingCompleted"].some((key) => formData.has(key))) {
+    return { status: "error", message: "La configuración inicial la define NexusThrive. Actualiza el formulario." };
   }
-
-  const limitMessage = await organizationLimitProblem(ownerEmail);
-  if (limitMessage) return { status: "error", errors: { ownerEmail: limitMessage }, values: validation.values };
-
   try {
-    await adminDb.createTenant({
-      name,
-      slug,
-      vertical,
-      modules,
-      tenantType,
-      legalName,
-      taxId,
-      teamSize,
-      address,
-      ownerEmail,
-    });
+    const tenant = await createManagedBusiness(parsed.data, actor);
+    revalidateAdmin();
+    revalidatePath("/admin/negocios");
+    return { status: "ok", message: `Negocio «${tenant.name}» creado en preparación. El propietario todavía no tiene acceso.` };
   } catch (error) {
-    // Colisión de slug por carrera (constraint único en DB) u otro fallo
-    // del motor: la transacción ya revirtió todo.
-    const message =
-      error instanceof Error &&
-      (error.message.includes("unique") || error.message.includes("Tenant_slug"))
-        ? "Ese slug ya está en uso."
-        : "No se pudo crear el negocio. Intenta de nuevo.";
-    console.error("[admin] createTenant failed:", error);
-    return { status: "error", message, values: validation.values };
+    return { status: "error", message: provisioningErrorMessage(error) };
   }
-
-  await audit(actor, {
-    action: "CREATE_TENANT",
-    targetTenantName: name,
-    metadata: { slug, vertical, modules, tenantType, taxId, teamSize, ownerEmail },
-  });
-
-  revalidateAdmin();
-  return {
-    status: "ok",
-    message: `Negocio "${name}" creado correctamente.`,
-  };
 }
 
 /**
