@@ -1,23 +1,13 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { acceptInvitesFor } from "@/lib/core/tenancy/team-db";
-import { homeTenantFor } from "@/lib/core/tenancy/membership";
+import { homeTenantFor, managedAccessForEmail } from "@/lib/core/tenancy/membership";
 import { findStaffByEmail, getStaffContext } from "@/lib/platform/team/access";
 import { StaffAccessNotice } from "@/components/molecules/staff-access-notice";
 import { verifiedEmailOf } from "@/lib/core/auth/session-email";
+import { ManagedAccessNotice } from "@/components/molecules/managed-access-notice";
 
-/**
- * Callback post-login de Clerk: la ÚNICA puerta que decide a dónde va cada
- * persona después de registrarse o entrar.
- *
- * - Equipo NEXUS (o el SUPERADMIN heredado) → /admin (Operations Center).
- * - Correo en el equipo pero sin acceso (pausado, o con otra cuenta) → aviso
- *   que explica qué hacer. Antes caía en el onboarding y la persona terminaba
- *   creando un negocio por error.
- * - Usuario con tenant y onboarding completado → /{tenantSlug}.
- * - Usuario con tenant SIN onboarding → /onboarding.
- * - Sin usuario en BD (recién registrado) → /onboarding.
- */
+/** Access is resolved on the server; retired onboarding is never a destination. */
 export default async function AuthCallback() {
   const { userId, redirectToSignIn } = await auth();
 
@@ -57,8 +47,8 @@ export default async function AuthCallback() {
 
   // Negocio del usuario (solo membresías activas)
   const home = await homeTenantFor(userId);
-  if (home) redirect(home.onboardingCompleted ? `/${home.slug}` : "/onboarding");
-
-  // Usuario nuevo (aún no tiene tenant) → onboarding
-  redirect("/onboarding");
+  if (home?.access === "ready") redirect(`/${home.slug}`);
+  if (home) return <ManagedAccessNotice reason={home.access === "preparing" ? "preparing" : "suspended"} />;
+  const pending = await managedAccessForEmail(email);
+  return <ManagedAccessNotice reason={pending ?? "unauthorized"} />;
 }

@@ -1,14 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Check, ChevronDown, Plus } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/molecules/dropdown-menu";
 import { cn } from "@/lib/utils";
@@ -92,18 +90,6 @@ export function BusinessSwitcher({
             </DropdownMenuItem>
           );
         })}
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild className="min-h-12 items-center gap-3 px-2.5">
-          <Link href="/onboarding?nuevo=1">
-            <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-md border border-dashed border-border-strong">
-              <Plus className="size-4" />
-            </span>
-            <span className="flex min-w-0 flex-col leading-tight">
-              <span className="text-sm font-medium text-foreground">Crear otro negocio</span>
-              <span className="text-xs text-muted-foreground">Una organización nueva, con su propio equipo</span>
-            </span>
-          </Link>
-        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

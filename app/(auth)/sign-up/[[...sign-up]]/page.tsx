@@ -1,20 +1,19 @@
 import type { Metadata } from "next";
 import { SignUp } from "@clerk/nextjs";
 import { clerkAppearance } from "@/lib/core/auth/clerk-appearance";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = { title: "Crear cuenta · NEXUS THRIVE" };
 
-export default function SignUpPage() {
+export default async function SignUpPage({ searchParams }: { searchParams: Promise<{ __clerk_ticket?: string }> }) {
+  const { __clerk_ticket: ticket } = await searchParams;
+  // Clerk validates the ticket; Invite-only must also be enabled in its dashboard.
+  if (!ticket) redirect("/sign-in");
   return (
     <SignUp
       path="/sign-up"
       routing="path"
       signInUrl="/sign-in"
-      // Tras registrarse, la decisión de destino se toma en UNA sola puerta
-      // (/auth/callback): equipo de NEXUS → panel; invitación de negocio → su
-      // negocio; nuevo → onboarding. Antes se iba a "/" y el proxy lo
-      // devolvía al formulario de acceso (donde era fácil crear una segunda
-      // cuenta y terminar en el onboarding por error).
       fallbackRedirectUrl="/auth/callback"
       appearance={clerkAppearance}
     />
