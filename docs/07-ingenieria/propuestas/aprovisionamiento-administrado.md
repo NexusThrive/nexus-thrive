@@ -81,6 +81,21 @@ Este es el cierre histórico de la primera entrega documental. Después, el usua
 
 Todas las historias de código están implementadas en la pila de ramas, sin fusión ni despliegue. HU-08 conserva evidencia y correcciones de revisión; no declara configuración externa realizada.
 
+PR publicados en borrador, un PR por historia y cada base igual a la rama de la historia anterior:
+
+| Historia | PR | Base |
+| --- | --- | --- |
+| HU-01 | [#160](https://github.com/NexusThrive/nexus-thrive/pull/160) | `main` |
+| HU-02 | [#161](https://github.com/NexusThrive/nexus-thrive/pull/161) | HU-01 |
+| HU-03 | [#162](https://github.com/NexusThrive/nexus-thrive/pull/162) | HU-02 |
+| HU-04 | [#163](https://github.com/NexusThrive/nexus-thrive/pull/163) | HU-03 |
+| HU-05 | [#164](https://github.com/NexusThrive/nexus-thrive/pull/164) | HU-04 |
+| HU-06 | [#165](https://github.com/NexusThrive/nexus-thrive/pull/165) | HU-05 |
+| HU-07 | [#166](https://github.com/NexusThrive/nexus-thrive/pull/166) | HU-06 |
+| HU-08 | [#167](https://github.com/NexusThrive/nexus-thrive/pull/167) | HU-07 |
+
+La pila local se ordenó antes de su primera publicación para colocar correcciones de tipos y retiro del gate en sus historias responsables; sin force ni cambios de ramas remotas existentes. El árbol final conserva el resultado revisado. Los resultados de CI de cada PR son independientes de la verificación local registrada abajo; no se presume CI aprobada por abrir los PR.
+
 | Historia | Estado del código | Evidencia principal |
 | --- | --- | --- |
 | HU-01 | Auditoría entregada; ADR aceptado posteriormente por el usuario | PR #160 y aceptación registrada en arquitectura/0011. |
@@ -101,11 +116,13 @@ Las entradas administrativas usan `createManagedBusiness`. La fábrica anterior 
 - `prisma db migrate` contra esa base: código 0, **91 migraciones aplicadas**, marker final igual al contrato. Registro local `/tmp/nexus-managed-test-migration.log`.
 - `vitest run --testTimeout=20000 --no-file-parallelism tests/integration/core/tenancy/managed-provisioning.integration.test.ts`: código 0, **13 pruebas aprobadas**, 2,71 s. Incluye acciones de servidor con personal real en la base de ensayo, concurrencia, correo no verificado/ajeno, OWNER sin personal Nexus, aislamiento, suspensión, fallo de correo, reintento, herencia y actualización SQL con datos previos. Clerk y correo están simulados; **no se enviaron mensajes reales**. Registro `/tmp/nexus-managed-focused-integration.log`.
 - Selección de unitarias y arquitectura (`access-policy`, `private-entrypoints`, correo de sesión, autorización de páginas, tenant-scope y acceso a datos): código 0, **826 pruebas aprobadas en 6 archivos**, 2,41 s. La cifra incluye casos parametrizados de rutas existentes; no se repitió la suite completa. Registro `/tmp/nexus-managed-focused-unit.log`.
+- Tras añadir `.env.produccion` a la regresión de destinos, se repitió únicamente `private-entrypoints.test.ts`: código 0, **4 pruebas aprobadas**, 1,93 s. No se repitieron integración ni suite completa por ese ajuste.
 - `pnpm exec tsc --noEmit`: código 0 en el conjunto funcional. La primera pasada detectó dos usos de `Temporal.Now` incompatibles con las declaraciones locales; se corrigieron a `Temporal.Instant.fromEpochMilliseconds` antes de la pasada exitosa.
 - ESLint limitado a los archivos de implementación afectados: código 0, sin diagnósticos. Registro `/tmp/nexus-managed-focused-lint.log`.
 - `node scripts/check-layers.mjs`: código 0; 394 archivos, cero dependencias nuevas/ciclos de valores, tres ciclos de solo tipos dentro del tope existente.
 - `pnpm build` con la base temporal: código 0; compilación, TypeScript y generación de rutas completadas. Registro `/tmp/nexus-managed-build.log`. No se desplegó el resultado.
 - `pnpm docs:check`: código 0; cero errores nuevos y los diez enlaces preexistentes de skills de terceros. Un intento directo en sandbox falló al lanzar Git (`EPERM`); repetición autorizada exitosa.
+- Comprobación documental final con los PR publicados: 520 archivos, 1.455 enlaces locales, código 0. `scripts/check-prod-sql.sh 42871b6d` confirmó SQL operativo para el cambio de modelo; diff sin errores de espacios. El contenedor temporal fue detenido y retirado después del build y de las pruebas; los logs permanecen en `/tmp`.
 - No se ejecutaron de nuevo la suite completa, toda la integración ni `pnpm verify`, conforme a la petición de reducir repeticiones. Las comprobaciones enfocadas cubren las fronteras modificadas. No se ejecutó navegador contra Clerk real ni se acredita llegada a bandeja de correo.
 
 ### Revisión independiente
