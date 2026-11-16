@@ -7,7 +7,7 @@ import { buttonVariants } from "@/components/atoms/button-variants";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
 import { NLoader } from "@/components/atoms/n-loader";
 import { normalizeSlug } from "@/lib/core/tenancy/onboarding/slug";
-import { createTenantAction, checkSlugAvailabilityAction, type AdminFormState } from "../actions";
+import { createTenantAction, checkSlugAvailabilityAction, type AdminFormState } from "@/app/admin/actions";
 
 const INITIAL: AdminFormState = { status: "idle" };
 export default function TenantForm({ onClose, initialOwnerEmail = "" }: { onClose: () => void; initialOwnerEmail?: string }) {
