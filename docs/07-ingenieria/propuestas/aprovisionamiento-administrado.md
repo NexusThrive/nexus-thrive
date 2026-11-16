@@ -137,3 +137,17 @@ Ese veredicto no es aprobación de QA desplegado ni certifica dashboard, ticket 
 Antes de integrar/desplegar, seguir la [guía operativa](../../08-operaciones/devops.md#aprovisionamiento-privado-de-negocios): revisar y aplicar la migración en el entorno correspondiente; seleccionar Invite-only en Clerk; configurar remitente y origen; programar el cron; comprobar el recorrido real con un correo autorizado. Estos pasos requieren credenciales y estado externos y **no se ejecutaron automáticamente**. No se hace merge a `main` ni push a `sprint/*`.
 
 Engram sigue sin estar disponible. Este reporte conserva objetivo, aceptación, decisiones, archivos responsables, comandos, resultados, revisión independiente y pendientes para continuar sin depender del historial de conversación.
+
+## Aplicación local y configuración operativa — 2026-11-16
+
+El usuario pidió aplicar la migración en ambas bases configuradas. La conexión Supabase de `DIRECT_URL` devolvió `28P01` (autenticación); posteriormente indicó expresamente **dejar Supabase pendiente**. No se modificó su esquema ni se copiaron credenciales al repositorio. El usuario confirmó Invite-only en Clerk; la configuración del proveedor de correo y del cron se trata por entorno, sin inferirla de esa confirmación.
+
+En PostgreSQL local se aplicó exclusivamente el SQL aditivo de aprovisionamiento a las **2026-11-16T19:01:31Z**. Respaldo previo en formato custom, legible por `pg_restore --list`, de 867.253 bytes; ubicación privada `/tmp/nexus-provisioning-live-migration/local-backup-1794855690739.dump`. Las capturas y diagnósticos completos permanecen en el mismo directorio privado; no se publican datos de negocios ni membresías.
+
+La transacción bloqueó las tablas implicadas durante el cambio y comparó los campos anteriores antes y después: **79 tenants, 17 membresías y una invitación histórica conservados**, sin diferencias en los datos comparados. Se añadieron las columnas de estado/entrega y la unicidad de invitaciones pendientes; los 79 tenants anteriores conservaron `managedProvisioning=false`. No se ejecutaron scripts de datos comerciales.
+
+El marker local anterior (`a8971d5b…`) no pertenece al grafo versionado, por lo que no se ejecutó una cadena general de migraciones. Después del SQL, `db verify --schema-only` detectó **762 diferencias adicionales** entre esa base y el contrato completo, incluidas tablas de otros módulos ausentes. **No se firmó el nuevo contrato ni se alteró el marker** para ocultarlas. El SQL solicitado está aplicado; la base local completa todavía requiere una reconciliación de esquema separada antes de declararla alineada con todo el contrato.
+
+La consulta del negocio reportado por el usuario confirmó estado de preparación, sin primera activación y sin invitación: no debe salir correo al completar ese modal. En el entorno local tampoco están configuradas las parejas `RESEND_API_KEY`/`INBOX_EMAIL_FROM` ni `CRON_SECRET`. La [guía operativa](../../08-operaciones/devops.md#activar-correo-y-cron) contiene los pasos de configuración; estos valores no se han inventado ni se han escrito secretos en Git. No se enviaron mensajes de prueba ni se activó el negocio por cuenta del propietario.
+
+Siguientes pasos: configurar correo y origen en el entorno usado, marcar preparación lista y activar desde la ficha; publicar el workflow del cron; corregir la conexión Supabase cuando el usuario retome esa migración. Engram sigue sin estar disponible; este apartado conserva el cierre y sus limitaciones.
