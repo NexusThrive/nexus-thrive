@@ -6,6 +6,7 @@ import { auditOperation } from "@/lib/core/operations/audit";
 import { OPERATIONS } from "@/lib/runtime/operations";
 import { consumeMeter, secondsToNextPeriod } from "@/lib/core/entitlements/meters";
 import { tenantWithModules } from "@/lib/core/tenancy/membership";
+import { canOperateTenant } from "@/lib/core/tenancy/access-policy";
 
 /**
  * Conexión de `/api/v1` y `/api/mcp` a la base y al registro de operaciones (compartida: misma llave, mismo registro de uso).
@@ -27,7 +28,7 @@ export const apiDeps: ApiDeps = {
   authenticate: (authorization) => authenticateApiKey(authorization),
   loadTenant: async (tenantId) => {
     const tenant = await tenantWithModules(tenantId);
-    return tenant ? { active: tenant.active, modules: tenant.modules.filter((m) => m.active).map((m) => String(m.moduleName)) } : null;
+    return tenant ? { active: canOperateTenant(tenant), modules: tenant.modules.filter((m) => m.active).map((m) => String(m.moduleName)) } : null;
   },
   // El registro de uso se escribe después de responder: no demora la petición.
   log: (entry) => {

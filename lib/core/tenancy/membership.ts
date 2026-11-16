@@ -1,5 +1,6 @@
 import { db } from "@/prisma/db";
 import { acceptInvitesFor } from "@/lib/core/tenancy/team-db";
+import { canOperateTenant, tenantAccessReason } from "./access-policy";
 
 /**
  * Membresía activa de una cuenta en un negocio, o `null` si no puede entrar.
@@ -20,6 +21,8 @@ export async function resolveTenantMembership(input: {
   identity: () => Promise<{ verifiedEmail: string | null; name: string | null }>;
 }) {
   const { tenantId, clerkUserId } = input;
+  const tenant = await db.orm.public.Tenant.where({ id: tenantId }).first();
+  if (!tenant || !canOperateTenant(tenant)) return null;
   const find = () => db.orm.public.User.where({ tenantId, clerkUserId }).first();
 
   let user = await find();
@@ -38,6 +41,8 @@ export async function resolveTenantMembership(input: {
  * quien fue retirado del equipo deja de verlos (SEC-08).
  */
 export async function isActiveMember(tenantId: string, clerkUserId: string): Promise<boolean> {
+  const tenant = await db.orm.public.Tenant.where({ id: tenantId }).first();
+  if (!tenant || !canOperateTenant(tenant)) return false;
   const member = await db.orm.public.User.where({ tenantId, clerkUserId, active: true }).select("id").first();
   return member !== null;
 }
@@ -49,21 +54,21 @@ export async function isActiveMember(tenantId: string, clerkUserId: string): Pro
  */
 export async function homeTenantFor(
   clerkUserId: string,
-): Promise<{ tenantId: string; slug: string; name: string; onboardingCompleted: boolean } | null> {
+): Promise<{ tenantId: string; slug: string; name: string; onboardingCompleted: boolean; access: "ready" | "preparing" | "suspended" } | null> {
   const rows = await db.orm.public.User.where({ clerkUserId, active: true })
-    .include("tenant", (t) => t.select("slug", "name", "onboardingCompleted", "active"))
+    .include("tenant", (t) => t.select("slug", "name", "onboardingCompleted", "active", "managedProvisioning", "activatedAt"))
     .all();
   // Una cuenta puede tener varias organizaciones: entra a la que usó por última vez
   // (completas y activas primero; una pendiente de alta solo si no hay otra).
   const usable = rows.filter((r) => r.tenant);
   const ranked = [...usable].sort(
     (a, b) =>
-      Number(Boolean(b.tenant?.onboardingCompleted && b.tenant.active)) - Number(Boolean(a.tenant?.onboardingCompleted && a.tenant.active)) ||
+      Number(Boolean(b.tenant && canOperateTenant(b.tenant))) - Number(Boolean(a.tenant && canOperateTenant(a.tenant))) ||
       b.updatedAt.epochMilliseconds - a.updatedAt.epochMilliseconds,
   );
   const user = ranked[0];
   if (!user?.tenant) return null;
-  return { tenantId: user.tenantId, slug: user.tenant.slug, name: user.tenant.name, onboardingCompleted: user.tenant.onboardingCompleted };
+  return { tenantId: user.tenantId, slug: user.tenant.slug, name: user.tenant.name, onboardingCompleted: user.tenant.onboardingCompleted, access: tenantAccessReason(user.tenant) };
 }
 
 /**
@@ -84,10 +89,10 @@ export async function rememberBusiness(clerkUserId: string, tenantId: string): P
  */
 export async function businessesOfMember(clerkUserId: string): Promise<{ slug: string; name: string }[]> {
   const rows = await db.orm.public.User.where({ clerkUserId, active: true })
-    .include("tenant", (t) => t.select("slug", "name", "active", "onboardingCompleted"))
+    .include("tenant", (t) => t.select("slug", "name", "active", "onboardingCompleted", "managedProvisioning", "activatedAt"))
     .all();
   return rows
-    .flatMap((row) => (row.tenant && row.tenant.active && row.tenant.onboardingCompleted ? [{ slug: row.tenant.slug, name: row.tenant.name }] : []))
+    .flatMap((row) => (row.tenant && canOperateTenant(row.tenant) ? [{ slug: row.tenant.slug, name: row.tenant.name }] : []))
     .sort((a, b) => a.name.localeCompare(b.name, "es"));
 }
 
@@ -105,9 +110,10 @@ export async function tenantLetterhead(tenantId: string) {
 
 /** Negocio activo por slug, con sus módulos (shell de la app). */
 export async function activeTenantWithModules(slug: string) {
-  return db.orm.public.Tenant.where({ slug, active: true })
+  const tenant = await db.orm.public.Tenant.where({ slug, active: true })
     .include("modules", (module) => module.select("moduleName", "active"))
     .first();
+  return tenant && canOperateTenant(tenant) ? tenant : null;
 }
 
 /** Tema guardado de la persona en ese negocio (`null` si no eligió). */

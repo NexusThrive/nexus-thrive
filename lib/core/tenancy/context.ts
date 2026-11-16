@@ -6,6 +6,7 @@ import { createTenantDb } from "@/lib/core/tenancy/db";
 import type { BusinessRole } from "@/lib/core/auth/roles";
 import { can } from "@/lib/core/auth/permissions";
 import { modulesForRoute } from "@/lib/core/capabilities/route-modules";
+import { canOperateTenant } from "./access-policy";
 
 /**
  * Contexto de tenant resuelto para una server action: usuario autenticado,
@@ -35,8 +36,9 @@ export type TenantContext = {
 type TenantRecord = NonNullable<Awaited<ReturnType<typeof loadActiveTenant>>>;
 
 /** El negocio con ese slug, solo si está activo (suspendido = `null`). */
-export function loadActiveTenant(slug: string) {
-  return db.orm.public.Tenant.where({ slug, active: true }).first();
+export async function loadActiveTenant(slug: string) {
+  const tenant = await db.orm.public.Tenant.where({ slug, active: true }).first();
+  return tenant && canOperateTenant(tenant) ? tenant : null;
 }
 
 /**
