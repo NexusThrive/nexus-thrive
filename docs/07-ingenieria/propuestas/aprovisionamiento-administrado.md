@@ -68,7 +68,7 @@ No sustituir pruebas nuevas por lectura de código, ni respuesta de proveedor po
 - `pnpm lint`: código 0, cero errores y 37 advertencias en código existente; sin aplicar fixes ajenos al alcance. `pnpm exec tsc --noEmit`: código 0, sin diagnósticos.
 - `git diff --check` y `git diff --cached --check`: sin errores. `pnpm verify`, build y navegador no ejecutados en este cambio exclusivamente documental; no se afirma validación del nuevo flujo.
 - Los primeros intentos de comandos pnpm en sandbox fallaron antes de ejecutar por descarga/verificación de pnpm 12.3.4 (`fetch failed`); se repitieron con red autorizada sin desactivar firmas. Fallos de entorno separados de los resultados anteriores.
-- PR: pendiente de publicar; sin fusión. QA/revisión arquitectónica: pendientes de revisor independiente.
+- PR documental: [#160](https://github.com/NexusThrive/nexus-thrive/pull/160), en borrador hacia `main`, sin fusión. Commit inicial `6abfdc00`. El conector GitHub devolvió 403 al crear el PR; se publicó con la CLI autenticada. QA/revisión arquitectónica: pendientes de revisor independiente.
 - Engram no disponible; objetivo, instrucciones, hallazgos, resultados, pendientes y archivos relevantes conservados en auditoría, ADR y este informe.
 
 Siguiente: revisar HU-01/ADR y ejecutar HU-02 en su rama/PR, seguido por política común y cierre de entradas. El ADR requiere revisión humana antes de integrar decisiones estructurales; escribirlo no lo acepta. Historias funcionales todavía no implementadas.
