@@ -57,6 +57,7 @@ const config: StorybookConfig = {
       "@/app/[tenant]/(app)/inventario/categorias/actions": path.resolve(import.meta.dirname, "mocks/catalog-actions.ts"),
       "@/app/[tenant]/(app)/inventario/atributos/actions": path.resolve(import.meta.dirname, "mocks/catalog-actions.ts"),
       "@/app/admin/usuarios/actions": path.resolve(import.meta.dirname, "mocks/admin-users-actions.ts"),
+      "@/app/admin/actions": path.resolve(import.meta.dirname, "mocks/admin-actions.ts"),
       "@/app/admin/soluciones/actions": path.resolve(import.meta.dirname, "mocks/admin-soluciones-actions.ts"),
       "@/app/[tenant]/(app)/presencia/crecimiento/actions": path.resolve(import.meta.dirname, "mocks/growth-actions.ts"),
       "@/app/[tenant]/(app)/presencia/google/actions": path.resolve(import.meta.dirname, "mocks/google-actions.ts"),
