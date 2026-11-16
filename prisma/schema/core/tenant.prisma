@@ -112,6 +112,11 @@ model Tenant {
   active       Boolean  @default(true)
 
   onboardingCompleted Boolean @default(false)
+  managedProvisioning Boolean @default(false)
+  ownerEmail String?
+  activatedAt DateTime?
+  provisioningKey String? @unique
+  provisioningRequestHash String?
   tenantType TenantType @default(COMPANY)
   legalName String?
   taxId String?
