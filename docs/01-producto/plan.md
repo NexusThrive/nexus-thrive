@@ -6,6 +6,8 @@ El plan heredado no registraba historias vigentes. El 2026-11-16 el usuario acep
 
 Posteriormente solicitó auditar los errores de pantallas: **HU-09 — Reconciliación del esquema local**, continuación correctiva de M01/S01 registrada en el mismo informe, con respaldo y preservación de datos. No amplía la funcionalidad comercial ni autoriza cambios en Supabase, que dejó pendiente.
 
+Durante esa auditoría solicitó **HU-10 — Ocultar herramientas internas en la interfaz del negocio**: Funciones, Importar y exportar e Integraciones, con sus accesos secundarios. Se registra como historia separada en el mismo informe y en su propia rama/PR.
+
 ## Orden de trabajo
 
 La [estrategia de producto](estrategia/README.md) contiene las decisiones aceptadas y su transición por etapas. La [hoja de ruta](hoja-de-ruta.md) conserva los seguimientos técnicos con su fecha. Las [funcionalidades](funcionalidades/README.md) describen capacidades y los [pendientes heredados](backlog/README.md) requieren validación antes de convertirse en historias listas.

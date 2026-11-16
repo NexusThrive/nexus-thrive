@@ -183,9 +183,6 @@ export default function PipelineView({
               <DropdownMenuItem asChild>
                 <Link href={`/${slug}/crm/configuracion#etapas`}>Configurar etapas</Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href={`/${slug}/data`}>Importar contactos</Link>
-              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

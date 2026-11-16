@@ -208,11 +208,7 @@ export default function StockView({ initialTab, slug, warehouses, overview, tran
       {openCount ? <CountSheet slug={slug} id={openCount} onClose={() => setOpenCount(null)} /> : null}
       {purchasesActive ? null : tab === "reorder" ? (
         <p className="text-ui text-muted-foreground">
-          Para pedir a tus proveedores desde aquí, enciende «Compras» en{" "}
-          <Link href={`/${slug}/functions`} className="font-medium text-foreground underline underline-offset-4">
-            Funciones
-          </Link>
-          .
+          Para habilitar pedidos a proveedores, contacta al equipo de NexusThrive.
         </p>
       ) : null}
     </div>

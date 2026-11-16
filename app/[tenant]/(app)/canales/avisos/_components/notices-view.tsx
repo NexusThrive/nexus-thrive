@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Alert } from "@/components/molecules/alert";
 import { Badge } from "@/components/atoms/badge";
@@ -42,8 +41,7 @@ export default function NoticesView({ slug, templates, notices, connected }: { s
     <div className="grid gap-4">
       {!connected ? (
         <Alert tone="info">
-          Aún no conectas tu número de WhatsApp Business: los avisos quedan listos para enviarlos con un toque.{" "}
-          <Link href={`/${slug}/integrations`} className="font-semibold underline">Conectar WhatsApp</Link>
+          Tu número de WhatsApp Business aún no está conectado. Contacta al equipo de NexusThrive para configurarlo.
         </Alert>
       ) : null}
       <Alert tone="warning">Fuera de las 24 h desde el último mensaje del cliente, WhatsApp solo deja enviar plantillas aprobadas por Meta. Sin consentimiento, el aviso nunca sale solo; si el cliente escribe «BAJA», no le sale ninguno más.</Alert>

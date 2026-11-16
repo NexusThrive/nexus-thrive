@@ -174,10 +174,9 @@ export default function CatalogView({
                 <Package className="size-7" strokeWidth={1.6} />
               </span>
               <h2 id="cat-vacio" className="font-display text-xl font-semibold text-foreground">Aún no hay {KIND_LABELS[kind].many.toLowerCase()}</h2>
-              <p className="max-w-md text-ui text-muted-foreground">{KIND_LABELS[kind].hint} Créalos uno a uno o cárgalos todos de una vez desde Excel.</p>
+              <p className="max-w-md text-ui text-muted-foreground">{KIND_LABELS[kind].hint} Crea el primero para comenzar.</p>
               <div className="mt-1 flex flex-wrap justify-center gap-2.5">
                 {newButton}
-                {canManage ? <Link href={`/${slug}/data`} className={cn(buttonVariants({ variant: "outline" }), "h-11 rounded-full border-border/60 bg-transparent px-5")}>Importar desde Excel</Link> : null}
               </div>
             </div>
             <ul aria-hidden="true" className="grid min-h-0 flex-1 grid-cols-2 content-start gap-4 overflow-hidden sm:grid-cols-4">
