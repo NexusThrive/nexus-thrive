@@ -71,6 +71,15 @@ export async function homeTenantFor(
   return { tenantId: user.tenantId, slug: user.tenant.slug, name: user.tenant.name, onboardingCompleted: user.tenant.onboardingCompleted, access: tenantAccessReason(user.tenant) };
 }
 
+/** Called only with the verified primary email obtained from the server session. */
+export async function managedAccessForEmail(email: string): Promise<"preparing" | "suspended" | null> {
+  if (!email) return null;
+  const rows = await db.orm.public.Tenant.where({ ownerEmail: email, managedProvisioning: true }).all();
+  if (rows.some((tenant) => tenantAccessReason(tenant) === "preparing")) return "preparing";
+  if (rows.some((tenant) => tenantAccessReason(tenant) === "suspended")) return "suspended";
+  return null;
+}
+
 /**
  * Marca la organización como la última usada por la cuenta (la que abre al volver a entrar).
  * Solo si es miembro activo; devuelve si se recordó.

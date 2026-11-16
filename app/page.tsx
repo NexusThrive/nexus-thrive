@@ -28,12 +28,7 @@ export default function Home() {
         >
           Iniciar sesión
         </Link>
-        <Link
-          href="/sign-up"
-          className="inline-flex h-11 items-center justify-center rounded-md border border-paper/25 px-6 text-sm font-semibold text-paper transition hover:border-paper/50 hover:bg-paper/5"
-        >
-          Crear negocio
-        </Link>
+
       </div>
 
       <p className="text-xs text-paper/40">

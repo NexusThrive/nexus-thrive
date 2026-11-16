@@ -12,7 +12,6 @@ export type AuthMode = "sign-in" | "sign-up";
 export function AuthModeSwitch({ mode }: { mode: AuthMode }) {
   const links: { mode: AuthMode; href: string; label: string }[] = [
     { mode: "sign-in", href: "/sign-in", label: "Iniciar sesión" },
-    { mode: "sign-up", href: "/sign-up", label: "Crear cuenta" },
   ];
   return (
     <nav

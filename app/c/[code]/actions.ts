@@ -26,7 +26,7 @@ export async function claimBenefitAction(formData: FormData): Promise<void> {
   await setBenefitCookie(code);
 
   const { userId } = await auth();
-  redirect(userId ? "/onboarding" : "/sign-up");
+  redirect(userId ? "/auth/callback" : "/sign-in");
 }
 
 export async function redeemBenefitAction(formData: FormData): Promise<void> {
@@ -36,14 +36,14 @@ export async function redeemBenefitAction(formData: FormData): Promise<void> {
   const { userId } = await auth();
   if (!userId) {
     await setBenefitCookie(code);
-    redirect("/sign-up");
+    redirect("/sign-in");
   }
 
   const home = await homeTenantFor(userId);
   const tenantId = home?.tenantId;
-  if (!tenantId) {
+  if (!tenantId || home?.access !== "ready") {
     await setBenefitCookie(code);
-    redirect("/onboarding");
+    redirect("/auth/callback");
   }
 
   const result = await redeemBenefit({

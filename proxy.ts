@@ -52,7 +52,7 @@ export default clerkMiddleware(
     // sesión y membresía (y cada server action lo revalida).
 
     // Raíz: si hay sesión, la decisión de destino se toma en /auth/callback
-    // (equipo de NEXUS → panel, invitación → su negocio, nuevo → onboarding).
+    // (equipo de NEXUS → panel, invitación → su negocio, sin relación → acceso no autorizado).
     // Sin sesión, al acceso.
     if (pathname === "/") {
       const { userId } = await auth();
