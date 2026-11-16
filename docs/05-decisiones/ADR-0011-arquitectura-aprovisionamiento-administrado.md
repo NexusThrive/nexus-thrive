@@ -2,9 +2,9 @@
 
 - ID: arquitectura/0011
 - Título: Separar preparación, activación, invitación e identidad en el alta administrada
-- Estado: Propuesta
+- Estado: Aceptada por el usuario el 2026-11-16; implementación y revisión técnica independientes pendientes
 - Fecha: 2026-11-16
-- Responsables: dueño del producto y revisión humana de arquitectura; aceptación pendiente
+- Responsables: dueño del producto (aceptación explícita en esta sesión); revisión técnica independiente antes de integración
 - Reemplaza a: no aplica; concreta el alta sin reescribir decisiones aceptadas
 
 ## Contexto

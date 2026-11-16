@@ -10,6 +10,10 @@ No existe `docs/07-ingenieria/PAUSA` en la revisión inicial. Base: `main`, comm
 
 ## Historias y dependencias
 
+El usuario aceptó el ADR, M01/S01 y todas las historias el 2026-11-16 («acepto todo dale con todas»). Se implementan en PR apilados sin fusión automática. Por su petición posterior, se limita la repetición de pruebas: comprobaciones enfocadas por cambio y verificación consolidada al final.
+
+HU-02, intento 1: contrato emitido y migración generada con 15 operaciones exclusivamente aditivas. La referencia `db` estaba atrasada y produjo un paquete ajeno al alcance; ese paquete local se descartó sin aplicarlo. Se comparó el almacenamiento del contrato anterior con los snapshots: origen exacto `a9b88b713550292f7a53606a717fc3f12e1ba425706df226c51113aaf3443f67`, destino `aa3535fad47d3ed4395c026ce67d9fbaaecae4118e20153ab85d2fec3036fdb4`. Incluye SQL operativo equivalente; ninguna migración se aplica a la base inventariada.
+
 | HU | Resultado verificable | Rama | Dependencia |
 | --- | --- | --- | --- |
 | HU-01 | Auditoría en español, inventario real de lectura, ADR propuesto, riesgos y plan. Sin mutar aplicación/dashboard. | `chore/HU-managed-provisioning-audit-01` | Ninguna. |
