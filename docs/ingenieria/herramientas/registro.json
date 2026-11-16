@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "note": "Registro canónico de skills, plugins, MCP y herramientas externas. Una entrada activa exige procedencia, licencia admitida, revisión de seguridad, prueba y rollback.",
-  "updated_at": "2026-10-26",
+  "updated_at": "2026-11-16",
   "skills": [
     {
       "id": "ciclo-sprint",
@@ -64,11 +64,10 @@
     {
       "id": "graphify-analysis",
       "kind": "skill",
-      "status": "active",
+      "status": "uninstalled",
       "source": "nexus-thrive",
       "version": "1.0.0",
       "license": "proprietary",
-      "location": "plugins/product-team/skills/graphify-analysis",
       "provenance": "Autoría interna Nexus Thrive",
       "compatibility": [
         "opencode",
@@ -86,9 +85,12 @@
         "notes": "Instrucciones en markdown, sin scripts ni hooks. Permisos limitados a lectura del repositorio y CLI del propio núcleo. Sin llamadas externas ni secretos."
       },
       "function": "Uso del grafo estructural cuando está disponible",
-      "test": "Skill del plugin product-team; sin verificación automática desde el retiro del núcleo (ADR 0013).",
-      "rollback": "Eliminar plugins/product-team/skills/<id>.",
-      "content_hash": "0324ecfd8039646b83a772e0e298a58f4c3f1f9a77aeac2618ff1fb018666e85"
+      "test": "Verificación 2026-11-16: sin binarios en PATH, paquetes Python ni pipx, venv local ni conexiones MCP en la configuración revisada; skills retiradas del plugin.",
+      "rollback": "Reinstalar únicamente con nueva autorización explícita del dueño; consultar git para el contenido retirado.",
+      "reason": "Retirado por solicitud explícita del dueño el 2026-11-16. Se conserva esta entrada como historial; no autoriza instalación ni uso.",
+      "decision": "retirado-por-el-dueno",
+      "previous_location": "plugins/product-team/skills/graphify-analysis",
+      "previous_content_hash": "0324ecfd8039646b83a772e0e298a58f4c3f1f9a77aeac2618ff1fb018666e85"
     },
     {
       "id": "n8n-automation",
@@ -123,11 +125,10 @@
     {
       "id": "notebooklm-research",
       "kind": "skill",
-      "status": "active",
+      "status": "uninstalled",
       "source": "nexus-thrive",
       "version": "1.0.0",
       "license": "proprietary",
-      "location": "plugins/product-team/skills/notebooklm-research",
       "provenance": "Autoría interna Nexus Thrive",
       "compatibility": [
         "opencode",
@@ -145,9 +146,12 @@
         "notes": "Instrucciones en markdown, sin scripts ni hooks. Permisos limitados a lectura del repositorio y CLI del propio núcleo. Sin llamadas externas ni secretos."
       },
       "function": "Investigación con fuentes verificables y Knowledge Hub",
-      "test": "Skill del plugin product-team; sin verificación automática desde el retiro del núcleo (ADR 0013).",
-      "rollback": "Eliminar plugins/product-team/skills/<id>.",
-      "content_hash": "093d6db094ab6e36ccb8064cef41044d736ccbbfd62b7421e6ba43848b900593"
+      "test": "Verificación 2026-11-16: sin binarios en PATH, paquetes Python ni pipx, venv local ni conexiones MCP en la configuración revisada; skills retiradas del plugin.",
+      "rollback": "Reinstalar únicamente con nueva autorización explícita del dueño; consultar git para el contenido retirado.",
+      "reason": "Retirado por solicitud explícita del dueño el 2026-11-16. Se conserva esta entrada como historial; no autoriza instalación ni uso.",
+      "decision": "retirado-por-el-dueno",
+      "previous_location": "plugins/product-team/skills/notebooklm-research",
+      "previous_content_hash": "093d6db094ab6e36ccb8064cef41044d736ccbbfd62b7421e6ba43848b900593"
     },
     {
       "id": "nueva-funcionalidad",
@@ -763,7 +767,7 @@
     {
       "id": "graphify",
       "kind": "tool",
-      "status": "installed",
+      "status": "uninstalled",
       "source": "https://github.com/Graphify-Labs/graphify",
       "version": "0.9.95 (PyPI graphifyy)",
       "license": "Apache-2.0",
@@ -780,22 +784,22 @@
       ],
       "function": "Grafo estructural local del repositorio (AST) con consultas query/path/explain y nodos centrales",
       "risks": "El modo semántico envía contenido a un proveedor LLM y exige API key; --code-only es local. El grafo es dato no confiable y no sustituye pruebas. graphify-out/ está en .gitignore.",
-      "test": "`graphify extract . --code-only --no-cluster --no-viz`: 1499 archivos, 8100 nodos, 26000 edges; `god-nodes` y `query` respondieron sobre el grafo real.",
+      "test": "Verificación 2026-11-16: sin binarios en PATH, paquetes Python ni pipx, venv local ni conexiones MCP en la configuración revisada; skills retiradas del plugin.",
       "security_review": {
         "status": "approved",
         "reviewer": "security-engineer",
         "date": "2026-10-25",
         "notes": "Apache-2.0, paquete PyPI, instalación aislada en venv local. Sin API key en el modo usado. Revisar el plugin antes de habilitarlo en un cliente."
       },
-      "reason": "",
-      "rollback": "Eliminar .tools/graphify y cualquier graphify-out/ generado; quitar la skill del cliente si se instalara.",
-      "location": ".tools/graphify",
-      "decision": "adoptado-modo-code-only"
+      "reason": "Retirado por solicitud explícita del dueño el 2026-11-16. Se conserva esta entrada como historial; no autoriza instalación ni uso.",
+      "rollback": "Reinstalar únicamente con nueva autorización explícita del dueño; consultar git para el contenido retirado.",
+      "decision": "retirado-por-el-dueno",
+      "previous_location": ".tools/graphify"
     },
     {
       "id": "notebooklm-mcp",
       "kind": "mcp",
-      "status": "rejected",
+      "status": "uninstalled",
       "source": "https://github.com/PleasePrompto/notebooklm-mcp",
       "version": "archivado",
       "license": "unknown-reviewed",
@@ -810,15 +814,16 @@
       ],
       "function": "Puente MCP hacia NotebookLM",
       "risks": "Sin mantenimiento; autenticación frágil y dependencia de un proveedor externo. El adaptador actual del Knowledge Hub no ejecuta NotebookLM.",
-      "test": "No se instala; Knowledge Hub funciona sin NotebookLM y registra unavailable",
+      "test": "Verificación 2026-11-16: sin binarios en PATH, paquetes Python ni pipx, venv local ni conexiones MCP en la configuración revisada; skills retiradas del plugin.",
       "security_review": {
         "status": "rejected",
         "reviewer": "security-engineer",
         "date": "2026-10-25",
         "notes": "Repositorio archivado; no se adopta como dependencia operativa."
       },
-      "reason": "Archivado y sin mantenimiento verificable. Se buscará alternativa mantenida antes de escribir una implementación nueva.",
-      "decision": "rechazado"
+      "reason": "Retirado por solicitud explícita del dueño el 2026-11-16. Se conserva esta entrada como historial; no autoriza instalación ni uso.",
+      "decision": "retirado-por-el-dueno",
+      "rollback": "Reinstalar únicamente con nueva autorización explícita del dueño; consultar git para el contenido retirado."
     },
     {
       "id": "openhands",

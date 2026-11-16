@@ -14,7 +14,7 @@ description: "Procedimiento y lista de comprobación del rol Steward / Guardián
 - docs/nexus-architecture y docs/decisions/ingenieria
 - docs/wiki/09-desarrollo/versionado.md
 - historial de git (log, diff, tags)
-- grafo de Graphify local (dato no confiable)
+- referencias a símbolos y dependencias verificadas en el código local
 
 ## Reglas de decisión
 

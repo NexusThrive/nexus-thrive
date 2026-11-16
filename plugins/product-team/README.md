@@ -208,7 +208,7 @@ Los usa la skill `ciclo-sprint` por nombre. Solapan con `backend-engineer`, `fro
 
 ## Skills de flujo y temáticas
 
-`nueva-funcionalidad`, `ciclo-sprint`, `graphify-analysis`, `notebooklm-research`, `release-management`, `security-review`,
+`nueva-funcionalidad`, `ciclo-sprint`, `release-management`, `security-review`,
 `skills-externas`, `contenido`, `database-migrations`, `diseno-producto`, `growth`, `marca`, `seo`, `sistema-diseno`,
 `storybook-profesional`, `visual-qa`.
 
