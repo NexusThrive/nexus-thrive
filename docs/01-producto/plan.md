@@ -4,6 +4,8 @@
 
 El plan heredado no registraba historias vigentes. El 2026-11-16 el usuario aceptó **M01 — MVP privado administrado**, **S01 — Alta, activación y acceso seguro** y las historias HU-01 a HU-08 del [plan y reporte de aprovisionamiento](../07-ingenieria/propuestas/aprovisionamiento-administrado.md). La aceptación autoriza implementación y PR; no acredita configuración externa ni fusión. Los estados de entrega se documentan con evidencia.
 
+Posteriormente solicitó auditar los errores de pantallas: **HU-09 — Reconciliación del esquema local**, continuación correctiva de M01/S01 registrada en el mismo informe, con respaldo y preservación de datos. No amplía la funcionalidad comercial ni autoriza cambios en Supabase, que dejó pendiente.
+
 ## Orden de trabajo
 
 La [estrategia de producto](estrategia/README.md) contiene las decisiones aceptadas y su transición por etapas. La [hoja de ruta](hoja-de-ruta.md) conserva los seguimientos técnicos con su fecha. Las [funcionalidades](funcionalidades/README.md) describen capacidades y los [pendientes heredados](backlog/README.md) requieren validación antes de convertirse en historias listas.

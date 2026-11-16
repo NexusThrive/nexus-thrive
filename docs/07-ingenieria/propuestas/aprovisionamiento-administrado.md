@@ -24,6 +24,7 @@ HU-02, intento 1: contrato emitido y migración generada con 15 operaciones excl
 | HU-06 | Consultar preparación y marcar listo; activar una vez con una invitación local; renovar/revocar/suspender/reactivar como acciones independientes, autorizadas y auditadas. | `feature/HU-managed-business-activation-06` | HU-05. |
 | HU-07 | Entrega con Clerk/cuentas existentes, estado durable, recuperación de timeout, reenvío y renovación sin duplicados. Sin identidades duplicadas ni invitación preactivación. | `feature/HU-owner-invitation-delivery-07` | HU-06. |
 | HU-08 | Recorridos completos y compatibilidad, dashboard documentado por instancia, evidencia de entrega y pruebas desplegadas, QA/revisión independientes. | `chore/HU-managed-provisioning-verification-08` | HU-02 a HU-07. |
+| HU-09 | Auditar errores de pantallas y reconciliar el esquema local existente con respaldo, sin eliminar datos ni elementos heredados; verificar consultas reales y registrar restricciones pendientes. Solicitada por el usuario tras los errores de ejecución. | `fix/HU-local-schema-reconciliation-09` | HU-08; continuación correctiva de M01/S01. |
 
 Un PR en inglés por historia. Se confirmó el objetivo S01, pero no una rama de integración: no crear ni pushear `sprint/S01`. Se pueden presentar dependencias como PR apilados apuntando a la historia anterior, con dependencia visible; HU-01 puede apuntar a `main` como documentación. Integración/promoción requieren revisión humana, sin aprobar el propio trabajo. Ningún despliegue parcial debe habilitar invitaciones prematuras. Máximo tres intentos por historia; registrar fallos y detener al tercero.
 
@@ -175,3 +176,55 @@ Respaldo previo legible en `/tmp/nexus-provisioning-live-migration/local-before-
 El buzón falló porque la tabla histórica `Task` no existía en la base local. La revisión de las consultas del mismo recorrido también identificó la columna ausente `StoreOrder.fulfillment`. A las **2026-11-16T19:39:05Z** se aplicaron transaccionalmente los SQL versionados de tareas (`2026-11-07-tareas.sql`), tareas de proyecto (`2026-11-07-tareas-de-proyecto.sql`) y cumplimiento de pedidos (`2026-11-07-cumplimiento-de-pedidos.sql`). Del SQL de CRM (`2026-11-07-crm-pipeline.sql`) se extrajeron exclusivamente las dos instrucciones aditivas de `Task.dueAt` y `Task.kind`, requeridas por el contrato actual; no se aplicó el resto del cambio de CRM. No se modificó código funcional comercial ni Supabase.
 
 Respaldo previo completo, legible por `pg_restore --list`, en `/tmp/nexus-provisioning-live-migration/local-before-notifications-1794857944255.dump`. Bajo bloqueo transaccional se compararon todos los campos anteriores de **82 tenants, 19 membresías, 6 productos y cero pedidos**, sin diferencias. Las proyecciones de tareas y pedidos quedaron consultables. Después pasaron las funciones reales `loadInbox` y `loadNotifications` con el runtime Prisma de la aplicación para los **dos tenants administrados con membresías activas**; comprobación de solo lectura, sin repetir suites. El primer intento del comprobador falló por utilizar un nombre de función inexistente; se corrigió únicamente la utilidad temporal y se repitió la lectura con éxito. El marker no se alteró; la divergencia global sigue pendiente. Engram no disponible: esta evidencia permanece en el informe.
+
+## HU-09 — Auditoría de errores y reconciliación local — 2026-11-16
+
+El usuario reportó después `PaymentMethodSetting` ausente en POS y pidió auditar las pantallas conjuntamente. Las reparaciones anteriores eran parciales y no resolvían la divergencia general; esta historia aborda esa causa operativa. No modifica funcionalidad de tienda, navegación ni reglas comerciales. No cambia el contrato, las decisiones estructurales aceptadas ni migraciones históricas: recupera definiciones ya versionadas. El SQL de recuperación local no sustituye una migración de producto ni autoriza su uso en producción.
+
+### Hallazgos y atribución
+
+- `prisma db verify --schema-only`: código **4**, **643 hallazgos** antes de la reparación. Son diferencias estructurales, no 643 errores de pantalla independientes.
+- Inventario directo de los **151 modelos**: faltaban **27 tablas y 23 columnas**. La comparación con `main` confirmó que **las 27 tablas y las 23 columnas ya existían en su contrato**, antes de los cambios de aprovisionamiento.
+- `git diff main...HEAD` no muestra cambios de aprovisionamiento en `lib/business`, `lib/domains` ni en contratos comerciales. Los cambios de contrato se limitan a `Tenant` y `TenantInvite`. POS y sus consultas no se modificaron; `PaymentMethodSetting` ya se incorporó en `main` mediante `2f9988e4`, del 2026-11-08.
+- La retirada del gate de onboarding permite alcanzar consultas existentes que antes podían quedar detrás del wizard. Esto puede hacer visible la incompatibilidad; no demuestra cuándo se omitieron las migraciones de esta base. No se atribuye el origen histórico sin evidencia.
+- El rastreo estático de imports y referencias ORM identificó **98 archivos de página/layout potencialmente afectados**. Es una aproximación transitiva que incluye repositorios compartidos, ramas condicionales y permisos; no equivale a 98 fallos reproducidos ni a una prueba visual.
+
+| Área | Tablas ausentes al iniciar esta auditoría |
+| --- | --- |
+| Ventas, precios y operación | `PaymentMethodSetting`, `PriceTier`, `SalesQuote`, `SalesQuoteLine`, `Delivery`, `ProductionOrder`, `Deliverable` |
+| CRM y contactos | `CrmStage`, `CrmLostReason`, `CrmTag`, `CrmTeam`, `Opportunity`, `OpportunityEvent`, `CustomerGroup`, `CustomerGroupMember`, `SavedSearch`, `LeadForm` |
+| Pagos y tesorería | `FinancialAccount`, `Obligation`, `PaymentAllocation`, `PaymentAttempt`, `ProviderSettlement`, `BankStatementLine` |
+| Canales y comunicaciones | `BusinessConversation`, `BusinessMessage`, `MessageTemplate`, `WhatsappNotice` |
+
+Las columnas ausentes estaban en `Customer` (consentimiento, exclusión, responsable, teléfono normalizado, lista de precios, origen y etapa), `Party` (contacto, región y responsabilidad tributaria), `PaymentIntent` (comisiones, cuenta, neto, comprobante, rechazo y liquidación) y `StoreOrder` (canal, cliente, identificador externo y cotización).
+
+La vista previa `prisma db update --dry-run --json` terminó con código **0** y propuso **298 operaciones aditivas y nueve destructivas**. No se ejecutó `db update`: se excluyeron todas las eliminaciones. Se conservaron `Membership.payments`, la tabla `PresenceChannel`, seis columnas antiguas de `PresenceRequest` y su restricción de elementos no nulos. La conexión de la aplicación usa localmente un rol propietario de todas las tablas, con `rolsuper=true` y `rolbypassrls=true`; por ello habilitar el RLS del contrato no bloquea sus lecturas. Esta comprobación es específica del entorno local.
+
+### Datos históricos incompatibles
+
+El ensayo sobre una copia restaurada detectó referencias huérfanas preexistentes. No se borraron, reasignaron ni rellenaron registros. No hay grupos duplicados para los índices parciales de `Customer` por tenant/código de acceso y tenant/NFC.
+
+| Restricción | Filas cuyo tenant no existe | Estado posterior |
+| --- | ---: | --- |
+| `Attendance_tenantId_fkey` | 12 | `NOT VALID`, `convalidated=false` |
+| `Booking_tenantId_fkey` | 10 | `NOT VALID`, `convalidated=false` |
+| `InboxConversation_tenantId_fkey` | 7 | `NOT VALID`, `convalidated=false` |
+| `SupportTicket_tenantId_fkey` | 4 | `NOT VALID`, `convalidated=false` |
+
+Estas cuatro FK conservan **33 filas históricas** y restringen nuevas inserciones/cambios de clave. La remediación de los datos y `VALIDATE CONSTRAINT` quedan pendientes de una decisión explícita sobre los registros. Un verificador de esquema satisfactorio no demuestra integridad histórica resuelta. **No se firmó ni avanzó el marker**: permanece el marcador antiguo fuera del grafo, ya inventariado. Una ejecución general de `db migrate` sigue requiriendo una reconciliación explícita del historial; no fingir migraciones aplicadas.
+
+### Reparación y evidencia real
+
+Se conservó el [SQL local revisable](../../08-operaciones/sql-produccion/2026-11-16-reconciliacion-local.sql), SHA-256 `a9a5a5928d9008ad394e40ba3a1b3644ad6eb96571bf37912f81d24d347c2fa9`. Contiene las 298 operaciones aditivas de la vista previa, con la única variación deliberada de las cuatro FK `NOT VALID`. No incluye las nueve operaciones destructivas ni instrucciones de modificación de datos. No se aplicaron en bloque los SQL históricos del directorio.
+
+1. Respaldo completo custom en `/tmp/nexus-provisioning-live-migration/local-before-full-reconciliation-1794858407175.dump`, con permisos privados y catálogo legible por `pg_restore --list`.
+2. Restauración real en una base temporal local. Primer ensayo SQL: fallo `23503` por una FK histórica y **rollback completo**; la base de la aplicación no fue afectada. Tras inventariar todas las referencias, el segundo ensayo SQL, con las cuatro FK diferidas, pasó. Dos fallos auxiliares del restore se resolvieron sin cambios en la base original: parámetro `schema` incompatible con libpq e intento de restaurar sobre la copia ya restaurada.
+3. Ensayo satisfactorio: comparación de **125 tablas y 2.550 filas**, con todos sus campos originales, sin diferencias. `prisma db verify --schema-only`: **código 0** sobre la copia.
+4. Aplicación local a las **2026-11-16T19:50:11Z**, con bloqueo transaccional y la misma comparación antes/después: **125 tablas y 2.550 filas conservadas**, incluidos los elementos heredados ajenos al contrato. Marker intacto. `prisma db verify --schema-only`: **código 0**. No quedan tablas ni columnas requeridas ausentes.
+5. Runtime Prisma de la aplicación: lectura completa limitada a una fila de **151/151 modelos**, sin errores; filtro de tenant cuando corresponde. No se imprimieron filas ni secretos.
+6. Consultas reales, en modo de lectura, para **18 negocios con membresías activas**, incluidos heredados y administrados: **90/90 ejecuciones satisfactorias**. Se ejercitaron los seis loaders paralelos de POS como un recorrido, `loadInbox`, `loadNotifications`, `loadHomeSummary` (exige todos sus bloques) y `loadFirstSteps`. Sin registrar ventas, cobros, asistencia ni invitaciones.
+7. Se comprobó en `pg_constraint` que solo las cuatro FK listadas siguen sin validar y que el marker es idéntico al inventario previo. La base temporal del ensayo fue retirada; el respaldo y las evidencias privadas permanecen en `/tmp/nexus-provisioning-live-migration/`.
+
+El revisor independiente `provisioning_review` confirmó la correspondencia de las 298 operaciones, exclusión de las nueve destructivas, orden de dependencias, RLS, preservación del ensayo y las cuatro variaciones deliberadas. Emitió revisión estática favorable para esta recuperación local, sin aprobación de QA funcional. No se probaron todas las pantallas en navegador ni flujos de escritura; no se afirma que cualquier posible defecto visual o funcional esté resuelto. No se repitieron suites generales porque no cambió código de aplicación. Supabase permanece pendiente por instrucción expresa del usuario. Engram no disponible: el informe conserva objetivo, alcance, decisiones operativas, evidencia y pendientes.
+
+Verificación documental: `pnpm docs:check`, código **0**, 520 archivos y 1.459 enlaces locales; cero errores nuevos, diez fallos preexistentes en skills de terceros. La ejecución en sandbox quedó esperando al gestor de paquetes; se repitió con acceso autorizado. `git diff --check`: sin errores. HU-09 conserva la revisión funcional desplegada pendiente; no se fusiona automáticamente.
