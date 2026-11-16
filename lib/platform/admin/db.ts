@@ -148,6 +148,8 @@ export type TenantListRow = {
   /** Ciudad declarada en el onboarding (Paso 1). */
   city: string | null;
   /** Wizard de onboarding (false = aún no configuró el negocio). */
+  managedProvisioning?: boolean;
+  activatedAt?: unknown;
   onboardingCompleted: boolean;
   /** Progreso real de configuración derivado de los campos del onboarding. */
   onboardingProgress: number;
@@ -211,6 +213,8 @@ export type TenantDetail = {
   active: boolean;
   suspendedReason: string | null;
   suspendedAt: string | null;
+  managedProvisioning?: boolean;
+  activatedAt?: unknown;
   onboardingCompleted: boolean;
   onboardingProgress: number;
   city: string | null;
@@ -331,6 +335,8 @@ type TenantRowSource = {
   teamSize: string | null;
   address: string | null;
   active: boolean;
+  managedProvisioning?: boolean;
+  activatedAt?: unknown;
   onboardingCompleted: boolean;
   city: string | null;
   whatsappNumber: string | null;
@@ -419,6 +425,8 @@ function buildTenantRow(
     teamSize: row.teamSize ?? null,
     address: row.address ?? null,
     active: row.active,
+    managedProvisioning: row.managedProvisioning,
+    activatedAt: row.activatedAt ? String(row.activatedAt) : null,
     suspendedReason: row.suspendedReason ?? null,
     city: row.city ?? null,
     onboardingCompleted: row.onboardingCompleted,
@@ -913,6 +921,8 @@ export function createAdminDb() {
         suspendedAt: tenant.suspendedAt
           ? toJsDate(tenant.suspendedAt).toISOString()
           : null,
+        managedProvisioning: tenant.managedProvisioning,
+        activatedAt: tenant.activatedAt ? String(tenant.activatedAt) : null,
         onboardingCompleted: tenant.onboardingCompleted,
         onboardingProgress: computeOnboardingProgress(
           tenant as unknown as TenantRowSource,

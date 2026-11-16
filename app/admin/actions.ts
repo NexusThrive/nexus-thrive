@@ -10,6 +10,7 @@ import { requireStaff } from "@/lib/platform/team/access";
 import type { PermissionKey } from "@/lib/platform/team/permissions";
 import { revalidatePath } from "next/cache";
 import { createManagedBusiness, provisioningErrorMessage } from "@/lib/platform/admin/managed-business";
+import { managedLifecycle, type ManagedCommand } from "@/lib/platform/admin/managed-lifecycle";
 import { managedBusinessInput } from "@/lib/platform/admin/managed-validation";
 import { createAdminDb, type AuditLogInput } from "@/lib/platform/admin/db";
 import { validateSlug, type SlugValidation } from "@/lib/core/tenancy/catalogs";
@@ -165,13 +166,8 @@ export async function suspendTenantAction(
     return { status: "ok", message: "El negocio ya estaba suspendido." };
   }
 
-  await adminDb.suspendTenant(tenantId, reason);
-  await audit(actor, {
-    action: "SUSPEND_TENANT",
-    targetTenantId: tenant.tenantId,
-    targetTenantName: tenant.name,
-    metadata: { reason },
-  });
+  try { await managedLifecycle(tenantId, "suspend", actor, reason); }
+  catch (error) { return { status: "error", message: provisioningErrorMessage(error) }; }
 
   revalidateAdmin();
   revalidatePath(`/admin/${tenantId}`);
@@ -199,12 +195,9 @@ export async function activateTenantAction(
     return { status: "error", message: "El negocio no fue encontrado." };
   }
 
-  await adminDb.activateTenant(tenantId);
-  await audit(actor, {
-    action: "ACTIVATE_TENANT",
-    targetTenantId: tenant.tenantId,
-    targetTenantName: tenant.name,
-  });
+  if (!(await requireActor("accounts.create"))) return ACCESS_DENIED;
+  try { await managedLifecycle(tenantId, "activate", actor); }
+  catch (error) { return { status: "error", message: provisioningErrorMessage(error) }; }
 
   revalidateAdmin();
   revalidatePath(`/admin/${tenantId}`);
@@ -364,4 +357,19 @@ export async function checkSlugAvailabilityAction(
 
   const exists = await createAdminDb().slugExists(validation.slug);
   return { status: exists ? "taken" : "available" };
+}
+
+/** Every lifecycle command rechecks staff permissions on the server. */
+export async function manageProvisioningAction(tenantId: string, command: Exclude<ManagedCommand, "suspend">): Promise<AdminFormState> {
+  if (!["ready", "activate", "renew", "revoke"].includes(command)) return { status: "error", message: "Acción no válida." };
+  const actor = await requireActor(command === "ready" ? "accounts.edit" : command === "activate" ? "accounts.suspend" : "accounts.create");
+  if (!actor || (command === "activate" && !(await requireActor("accounts.create")))) return ACCESS_DENIED;
+  const id = validateTenantId(tenantId);
+  if (!id) return { status: "error", message: "Negocio no válido." };
+  try {
+    await managedLifecycle(id, command, actor);
+    revalidateAdmin();
+    revalidatePath(`/admin/negocios/${id}`);
+    return { status: "ok", message: command === "ready" ? "Negocio listo para activar." : command === "activate" ? "Negocio habilitado. La invitación queda pendiente de entrega si corresponde." : command === "renew" ? "Invitación renovada y pendiente de entrega." : "Invitación pendiente revocada." };
+  } catch (error) { return { status: "error", message: provisioningErrorMessage(error) }; }
 }

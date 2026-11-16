@@ -7,13 +7,15 @@ import { Badge, StatusDot } from "@/components/atoms/badge";
  */
 export default function TenantStatusBadge({
   active,
+  preparing = false,
 }: {
   active: boolean;
+  preparing?: boolean;
 }) {
   return (
     <Badge variant="default">
       <StatusDot tone={active ? "success" : "danger"} />
-      {active ? "Activo" : "Suspendido"}
+      {preparing ? "En preparación" : active ? "Activo" : "Suspendido"}
     </Badge>
   );
 }

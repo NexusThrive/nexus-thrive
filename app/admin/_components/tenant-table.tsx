@@ -111,7 +111,7 @@ export default function TenantTable({
                     {VERTICAL_LABELS[row.vertical]} · {row.lastActivityLabel}
                   </small>
                 </span>
-                <TenantStatusBadge active={row.active} />
+                <TenantStatusBadge active={row.active} preparing={Boolean(row.managedProvisioning && !row.activatedAt)} />
               </Link>
             </li>
           );
@@ -188,7 +188,7 @@ export default function TenantTable({
                       {VERTICAL_LABELS[row.vertical]}
                     </td>
                     <td className="px-3 py-3">
-                      <TenantStatusBadge active={row.active} />
+                      <TenantStatusBadge active={row.active} preparing={Boolean(row.managedProvisioning && !row.activatedAt)} />
                     </td>
                     <td className="px-3 py-3">
                       <OnboardingProgress row={row} />
