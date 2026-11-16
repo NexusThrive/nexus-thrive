@@ -358,5 +358,4 @@ pieza más al principio:
 punta a punta (pantalla → servidor → base), cumplen el §9 hasta donde su nivel
 lo exige, tienen pruebas y un negocio real la usó.
 
-Esto se refleja en [`README.md`](https://github.com/NexusThrive/nexus-thrive/blob/c7f9bc89b38bef37a26dcdeeb8bcc4c1df6898ad/docs/wiki/02-producto/guia-de-construccion.md) §4 (ruta por fases) y en el
-progreso, que ahora cuenta aparte la columna **Integración**.
+El trabajo confirmado se registra en el [plan de producto](../01-producto/plan.md). El [progreso por capas](../01-producto/funcionalidades/capas/README.md) cuenta aparte la columna **Integración**; no convierte una casilla en verificación actual.

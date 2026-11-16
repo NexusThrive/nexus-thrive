@@ -1,6 +1,6 @@
 # Mapa de áreas y módulos de `lib/`
 
-Vista de toda la implementación: nueve áreas, y dentro de cada una sus módulos. **Se generó recorriendo `lib/`** el 31 de octubre de 2026; `tests/architecture/documentation.test.ts` falla si aparece o desaparece un módulo sin actualizar esta página. Quién puede importar a quién: [reglas de dependencias](../../06-reglas/reglas-dependencias.md). Cómo añadir un módulo: [guía de implementación](../guia-implementacion-lib.md). Cómo se documenta cada módulo: [documentación de módulos](https://github.com/NexusThrive/nexus-thrive/blob/c7f9bc89b38bef37a26dcdeeb8bcc4c1df6898ad/docs/wiki/04-modulos/documentacion-de-modulos.md).
+Vista de toda la implementación: nueve áreas, y dentro de cada una sus módulos. **Se generó recorriendo `lib/`** el 31 de octubre de 2026; `tests/architecture/documentation.test.ts` falla si aparece o desaparece un módulo sin actualizar esta página. Quién puede importar a quién: [reglas de dependencias](../../06-reglas/reglas-dependencias.md). Cómo añadir un módulo: [guía de implementación](../guia-implementacion-lib.md). Cómo se documenta cada módulo: [estándar documental](../../07-ingenieria/documentation-standard.md).
 
 Además de las nueve áreas, la raíz de `lib/` tiene dos archivos de excepción (`utils.ts` y `cn.ts`, convención de shadcn/ui).
 

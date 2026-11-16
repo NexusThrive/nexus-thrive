@@ -1,8 +1,8 @@
 # PRODUCT.md — Qué es NEXUS y para quién
 
-Resumen para decidir diseño. El detalle de producto está en
-[docs/01-producto/propuestas/vision-producto-2026-10.md](../../../../docs/01-producto/propuestas/vision-producto-2026-10.md)
-y la ruta en [docs/09-historico/producto/guia-de-construccion-2026-10.md](https://github.com/NexusThrive/nexus-thrive/blob/c7f9bc89b38bef37a26dcdeeb8bcc4c1df6898ad/docs/wiki/02-producto/guia-de-construccion.md).
+Resumen para decidir diseño. La fuente de producto es la
+[estrategia aceptada](../../../../docs/01-producto/estrategia/README.md)
+y el trabajo confirmado se consulta en el [plan](../../../../docs/01-producto/plan.md).
 
 ## Qué es
 

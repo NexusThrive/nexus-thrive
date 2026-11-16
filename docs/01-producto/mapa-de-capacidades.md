@@ -9,21 +9,20 @@ tags: [guia, mercado, capas, ruta]
 
 # Mapa de capacidades empresariales vs. capas de NEXUS
 
-[← Guía](https://github.com/NexusThrive/nexus-thrive/blob/c7f9bc89b38bef37a26dcdeeb8bcc4c1df6898ad/docs/wiki/02-producto/guia-de-construccion.md) · Contrasta el inventario de **30 áreas y 447 capacidades** que
+[← Producto](README.md) · Contrasta el inventario de **30 áreas y 447 capacidades** que
 usa una empresa (de una persona a varios departamentos) con las capas de NEXUS y
-con lo que existe hoy en el código. Sirve para separar **lo que NEXUS ya tiene**
-de **lo que es visión**, y para decidir qué sigue.
+con el estado declarado en la fuente de octubre de 2026. Sirve como catálogo de alcance, no como evidencia de implementación actual. Los estados y conteos heredados requieren nueva verificación antes de usarse en una historia. El trabajo confirmado está en el [plan](plan.md).
 
 | Estado | Significa |
 | --- | --- |
-| ✅ Hecho | Existe en el producto de punta a punta |
+| ✅ Hecho (declarado, sin verificar actualmente) | La fuente original lo declaró implementado; no se ha revalidado por esta limpieza |
 | 🟡 Parcial | Existe una parte, o existe solo en el panel interno de NEXUS y no para los negocios |
 | 🏷️ De un rubro | Existe, pero solo para un rubro (construcción, gimnasio, museo) |
 | ⬜ Falta | No existe; está prevista en una subcapa |
 | 🔌 Integrar | Se decide integrar con un tercero, no construir (DIAN, contabilidad, nómina, n8n, Clerk…) |
 | ➖ Fuera de alcance | No es para pymes ahora o lo da otra herramienta (correo corporativo, gestión de TI…) |
 
-**Fase**: la de la [ruta de la guía](https://github.com/NexusThrive/nexus-thrive/blob/c7f9bc89b38bef37a26dcdeeb8bcc4c1df6898ad/docs/wiki/02-producto/guia-de-construccion.md#4-ruta-por-fases) según la subcapa
+**Fase heredada, sin prioridad vigente confirmada**: la de la [fuente histórica](https://github.com/NexusThrive/nexus-thrive/blob/c7f9bc89b38bef37a26dcdeeb8bcc4c1df6898ad/docs/wiki/02-producto/guia-de-construccion.md#4-ruta-por-fases) según la subcapa
 (2 cimientos · 3 vender, cobrar y facturar · 4 atender y automatizar · 5 que te
 encuentren · 6 equipo y contabilidad). "—" = está en las capas sin fecha.
 

@@ -87,7 +87,7 @@ todas sin duplicar el núcleo ni crear una aplicación nueva:
 
 ## 2. El cambio de decisión: de perfiles a soluciones
 
-### 2.1 Lo vigente hoy
+### 2.1 Regla anterior, reemplazada por arquitectura/0007
 
 [`docs/09-historico/producto/distribucion-por-rubro.md`](https://github.com/NexusThrive/nexus-thrive/blob/c7f9bc89b38bef37a26dcdeeb8bcc4c1df6898ad/docs/wiki/02-producto/distribucion-por-rubro.md) establece:
 
@@ -95,7 +95,7 @@ todas sin duplicar el núcleo ni crear una aplicación nueva:
 - Cualquier negocio enciende cualquier función.
 - **Nada se vende por separado**; todo está incluido en todos los planes.
 
-El código lo refleja:
+La evidencia registrada al elaborar esta guía describía esa regla; no acredita el estado actual de la transición:
 
 | Pieza | Evidencia |
 |---|---|
