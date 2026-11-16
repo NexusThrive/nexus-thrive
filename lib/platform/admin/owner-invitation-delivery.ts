@@ -4,12 +4,19 @@ import { or } from "@prisma/orm-postgres/orm-client";
 import { db } from "@/prisma/db";
 import { canOperateTenant } from "@/lib/core/tenancy/access-policy";
 import { lockTenant } from "@/lib/core/tenancy/locking";
-import { sendEmail } from "@/lib/platform/inbox/inbox-providers";
 import { auditProvisioning, ProvisioningError, type ProvisioningActor } from "./managed-business";
 
 const now = () => Temporal.Instant.fromEpochMilliseconds(Date.now());
 const at = (ms: number) => Temporal.Instant.fromEpochMilliseconds(ms);
 const MAX_ATTEMPTS = 6;
+
+/** The application supplies the transport; admin does not depend on inbox. */
+export type OwnerInvitationEmailSender = (
+  to: string,
+  subject: string,
+  body: string,
+  options: { idempotencyKey: string },
+) => Promise<{ delivery: "sent"; externalId: string | null } | { delivery: "manual" | "failed" }>;
 
 function applicationOrigin() {
   const url = new URL(process.env.NEXT_PUBLIC_APP_URL ?? "");
@@ -41,7 +48,7 @@ export async function applicationInvitationDestination(email: string) {
   return { url: invite.url, providerId: invite.id };
 }
 
-export async function deliverOwnerInvitation(tenantId: string): Promise<"sent" | "failed" | "skipped"> {
+export async function deliverOwnerInvitation(tenantId: string, sendEmail: OwnerInvitationEmailSender): Promise<"sent" | "failed" | "skipped"> {
   const token = randomUUID();
   const claimed = await db.transaction(async (tx) => {
     const tenant = await lockTenant(tx, tenantId);
@@ -94,13 +101,13 @@ export async function retryOwnerInvitation(tenantId: string, actor: Provisioning
   });
 }
 
-export async function dispatchOwnerInvitations() {
+export async function dispatchOwnerInvitations(sendEmail: OwnerInvitationEmailSender) {
   const invites = await db.orm.public.TenantInvite.where({ role: "OWNER" }).where((i) => i.deliveryStatus.in(["PENDING", "FAILED", "SENDING"])).where((i) => i.acceptedAt.isNull()).where((i) => i.revokedAt.isNull()).where((i) => i.expiresAt.gt(now())).where((i) => i.deliveryAttempts.lt(MAX_ATTEMPTS)).where((i) => or(i.deliveryNextAttemptAt.isNull(), i.deliveryNextAttemptAt.lte(now()))).where((i) => or(i.deliveryLeaseUntil.isNull(), i.deliveryLeaseUntil.lte(now()))).orderBy((i) => i.createdAt.asc()).limit(5).all();
   const results: string[] = [];
   const deadline = Date.now() + 40_000;
   for (const invite of invites) {
     if (Date.now() >= deadline) break;
-    results.push(await deliverOwnerInvitation(invite.tenantId));
+    results.push(await deliverOwnerInvitation(invite.tenantId, sendEmail));
   }
   return { sent: results.filter((r) => r === "sent").length, failed: results.filter((r) => r === "failed").length, skipped: results.filter((r) => r === "skipped").length };
 }
