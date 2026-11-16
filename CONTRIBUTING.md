@@ -1,70 +1,33 @@
-# Contribuir
+# Contributing to NexusThrive
 
-NEXUS es un monorepo de Next.js. El repositorio está en GitHub y **todo se
-propone y se fusiona allí** mediante pull requests.
+This repository contains Thrive Business as a modular Next.js monolith. Start with [the documentation index](docs/README.md), [AGENTS.md](AGENTS.md) and [the product plan](docs/01-producto/plan.md).
 
-- Guías de trabajo: [wiki de desarrollo](docs/wiki/09-desarrollo/README.md)
-- Ramas, CI, SQL de producción y despliegue: [docs/wiki/08-operacion-y-despliegue/devops.md](docs/wiki/08-operacion-y-despliegue/devops.md)
-- Cómo agregar una funcionalidad: [docs/wiki/09-desarrollo/nueva-funcionalidad.md](docs/wiki/09-desarrollo/nueva-funcionalidad.md)
+## Workflow
 
----
+Follow milestone M → sprint S → story HU → branch → PR → verification. Do not invent a current milestone or sprint. Task branches follow `<type>/HU-<english-slug>-<nn>` with feature, fix, chore or hotfix and two digits, for example `chore/HU-documentation-consolidation-01`. See [branches](docs/07-ingenieria/ramas.md).
 
-## 1. Dónde se trabaja
+Use Conventional Commits in English. Open one focused pull request per story with an English title and description, the relevant documentation updates and actual validation results. Use [the PR template](.github/pull_request_template.md). Keep unresolved dependencies or failing checks in draft. Independent QA/review is required; the implementer does not approve their own work. Never merge automatically or promote a sprint without human approval.
 
-Un único remoto, `origin`, apunta a GitHub. Los pull requests se abren y se
-fusionan allí; no hay espejo ni segundo remoto.
-
-## 2. Ramas y commits
-
-- `main` es la única rama que se despliega y solo recibe merges.
-- Una rama por cambio, con prefijo: `fix/<qué>`, `feature/<qué>`,
-  `hotfix/<qué>`, `refactor/<qué>`, `docs/<qué>`.
-- Un PR hace **una** cosa. Si mientras arreglas ves otra, va en otro PR.
-- Commits en español, imperativo y con alcance:
-  `fix(caja): no cobra dos veces una factura`.
-
-## 3. Antes de abrir el PR
+## Validation
 
 ```bash
-pnpm exec tsc --noEmit     # tipos
-pnpm lint                  # eslint + reglas de arquitectura
-pnpm test                  # unitarias
-pnpm test:integration      # requiere Postgres local (TEST_DATABASE_URL)
+pnpm docs:check
+pnpm exec tsc --noEmit
+pnpm lint
+pnpm check:layers
+pnpm test
 ```
 
-`pnpm verify` encadena tipos, unitarias, integración y build; es lo que corre el
-CI. Si cambias el contrato de datos (`prisma/schema/`, un archivo por dominio), revisa
-[devops.md §4](docs/wiki/08-operacion-y-despliegue/devops.md#sql-de-producción): el SQL de producción se
-corre **antes** del merge.
+Integration tests require a disposable PostgreSQL database and TEST_DATABASE_URL; run `pnpm test:integration` only against the intended test database. `pnpm verify` runs typecheck, architecture checks, unit tests, integration and the application build. Record environment limitations; do not claim skipped checks passed. CI also validates lint, production SQL, Storybook and migrations. See [testing](docs/07-ingenieria/testing.md) and [operations](docs/08-operaciones/README.md).
 
-## 4. Abrir el pull request
+## Documentation and languages
 
-```bash
-git switch -c fix/mi-cambio
-git add -A
-git commit -m "fix(scope): describe el cambio"
-git push -u origin fix/mi-cambio
-```
+Project documentation and the root README are Spanish. AGENTS.md, CONTRIBUTING.md, code, technical comments, tests, branch names, commits and pull requests are English. The UI defaults to Spanish. This policy does not authorize a functional translation or contract change. See [language policy](docs/07-ingenieria/language-policy.md).
 
-Con `gh pr create` (o el enlace que imprime el push) se abre el PR contra
-`main` y se describe qué cambia y cómo se comprobó. Se fusiona en GitHub,
-borrando la rama al terminar.
+Update each topic's canonical source and its index. Preserve ADR identifiers, accepted decisions and useful historical evidence. Significant changes to module boundaries, data contracts or security guarantees require an ADR and human review. Use [the ADR template](docs/05-decisiones/plantilla.md). Operational design is maintained in [packages/brand](packages/brand/README.md); link to it without copying it into docs.
 
-## 5. Después del merge
+## Repository safety
 
-```bash
-git switch main && git pull
-git branch -d fix/mi-cambio
-```
+Never push directly to main or sprint/*, use --force or --no-verify, rewrite history, or commit secrets. Keep real configuration outside tracked files. Production model changes require the repository's established migration and SQL checks; this documentation cleanup does not change that process. Preserve the operational SQL paths and `docs/07-ingenieria/PAUSA`.
 
-
-## 6. Reglas que no se negocian
-
-| Regla | Motivo |
-|---|---|
-| Nada de push directo a `main` | Entra por PR |
-| Nada de `--force` en ramas compartidas ni `--no-verify` | Reescribe historia y salta las comprobaciones |
-| Un PR, una cosa | Revisión y reversión simples |
-| Los secretos no entran al repo: `.env` local, valores reales solo en Vercel | El historial no se borra de verdad |
-| Si un secreto llega a Git: rotarlo primero, limpiar después | Limpiar sin rotar no sirve |
-| Los tags se crean en GitHub | Ver [VERSIONADO.md](docs/wiki/09-desarrollo/versionado.md) |
+Release/version conventions are documented in [versioning](docs/07-ingenieria/versionado.md). The repository is the documentation source; there is no GitHub Wiki publisher.

@@ -15,9 +15,9 @@ You are the pull request reviewer, working with the judgment of a Senior Develop
 ## Inputs
 
 - The pull request, via `gh pr view <n>` and `gh pr diff <n>`.
-- The story in `docs/product/backlog/<slug>.md`, including its "Reglas de negocio" and their sources.
-- The design note in `docs/ingenieria/diseno/<story-id>.md`.
-- The QA verdict in `docs/ingenieria/qa/<story-id>.md`.
+- The story in `docs/01-producto/backlog/<slug>.md`, including its "Reglas de negocio" and their sources.
+- The design note in `docs/07-ingenieria/diseno/<story-id>.md`.
+- The QA verdict in `docs/07-ingenieria/qa/<story-id>.md`.
 
 ## Checklist
 

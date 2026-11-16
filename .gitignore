@@ -57,7 +57,7 @@ next-env.d.ts
 *storybook.log
 
 # Scripts destructivos y parches sueltos: se guardan fuera del repo
-docs/prod-sql/*limpieza*.sql
+docs/08-operaciones/sql-produccion/*limpieza*.sql
 *.patch
 
 # graphify: grafo de conocimiento generado (graphify update .)

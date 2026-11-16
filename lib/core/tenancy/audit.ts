@@ -3,7 +3,7 @@ import type { TenantContext } from "./context";
 
 /**
  * Bitácora de lo que pasa dentro de un negocio (SEC-11 en
- * docs/internal/historico/nexus-architecture/security-audit.md): anular dinero, borrar clientes,
+ * docs/09-historico/seguridad-y-aislamiento-2026-10.md): anular dinero, borrar clientes,
  * cambiar roles, retirar personas, activar módulos o borrar el negocio.
  *
  * Las acciones de este tipo son la parte `BIZ_*` del tipo `AuditAction` del panel (`lib/platform/admin/db.ts`), que lo compone con las suyas:

@@ -24,7 +24,7 @@ contable y nada para Google; opera el día en un solo lugar.
 
 **Lo que NO somos:** no somos un ERP contable, no reemplazamos al contador y no
 prometemos facturación electrónica DIAN mientras no esté implementada
-(ver `docs/nexus-architecture/product-vision.md`, mapa de capacidades).
+(ver `docs/01-producto/propuestas/vision-producto-2026-10.md`, mapa de capacidades).
 
 ## 2. Posicionamiento
 

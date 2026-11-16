@@ -30,7 +30,7 @@ Etiquetas: **[H]** hecho observado en el repo · **[A]** decisión aprobada por 
 
 ### B-1. Tesis y usuario
 
-**[H]** `docs/nexus-architecture/product-vision.md`: una pyme colombiana usa hoy «un cuaderno o Excel, WhatsApp, una caja, un software contable y nada para que la encuentren en Google». Nexus es «el lugar donde el negocio opera el día entero».
+**[H]** `docs/01-producto/propuestas/vision-producto-2026-10.md`: una pyme colombiana usa hoy «un cuaderno o Excel, WhatsApp, una caja, un software contable y nada para que la encuentren en Google». Nexus es «el lugar donde el negocio opera el día entero».
 Tres rasgos que ya declara: se adapta al **rubro**, **operación diaria primero y contabilidad después**, **Colombia de fábrica**.
 
 **Usuarios** (derivados del código de roles, `lib/core/auth/roles.ts`) [H]:
@@ -88,7 +88,7 @@ Tres rasgos que ya declara: se adapta al **rubro**, **operación diaria primero 
 
 Tu lista (Foundation, Core, Business, Finance, Automation, Insights, Integrations, Industry, Experience) frente al código real:
 
-| Dominio propuesto | Capa real hoy [H] (`docs/architecture/layers.json`) | Estado |
+| Dominio propuesto | Capa real hoy [H] (`docs/02-arquitectura/controles/layers.json`) | Estado |
 |---|---|---|
 | Foundation | `lib/foundation` (utilidades, acceso a base, límites, QR, rate-limit) | Existe |
 | Core | `lib/core`: auth, tenancy, capacidades, entitlements/planes, eventos, archivos, operaciones, terceros, sectores | Existe |

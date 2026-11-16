@@ -44,4 +44,4 @@ description: "Procedimiento y lista de comprobación del rol QA Engineer. Úsala
 
 ## Memoria
 
-Escribe docs/ingenieria/qa/<id>.md y registra el veredicto en el núcleo.
+Escribe docs/07-ingenieria/qa/<id>.md y registra el veredicto en el núcleo.

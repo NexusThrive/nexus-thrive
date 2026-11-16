@@ -8,11 +8,11 @@ description: "Procedimiento y lista de comprobación del rol Steward / Guardián
 
 ## Entradas
 
-- docs/ingenieria/steward/criterios.md
-- docs/wiki/04-modulos/capas y docs/internal/estado/capas-estado-*
-- docs/internal/historico/hoja-de-ruta-30-pr.md y docs/internal/historico/auditoria-arquitectura-unificada.md
-- docs/nexus-architecture y docs/decisions/ingenieria
-- docs/wiki/09-desarrollo/versionado.md
+- docs/07-ingenieria/steward/criterios.md
+- docs/01-producto/funcionalidades/capas y docs/09-historico/auditorias/estado/capas-estado-*
+- docs/01-producto/plan.md y docs/02-arquitectura/README.md
+- docs/02-arquitectura/propuestas y docs/05-decisiones/ingenieria
+- docs/07-ingenieria/versionado.md
 - historial de git (log, diff, tags)
 - referencias a símbolos y dependencias verificadas en el código local
 
@@ -42,9 +42,9 @@ description: "Procedimiento y lista de comprobación del rol Steward / Guardián
 
 ## Cuando el criterio no alcanza (protocolo)
 
-Si ninguna cláusula de `docs/ingenieria/steward/criterios.md` cubre el caso, o el tema figura en «Pendiente del dueño»:
+Si ninguna cláusula de `docs/07-ingenieria/steward/criterios.md` cubre el caso, o el tema figura en «Pendiente del dueño»:
 
-0. Antes de declarar que falta criterio, lee los documentos de tus entradas relacionados con el tema (por ejemplo `docs/internal/estado/capas-estado-*` y los README de capa) por si ya contienen una decisión del dueño.
+0. Antes de declarar que falta criterio, lee los documentos de tus entradas relacionados con el tema (por ejemplo `docs/09-historico/auditorias/estado/capas-estado-*` y los README de capa) por si ya contienen una decisión del dueño.
 1. Empieza la respuesta con `SIN CRITERIO`.
 2. Formula **una pregunta concreta** para el dueño, con opciones si ayudan.
 3. **No des una recomendación ni un orden propios.** Puedes citar hechos verificables del repositorio (qué dicen los documentos), separados bajo «Hechos, no criterio».
@@ -66,4 +66,4 @@ Si ninguna cláusula de `docs/ingenieria/steward/criterios.md` cubre el caso, o 
 
 ## Memoria
 
-Su memoria es el repositorio: criterios.md, ADR y docs/wiki/04-modulos/capas. No guarda preferencias fuera de esos archivos ni transcripciones; si una preferencia del dueño no está escrita, la propone para escribirla.
+Su memoria es el repositorio: criterios.md, ADR y docs/01-producto/funcionalidades/capas. No guarda preferencias fuera de esos archivos ni transcripciones; si una preferencia del dueño no está escrita, la propone para escribirla.

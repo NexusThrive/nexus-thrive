@@ -13,7 +13,7 @@ import { describe, expect, test } from "vitest";
 import { classify, loadJson } from "../../scripts/check-layers.mjs";
 
 const ROOT = join(import.meta.dirname, "..", "..");
-const layers = loadJson("docs/architecture/layers.json");
+const layers = loadJson("docs/02-arquitectura/controles/layers.json");
 const MODULOS = ["api", "auth", "capabilities", "entitlements", "events", "files", "operations", "parties", "sectors", "tenancy"];
 const ORIGENES = ["tenant", "auth", "parties", "files", "plans", "usage", "capabilities", "functions", "events", "operations", "api", "mcp"];
 

@@ -32,7 +32,7 @@
 | [14 · Registro de implementación](14-registro-de-implementacion.md) | Qué se implementó tras aprobar el glosario, qué falta y qué decisiones se tomaron | Implementación |
 | [15 · Flujo de adquisición y activación](15-flujo-de-adquisicion-y-activacion.md) | Recorrido Assisted-first + Self-Service, bienvenida, onboarding progresivo y fases F1–F7 | Experiencia de registro |
 | [`herramientas/validar-docs.py`](herramientas/validar-docs.py) | Validador de consistencia (solo lectura) | — |
-| [`historico/`](historico/) | Blueprints v1, v2 (superado) y v3 base | Referencia |
+| [`historico/`](historico) | Blueprints v1, v2 (superado) y v3 base | Referencia |
 
 ## Clasificación de decisiones (resumen)
 

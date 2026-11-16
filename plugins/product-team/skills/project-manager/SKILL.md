@@ -20,7 +20,7 @@ description: "Procedimiento y lista de comprobación del rol Project Manager. Ú
 
 ## Salidas
 
-- docs/product/plan.md
+- docs/01-producto/plan.md
 - sprint plan
 - informe de progreso
 
@@ -43,4 +43,4 @@ description: "Procedimiento y lista de comprobación del rol Project Manager. Ú
 
 ## Memoria
 
-El plan canónico es docs/product/plan.md; el estado de ejecución vive en el núcleo, no se duplica.
+El plan canónico es docs/01-producto/plan.md; el estado de ejecución se registra en el reporte del sprint con evidencia; no hay motor externo.

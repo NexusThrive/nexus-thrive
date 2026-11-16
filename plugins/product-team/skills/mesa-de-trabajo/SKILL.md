@@ -45,4 +45,4 @@ description: "Procedimiento y lista de comprobación del rol Mesa de trabajo. Ú
 
 ## Memoria
 
-Escribe hallazgos en docs/product/contexto-dominio.md con referencias; no guarda conjeturas como hechos.
+Escribe hallazgos en docs/01-producto/contexto-dominio.md con referencias; no guarda conjeturas como hechos.

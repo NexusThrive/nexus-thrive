@@ -30,7 +30,7 @@ Aprobado como dirección (blueprint v3 §6). Cada requisito lleva su porqué, su
 ### 2.1 Lo que el contrato NO exige (para no cerrar puertas)
 - No impone un menú ni un flujo; impone **cómo se declara y cómo se comunica**.
 - No fuerza a un módulo a ser igual a otro; fuerza a que **lo igual se haga igual** (P4).
-- No crea capas nuevas: la arquitectura por capas vigente (`docs/architecture/layers.json`) se respeta.
+- No crea capas nuevas: la arquitectura por capas vigente (`docs/02-arquitectura/controles/layers.json`) se respeta.
 
 ### 2.2 Cómo entra un módulo nuevo (pasos)
 1. **Justificar** en un párrafo: problema, principio, quién lo usa (D3), qué existente no lo resuelve.

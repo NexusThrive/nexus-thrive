@@ -4,7 +4,7 @@ import { defineConfig as ormConfig } from "@prisma/orm-postgres/config";
 
 export default definePrismaConfig({
   orm: ormConfig({
-    // El contrato se divide por dominio en prisma/schema/ (docs/architecture/).
+    // El contrato se divide por dominio en prisma/schema/ (docs/02-arquitectura/modelo-de-datos/prisma-estructura.md).
     // `output` mantiene contract.json y contract.d.ts en prisma/.
     contract: "prisma/schema/**/*.prisma",
     output: "prisma",

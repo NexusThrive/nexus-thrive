@@ -1,7 +1,7 @@
 /**
  * Guardián de SQL de producción (scripts/check-prod-sql.sh).
  *
- * Regla: si cambia el modelo de datos, el cambio trae SQL en docs/prod-sql/.
+ * Regla: si cambia el modelo de datos, el cambio trae SQL en docs/08-operaciones/sql-produccion/.
  * Cambiar solo la documentación (`///`, `//`) o mover modelos entre archivos NO
  * es un cambio de modelo. Cualquier campo, tipo, relación, índice o restricción
  * distinto SÍ lo es. Cada caso crea un repositorio git temporal.
@@ -154,8 +154,8 @@ describe("cambios reales del modelo: exigen SQL de producción", () => {
     expect(r.out).toContain("no hay ningún SQL nuevo");
   });
 
-  test("pasa si el mismo cambio trae SQL en docs/prod-sql/", () => {
-    const dir = scenario({ ...edit(BUS_F, ["  age      Int", "  age      Int\n  phone    String?"]), "docs/prod-sql/2026-10-30-telefono.sql": "ALTER TABLE \"Customer\" ADD COLUMN IF NOT EXISTS \"phone\" text;\n" });
+  test("pasa si el mismo cambio trae SQL en docs/08-operaciones/sql-produccion/", () => {
+    const dir = scenario({ ...edit(BUS_F, ["  age      Int", "  age      Int\n  phone    String?"]), "docs/08-operaciones/sql-produccion/2026-10-30-telefono.sql": "ALTER TABLE \"Customer\" ADD COLUMN IF NOT EXISTS \"phone\" text;\n" });
     const r = check(dir);
     expect(r.status, r.out).toBe(0);
     expect(r.out).toContain("SQL de producción presente");

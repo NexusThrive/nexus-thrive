@@ -15,7 +15,7 @@ import { classify, loadJson } from "../../scripts/check-layers.mjs";
 
 const ROOT = join(import.meta.dirname, "..", "..");
 const read = (rel: string) => readFileSync(join(ROOT, rel), "utf8");
-const layers = loadJson("docs/architecture/layers.json");
+const layers = loadJson("docs/02-arquitectura/controles/layers.json");
 
 const PUROS = [
   "lib/foundation/kernel/payment-vocabulary.ts",

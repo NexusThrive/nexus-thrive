@@ -13,8 +13,8 @@ import { describe, expect, test } from "vitest";
 import { areaOf, classify, compare, findCycles, findOrphanUnits, findViolations, loadJson, parseImports, ruleFor } from "../../scripts/check-layers.mjs";
 
 const ROOT = join(import.meta.dirname, "..", "..");
-const layers = loadJson("docs/architecture/layers.json");
-const exceptions = loadJson("docs/architecture/exceptions.json");
+const layers = loadJson("docs/02-arquitectura/controles/layers.json");
+const exceptions = loadJson("docs/02-arquitectura/controles/exceptions.json");
 const c = (file: string) => classify(file, layers);
 
 /** Capas mínimas para probar sin depender del contenido real de layers.json. */

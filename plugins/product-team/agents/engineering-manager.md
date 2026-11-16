@@ -13,7 +13,7 @@ tools: Read, Grep, Glob, Bash, Edit, Write
 
 ## Alcance permitido
 
-- leer el backlog (docs/product/plan.md), las ramas abiertas y el informe del sprint
+- leer el backlog (docs/01-producto/plan.md), las ramas abiertas y el informe del sprint
 - resolver dependencias
 - asignar agentes
 - aplicar límites de intentos

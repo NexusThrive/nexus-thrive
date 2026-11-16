@@ -14,7 +14,7 @@ import { classify, loadJson, parseImports } from "../../scripts/check-layers.mjs
 
 const ROOT = join(import.meta.dirname, "..", "..");
 const read = (rel: string) => readFileSync(join(ROOT, rel), "utf8");
-const layers = loadJson("docs/architecture/layers.json");
+const layers = loadJson("docs/02-arquitectura/controles/layers.json");
 
 function sources(dir: string): string[] {
   return readdirSync(join(ROOT, dir)).flatMap((name) => {

@@ -1,0 +1,322 @@
+[
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-17-ops-center-a.sql",
+    "hash": "eb6941d8918830c477e2443e10affde4c560d76c0ba780304fc39d959f048264"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-17-ops-center-b.sql",
+    "hash": "59ec700a0ac3564ee634e1554a94eb190387f1151fb50b72a2bd1aa03c74d838"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-17-ops-center-c.sql",
+    "hash": "cc3c6745d079b31a85efa31cb3376887e352aee11d84cd9b1be5ea969bfb5b33"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-17-ops-center-completo.sql",
+    "hash": "589f933c4d6dda2c95319e79952bfff76c65a1da2289b85d4bce36f8bb5379eb"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-17-ops-center-d.sql",
+    "hash": "b4c9db93a0ae6879761c8a9dce273f4e1efbbf728b06607c9fc14b674ac9dde7"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-17-ops-center-e.sql",
+    "hash": "a00b0ac2fc4551f4c024e8f80f6e297d656f4ad7a558e4942273d5d915e4cbcf"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-19-beneficios.sql",
+    "hash": "e6ebfac16aab7c2e81a48a5b93f6e27e82470f2eb4e263ab6a83a605366b2746"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-19-v1-negocio-completo.sql",
+    "hash": "808951dc6d589a1240cba9bcb113e9edaffb97752a27d860af54916b9b56aa50"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-20-admin-santiago.sql",
+    "hash": "be5fe90ef1fee8bee53d4d0ddce87fa51804e6b16e74cf388c46e1becc83422b"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-20-asistencia-intentos.sql",
+    "hash": "ba78e65abbc1c8c5b3318821eb30c36211a21eeaf8efdf5ba67d571db56e0207"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-21-alta-en-panel.sql",
+    "hash": "d145f7b9e75093675eb9b5dee726bc6ca948ffcae179a0276ff35f4843b18bc6"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-21-invitaciones-equipo.sql",
+    "hash": "554f8e079ef27ec50203f2efe55d7008316ec684ed1fba3d87f2e01d25b95d52"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-21-reinicio-de-datos.sql",
+    "hash": "e84601f494f4b8fb286aaf685ccc95565129d967fdd5d423d619cfc8e76758ba"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-23-codigos-a-medida.sql",
+    "hash": "5efd922b2a26b94e1bcf83339ee4a157c206a69662c0ac46c86dc306985b055b"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-23-documento-comercial.sql",
+    "hash": "6e97eeae3b496555d537862b404ae9f37971efb4b0b8bd74fbe060ed8ecaab1a"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-23-registro-de-capacidades.sql",
+    "hash": "21e7eefdb734c946760d954627f6133ca5e72d45b4156e51a6756d0ceb2503ed"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-23-restricciones-negocio-y-rls.sql",
+    "hash": "1512061e8cd573342d9d04ef7c4253203e7946943862e05223b8f26eca783d86"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-24-api-llaves.sql",
+    "hash": "471d739d2c2b33104be92e3348f2be6e3d50a86fb7338c2bfd02a099bac89e59"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-24-cartera.sql",
+    "hash": "01e6d893d20c5a21ffa111aa5415c6f93399162ac02857f0ee1bbf43c844c041"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-24-catalogo-maestro.sql",
+    "hash": "47380be1ec0274e1d39f3b8538dfbb0b98fa5ff54f8bbe352a5a5a95a46f96dd"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-24-compras-y-proveedores.sql",
+    "hash": "636be9f16ef9ef803d1392b2960063f99643f31f759b11647e0b49c9064cdead"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-24-conexiones-externas.sql",
+    "hash": "4a281ad96632c3a85c75482a87049c4922aa2da4d2b39af316585bd7221e2bbb"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-24-contabilidad-asientos.sql",
+    "hash": "c799e91f328f7c22f6d8c98a3fa8c8555bb5fd4d0181886af855027d037fabc7"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-24-contabilidad-plan-y-periodos.sql",
+    "hash": "419e54afcf84e298bc878de006173098787a81fbb9856582f16b04a9acca3dfc"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-24-existencias-llave-unica.sql",
+    "hash": "fd950cd3ab9abc32f33d4d47e6d3eb343c97e8f8473a9dcaf2d882f9b2182a37"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-24-facturacion-electronica.sql",
+    "hash": "a2bab71358a02b767aae07e7c3bef1af024d3f7391c30adfe6f246ce5e038b4e"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-24-google-business.sql",
+    "hash": "a12a546a1314cec72fb847bdd8f2a7243b8f8804069d172d51f5209c427f0ddb"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-24-impuestos-y-numeracion.sql",
+    "hash": "656fb8525dac58405c33c2350ab4486cf9071d340349d97dda5265be75c35c46"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-24-inventario-bodegas-kardex.sql",
+    "hash": "fdd68f314f39fb6611033ebfc6b7eff9466d7efa05105bd7d0472a714e5a083d"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-24-inventario-relleno.sql",
+    "hash": "5f40e7bc09657c735e90a71d5f69d4865fb6af4e7e478efbbefbc53a4b99dbc8"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-24-limite-de-negocios.sql",
+    "hash": "7803cb3979c7b6494067332d965ef3a1b33356b18d9b69b10c7e43773189cd8f"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-24-mini-sitio.sql",
+    "hash": "46a0140535709f840ad86ca51b27267688684d273a3fa9725f8726d2ebd7c944"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-24-pagos-cobros-en-linea.sql",
+    "hash": "d298815921e544ac63541f59dc2c06933a72b8aba872d94559c48ef048c570d3"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-24-perfil-general.sql",
+    "hash": "a2eb0f6ec58c169512d3c61c0fe0981e4b2fb459a700dfd854c6c5cc32f51ff4"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-24-pos-terminales.sql",
+    "hash": "b665c03383d19c9f882e77e1baff1e047fd784be99178e81bc5018e7ae91fd7a"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-24-presencia-v2.sql",
+    "hash": "8f7688f434541283e9a27ae94cdca7736ff6fb21a6b52e21c63b75aeb3f9f300"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-24-reputacion-y-atribucion.sql",
+    "hash": "db9f0182cfb821683532b93e788d47f9f4418642f2bd2b94e59cb008871e6acc"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-24-tercero-unico-relleno.sql",
+    "hash": "80333351cce69a42458985a51076de9a5270c17404d3309e56b46ed44772fd78"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-24-tercero-unico.sql",
+    "hash": "d295f93ed8ea4741184d3cc89c675cb6f111a47f47263db42d3ac92c0d6e5d83"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-24-tienda-en-linea.sql",
+    "hash": "5c9d0650858189a4ed664eaecc5dbe8a00fa332c6030ed830c71d1588a8faa11"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-24-traslados-conteos-reposicion.sql",
+    "hash": "5abc828a6c3692a290c78ec61680d035dbcb938d533fe57e1ee5067b0a55c714"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-24-uso-y-origen.sql",
+    "hash": "5e5e1a36c64e9175cd6e9f4056acb1e88f1c3cf555a6142b8ba48b5000ccf4ce"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-24-webhooks-outbox.sql",
+    "hash": "c7346e23586cd34f535d8ba4a75d46172e073040fdb3c23523016ae2bea22d01"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-10-25-funciones-hijas.sql",
+    "hash": "3e26cd5f4f809b3fd161847077fb7866e9ada26b24429a45753dd54edad42a64"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-11-04-registro-publico-gimnasio.sql",
+    "hash": "e368cabbee15c4366cba31a220748d8471532fd405616ab6fa75cad47cbcbda3"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-11-06-obligaciones.sql",
+    "hash": "df25839ae773cfdecb20b1437cbee6478347e494d8d1df16ada519c4e5b68043"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-11-07-aplicacion-de-pagos.sql",
+    "hash": "e8b72b046664a535e64502ec9294b04e4c5095a2e144799c02a78ebdbd7be451"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-11-07-conciliacion-bancaria.sql",
+    "hash": "917a5be2a958219b0b1d6d4bd1dccc27bec4af42afaf9d711b91882e8bfd56d5"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-11-07-contacto-unico.sql",
+    "hash": "6b016efe7af3134584185ca071bc319d103bd41599f06622c2c9193e2e265d9d"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-11-07-cotizaciones-comerciales.sql",
+    "hash": "f25abbc23b22994dddd5885d794abffaf3e2ac5f5ac50fec4d1a01a1749c9b1e"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-11-07-crm-pipeline.sql",
+    "hash": "8e2227e554d640c278da8767059f21fd42fe7639b9a1d9d3df1fd38feb99c599"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-11-07-cumplimiento-de-pedidos.sql",
+    "hash": "7f635b3aff2eec6bc5e080e01610938d66d47d2a1059998d85c767e9538377b1"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-11-07-entregables.sql",
+    "hash": "d09d4c0fb8e37bd3d7fd3d5a7c5e43f10d62be6f5befa8258b8e59eaba1457fb"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-11-07-entregas.sql",
+    "hash": "902a2dca1756f81b266c3b0ff10a55ba83c2278b25c61b18bde49b34ceb34463"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-11-07-formularios-de-captura.sql",
+    "hash": "198b28460e01be3ea12ac2bd8170e44b7a0b9eac70e64e0c321fbf3912254a05"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-11-07-intentos-de-pago.sql",
+    "hash": "ac583060ad257b5762943b477395e9c720aca6778ef7b567ecf06f73e7029306"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-11-07-liquidaciones.sql",
+    "hash": "5720950d76ec8c26beeff55aa76ec34995ce21c14ac51ffab0b512bed2541060"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-11-07-oportunidades.sql",
+    "hash": "e429662bf93d247f9f2266ea8fe9d25ea572ffb49aca5eb6fb697c6e7f9f51f2"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-11-07-ordenes-de-produccion.sql",
+    "hash": "c7548c294c7ea4ce6e9ce5950e24043bfda55b663eea2c220c99cd6bc4787f2b"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-11-07-plantillas-y-avisos.sql",
+    "hash": "8fb4dcdaef4603310f203a19e4203e285c26849334d49a5ba2e29875c2708156"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-11-07-tareas-de-proyecto.sql",
+    "hash": "f51c1ba358aa9ef72a2dd1f1ed789ba59d1ae57ce03bfb0cdd5e706096468c2a"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-11-07-tareas.sql",
+    "hash": "f89b9d9f3bf0d3113c7396464cd4c7964c9de172174c12e7dc588a05a193842e"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-11-07-tercero-region-y-responsabilidad.sql",
+    "hash": "82423b826c21eb0d6cc69eb99e2025603409083a263e6d4e7a4641151be2fbbc"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-11-07-tesoreria.sql",
+    "hash": "d257ecb442006e48d1ebcbae73216ba258dafca2e3ee8cfdf4867a17eb36ff2b"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-11-07-verificacion-de-transferencias.sql",
+    "hash": "63f5ec5dbbd710cc5fee51885e39b72dc847e52983019e98855564b1bade62a4"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-11-07-whatsapp-por-negocio.sql",
+    "hash": "e87eb03b024ffd4b5cd59cd43fbc926a694f3da2a6654c48ff00d40942e73aa6"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-11-08-catalogo-categorias-atributos-y-canales.sql",
+    "hash": "9fccc720e2724b37fde38b86396b20dba55963c6ae180f8427dcdc9cf75caf64"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-11-08-contacto-en-terceros.sql",
+    "hash": "2d344c481bd2da3b4c2e8f15db3af8d8f2f7573ac4b6556df9e2e35c6631890e"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-11-08-grupos-de-clientes-y-busquedas-guardadas.sql",
+    "hash": "6d4a98d74f15db36144d9a77dfb6c4c8dedf6cfca4501f6957c123466c5926c4"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-11-08-listas-de-precio-por-cantidad-y-cliente.sql",
+    "hash": "33548e43167242774dc4dfcb85fa6aa7e6c8276681cb530dcb32c471d1da4b6f"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-11-08-medios-de-pago-del-negocio.sql",
+    "hash": "4a6ccf27e95b613b058d0a2152aafbb6aff292fa59ff652aee8d87000fbe89c0"
+  },
+  {
+    "path": "docs/08-operaciones/sql-produccion/2026-11-08-pedidos-por-canal.sql",
+    "hash": "522c5b9768740b7f8945f58219bdda10e03e716c244e8c4ca101815892a27c56"
+  },
+  {
+    "path": "docs/02-arquitectura/controles/exceptions.json",
+    "hash": "ace6206c3b64620bc941dd085c477e692874b63b714227468066487b14ced253"
+  },
+  {
+    "path": "docs/02-arquitectura/controles/layers.json",
+    "hash": "953c25ab0aaae85f3209dd721acb32ab226eed9f3a4c048c6776d94b88467d05"
+  },
+  {
+    "path": "docs/07-ingenieria/herramientas/registro.json",
+    "hash": "1363a80cc3aecdc1b35dd1cdc5fc546829cdbfb2ca5bb76d0e495a1a215c64fb"
+  },
+  {
+    "path": "docs/07-ingenieria/conocimiento/catalog/sources.json",
+    "hash": "1961d795cc1f4a7cf0118230a4c2de3c45d30d30c39fbe903dd0ad2ff1e843d8"
+  },
+  {
+    "path": "docs/08-operaciones/workflows/migrar-produccion.yml",
+    "hash": "a23144db15ee4193f62b2271ebe1f64b357c76f1d7ade657976ba6ffe76f4d2f"
+  },
+  {
+    "path": "docs/08-operaciones/diagnostico/2026-10-31-fechas-utc-documentos.sql",
+    "hash": "39653091b52982c70c0e7267865e6222e30803ad686a563a4e143220a7cc41fe"
+  },
+  {
+    "path": "docs/02-arquitectura/flujos/excalidraw/Sistema Integral de Gesti\u00f3n Comercial, Marketing y Automatizaci\u00f3n.excalidraw",
+    "hash": "07c0d9aa5fa34946d81a682458738138d34cee7c373c6b7986c0fa084050f7a4"
+  },
+  {
+    "path": "scripts/prod-data.txt",
+    "hash": "3d9d4e6f95b224b5025bccc4b750575dfc4ee5441af01b7da7383f4e7a5ee296"
+  }
+]

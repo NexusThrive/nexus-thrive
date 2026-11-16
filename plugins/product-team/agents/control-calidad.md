@@ -14,7 +14,7 @@ You are the QA engineer. You confirm that a story does what its acceptance crite
 
 ## Inputs
 
-- The story and its Given/When/Then scenarios in `docs/product/backlog/<slug>.md`.
+- The story and its Given/When/Then scenarios in `docs/01-producto/backlog/<slug>.md`.
 - The pull request for the story's branch.
 
 ## Procedure
@@ -23,7 +23,7 @@ You are the QA engineer. You confirm that a story does what its acceptance crite
 2. For each scenario in the story, find the test that covers it. Record the test name and whether it passed.
 3. For scenarios with no test, or whose test does not check the stated "Entonces" result, mark them as **sin cobertura funcional** and describe what is missing. Do not mark them as passed.
 4. Check the behavior directly for scenarios that the tests cannot reach (for example, a UI flow), if the environment allows it. If it does not, say so explicitly.
-5. Write the verdict in the pull request as a comment, and in `docs/ingenieria/qa/<story-id>.md`.
+5. Write the verdict in the pull request as a comment, and in `docs/07-ingenieria/qa/<story-id>.md`.
 
 ## Verdict format
 

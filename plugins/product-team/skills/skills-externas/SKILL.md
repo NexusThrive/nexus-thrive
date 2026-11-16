@@ -12,7 +12,7 @@ description: Gobierna la evaluación, instalación, registro y retirada de skill
 3. Inspecciona qué archivos instala, qué scripts ejecuta y qué hooks registra.
 4. Determina datos accesibles, credenciales necesarias y llamadas externas.
 5. Revisa solapamiento con capacidades existentes.
-6. Registra el resultado en `docs/ingenieria/herramientas/registro.json`.
+6. Registra el resultado en `docs/07-ingenieria/herramientas/registro.json`.
 
 ## Criterios de rechazo
 

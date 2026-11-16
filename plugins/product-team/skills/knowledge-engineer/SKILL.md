@@ -21,7 +21,7 @@ description: "Procedimiento y lista de comprobación del rol Knowledge & Documen
 
 ## Salidas
 
-- docs/knowledge/catalog
+- docs/07-ingenieria/conocimiento/catalog
 - fichas de fuente
 - registro de sincronización
 
@@ -45,4 +45,4 @@ description: "Procedimiento y lista de comprobación del rol Knowledge & Documen
 
 ## Memoria
 
-El catálogo canónico es docs/knowledge/catalog/sources.json y el estado del núcleo.
+El catálogo canónico es docs/07-ingenieria/conocimiento/catalog/sources.json y los reportes de sprint con evidencia; el motor de estado anterior fue retirado.

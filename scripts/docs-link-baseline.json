@@ -1,0 +1,52 @@
+[
+  {
+    "source": ".agents/skills/prisma-8/references/queries-mongo.md",
+    "url": "examples/mongo-demo/src/server.ts",
+    "reason": "Pre-existing upstream Prisma skill reference; recorded before documentation migration on 2026-11-16."
+  },
+  {
+    "source": ".agents/skills/prisma-8/references/queries-postgres.md",
+    "url": "examples/prisma-8-demo/src/orm-client/",
+    "reason": "Pre-existing upstream Prisma skill reference; recorded before documentation migration on 2026-11-16."
+  },
+  {
+    "source": ".agents/skills/prisma-8/references/queries-postgres.md",
+    "url": "examples/prisma-8-demo/src/queries/",
+    "reason": "Pre-existing upstream Prisma skill reference; recorded before documentation migration on 2026-11-16."
+  },
+  {
+    "source": ".agents/skills/prisma-8/upgrading/app/upgrades/0.11-to-0.12/instructions.md",
+    "url": "../../../../docs/architecture%20docs/adrs/ADR%20223%20-%20Target-owned%20default%20namespace.md",
+    "reason": "Pre-existing upstream Prisma skill reference; recorded before documentation migration on 2026-11-16."
+  },
+  {
+    "source": ".agents/skills/prisma-8/upgrading/extension/upgrades/0.11-to-0.12/instructions.md",
+    "url": "../../../../docs/architecture%20docs/adrs/ADR%20223%20-%20Target-owned%20default%20namespace.md",
+    "reason": "Pre-existing upstream Prisma skill reference; recorded before documentation migration on 2026-11-16."
+  },
+  {
+    "source": ".claude/skills/prisma-8/references/queries-mongo.md",
+    "url": "examples/mongo-demo/src/server.ts",
+    "reason": "Pre-existing upstream Prisma skill reference; recorded before documentation migration on 2026-11-16."
+  },
+  {
+    "source": ".claude/skills/prisma-8/references/queries-postgres.md",
+    "url": "examples/prisma-8-demo/src/orm-client/",
+    "reason": "Pre-existing upstream Prisma skill reference; recorded before documentation migration on 2026-11-16."
+  },
+  {
+    "source": ".claude/skills/prisma-8/references/queries-postgres.md",
+    "url": "examples/prisma-8-demo/src/queries/",
+    "reason": "Pre-existing upstream Prisma skill reference; recorded before documentation migration on 2026-11-16."
+  },
+  {
+    "source": ".claude/skills/prisma-8/upgrading/app/upgrades/0.11-to-0.12/instructions.md",
+    "url": "../../../../docs/architecture%20docs/adrs/ADR%20223%20-%20Target-owned%20default%20namespace.md",
+    "reason": "Pre-existing upstream Prisma skill reference; recorded before documentation migration on 2026-11-16."
+  },
+  {
+    "source": ".claude/skills/prisma-8/upgrading/extension/upgrades/0.11-to-0.12/instructions.md",
+    "url": "../../../../docs/architecture%20docs/adrs/ADR%20223%20-%20Target-owned%20default%20namespace.md",
+    "reason": "Pre-existing upstream Prisma skill reference; recorded before documentation migration on 2026-11-16."
+  }
+]

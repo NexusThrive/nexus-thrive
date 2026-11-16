@@ -4,7 +4,7 @@ import { db } from "@/prisma/db";
 /**
  * Prisma 8 — patrones de consulta verificados (integración).
  *
- * Una prueba corta por patrón documentado en `docs/construction/prisma8-queries.md`.
+ * Una prueba corta por patrón documentado en `docs/07-ingenieria/propuestas/consultas-prisma-por-validar.md`.
  * NO toca la base de desarrollo: se salta salvo que exista `TEST_DATABASE_URL`,
  * y exige que `DATABASE_URL` apunte a esa misma base (igual que
  * `tenant-db.integration.test.ts`).

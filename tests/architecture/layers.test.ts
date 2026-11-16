@@ -19,8 +19,8 @@ import {
 } from "../../scripts/check-layers.mjs";
 
 const ROOT = join(import.meta.dirname, "..", "..");
-const layers = loadJson("docs/architecture/layers.json");
-const exceptions = loadJson("docs/architecture/exceptions.json");
+const layers = loadJson("docs/02-arquitectura/controles/layers.json");
+const exceptions = loadJson("docs/02-arquitectura/controles/exceptions.json");
 
 const read = (files: string[]): Record<string, string> => Object.fromEntries(files.map((f) => [f, readFileSync(join(ROOT, f), "utf8")]));
 const libSources = () => read(listSources());

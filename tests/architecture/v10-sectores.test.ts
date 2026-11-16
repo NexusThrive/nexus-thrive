@@ -11,8 +11,8 @@ import { classify, loadJson, parseImports } from "../../scripts/check-layers.mjs
 
 const ROOT = join(import.meta.dirname, "..", "..");
 const read = (rel: string) => readFileSync(join(ROOT, rel), "utf8");
-const layers = loadJson("docs/architecture/layers.json");
-const exceptions = loadJson("docs/architecture/exceptions.json");
+const layers = loadJson("docs/02-arquitectura/controles/layers.json");
+const exceptions = loadJson("docs/02-arquitectura/controles/exceptions.json");
 const importsOf = (rel: string) => parseImports(read(rel)).map((i: { spec: string }) => i.spec);
 const ls = (dir: string): string[] => readdirSync(join(ROOT, dir)).flatMap((n) => (statSync(join(ROOT, dir, n)).isDirectory() ? ls(`${dir}/${n}`) : [`${dir}/${n}`]));
 

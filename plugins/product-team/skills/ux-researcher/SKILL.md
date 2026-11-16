@@ -10,7 +10,7 @@ description: "Procedimiento y lista de comprobación del rol UX Researcher. Úsa
 
 - soporte y feedback real
 - analítica disponible
-- docs/product/contexto-dominio.md
+- docs/01-producto/contexto-dominio.md
 
 ## Reglas de decisión
 

@@ -1,0 +1,156 @@
+[
+  {
+    "path": "docs/05-decisiones/ADR-0001-arquitectura-monolito-modular.md",
+    "hash": "79832ba6739b4d4b7d37397892fc45b8f4583dbed507b896bbb476e706ff131e",
+    "id": "arquitectura/0001",
+    "immutableDecision": false,
+    "decisionHash": "9b0bccb72bb871ee30f8584d231bdb79de68e64053a075af0ee10bc882ca4606"
+  },
+  {
+    "path": "docs/05-decisiones/ADR-0002-arquitectura-identidad-y-membresias.md",
+    "hash": "da7e41726bd89cfcd16effee054afcbe23280ed6b192399320ce46475839a6df",
+    "id": "arquitectura/0002",
+    "immutableDecision": false,
+    "decisionHash": "4c116fc3f9f97b5320c6468dda6b8469c732085e3e008e65a42f0cc54f2e43ff"
+  },
+  {
+    "path": "docs/05-decisiones/ADR-0003-arquitectura-registro-de-capacidades.md",
+    "hash": "ce598382e5155c1903014d47169f35f75d9db30800c8c25d51751bad5bf727d9",
+    "id": "arquitectura/0003",
+    "immutableDecision": true,
+    "decisionHash": "7187c40e3dd060fb544542befd6b271b149afc5d4eb134d44ec42a31995c325f"
+  },
+  {
+    "path": "docs/05-decisiones/ADR-0004-arquitectura-aislamiento-en-aplicacion.md",
+    "hash": "aaf0d0688a33d1c8dddc3c900b9496e29ddd08b7ecb2dc72c16fdbb9406e9495",
+    "id": "arquitectura/0004",
+    "immutableDecision": false,
+    "decisionHash": "14cac23a1fad203b4b9441f513bb89557b5ff0fe5be68c5351de3fd79e6c1988"
+  },
+  {
+    "path": "docs/05-decisiones/ADR-0005-arquitectura-esquema-de-produccion.md",
+    "hash": "f36bf5e0e7d52d5046b553bf8b6db97e0dc03ca3febb668b2f1e3a62fb9b1040",
+    "id": "arquitectura/0005",
+    "immutableDecision": false,
+    "decisionHash": "d75306c57641961a685990e0b0fcf83f36f41c4be9dbfc4126af7c9ac767b193"
+  },
+  {
+    "path": "docs/05-decisiones/ADR-0006-arquitectura-servicio-de-dinero.md",
+    "hash": "542bfc7a07a809d6677538e948744134a17ff49be1903cd9d94b99596b41a620",
+    "id": "arquitectura/0006",
+    "immutableDecision": false,
+    "decisionHash": "089a1fb83b1815102b7719fe018a1d483740cebe1bd1c2fe3d36fad9bc50dfca"
+  },
+  {
+    "path": "docs/05-decisiones/ADR-0007-arquitectura-soluciones-sobre-plataforma.md",
+    "hash": "2eda47d6052c2372b897a1bf8b5633d4e8b2e09152e5709c677617be38d03619",
+    "id": "arquitectura/0007",
+    "immutableDecision": true,
+    "decisionHash": "90ec4634463be4d79f39171eb7f861297971d1e51ee864e2f1938cce99f8a555"
+  },
+  {
+    "path": "docs/05-decisiones/ADR-0008-arquitectura-payments-y-treasury.md",
+    "hash": "21160de2a9645abf2d39426ebf55149ed518f669a6d1f7078ac947c3cfba1b2e",
+    "id": "arquitectura/0008",
+    "immutableDecision": true,
+    "decisionHash": "8d6fd2088775ce0b96f7f04fc46f2ca47800fe191cb4fb0359406457d8ad5b0c"
+  },
+  {
+    "path": "docs/05-decisiones/ADR-0010-arquitectura-whatsapp-por-negocio.md",
+    "hash": "77199809d51dcae5a4b3964e72b62d50b850e35de21ba8bc469cdda249fdcb4e",
+    "id": "arquitectura/0010",
+    "immutableDecision": true,
+    "decisionHash": "8eb4c0fc52fcea20939f11fd7f06decd13e3274515429d71cb02ee2e5783bca2"
+  },
+  {
+    "path": "docs/05-decisiones/ADR-0001-ingenieria-nucleo-local-python.md",
+    "hash": "76ca666db3efd64105826d7fbda762f0aa9371f9a6ec54741548918afd65ebca",
+    "id": "ingenieria/0001",
+    "immutableDecision": true,
+    "decisionHash": "b88d74fcbdc23708577edb9159ac860d538d94e9f9e553bc19a56205e95a2e26"
+  },
+  {
+    "path": "docs/05-decisiones/ADR-0002-ingenieria-fuente-unica-de-verdad.md",
+    "hash": "fa108a1f9485fb7bc2d008c63800d8dc8ffea198fdbb3c20c436d4ac33414859",
+    "id": "ingenieria/0002",
+    "immutableDecision": true,
+    "decisionHash": "1088f39adacc885ca403f3aabadfc39d95462ab3c188d0dbcfa0f9df8c91513d"
+  },
+  {
+    "path": "docs/05-decisiones/ADR-0003-ingenieria-persistencia-local-primero.md",
+    "hash": "022a6bf531c2848fa4fd860f0bfd4138fd1d05efcd52e4fb632d8efe1f0e10eb",
+    "id": "ingenieria/0003",
+    "immutableDecision": true,
+    "decisionHash": "265607c6e608a6833cbc6964fb8efd3c702031bd51f8c6a69bcf96a2213e051f"
+  },
+  {
+    "path": "docs/05-decisiones/ADR-0004-ingenieria-adaptadores-generados.md",
+    "hash": "670aeb9ee6227b7485f45af78927a42524ffc7fdcbaaa45a32e09c80e25bd605",
+    "id": "ingenieria/0004",
+    "immutableDecision": true,
+    "decisionHash": "175a12c9c7d342f20a10bf653c2376ebd488d5cc7c2986fb1f34613b42891335"
+  },
+  {
+    "path": "docs/05-decisiones/ADR-0005-ingenieria-puente-http-n8n.md",
+    "hash": "d17c58dba1404116539498c7ad70c72afe9e0181b515f019dc6d5a82469ccc01",
+    "id": "ingenieria/0005",
+    "immutableDecision": true,
+    "decisionHash": "ab14d2492c673a22057fde9c1ad6ddd3236c7ec68ee351b8c7ac549938a899f1"
+  },
+  {
+    "path": "docs/05-decisiones/ADR-0006-ingenieria-integraciones-no-disponibles.md",
+    "hash": "6484dc06fba2abb79a8a581b2fb30fcfc0983930ed437960eaf2fdf221bce3a7",
+    "id": "ingenieria/0006",
+    "immutableDecision": true,
+    "decisionHash": "3cf87318c3cf42dbd4d66838b78d9b1cbe3123e0385e423b8047af7501a0cea8"
+  },
+  {
+    "path": "docs/05-decisiones/ADR-0007-ingenieria-reconstruccion-product-team.md",
+    "hash": "c3756f5c120ca39b3a70821bd9b526abec8533052946957d2cb40b254a7306e9",
+    "id": "ingenieria/0007",
+    "immutableDecision": true,
+    "decisionHash": "da2683a196d7d98af761c558663ee25b512f98f3f19629d0b79987826e6d3daf"
+  },
+  {
+    "path": "docs/05-decisiones/ADR-0008-ingenieria-herramientas-externas-adopcion-selectiva.md",
+    "hash": "7f447c8ae16f41fa0fc552ced11ff6388d179459c0d343d434f0fea60139addd",
+    "id": "ingenieria/0008",
+    "immutableDecision": true,
+    "decisionHash": "e4c2e613eefa17be54ae39ab290ee20fb2f3ec2627eccb74fd47664854cf0260"
+  },
+  {
+    "path": "docs/05-decisiones/ADR-0009-ingenieria-graphify-vs-codebase-memory.md",
+    "hash": "9f5ab5cf941ab2627d21bfaae5faf3909e6f0a312baf2e348450eb11878a8a20",
+    "id": "ingenieria/0009",
+    "immutableDecision": true,
+    "decisionHash": "d532a4b2250c69d4e2222ffcc4c478163628d1bd071d138e4843707355fa88bf"
+  },
+  {
+    "path": "docs/05-decisiones/ADR-0010-ingenieria-dos-equipos-y-loops-compartidos.md",
+    "hash": "ed0a0387f6b630a28352d946438c5d0f84efd1027ea559ddbb666db26c279543",
+    "id": "ingenieria/0010",
+    "immutableDecision": true,
+    "decisionHash": "103deefe0cfaed94682ace2f648610c8cc3a31f3f74c5f0619d5c773836311b9"
+  },
+  {
+    "path": "docs/05-decisiones/ADR-0011-ingenieria-rechazo-openhands.md",
+    "hash": "f68b4e7720937c8d61d85980c4ac5c3ec9210cbae7290a65cf93d8d3fe582615",
+    "id": "ingenieria/0011",
+    "immutableDecision": true,
+    "decisionHash": "d800ef01374e3675840c8a382d22d5e206cafba4bf98b3d42a9cdb8eca639e16"
+  },
+  {
+    "path": "docs/05-decisiones/ADR-0012-ingenieria-agente-steward.md",
+    "hash": "10903a1e9069a2070c575ca64ea30493536248ddc9335b85e04316aacf6f35c7",
+    "id": "ingenieria/0012",
+    "immutableDecision": false,
+    "decisionHash": "99f3af125daca8a4d8efc99b3423496261f99b328908fb5ed5f538757026e9b9"
+  },
+  {
+    "path": "docs/05-decisiones/ADR-0013-ingenieria-subagentes-nativos-en-plugin.md",
+    "hash": "aac7c03d41c0f367d166433c55a6be9667b1c934cfa9999e80eba62a165a2464",
+    "id": "ingenieria/0013",
+    "immutableDecision": false,
+    "decisionHash": "4666d012b9e5f5f4fb37e15514eda5cfabd23a193ae64f2a0d961a8e67653f6b"
+  }
+]

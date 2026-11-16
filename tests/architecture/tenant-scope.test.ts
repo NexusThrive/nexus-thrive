@@ -48,7 +48,7 @@ const SCOPED_ELSEWHERE: { file: string; model: string; why: string }[] = [
   { file: "lib/industry/construction/shared.ts", model: "ProjectBudget", why: "recalcBudgetTotals recibe un presupuesto ya leído con tenantId." },
 ];
 
-/** El contrato está dividido por dominio en prisma/schema/ (docs/architecture/). */
+/** El contrato está dividido por dominio en prisma/schema/ (docs/02-arquitectura/controles/). */
 function schemaFiles(dir: string): string[] {
   return readdirSync(join(ROOT, dir)).flatMap((name) => {
     const path = `${dir}/${name}`;

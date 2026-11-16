@@ -20,7 +20,7 @@ description: "Procedimiento y lista de comprobación del rol Analista de Requeri
 
 ## Salidas
 
-- docs/product/backlog/<slug>.md
+- docs/01-producto/backlog/<slug>.md
 - HU-<slug>-<nn>
 - grafo de dependencias
 
@@ -44,4 +44,4 @@ description: "Procedimiento y lista de comprobación del rol Analista de Requeri
 
 ## Memoria
 
-Las historias viven en docs/product/backlog; los criterios no se reescriben para hacer pasar una prueba.
+Las historias viven en docs/01-producto/backlog; los criterios no se reescriben para hacer pasar una prueba.

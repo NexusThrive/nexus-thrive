@@ -52,7 +52,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      # Si cambió prisma/contract.prisma, el PR trae su SQL en docs/prod-sql/.
+      # Si cambió prisma/contract.prisma, el PR trae su SQL en docs/08-operaciones/sql-produccion/.
       - name: SQL de producción si cambió el modelo
         if: github.event_name == 'pull_request'
         run: bash ./scripts/check-prod-sql.sh "origin/${{ github.base_ref }}"

@@ -17,7 +17,7 @@ import { classify, loadJson } from "../../scripts/check-layers.mjs";
 const ROOT = join(import.meta.dirname, "..", "..");
 const read = (rel: string) => readFileSync(join(ROOT, rel), "utf8");
 const exists = (rel: string) => existsSync(join(ROOT, rel));
-const layers = loadJson("docs/architecture/layers.json");
+const layers = loadJson("docs/02-arquitectura/controles/layers.json");
 const importsOf = (rel: string) => [...read(rel).matchAll(/(?:from|import\()\s*["']([^"']+)["']/g)].map((m) => m[1]);
 
 describe("operaciones por dominio", () => {
@@ -81,7 +81,7 @@ describe("límite de clientes del plan", () => {
 
 describe("excepciones de la etapa E3", () => {
   test("no queda ninguna", () => {
-    const exc = JSON.parse(read("docs/architecture/exceptions.json")) as { exceptions: { etapa: string }[] };
+    const exc = JSON.parse(read("docs/02-arquitectura/controles/exceptions.json")) as { exceptions: { etapa: string }[] };
     expect(exc.exceptions.filter((e) => /^E3\b/.test(e.etapa))).toEqual([]);
   });
 });

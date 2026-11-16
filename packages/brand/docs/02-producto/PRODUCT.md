@@ -1,8 +1,8 @@
 # PRODUCT.md — Qué es NEXUS y para quién
 
 Resumen para decidir diseño. El detalle de producto está en
-[docs/nexus-architecture/product-vision.md](../../../../docs/nexus-architecture/product-vision.md)
-y la ruta en [docs/wiki/02-producto/guia-de-construccion.md](../../../../docs/wiki/02-producto/guia-de-construccion.md).
+[docs/01-producto/propuestas/vision-producto-2026-10.md](../../../../docs/01-producto/propuestas/vision-producto-2026-10.md)
+y la ruta en [docs/09-historico/producto/guia-de-construccion-2026-10.md](https://github.com/NexusThrive/nexus-thrive/blob/c7f9bc89b38bef37a26dcdeeb8bcc4c1df6898ad/docs/wiki/02-producto/guia-de-construccion.md).
 
 ## Qué es
 
@@ -60,7 +60,7 @@ ayuda enseña.
 - Next.js 16 + React 19 + Tailwind v4 + Radix; sin librerías de animación.
 - Datos: nada en `app/` consulta la base directo; todo pasa por repositorios
   de `lib/` con `tenantId`, `can()`, `money-service` y `logTenantAction`
-  ([docs/wiki/09-desarrollo/nueva-funcionalidad.md](../../../../docs/wiki/09-desarrollo/nueva-funcionalidad.md)).
+  ([docs/07-ingenieria/nueva-funcionalidad.md](../../../../docs/07-ingenieria/nueva-funcionalidad.md)).
 - Permisos en el servidor; ocultar un botón es comodidad, no seguridad.
 - Módulos apagados no muestran pantallas ni acciones (`modulesForRoute`).
 - Capturas para la ayuda: solo de la app real con datos de demostración.

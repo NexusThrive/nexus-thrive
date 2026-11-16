@@ -1,36 +1,19 @@
-# NEXUS THRIVE
+# NEXUS THRIVE · Thrive Business
 
-[Application](https://app.nexusthrive.com.co) · [Website](https://nexusthrive.com.co) · [Help Center](https://nexusthrive.com.co/help) · [Product Vision](docs/nexus-architecture/product-vision.md)
+[Aplicación](https://app.nexusthrive.com.co) · [Sitio web](https://nexusthrive.com.co) · [Documentación](docs/README.md)
 
-![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js) ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react) ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Supabase-4169E1?logo=postgresql) ![Prisma](https://img.shields.io/badge/Prisma-8-2D3748?logo=prisma)
+Thrive Business reúne clientes, ventas, cobros, inventario, agenda y operación del negocio en una plataforma conectada. Este repositorio contiene el monolito modular de Next.js; su documentación distingue la estrategia de producto, la implementación y la evidencia de verificación.
 
-NEXUS THRIVE is an integrated business operating system designed to bring every part of a business together.
+## Empezar
 
-Manage customers, sales, payments, accounting, inventory, scheduling, memberships, operations and online presence through one connected platform.
+Consulta el [índice documental](docs/README.md), la [instalación](docs/07-ingenieria/instalacion-y-primer-dia.md) y las [instrucciones para contribuir](CONTRIBUTING.md).
 
-NEXUS adapts to different industries through shared business capabilities, modular architecture and flexible workflows.
+| Tema | Fuente |
+| --- | --- |
+| Producto y trabajo actual | [Producto](docs/01-producto/README.md) y [plan](docs/01-producto/plan.md) |
+| Estructura y dominios | [Arquitectura](docs/02-arquitectura/README.md) |
+| Decisiones y garantías | [ADR](docs/05-decisiones/README.md) y [reglas](docs/06-reglas/README.md) |
+| Marca y experiencia | [Experiencia](docs/03-experiencia/README.md) |
+| Verificación y producción | [Ingeniería](docs/07-ingenieria/README.md) y [operaciones](docs/08-operaciones/README.md) |
 
-## Business Apps
-
-NEXUS brings together the essential tools to operate and grow a business:
-
-- **CRM** — Customer relationships and business management.
-- **Sales & POS** — Sales, transactions and payment collection.
-- **Finance & Accounting** — Cash management, expenses, receivables and financial records.
-- **Inventory & Purchasing** — Products, stock, suppliers and purchasing.
-- **Operations** — Scheduling, memberships, projects and access control.
-- **Online Presence** — Websites, e-commerce and business visibility.
-
-All capabilities work together, sharing business information without unnecessary duplication.
-
-## Technology
-
-Built with Next.js, React, TypeScript, Tailwind CSS, PostgreSQL, Prisma and Clerk.
-
-## Architecture
-
-NEXUS follows a modular monolith architecture, combining a shared business foundation with industry-specific capabilities and integrated services.
-
----
-
-<p align="center"><strong>NEXUS THRIVE</strong><br>One system to run your business.</p>
+Tecnologías del repositorio: Next.js, React, TypeScript, Tailwind CSS, PostgreSQL, Prisma y Clerk. Los detalles y límites están en la documentación responsable de cada tema.

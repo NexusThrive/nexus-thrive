@@ -6,7 +6,7 @@ argument-hint: "NN del sprint, por ejemplo 01, y opcionalmente historias separad
 
 # Ciclo de sprint autónomo
 
-Run the engineering loop for one sprint. The loop takes the next ready story from `docs/product/plan.md`, designs it, implements it, verifies it, reviews it, merges it into `sprint/S<nn>`, and moves to the next one. The human supervises through the sprint report and the pause switch. The human does not approve each story.
+Run the engineering loop for one sprint. The loop takes the next ready story from `docs/01-producto/plan.md`, designs it, implements it, verifies it, reviews it, merges it into `sprint/S<nn>`, and moves to the next one. The human supervises through the sprint report and the pause switch. The human does not approve each story.
 
 Read `references/reglas-ramas.md` before starting. Its rules are hard: never bypass them.
 
@@ -14,7 +14,7 @@ Read `references/reglas-ramas.md` before starting. Its rules are hard: never byp
 
 Stop and tell the user what is missing if any of these fail:
 
-1. `docs/product/plan.md` exists and lists at least one story that is ready (not marked "Bloqueada").
+1. `docs/01-producto/plan.md` exists and lists at least one story that is ready (not marked "Bloqueada").
 2. The workspace is a git repository with a remote, and `gh auth status` succeeds.
 3. `.product-team/ci.json` exists. If not, copy `templates/ci.json.example` from the plugin into `.product-team/ci.json` and tell the user which commands it uses, so they can adjust them.
 4. `.github/workflows/ci.yml` exists. If not, copy `templates/.github/workflows/ci.yml` there.
@@ -24,14 +24,14 @@ If any step creates files in the repository, commit them in a single setup commi
 
 ## Pause switch
 
-Before each story, check whether the file `docs/ingenieria/PAUSA` exists. If it exists, stop the loop, write the current state to the sprint report, and tell the user the loop is paused. The human stops the loop by creating that file and resumes it by deleting it. Never delete it yourself.
+Before each story, check whether the file `docs/07-ingenieria/PAUSA` exists. If it exists, stop the loop, write the current state to the sprint report, and tell the user the loop is paused. The human stops the loop by creating that file and resumes it by deleting it. Never delete it yourself.
 
 ## Loop
 
 For each story in order from the plan (respecting dependencies, and skipping blocked ones):
 
 1. **Select.** Take the first story that is ready (not "Bloqueada") and whose dependencies are already merged. Record the selection in the sprint report.
-2. **Design.** Run the `arquitecto` agent. Its output is `docs/ingenieria/diseno/<story-id>.md`. If it marks the story as blocked, mark it blocked and go to step 1.
+2. **Design.** Run the `arquitecto` agent. Its output is `docs/07-ingenieria/diseno/<story-id>.md`. If it marks the story as blocked, mark it blocked and go to step 1.
 3. **Implement.** Read the "Tipo de trabajo" field of the design note and route the story:
    - `backend` -> run the `desarrollador-junior` agent.
    - `frontend` or `mixto` -> run the `desarrollador-frontend` agent.
@@ -53,7 +53,7 @@ Each stage can fail. Track attempts per story:
 
 ### What the human sees
 
-After every merge or blocker, update `docs/ingenieria/sprint-<nn>/reporte.md` with:
+After every merge or blocker, update `docs/07-ingenieria/sprints/S<nn>/reporte.md` with:
 
 ```markdown
 # Reporte del sprint S<nn>

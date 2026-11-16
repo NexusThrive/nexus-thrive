@@ -2,9 +2,9 @@
 /**
  * Reglas de dependencia entre capas de Nexus (E0).
  *
- * Lee docs/architecture/layers.json (a qué capa pertenece cada carpeta o archivo
+ * Lee docs/02-arquitectura/controles/layers.json (a qué capa pertenece cada carpeta o archivo
  * de lib/) y comprueba los imports de lib/**. Los incumplimientos que ya existían
- * están en docs/architecture/exceptions.json: cada uno con origen, destino,
+ * están en docs/02-arquitectura/controles/exceptions.json: cada uno con origen, destino,
  * justificación, etapa de resolución y estado. Una excepción nueva, o una que ya
  * no se necesita, hace fallar la comprobación: la lista solo puede encogerse.
  *
@@ -283,8 +283,8 @@ export function compare(violations, unclassified, exceptions, layers, literals =
 }
 
 function main() {
-  const layers = loadJson("docs/architecture/layers.json");
-  const exceptions = loadJson("docs/architecture/exceptions.json");
+  const layers = loadJson("docs/02-arquitectura/controles/layers.json");
+  const exceptions = loadJson("docs/02-arquitectura/controles/exceptions.json");
   const read = (list) => Object.fromEntries(list.map((f) => [f, readFileSync(join(ROOT, f), "utf8")]));
   const sources = read(listSources());
   const literals = findVerticalLiterals(read(listSources(ROOT, ["lib", "app", "components"])));

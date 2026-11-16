@@ -3,7 +3,7 @@
 - **Estado:** propuesta operativa. No hay campañas publicadas ni resultados
   medidos.
 - **Base:** capacidades reales del producto
-  (`docs/nexus-architecture/product-vision.md`) y Brand Book
+  (`docs/01-producto/propuestas/vision-producto-2026-10.md`) y Brand Book
   (`packages/brand/docs/01-marca/brand-book.md`).
 
 ## 1. Objetivo

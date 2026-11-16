@@ -288,7 +288,7 @@ Tailwind y el logo, pero **la documentación y los componentes viven repartidos 
 | Marketing (contenidos, SEO, ventas, medición, experimentos) | `docs/marketing/*.md` (5) | — | 1 documento |
 | Documentación de Storybook (introducción, colores, tipografía, espacio, movimiento, patrones, capas, accesibilidad, inventario) | `components/docs/*.mdx` (9) | — | `.storybook/main.ts` |
 | Léame del paquete y prompt de marca | `packages/brand/README.md`, `PROMPT.md` | 26 KB el prompt | — |
-| Diseño de PrettyModal (histórico) | `docs/internal/historico/superpowers/` | — | `responsive-sheet.tsx` (comentario) |
+| Diseño de PrettyModal (histórico) | `docs/09-historico/superpowers/` | — | `responsive-sheet.tsx` (comentario) |
 
 ### B. Tokens, estilos y activos
 
@@ -360,13 +360,13 @@ El código de los componentes **no se muda** (ver decisión 1); `packages/brand/
 | 5 | **`docs/marketing`** | Dentro del brand (07) o fuera | Dentro (se decidió mantenerlo junto a marca y diseño) |
 | 6 | **Duplicado de fuentes (`app/fonts` vs `packages/brand/fonts`)** | Dejarlo / unificarlo | Tarea aparte: se revisa cómo las carga la app antes de tocarlo |
 | 7 | **Iconos de la app (`app/icon.svg`, `public/icons`)** | Quedan (los exige Next/PWA en esas rutas) o se copian a `assets/` | Quedan: Next y el service worker leen esas rutas; el brand solo los documenta |
-| 8 | **Wiki** | Añadir una entrada «Diseño» a `docs/wiki/Home` que apunte al brand | Sí, un enlace; no se duplica el contenido |
+| 8 | **Wiki** | Añadir una entrada «Diseño» a `docs/Home` que apunte al brand | Sí, un enlace; no se duplica el contenido |
 
 ### Cómo se haría (cuando se decida)
 
 1. Rama nueva desde `main` (no desde esta rama) y un PR único de **solo documentación**, con `git mv` para conservar el historial.
 2. Reescritura de los enlaces con el mismo método de la wiki (resuelve cada destino y falla si algo no existe).
-3. Actualizar `CLAUDE.md`, `.github/pull_request_template.md`, `ui-rules.test.ts`, `.storybook/main.ts` y las citas en `docs/wiki`.
+3. Actualizar `CLAUDE.md`, `.github/pull_request_template.md`, `ui-rules.test.ts`, `.storybook/main.ts` y las citas en `docs`.
 4. Prueba de arquitectura: ningún `.md` de diseño fuera de `packages/brand/docs/` (salvo los enlazados), y todos los enlaces resuelven.
 5. Verificación completa (`pnpm verify`, `pnpm build-storybook`) y CI de GitHub antes de fusionar.
 6. **Sin tocar** los tokens, componentes ni estilos: solo se reubican documentos y se indexan.
