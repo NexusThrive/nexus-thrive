@@ -116,7 +116,7 @@ describe.skipIf(!TEST_URL)("managed provisioning lifecycle", () => {
   });
 
   test("concurrent delivery sends once and reuses the existing local invitation", async () => {
-    const result = await Promise.all([deliverOwnerInvitation(tenantId), deliverOwnerInvitation(tenantId)]);
+    const result = await Promise.all([deliverOwnerInvitation(tenantId, provider.send), deliverOwnerInvitation(tenantId, provider.send)]);
     expect(result).toContain("sent");
     expect(provider.create).toHaveBeenCalledTimes(1);
     expect(provider.send).toHaveBeenCalledTimes(1);
@@ -138,10 +138,10 @@ describe.skipIf(!TEST_URL)("managed provisioning lifecycle", () => {
     provider.create.mockClear();
     provider.users.mockResolvedValue({ data: [{ emailAddresses: [{ emailAddress: owner }] }] });
     provider.send.mockResolvedValueOnce({ delivery: "manual" });
-    expect(await deliverOwnerInvitation(tenantId)).toBe("failed");
+    expect(await deliverOwnerInvitation(tenantId, provider.send)).toBe("failed");
     expect((await managedProvisioningStatus(tenantId))?.invite?.delivery).toBe("FAILED");
     await retryOwnerInvitation(tenantId, actor);
-    expect(await deliverOwnerInvitation(tenantId)).toBe("sent");
+    expect(await deliverOwnerInvitation(tenantId, provider.send)).toBe("sent");
     expect(provider.create).not.toHaveBeenCalled();
     expect(provider.send.mock.calls.at(-1)?.[2]).toContain("https://app.example.com/sign-in");
   });
