@@ -16,4 +16,6 @@ Una funcionalidad distingue: **Implementada y verificada**, **Implementada sin v
 
 ## Dependencias, bloqueos y riesgos
 
+La solicitud de aprovisionamiento privado del 2026-11-16 tiene [auditoría y riesgos](../02-arquitectura/propuestas/aprovisionamiento-administrado.md), [ADR propuesto](../05-decisiones/ADR-0011-arquitectura-aprovisionamiento-administrado.md) y [desglose propuesto M01/S01/HU-01 a HU-08](../07-ingenieria/propuestas/aprovisionamiento-administrado.md). Esta entrega documental no confirma el sprint ni declara funcionalidades implementadas; su evidencia y siguientes pasos viven en ese informe.
+
 No hay dependencias de historias formalizadas ni bloqueos confirmados en el plan heredado. Los pendientes y decisiones abiertas conservan su clasificación; no se declaran resueltos por esta reorganización.
