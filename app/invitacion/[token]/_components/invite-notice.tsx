@@ -44,7 +44,7 @@ export function InviteNotice({
         <div className="mt-5 flex flex-wrap gap-2">
           {kind === "signin" ? (
             <>
-              <Link href="/sign-up" className={buttonVariants({ size: "sm" })}>
+              <Link href={`/invitacion/${token}/registro`} className={buttonVariants({ size: "sm" })}>
                 <LogIn aria-hidden="true" className="size-3.5" /> Crear mi cuenta
               </Link>
               <Link href="/sign-in" className={buttonVariants({ size: "sm", variant: "outline" })}>

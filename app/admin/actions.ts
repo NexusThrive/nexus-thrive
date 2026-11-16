@@ -9,6 +9,9 @@ import { headers } from "next/headers";
 import { requireStaff } from "@/lib/platform/team/access";
 import type { PermissionKey } from "@/lib/platform/team/permissions";
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
+import { deliverOwnerInvitation, retryOwnerInvitation } from "@/lib/platform/admin/owner-invitation-delivery";
+import { sendEmail } from "@/lib/platform/inbox/inbox-providers";
 import { createManagedBusiness, provisioningErrorMessage } from "@/lib/platform/admin/managed-business";
 import { managedLifecycle, type ManagedCommand } from "@/lib/platform/admin/managed-lifecycle";
 import { managedBusinessInput } from "@/lib/platform/admin/managed-validation";
@@ -196,7 +199,10 @@ export async function activateTenantAction(
   }
 
   if (!(await requireActor("accounts.create"))) return ACCESS_DENIED;
-  try { await managedLifecycle(tenantId, "activate", actor); }
+  try {
+    await managedLifecycle(tenantId, "activate", actor);
+    after(() => deliverOwnerInvitation(tenantId, sendEmail).then(() => undefined));
+  }
   catch (error) { return { status: "error", message: provisioningErrorMessage(error) }; }
 
   revalidateAdmin();
@@ -368,8 +374,22 @@ export async function manageProvisioningAction(tenantId: string, command: Exclud
   if (!id) return { status: "error", message: "Negocio no válido." };
   try {
     await managedLifecycle(id, command, actor);
+    if (command === "activate" || command === "renew") after(() => deliverOwnerInvitation(id, sendEmail).then(() => undefined));
     revalidateAdmin();
     revalidatePath(`/admin/negocios/${id}`);
     return { status: "ok", message: command === "ready" ? "Negocio listo para activar." : command === "activate" ? "Negocio habilitado. La invitación queda pendiente de entrega si corresponde." : command === "renew" ? "Invitación renovada y pendiente de entrega." : "Invitación pendiente revocada." };
+  } catch (error) { return { status: "error", message: provisioningErrorMessage(error) }; }
+}
+
+export async function retryOwnerDeliveryAction(tenantId: string): Promise<AdminFormState> {
+  const actor = await requireActor("accounts.create");
+  if (!actor) return ACCESS_DENIED;
+  const id = validateTenantId(tenantId);
+  if (!id) return { status: "error", message: "Negocio no válido." };
+  try {
+    await retryOwnerInvitation(id, actor);
+    after(() => deliverOwnerInvitation(id, sendEmail).then(() => undefined));
+    revalidatePath(`/admin/negocios/${id}`);
+    return { status: "ok", message: "Entrega programada de nuevo. Actualiza el estado en un momento." };
   } catch (error) { return { status: "error", message: provisioningErrorMessage(error) }; }
 }

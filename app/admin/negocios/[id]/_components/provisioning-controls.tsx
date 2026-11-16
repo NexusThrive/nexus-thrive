@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { buttonVariants } from "@/components/atoms/button-variants";
-import { manageProvisioningAction } from "@/app/admin/actions";
+import { manageProvisioningAction, retryOwnerDeliveryAction } from "@/app/admin/actions";
 import type { ManagedProvisioningStatus, ManagedCommand } from "@/lib/platform/admin/managed-lifecycle";
 import SuspendDialog from "../../../_components/suspend-dialog";
 
@@ -32,6 +32,8 @@ export default function ProvisioningControls({ state, name, canEdit, canActivate
       {state.invite && <p className="text-xs text-muted-foreground">Vence: {new Date(state.invite.expiresAt).toLocaleString("es-CO", { timeZone: "UTC" })} UTC · Intentos de entrega: {state.invite.attempts}</p>}
       {state.invite?.deliveryError && <p role="alert" className="text-sm text-destructive">{state.invite.deliveryError}</p>}
       <div className="flex flex-wrap gap-2">
+        <button type="button" disabled={pending} onClick={() => router.refresh()} className={buttonVariants({ variant: "outline" })}>Actualizar estado</button>
+        {state.active && canInvite && state.invite?.status === "PENDING" && state.invite.delivery !== "SENT" && <button type="button" disabled={pending} onClick={() => start(async () => { try { setFeedback(await retryOwnerDeliveryAction(state.tenantId)); router.refresh(); } catch { setFeedback({ status: "error", message: "No se pudo reintentar. Inténtalo de nuevo." }); } })} className={buttonVariants({ variant: "outline" })}>Reintentar entrega</button>}
         {!state.activated && !state.ready && canEdit && <button type="button" disabled={pending} onClick={() => run("ready")} className={buttonVariants()}>Marcar preparación lista</button>}
         {!state.activated && state.ready && canActivate && <button type="button" disabled={pending} onClick={() => run("activate")} className={buttonVariants()}>Activar y emitir invitación</button>}
         {state.activated && !state.active && canActivate && <button type="button" disabled={pending} onClick={() => run("activate")} className={buttonVariants()}>Reactivar acceso</button>}

@@ -36,12 +36,13 @@ export async function sendWhatsapp(to: string, body: string): Promise<SendResult
 }
 
 /** Envía un correo por Resend. Sin proveedor configurado devuelve entrega «manual». */
-export async function sendEmail(to: string, subject: string, body: string): Promise<SendResult> {
+export async function sendEmail(to: string, subject: string, body: string, options: { idempotencyKey?: string } = {}): Promise<SendResult> {
   if (!providers.email()) return { delivery: "manual" };
   try {
     const r = await fetch("https://api.resend.com/emails", {
       method: "POST",
-      headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json" },
+      headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json", ...(options.idempotencyKey ? { "Idempotency-Key": options.idempotencyKey } : {}) },
+      signal: AbortSignal.timeout(15_000),
       body: JSON.stringify({ from: process.env.INBOX_EMAIL_FROM, to: [to], subject, text: body }),
     });
     const j = (await r.json().catch(() => ({}))) as { id?: string; message?: string };
