@@ -13,7 +13,7 @@ import { after } from "next/server";
 import { deliverOwnerInvitation, retryOwnerInvitation } from "@/lib/platform/admin/owner-invitation-delivery";
 import { sendEmail } from "@/lib/platform/inbox/inbox-providers";
 import { createManagedBusiness, provisioningErrorMessage } from "@/lib/platform/admin/managed-business";
-import { managedLifecycle, type ManagedCommand } from "@/lib/platform/admin/managed-lifecycle";
+import { managedLifecycle, managedProvisioningStatus, type ManagedCommand } from "@/lib/platform/admin/managed-lifecycle";
 import { managedBusinessInput } from "@/lib/platform/admin/managed-validation";
 import { createAdminDb, type AuditLogInput } from "@/lib/platform/admin/db";
 import { validateSlug, type SlugValidation } from "@/lib/core/tenancy/catalogs";
@@ -198,7 +198,8 @@ export async function activateTenantAction(
     return { status: "error", message: "El negocio no fue encontrado." };
   }
 
-  if (!(await requireActor("accounts.create"))) return ACCESS_DENIED;
+  const managed = await managedProvisioningStatus(tenantId);
+  if (managed && !managed.activated && !(await requireActor("accounts.create"))) return ACCESS_DENIED;
   try {
     await managedLifecycle(tenantId, "activate", actor);
     after(() => deliverOwnerInvitation(tenantId, sendEmail).then(() => undefined));
@@ -369,9 +370,13 @@ export async function checkSlugAvailabilityAction(
 export async function manageProvisioningAction(tenantId: string, command: Exclude<ManagedCommand, "suspend">): Promise<AdminFormState> {
   if (!["ready", "activate", "renew", "revoke"].includes(command)) return { status: "error", message: "Acción no válida." };
   const actor = await requireActor(command === "ready" ? "accounts.edit" : command === "activate" ? "accounts.suspend" : "accounts.create");
-  if (!actor || (command === "activate" && !(await requireActor("accounts.create")))) return ACCESS_DENIED;
+  if (!actor) return ACCESS_DENIED;
   const id = validateTenantId(tenantId);
   if (!id) return { status: "error", message: "Negocio no válido." };
+  if (command === "activate") {
+    const managed = await managedProvisioningStatus(id);
+    if (managed && !managed.activated && !(await requireActor("accounts.create"))) return ACCESS_DENIED;
+  }
   try {
     await managedLifecycle(id, command, actor);
     if (command === "activate" || command === "renew") after(() => deliverOwnerInvitation(id, sendEmail).then(() => undefined));

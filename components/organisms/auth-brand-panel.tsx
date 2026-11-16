@@ -24,10 +24,10 @@ const SCRIPT: Record<AuthMode, Step[]> = {
   ],
   "sign-up": [
     { text: "¡Hola! Soy AURI y te ayudo a empezar.", mood: "joy" },
-    { text: "Primero, crea tu cuenta. Son 15 días gratis y sin tarjeta.", mood: "wink", open: "step1" },
-    { text: "Después agregas tu negocio y tus servicios.", mood: "curious", open: "step2" },
-    { text: "Y yo conecto tu WhatsApp para que empieces a vender.", mood: "surprise", open: "step3" },
-    { text: "¿Listo? Regístrate y arrancamos.", mood: "joy" },
+    { text: "Tu acceso se habilita mediante una invitación de NexusThrive.", mood: "wink", open: "step1" },
+    { text: "El equipo prepara tu negocio antes de entregarte acceso.", mood: "curious", open: "step2" },
+    { text: "Verifica el correo al que recibiste la invitación.", mood: "think", open: "step3" },
+    { text: "Acepta tu invitación y entra directamente a tu panel.", mood: "joy" },
   ],
 };
 
@@ -98,7 +98,7 @@ export function AuthBrandPanel({ mode }: { mode: AuthMode }) {
         <i className={styles.blobB} />
         <i className={styles.dots} />
       </span>
-      <h1 className="sr-only">{signIn ? "Bienvenido de nuevo a NEXUS THRIVE" : "Crea tu negocio en NEXUS THRIVE"}</h1>
+      <h1 className="sr-only">{signIn ? "Bienvenido de nuevo a NEXUS THRIVE" : "Acepta tu invitación a NEXUS THRIVE"}</h1>
 
       <div className={styles.hero} aria-hidden="true">
         <div className={styles.auri}>
@@ -162,12 +162,12 @@ export function AuthBrandPanel({ mode }: { mode: AuthMode }) {
             </>
           ) : (
             <div className={cn(styles.card, opened.size > 0 && styles.open)} style={{ opacity: opened.size > 0 ? undefined : 0 }}>
-              <small className="text-xs text-muted-foreground">Tu negocio en tres pasos</small>
+              <small className="text-xs text-muted-foreground">Tu acceso por invitación</small>
               <ul className={styles.checks}>
                 {[
-                  ["step1", "Crea tu cuenta"],
-                  ["step2", "Agrega tu negocio y servicios"],
-                  ["step3", "Conecta WhatsApp y empieza a vender"],
+                  ["step1", "Recibe tu invitación"],
+                  ["step2", "Verifica tu correo"],
+                  ["step3", "Entra a tu panel preparado"],
                 ].map(([key, label]) => (
                   <li key={key} data-on={opened.has(key!) ? "" : undefined}>
                     <span className={styles.box}>

@@ -14,6 +14,7 @@ export default async function SignUpPage({ searchParams }: { searchParams: Promi
       path="/sign-up"
       routing="path"
       signInUrl="/sign-in"
+      forceRedirectUrl="/auth/callback"
       fallbackRedirectUrl="/auth/callback"
       appearance={clerkAppearance}
     />
