@@ -27,6 +27,10 @@ export const PAYMENT_METHOD_LABELS: Record<PaymentMethodValue, string> = {
  */
 export const RESERVED_SLUGS = [
   "admin",
+  "auth",
+  "onboarding",
+  "invitacion",
+  "__clerk",
   "encuesta",
   "r",
   "app",

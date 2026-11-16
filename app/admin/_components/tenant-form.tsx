@@ -1,588 +1,68 @@
 "use client";
 
-import { useEffect, useActionState, useState } from "react";
-import { Building2, Check, User, X } from "lucide-react";
-import { NLoader } from "@/components/atoms/n-loader";
-import {
-  createTenantAction,
-  checkSlugAvailabilityAction,
-  type AdminFormState,
-} from "../actions";
-import { VERTICAL_ICONS, VERTICAL_LABELS, VERTICALS, type VerticalValue } from "@/lib/core/sectors/verticals";
-import { MODULE_LABELS, MODULES } from "@/lib/core/capabilities/modules";
-import {
-  TEAM_SIZE_LABELS,
-  type OnboardingTenantType,
-  type TeamSizeValue,
-} from "@/lib/core/tenancy/onboarding/types";
-import { getOnboardingModulePreset } from "@/lib/core/tenancy/onboarding/presets";
+import { useActionState, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Input, labelClasses } from "@/components/atoms/input";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { ResponsiveSheet } from "@/components/organisms/responsive-sheet";
-import { labelClasses } from "@/components/atoms/input";
-import { Select } from "@/components/atoms/select";
+import { NLoader } from "@/components/atoms/n-loader";
+import { normalizeSlug } from "@/lib/core/tenancy/onboarding/slug";
+import { createTenantAction, checkSlugAvailabilityAction, type AdminFormState } from "../actions";
 
-const IDLE_STATE: AdminFormState = { status: "idle" };
-const SLUG_DEBOUNCE_MS = 350;
-
-type SlugStatus = "idle" | "checking" | "available" | "taken" | "invalid";
-
-/**
- * Modal de alta de negocios en la plataforma. El slug se chequea en vivo
- * (debounce) contra el servidor, pero la validación definitiva — formato,
- * catálogo, unicidad y transacción con los módulos — siempre ocurre en el
- * Server Action. Crea el tenant con sus módulos iniciales en una sola
- * transacción y cierra tras el feedback de éxito.
- */
-export default function TenantForm({ onClose }: { onClose: () => void }) {
-  const [state, formAction, isPending] = useActionState(
-    createTenantAction,
-    IDLE_STATE,
-  );
-
-  const [name, setName] = useState(state.values?.name ?? "");
-  const [slug, setSlug] = useState(state.values?.slug ?? "");
-  const [vertical, setVertical] = useState<VerticalValue | "">(
-    state.values?.vertical ?? "",
-  );
-  const [modules, setModules] = useState<ReadonlySet<string>>(
-    new Set(state.values?.modules ?? []),
-  );
-  // Perfil adaptativo del onboarding: Empresa (default) / Persona individual.
-  const [tenantType, setTenantType] = useState<OnboardingTenantType>(
-    state.values?.tenantType === "INDIVIDUAL" ? "INDIVIDUAL" : "COMPANY",
-  );
-  const [legalName, setLegalName] = useState(state.values?.legalName ?? "");
-  const [taxId, setTaxId] = useState(state.values?.taxId ?? "");
-  const [teamSize, setTeamSize] = useState<TeamSizeValue | "">(
-    state.values?.teamSize ?? "",
-  );
-  const [address, setAddress] = useState(state.values?.address ?? "");
-  // Si el CEO aún no tocó los módulos a mano, elegir vertical/perfil
-  // preselecciona la receta adaptativa (tenantType + vertical), igual que
-  // el wizard de onboarding del integrante.
-  const [modulesTouched, setModulesTouched] = useState(false);
-  // Última respuesta del servidor; se deriva `slugStatus` para no llamar
-  // setState de forma síncrona dentro de un effect.
-  const [slugCheck, setSlugCheck] = useState<{
-    slug: string;
-    status: "available" | "taken" | "invalid";
-  } | null>(null);
-
-  // Check de disponibilidad en vivo con debounce.
+const INITIAL: AdminFormState = { status: "idle" };
+export default function TenantForm({ onClose, initialOwnerEmail = "" }: { onClose: () => void; initialOwnerEmail?: string }) {
+  const router = useRouter();
+  const [state, action, pending] = useActionState(createTenantAction, INITIAL);
+  const [name, setName] = useState("");
+  const [slug, setSlug] = useState("");
+  const [editedSlug, setEditedSlug] = useState(false);
+  const [ownerEmail, setOwnerEmail] = useState(initialOwnerEmail);
+  const [key] = useState(() => crypto.randomUUID());
+  const [checked, setChecked] = useState<{ slug: string; status: string } | null>(null);
+  const status = checked?.slug === slug ? checked.status : slug ? "checking" : "idle";
   useEffect(() => {
-    const trimmed = slug.trim();
-    if (!trimmed) {
-      return;
-    }
-
+    if (!slug) return;
     let cancelled = false;
     const timer = setTimeout(() => {
-      void checkSlugAvailabilityAction(trimmed).then((result) => {
-        if (!cancelled && result.status !== "unauthorized") {
-          setSlugCheck({ slug: trimmed, status: result.status });
-        }
-      });
-    }, SLUG_DEBOUNCE_MS);
-
-    return () => {
-      cancelled = true;
-      clearTimeout(timer);
-    };
+      void checkSlugAvailabilityAction(slug).then((result) => {
+        if (!cancelled) setChecked({ slug, status: result.status });
+      }).catch(() => { if (!cancelled) setChecked({ slug, status: "failed" }); });
+    }, 350);
+    return () => { cancelled = true; clearTimeout(timer); };
   }, [slug]);
-
-  // Cierra tras el éxito.
   useEffect(() => {
-    if (state.status !== "ok") {
-      return;
-    }
-    const timer = setTimeout(() => onClose(), 1500);
-    return () => clearTimeout(timer);
-  }, [state, onClose]);
-
-
+    if (state.status === "ok") router.refresh();
+  }, [state.status, router]);
+  const success = state.status === "ok";
+  const disabled = pending || success;
   const errors = state.errors ?? {};
-
-  const trimmedSlug = slug.trim();
-  const slugStatus: SlugStatus = !trimmedSlug
-    ? "idle"
-    : slugCheck && slugCheck.slug === trimmedSlug
-      ? slugCheck.status
-      : "checking";
-
-  const toggleModule = (moduleName: string) => {
-    setModulesTouched(true);
-    setModules((current) => {
-      const next = new Set(current);
-      if (next.has(moduleName)) {
-        next.delete(moduleName);
-      } else {
-        next.add(moduleName);
-      }
-      return next;
-    });
-  };
-
-  // Receta adaptativa (misma regla que el wizard: INDIVIDUAL quita los
-  // módulos pesados de equipo). Solo actúa mientras el CEO no tocó módulos.
-  const applyPreset = (
-    nextTenantType: OnboardingTenantType,
-    nextVertical: VerticalValue | "",
-  ) => {
-    if (modulesTouched || !nextVertical) {
-      return;
-    }
-    setModules(
-      new Set(
-        getOnboardingModulePreset({
-          tenantType: nextTenantType,
-          vertical: nextVertical,
-        }),
-      ),
-    );
-  };
-
-  const changeTenantType = (next: OnboardingTenantType) => {
-    setTenantType(next);
-    applyPreset(next, vertical);
-  };
-
-  const slugHint =
-    slugStatus === "checking"
-      ? "Verificando…"
-      : slugStatus === "available"
-        ? "Slug disponible."
-        : slugStatus === "taken"
-          ? "Ese slug ya está en uso."
-          : slugStatus === "invalid"
-            ? "Formato de slug no válido."
-            : null;
-
-  const slugHintTone =
-    slugStatus === "available"
-      ? "text-success"
-      : slugStatus === "taken" || slugStatus === "invalid"
-        ? "text-destructive"
-        : "text-muted-foreground";
-
+  const slugHint = { idle: "De 3 a 48 caracteres: letras, números y guiones.", checking: "Verificando disponibilidad…", available: "Slug disponible.", taken: "Ese slug ya está en uso.", invalid: "El formato del slug no es válido.", unauthorized: "Tu sesión no tiene permiso para crear negocios.", failed: "No pudimos verificarlo. Al guardar se comprobará de nuevo." }[status] ?? "";
   return (
-    <ResponsiveSheet
-      open
-      onOpenChange={(open) => { if (!open && !isPending) onClose(); }}
-      title="Nuevo negocio"
-      description="Crea el tenant con su vertical y módulos iniciales."
-    >
-        <form action={formAction} className="space-y-4" noValidate>
-          {/* Perfil del onboarding (Empresa / Persona individual) */}
-          <fieldset>
-            <legend className="text-sm font-medium text-foreground/80">
-              Perfil del negocio
-            </legend>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              Define cómo se presenta el negocio en NEXUS; el integrante
-              confirma el resto en su onboarding.
-            </p>
-            <input type="hidden" name="tenantType" value={tenantType} />
-            <div className="mt-2 grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={() => changeTenantType("COMPANY")}
-                aria-pressed={tenantType === "COMPANY"}
-                className={[
-                  "flex items-center gap-2.5 rounded-lg border px-3 py-2.5 text-sm font-medium transition",
-                  tenantType === "COMPANY"
-                    ? "border-gold-600/30 bg-accent-subtle text-accent-text"
-                    : "border-border text-foreground/80 hover:border-border-strong hover:bg-muted",
-                ].join(" ")}
-              >
-                <Building2 aria-hidden="true" className="h-4 w-4 shrink-0" />
-                Empresa
-              </button>
-              <button
-                type="button"
-                onClick={() => changeTenantType("INDIVIDUAL")}
-                aria-pressed={tenantType === "INDIVIDUAL"}
-                className={[
-                  "flex items-center gap-2.5 rounded-lg border px-3 py-2.5 text-sm font-medium transition",
-                  tenantType === "INDIVIDUAL"
-                    ? "border-gold-600/30 bg-accent-subtle text-accent-text"
-                    : "border-border text-foreground/80 hover:border-border-strong hover:bg-muted",
-                ].join(" ")}
-              >
-                <User aria-hidden="true" className="h-4 w-4 shrink-0" />
-                Persona individual
-              </button>
-            </div>
-            {errors.tenantType ? (
-              <p role="alert" className="mt-1 text-xs text-destructive">
-                {errors.tenantType}
-              </p>
-            ) : null}
-          </fieldset>
-
-          {/* Nombre del negocio */}
-          <div>
-            <label
-              htmlFor="tenant-name"
-              className={labelClasses}
-            >
-              Nombre
-            </label>
-            <input
-              id="tenant-name"
-              name="name"
-              type="text"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              placeholder={
-                "Nombre del negocio"
-              }
-              aria-invalid={Boolean(errors.name)}
-              className={[
-                "h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
-                errors.name
-                  ? "border-destructive/40 focus:border-destructive focus:outline-destructive/30"
-                  : "border-border hover:border-border-strong focus:border-gold-600/30 focus:outline-ring/30",
-              ].join(" ")}
-            />
-            {errors.name ? (
-              <p role="alert" className="mt-1 text-xs text-destructive">
-                {errors.name}
-              </p>
-            ) : null}
-          </div>
-
-          {/* Dueño: el negocio nace con una invitación OWNER a este correo. */}
-          <div>
-            <label htmlFor="tenant-owner-email" className={labelClasses}>
-              Correo del dueño
-            </label>
-            <input
-              id="tenant-owner-email"
-              name="ownerEmail"
-              type="email"
-              autoComplete="off"
-              defaultValue={state.values?.ownerEmail ?? ""}
-              placeholder="dueno@negocio.com"
-              aria-invalid={Boolean(errors.ownerEmail)}
-              aria-describedby="tenant-owner-email-hint"
-              className={[
-                "h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
-                errors.ownerEmail
-                  ? "border-destructive/40 focus:border-destructive focus:outline-destructive/30"
-                  : "border-border hover:border-border-strong focus:border-gold-600/30 focus:outline-ring/30",
-              ].join(" ")}
-            />
-            {errors.ownerEmail ? (
-              <p role="alert" className="mt-1 text-xs text-destructive">
-                {errors.ownerEmail}
-              </p>
-            ) : (
-              <p id="tenant-owner-email-hint" className="mt-1 text-xs text-muted-foreground">
-                Entra como dueño al iniciar sesión con este correo verificado.
-              </p>
-            )}
-          </div>
-
-          {/* Razón social (solo Empresa, opcional) */}
-          {tenantType === "COMPANY" ? (
-            <div>
-              <label
-                htmlFor="tenant-legal-name"
-                className={labelClasses}
-              >
-                Razón social{" "}
-                <span className="font-normal text-muted-foreground">(opcional)</span>
-              </label>
-              <input
-                id="tenant-legal-name"
-                name="legalName"
-                type="text"
-                value={legalName}
-                onChange={(event) => setLegalName(event.target.value)}
-                placeholder="Razón social"
-                aria-invalid={Boolean(errors.legalName)}
-                className={[
-                  "h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
-                  errors.legalName
-                    ? "border-destructive/40 focus:border-destructive focus:outline-destructive/30"
-                    : "border-border hover:border-border-strong focus:border-gold-600/30 focus:outline-ring/30",
-                ].join(" ")}
-              />
-              {errors.legalName ? (
-                <p role="alert" className="mt-1 text-xs text-destructive">
-                  {errors.legalName}
-                </p>
-              ) : null}
-            </div>
-          ) : null}
-
-          {/* NIT / RUT (opcional; quien lo omita lo completa en el onboarding) */}
-          <div>
-            <label
-              htmlFor="tenant-tax-id"
-              className={labelClasses}
-            >
-              {tenantType === "COMPANY" ? "NIT / RUT" : "Documento (CC / NIT)"}{" "}
-              <span className="font-normal text-muted-foreground">(opcional)</span>
-            </label>
-            <input
-              id="tenant-tax-id"
-              name="taxId"
-              type="text"
-              value={taxId}
-              onChange={(event) => setTaxId(event.target.value)}
-              placeholder="Número de documento"
-              aria-invalid={Boolean(errors.taxId)}
-              className={[
-                "h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
-                errors.taxId
-                  ? "border-destructive/40 focus:border-destructive focus:outline-destructive/30"
-                  : "border-border hover:border-border-strong focus:border-gold-600/30 focus:outline-ring/30",
-              ].join(" ")}
-            />
-            {errors.taxId ? (
-              <p role="alert" className="mt-1 text-xs text-destructive">
-                {errors.taxId}
-              </p>
-            ) : null}
-          </div>
-
-          {/* Tamaño del equipo (solo Empresa, opcional) */}
-          {tenantType === "COMPANY" ? (
-            <div>
-              <label
-                htmlFor="tenant-team-size"
-                className={labelClasses}
-              >
-                Equipo{" "}
-                <span className="font-normal text-muted-foreground">(opcional)</span>
-              </label>
-              <Select
-                id="tenant-team-size"
-                name="teamSize"
-                value={teamSize}
-                onChange={(event) =>
-                  setTeamSize(event.target.value as TeamSizeValue | "")
-                }
-                aria-invalid={Boolean(errors.teamSize)}
-                className={[
-                  "h-10 w-full appearance-none rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
-                  errors.teamSize
-                    ? "border-destructive/40 focus:border-destructive focus:outline-destructive/30"
-                    : "border-border hover:border-border-strong focus:border-gold-600/30 focus:outline-ring/30",
-                ].join(" ")}
-              >
-                <option value="" disabled>
-                  Sin dato (se confirma en el onboarding)…
-                </option>
-                {Object.entries(TEAM_SIZE_LABELS).map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
-              </Select>
-              {errors.teamSize ? (
-                <p role="alert" className="mt-1 text-xs text-destructive">
-                  {errors.teamSize}
-                </p>
-              ) : null}
-            </div>
-          ) : null}
-
-          {/* Dirección / REMOTE (solo Empresa, opcional) */}
-          {tenantType === "COMPANY" ? (
-            <div>
-              <label
-                htmlFor="tenant-address"
-                className={labelClasses}
-              >
-                Dirección{" "}
-                <span className="font-normal text-muted-foreground">
-                  (opcional · «REMOTE» si no tiene sede)
-                </span>
-              </label>
-              <input
-                id="tenant-address"
-                name="address"
-                type="text"
-                value={address}
-                onChange={(event) => setAddress(event.target.value)}
-                placeholder="Dirección"
-                aria-invalid={Boolean(errors.address)}
-                className={[
-                  "h-10 w-full rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
-                  errors.address
-                    ? "border-destructive/40 focus:border-destructive focus:outline-destructive/30"
-                    : "border-border hover:border-border-strong focus:border-gold-600/30 focus:outline-ring/30",
-                ].join(" ")}
-              />
-              {errors.address ? (
-                <p role="alert" className="mt-1 text-xs text-destructive">
-                  {errors.address}
-                </p>
-              ) : null}
-            </div>
-          ) : null}
-
-          {/* Slug (subdominio) con check en vivo */}
-          <div>
-            <label
-              htmlFor="tenant-slug"
-              className={labelClasses}
-            >
-              Slug (subdominio)
-            </label>
-            <div className="mt-1 flex items-center rounded-lg border border-border bg-card transition focus-within:border-gold-600/30 focus-within:outline-2 focus-within:outline-ring/30 hover:border-border-strong">
-              <input
-                id="tenant-slug"
-                name="slug"
-                type="text"
-                value={slug}
-                onChange={(event) => setSlug(event.target.value)}
-                placeholder="mi-negocio"
-                aria-invalid={Boolean(errors.slug)}
-                className="h-10 w-full rounded-l-lg bg-transparent px-3 text-sm text-foreground focus:outline-none"
-              />
-                <span className="flex h-10 shrink-0 items-center border-l border-border px-3 text-xs text-muted-foreground">
-                {slugStatus === "checking" ? (
-                  <NLoader size={14} className="text-current" />
-                ) : slugStatus === "available" ? (
-                  <Check aria-hidden="true" className="h-3.5 w-3.5 text-success" />
-                ) : slugStatus === "taken" || slugStatus === "invalid" ? (
-                  <X aria-hidden="true" className="h-3.5 w-3.5 text-destructive" />
-                ) : null}
-              </span>
-            </div>
-            {errors.slug ? (
-              <p role="alert" className="mt-1 text-xs text-destructive">
-                {errors.slug}
-              </p>
-            ) : slugHint ? (
-              <p className={`mt-1 text-xs ${slugHintTone}`}>{slugHint}</p>
-            ) : (
-              <p className="mt-1 text-xs text-muted-foreground">
-                Minúsculas, números y guiones · 3–48 caracteres.
-              </p>
-            )}
-          </div>
-
-          {/* Vertical */}
-          <div>
-            <label
-              htmlFor="tenant-vertical"
-              className={labelClasses}
-            >
-              Vertical
-            </label>
-            <Select
-              id="tenant-vertical"
-              name="vertical"
-              value={vertical}
-              onChange={(event) => {
-                const next = event.target.value as VerticalValue | "";
-                setVertical(next);
-                applyPreset(tenantType, next);
-              }}
-              aria-invalid={Boolean(errors.vertical)}
-              className={[
-                "h-10 w-full appearance-none rounded-lg border bg-card px-3 text-sm text-foreground transition focus:outline-2",
-                errors.vertical
-                  ? "border-destructive/40 focus:border-destructive focus:outline-destructive/30"
-                  : "border-border hover:border-border-strong focus:border-gold-600/30 focus:outline-ring/30",
-              ].join(" ")}
-            >
-              <option value="" disabled>
-                Selecciona una vertical…
-              </option>
-              {VERTICALS.map((value) => (
-                <option key={value} value={value}>
-                  {VERTICAL_ICONS[value]} {VERTICAL_LABELS[value]}
-                </option>
-              ))}
-            </Select>
-            {errors.vertical ? (
-              <p role="alert" className="mt-1 text-xs text-destructive">
-                {errors.vertical}
-              </p>
-            ) : null}
-          </div>
-
-          {/* Módulos iniciales */}
-          <fieldset>
-            <legend className="text-sm font-medium text-foreground/80">
-              Módulos iniciales
-            </legend>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              Podrás activar o desactivar cada módulo después desde la tabla.
-            </p>
-            <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
-              {MODULES.map((moduleName) => (
-                <label
-                  key={moduleName}
-                  className="flex cursor-pointer items-center gap-2.5 rounded-lg border border-border px-3 py-2.5 text-sm text-foreground/80 transition hover:border-border-strong hover:bg-muted"
-                >
-                  <input
-                    type="checkbox"
-                    name="modules"
-                    value={moduleName}
-                    checked={modules.has(moduleName)}
-                    onChange={() => toggleModule(moduleName)}
-                    className="h-4 w-4 rounded-xs border-border-strong accent-primary"
-                  />
-                  {MODULE_LABELS[moduleName]}
-                </label>
-              ))}
-            </div>
-            {errors.modules ? (
-              <p role="alert" className="mt-1 text-xs text-destructive">
-                {errors.modules}
-              </p>
-            ) : null}
-          </fieldset>
-
-          {state.status === "error" && state.message ? (
-            <p
-              role="alert"
-              className="rounded-md border-l-[3px] border-l-danger bg-danger-subtle px-3 py-2.5 text-ui text-danger"
-            >
-              {state.message}
-            </p>
-          ) : null}
-
-          {state.status === "ok" ? (
-            <p
-              role="status"
-              className="flex items-center gap-2 rounded-lg bg-success/10 px-3 py-2 text-sm text-success"
-            >
-              <Building2 aria-hidden="true" className="h-4 w-4 shrink-0" />
-              {state.message ?? "Negocio creado correctamente."}
-            </p>
-          ) : null}
-
-          <div className="flex justify-end gap-2 pt-1">
-            <button
-              type="button"
-              disabled={isPending}
-              onClick={onClose}
-              className={buttonVariants({ variant: "outline" })}
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              disabled={isPending}
-              className={buttonVariants()}
-            >
-              {isPending ? (
-                <NLoader size={16} className="text-current" />
-              ) : (
-                <Building2 aria-hidden="true" className="h-4 w-4" />
-              )}
-              {isPending ? "Creando…" : "Crear negocio"}
-            </button>
-          </div>
-        </form>
-      
+    <ResponsiveSheet open onOpenChange={(open) => { if (!open && !pending) onClose(); }} title="Nuevo negocio" description="Se creará en preparación. El propietario recibirá acceso después de la activación.">
+      <form action={action} className="space-y-5" aria-busy={pending}>
+        <input type="hidden" name="provisioningKey" value={key} suppressHydrationWarning />
+        <p className="rounded-md border border-border bg-muted p-3 text-sm">Estado inicial: <strong>En preparación</strong>. Perfil Nexus Commerce configurado internamente. No se enviará una invitación todavía.</p>
+        <div>
+          <label htmlFor="managed-name" className={labelClasses}>Nombre comercial</label>
+          <Input id="managed-name" name="name" required minLength={2} maxLength={80} value={name} disabled={disabled} autoComplete="organization" aria-invalid={Boolean(errors.name)} aria-describedby={errors.name ? "managed-name-error" : undefined} onChange={(e) => { setName(e.target.value); if (!editedSlug) setSlug(normalizeSlug(e.target.value).slice(0, 48).replace(/-$/, "")); }} />
+          {errors.name && <p id="managed-name-error" role="alert" className="text-sm text-destructive">{errors.name}</p>}
+        </div>
+        <div>
+          <label htmlFor="managed-slug" className={labelClasses}>Slug del negocio</label>
+          <Input id="managed-slug" name="slug" required minLength={3} maxLength={48} value={slug} disabled={disabled} autoComplete="off" aria-invalid={Boolean(errors.slug) || status === "taken" || status === "invalid"} aria-describedby="managed-slug-hint" onChange={(e) => { setEditedSlug(true); setSlug(e.target.value.trim().toLowerCase()); }} />
+          <p id="managed-slug-hint" role="status" aria-live="polite" className="mt-1 text-sm text-muted-foreground">{errors.slug ?? slugHint}</p>
+        </div>
+        <div>
+          <label htmlFor="managed-email" className={labelClasses}>Correo del propietario</label>
+          <Input id="managed-email" name="ownerEmail" type="email" required maxLength={254} value={ownerEmail} disabled={disabled} autoComplete="email" aria-invalid={Boolean(errors.ownerEmail)} aria-describedby="managed-email-hint" onChange={(e) => setOwnerEmail(e.target.value)} />
+          <p id="managed-email-hint" className="mt-1 text-sm text-muted-foreground">{errors.ownerEmail ?? "Solo este correo verificado podrá aceptar la invitación OWNER."}</p>
+        </div>
+        {state.message && <p role={success ? "status" : "alert"} className={success ? "text-success" : "text-destructive"}>{state.message}</p>}
+        <div className="flex justify-end gap-2">
+          <button type="button" disabled={pending} onClick={onClose} className={buttonVariants({ variant: "outline" })}>{success ? "Cerrar" : "Cancelar"}</button>
+          {!success && <button type="submit" disabled={pending || status === "taken" || status === "invalid" || status === "unauthorized"} className={buttonVariants()}>{pending && <NLoader size={16} />} {pending ? "Creando…" : "Crear en preparación"}</button>}
+        </div>
+      </form>
     </ResponsiveSheet>
   );
 }

@@ -1,11 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { VERTICAL_LABELS, isVertical } from "@/lib/core/sectors/verticals";
-import { DEFAULT_MODULES_BY_VERTICAL } from "@/lib/core/sectors/catalog";
 import { normalizeEmail, slugFromName } from "@/lib/platform/admin/account-limits";
-import { createAdminDb } from "@/lib/platform/admin/db";
-import { organizationLimitProblem, setLimit } from "@/lib/platform/admin/users-db";
+import { createManagedBusiness, provisioningErrorMessage } from "@/lib/platform/admin/managed-business";
+import { setLimit } from "@/lib/platform/admin/users-db";
 import { requireStaff } from "@/lib/platform/team/access";
 import { logOps } from "@/lib/platform/team/audit";
 
@@ -25,23 +23,15 @@ export async function setUserLimitAction(email: string, raw: string, note: strin
 }
 
 /** Crea un negocio para una persona (queda con una invitación de dueño a su correo), respetando su límite. */
-export async function createUserOrganizationAction(email: string, name: string, vertical: string): Promise<UserResult> {
+export async function createUserOrganizationAction(email: string, name: string, _vertical: string, provisioningKey?: string): Promise<UserResult> {
   const ctx = await requireStaff("accounts.create");
   if (!ctx) return DENIED;
-  const owner = normalizeEmail(email);
-  if (name.trim().length < 3) return { ok: false, message: "Ponle un nombre al negocio (mínimo 3 letras)." };
-  if (!isVertical(vertical)) return { ok: false, message: "Elige un rubro." };
-  const problem = await organizationLimitProblem(owner);
-  if (problem) return { ok: false, message: problem };
-  const adminDb = createAdminDb();
-  let slug = slugFromName(name, () => false);
-  for (let i = 2; await adminDb.slugExists(slug); i++) slug = slugFromName(name, () => false) + `-${i}`;
+  if (!provisioningKey) return { ok: false, message: "Actualiza el formulario para crear una solicitud segura." };
   try {
-    await adminDb.createTenant({ name: name.trim(), slug, vertical, modules: [...DEFAULT_MODULES_BY_VERTICAL[vertical]], tenantType: "COMPANY", ownerEmail: owner });
-  } catch {
-    return { ok: false, message: "No se pudo crear el negocio. Inténtalo de nuevo." };
+    const tenant = await createManagedBusiness({ name, ownerEmail: normalizeEmail(email), slug: slugFromName(name, () => false), provisioningKey }, { userId: ctx.clerkUserId, email: ctx.email });
+    refresh();
+    return { ok: true, message: `Negocio «${tenant.name}» creado en preparación, sin acceso del propietario.` };
+  } catch (error) {
+    return { ok: false, message: provisioningErrorMessage(error) };
   }
-  await logOps(ctx, "USER_ORG_CREATE", { targetTenantName: name.trim(), metadata: { email: owner, slug, vertical } });
-  refresh();
-  return { ok: true, message: `Negocio «${name.trim()}» creado (${VERTICAL_LABELS[vertical]}); ${owner} lo reclama al entrar con ese correo` };
 }
