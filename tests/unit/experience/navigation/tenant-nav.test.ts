@@ -12,10 +12,10 @@ describe("buildTenantNav", () => {
     expect(groups[0].items.map((i) => i.label)).toEqual(["Resumen", "Notificaciones"]);
   });
 
-  it("solo muestra funciones activas y siempre Funciones y Configuración", () => {
+  it("shows active business modules and only settings in the system menu", () => {
     const groups = buildTenantNav("retail", ["dashboard", "crm"]);
     expect(groups.map((g) => g.label)).toEqual(["General", "Clientes y agenda", "CRM", "Sistema"]);
-    expect(groups.flatMap((g) => g.items).map((i) => i.href)).toEqual(["/resumen", "/notificaciones", "/contactos", "/crm", "/crm/informes", "/crm/tareas", "/crm/configuracion", "/functions", "/data", "/integrations", "/settings"]);
+    expect(groups.flatMap((g) => g.items).map((i) => i.href)).toEqual(["/resumen", "/notificaciones", "/contactos", "/crm", "/crm/informes", "/crm/tareas", "/crm/configuracion", "/settings"]);
   });
 
   it("agrupa por trabajo, con todas las categorías desplegables, y omite los grupos vacíos", () => {
@@ -64,7 +64,7 @@ describe("buildTenantNav", () => {
     const labels = buildTenantNav("construction", ["construction"])
       .flatMap((g) => g.items)
       .map((i) => i.label);
-    expect(labels).toEqual(["Resumen", "Notificaciones", "Obras", "Cotizaciones", "Catálogo APU", "Funciones", "Importar y exportar", "Integraciones", "Configuración"]);
+    expect(labels).toEqual(["Resumen", "Notificaciones", "Obras", "Cotizaciones", "Catálogo APU", "Configuración"]);
   });
 });
 

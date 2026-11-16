@@ -57,7 +57,7 @@ export function HelpCenter({
   const results = useMemo(() => {
     const text = normalize(query.trim());
     if (text.length < 2) return [];
-    return CAPABILITIES.filter((c) => c.status !== "PLANNED" && c.id !== "dashboard" && (hasFunctions || activeModules.includes(c.id)))
+    return CAPABILITIES.filter((c) => c.status !== "PLANNED" && c.id !== "dashboard" && (hasFunctions || (activeModules.includes(c.id) && c.nav.length > 0)))
       .filter((c) => normalize(`${c.name} ${c.label} ${c.description} ${c.pitch} ${c.category}`).includes(text))
       .slice(0, 8);
   }, [query, hasFunctions, activeModules]);

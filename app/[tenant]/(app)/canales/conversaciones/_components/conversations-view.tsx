@@ -45,8 +45,7 @@ export default function ConversationsView({ slug, conversations, selected, messa
     <div className="grid gap-4">
       {!connected ? (
         <Alert tone="info">
-          Aún no conectas tu número de WhatsApp Business: lo que escribas queda listo para enviarlo con un toque.{" "}
-          <Link href={`/${slug}/integrations`} className="font-semibold underline">Conectar WhatsApp</Link>
+          Tu número de WhatsApp Business aún no está conectado. Contacta al equipo de NexusThrive para configurarlo.
         </Alert>
       ) : null}
       {conversations.length === 0 ? (

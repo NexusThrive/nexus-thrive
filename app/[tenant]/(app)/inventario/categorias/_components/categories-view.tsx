@@ -3,9 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, ChevronRight, FolderPlus, Layers, Pencil, Plus, ScanBarcode, Tags, Trash2 } from "lucide-react";
-import Link from "next/link";
 import { Button } from "@/components/atoms/button";
-import { buttonVariants } from "@/components/atoms/button-variants";
 import { Input } from "@/components/atoms/input";
 import { Select } from "@/components/atoms/select";
 import { EmptyState } from "@/components/molecules/empty-state";
@@ -96,9 +94,6 @@ export default function CategoriesView({ slug, tree }: { slug: string; tree: Cat
             <Button type="button" onClick={() => setEditing({ name: "", parentId: null })}>
               <Plus aria-hidden="true" className="size-4" /> Crear la primera
             </Button>
-          }
-          secondaryAction={
-            <Link href={`/${slug}/data`} className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-[34px] border border-border")}>Importar productos desde Excel</Link>
           }
           highlights={[
             { icon: <Layers />, title: "Categoría y subcategoría", text: "Dos niveles: Ropa › Camisetas." },

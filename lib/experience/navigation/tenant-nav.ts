@@ -125,7 +125,7 @@ export function buildTenantNav(vertical: VerticalValue, activeModules: readonly 
       icon: GROUP_ICONS[label],
       menus: menusFor(label, active, role),
     })),
-    { label: "Sistema", items: gym ? [SETTINGS_ITEM] : [FUNCTIONS_ITEM, DATA_ITEM, INTEGRATIONS_ITEM, SETTINGS_ITEM], pinned: true },
+    { label: "Sistema", items: [SETTINGS_ITEM], pinned: true },
   ].filter((group) => group.items.length > 0);
 }
 
