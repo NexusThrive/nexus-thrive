@@ -105,7 +105,7 @@ while IFS= read -r line; do
   line="${line%%#*}"; line="$(echo "$line" | xargs)"
   [ -z "$line" ] && continue
   echo "→ $line"
-  psql "$URL" -v ON_ERROR_STOP=1 -q -f "docs/prod-sql/$line"
+  psql "$URL" -v ON_ERROR_STOP=1 -q -f "docs/08-operaciones/sql-produccion/$line"
 done < scripts/prod-data.txt
 
 echo

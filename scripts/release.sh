@@ -66,7 +66,7 @@ fi
 # La versión tiene que estar anotada en el changelog.
 if ! grep -q "## \[$VERSION\]" CHANGELOG.md 2>/dev/null; then
   echo "El CHANGELOG.md no tiene la sección '## [$VERSION]'."
-  echo "Anótala antes de publicar (ver docs/wiki/09-desarrollo/versionado.md, sección 7)."
+  echo "Anótala antes de publicar (ver docs/07-ingenieria/versionado.md, sección 7)."
   exit 1
 fi
 
@@ -96,7 +96,7 @@ cat <<EOF
 
 Pendiente de hacer a mano (no lo hace este script):
   - Si la versión trae cambios de esquema: correr el SQL nuevo de
-    docs/prod-sql/ en Supabase ANTES de que alguien use la función nueva.
+    docs/08-operaciones/sql-produccion/ en Supabase ANTES de que alguien use la función nueva.
   - Anotar la versión en CHANGELOG.md.
-  - Verificar en producción (ver docs/wiki/09-desarrollo/versionado.md, sección 6).
+  - Verificar en producción (ver docs/07-ingenieria/versionado.md, sección 6).
 EOF

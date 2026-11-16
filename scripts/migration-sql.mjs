@@ -1,5 +1,5 @@
 // Convierte una migración de Prisma 8 (migrations/app/<dir>/ops.json) en el SQL
-// de producción que pide `scripts/check-prod-sql.sh` (docs/prod-sql/<fecha>-<tema>.sql):
+// de producción que pide `scripts/check-prod-sql.sh` (docs/08-operaciones/sql-produccion/<fecha>-<tema>.sql):
 // las mismas sentencias, en el mismo orden, dentro de una transacción.
 //
 //   node scripts/migration-sql.mjs <carpeta-de-la-migración> "<título>" [salida.sql]
@@ -22,7 +22,7 @@ if (!dir || !title) {
 const ops = JSON.parse(readFileSync(join(root, "migrations/app", dir, "ops.json"), "utf8"));
 const date = dir.slice(0, 8).replace(/(\d{4})(\d{2})(\d{2})/, "$1-$2-$3");
 const slug = dir.slice(14);
-const out = outArg ?? join(root, "docs/prod-sql", `${date}-${slug.replace(/_/g, "-")}.sql`);
+const out = outArg ?? join(root, "docs/08-operaciones/sql-produccion", `${date}-${slug.replace(/_/g, "-")}.sql`);
 
 const statements = ops.flatMap((op) => (op.execute ?? []).map((step) => step.sql.trim().replace(/;$/, "")));
 const body = [

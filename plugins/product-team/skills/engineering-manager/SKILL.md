@@ -8,9 +8,9 @@ description: "Procedimiento y lista de comprobación del rol Engineering Manager
 
 ## Entradas
 
-- docs/product/plan.md
+- docs/01-producto/plan.md
 - ramas abiertas y PR (`git branch`, `gh pr list`)
-- informe del sprint en `docs/ingenieria/sprints/`
+- informe del sprint en `docs/07-ingenieria/sprints/`
 - reglas de ramas y compuertas en `CLAUDE.md` y el CI
 
 ## Reglas de decisión

@@ -15,7 +15,7 @@ description: Prepara versiones y PR de promoción a main con evidencias, notas y
 
 ## Preparación
 
-1. Escribe `docs/ingenieria/sprints/S<nn>/reporte.md` con `git log main..sprint/S<nn>` y las evidencias de CI.
+1. Escribe `docs/07-ingenieria/sprints/S<nn>/reporte.md` con `git log main..sprint/S<nn>` y las evidencias de CI.
 2. Verifica `git status`, rama y diff `sprint/S<nn>...main`.
 3. Crea el PR **sin mergear**:
    `gh pr create --base main --head sprint/S<nn> --title "..." --body-file <notas>`

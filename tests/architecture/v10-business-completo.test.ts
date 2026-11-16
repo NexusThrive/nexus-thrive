@@ -12,7 +12,7 @@ import { describe, expect, test } from "vitest";
 import { classify, loadJson } from "../../scripts/check-layers.mjs";
 
 const ROOT = join(import.meta.dirname, "..", "..");
-const layers = loadJson("docs/architecture/layers.json");
+const layers = loadJson("docs/02-arquitectura/controles/layers.json");
 const MODULOS = ["catalog", "customers", "data-exchange", "growth", "inventory", "pos", "presence", "purchasing", "sales", "scheduling", "store"];
 const ETAPA_B = ["data-exchange", "growth", "inventory", "pos", "presence", "purchasing", "store"];
 

@@ -12,7 +12,7 @@ import { describe, expect, test } from "vitest";
 const ROOT = join(import.meta.dirname, "..", "..");
 const read = (rel: string) => readFileSync(join(ROOT, rel), "utf8");
 const exists = (rel: string) => existsSync(join(ROOT, rel));
-const exceptions = JSON.parse(read("docs/architecture/exceptions.json")) as { exceptions: { regla: string; etapa: string }[] };
+const exceptions = JSON.parse(read("docs/02-arquitectura/controles/exceptions.json")) as { exceptions: { regla: string; etapa: string }[] };
 
 describe("permisos, roles y equipo viven en Core", () => {
   test.each(["lib/core/auth/permissions.ts", "lib/core/auth/roles.ts", "tests/unit/core/auth/permissions.test.ts", "lib/core/tenancy/team-db.ts"])("existe %s", (file) => {

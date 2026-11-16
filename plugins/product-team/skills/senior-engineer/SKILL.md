@@ -16,7 +16,7 @@ description: "Procedimiento y lista de comprobación del rol Senior Software Eng
 
 - detenerse y escalar si el diseño no cierra
 - no tocar archivos fuera del alcance sin justificarlo
-- consultar Graphify en cambios transversales
+- revisar dependencias mediante búsqueda local y lectura del código en cambios transversales
 
 ## Salidas
 

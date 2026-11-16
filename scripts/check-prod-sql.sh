@@ -21,7 +21,7 @@ set -euo pipefail
 
 # El contrato se divide por dominio en prisma/schema/ (antes: prisma/contract.prisma).
 CONTRACT="prisma/schema prisma/contract.prisma"
-SQL_DIR="docs/prod-sql"
+SQL_DIR="docs/08-operaciones/sql-produccion"
 
 BASE="${1:-}"
 if [ -z "$BASE" ]; then
@@ -89,7 +89,7 @@ corre a mano en Supabase. Sin ese SQL, la versión se cae en producción.
 Qué hacer:
   1) Escribe el SQL en $SQL_DIR/ (aditivo e idempotente: que se pueda correr
      dos veces sin romper nada).
-  2) Anótalo en $SQL_DIR/00-ORDEN.md.
+  2) Anótalo en $SQL_DIR/README.md.
   3) Corre el SQL en el SQL Editor de Supabase ANTES de que alguien use la
      función nueva.
 EOF

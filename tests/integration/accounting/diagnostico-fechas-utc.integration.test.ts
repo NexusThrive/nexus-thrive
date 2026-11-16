@@ -1,5 +1,5 @@
 /**
- * docs/diagnostico/2026-10-31-fechas-utc-documentos.sql: diagnóstico de SOLO LECTURA.
+ * docs/08-operaciones/diagnostico/2026-10-31-fechas-utc-documentos.sql: diagnóstico de SOLO LECTURA.
  *
  * Con el código corregido ya no se generan asientos fechados en UTC, así que aquí se SIMULA
  * el daño histórico sobre la base desechable (se reescribe la fecha de algunos asientos con
@@ -20,7 +20,7 @@ import { deleteTenantCompletely } from "@/lib/core/tenancy/deletion";
 
 const TEST_URL = process.env.TEST_DATABASE_URL;
 const normalize = (url: string | undefined) => (url ?? "").replace(/\?.*$/, "");
-const SQL_FILE = join(import.meta.dirname, "..", "..", "..", "docs", "diagnostico", "2026-10-31-fechas-utc-documentos.sql");
+const SQL_FILE = join(import.meta.dirname, "..", "..", "..", "docs", "08-operaciones", "diagnostico", "2026-10-31-fechas-utc-documentos.sql");
 const SEP = "\u001f";
 
 type Fila = Record<string, string>;
@@ -56,8 +56,8 @@ describe("el archivo SQL de diagnóstico", () => {
     expect(sql).not.toMatch(/COMMIT/i);
   });
 
-  test("no vive en docs/prod-sql: no es una migración", () => {
-    expect(SQL_FILE).not.toContain("prod-sql");
+  test("no vive en docs/08-operaciones/sql-produccion: no es una migración", () => {
+    expect(SQL_FILE).not.toContain("sql-produccion");
   });
 });
 

@@ -12,7 +12,7 @@ afirma debe poder demostrarse en el producto o en el repositorio.
 
 ## 2. Qué está disponible hoy
 
-Basado en `docs/nexus-architecture/product-vision.md` (estado «Hoy»):
+Basado en `docs/01-producto/propuestas/vision-producto-2026-10.md` (estado «Hoy»):
 
 - Ficha de cliente con campos por rubro, notas y QR/NFC.
 - Cobros con recibo, caja menor, gastos, anulación auditada.

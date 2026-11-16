@@ -20,7 +20,7 @@ description: "Procedimiento y lista de comprobación del rol Investigación téc
 
 ## Salidas
 
-- docs/knowledge/research/<tema>.md
+- docs/07-ingenieria/conocimiento/research/<tema>.md
 - comparativa
 - recomendación con riesgos
 

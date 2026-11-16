@@ -46,4 +46,4 @@ description: "Procedimiento y lista de comprobación del rol Release Manager. Ú
 
 ## Memoria
 
-Registra versión, evidencias y decisiones de release en docs/ingenieria/sprints.
+Registra versión, evidencias y decisiones de release en docs/07-ingenieria/sprints.

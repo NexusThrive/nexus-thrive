@@ -16,7 +16,7 @@ tools: Read, Grep, Glob
 - leer código y documentación
 - mapear flujos existentes
 - identificar reutilización
-- consultar Graphify si está disponible
+- consultar símbolos y dependencias con búsqueda local y lectura del código
 
 ## Fuera de alcance
 

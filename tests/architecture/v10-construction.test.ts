@@ -12,7 +12,7 @@ import { describe, expect, test } from "vitest";
 import { classify, loadJson } from "../../scripts/check-layers.mjs";
 
 const ROOT = join(import.meta.dirname, "..", "..");
-const layers = loadJson("docs/architecture/layers.json");
+const layers = loadJson("docs/02-arquitectura/controles/layers.json");
 
 describe("Etapa N · lib/industry/construction", () => {
   test("lib/industry contiene los tres sectores y lib/construction ya no existe", () => {

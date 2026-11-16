@@ -4,7 +4,7 @@ import { describe, expect, test } from "vitest";
 import { modulesForRoute } from "@/lib/experience/navigation/tenant-nav";
 
 /**
- * SEC-03 (docs/internal/historico/nexus-architecture/security-audit.md): cada página de un
+ * SEC-03 (docs/09-historico/seguridad-y-aislamiento-2026-10.md): cada página de un
  * negocio comprueba sesión + membresía activa por sí misma. El layout de
  * `app/[tenant]` no basta: en la navegación del App Router puede no
  * ejecutarse, y se renderiza en paralelo con la página.

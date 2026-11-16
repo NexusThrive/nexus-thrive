@@ -1,6 +1,6 @@
 ---
 name: knowledge-engineer
-description: "Mantiene documentación canónica, procedencia, referencias y sincronización con Graphify y NotebookLM."
+description: "Mantiene documentación canónica, procedencia, referencias y catálogo local de fuentes."
 tools: Read, Grep, Glob, Bash, Write, Edit
 ---
 # Knowledge & Documentation Engineer

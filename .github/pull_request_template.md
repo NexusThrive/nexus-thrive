@@ -1,28 +1,27 @@
-## Qué cambia y por qué
+## Summary
 
-<!-- Una o dos frases. Enlaza el pendiente o la capa (docs/wiki/04-modulos/capas/) si aplica. -->
+Describe the problem and resulting behavior. Link the story or relevant product source.
 
-## Qué se probó
+## Motivation
 
-<!-- Comandos y resultados reales. Lo que no se pudo probar, dilo. -->
+Explain why this change is needed.
 
-- [ ] `pnpm exec tsc --noEmit`
-- [ ] `pnpm lint`
-- [ ] `pnpm test`
-- [ ] `pnpm test:integration` (si toca datos)
-- [ ] `pnpm test:e2e` (si toca un componente compartido)
+## Changes
 
-## Revisión de datos (obligatoria si toca lib/ o acciones)
+List the changes that matter to the reviewer. Include a migration map and approved deletions for documentation reorganizations.
 
-- [ ] **Sin acceso directo a la base desde `app/`**: todo pasa por un repositorio de `lib/` (ESLint y `tests/architecture/data-access.test.ts` lo vigilan).
-- [ ] **`tenantId` en cada consulta** de una tabla de negocio (`tests/architecture/tenant-scope.test.ts`); una excepción nueva lleva su motivo en esa prueba.
-- [ ] **Permiso** comprobado en el servidor: `requireTenantContext(slug, "/<ruta>")` + `can(ctx.role, "…")` (o `requireStaff("…")` en el panel).
-- [ ] **Dinero solo por `money-service.ts`** (cobrar, pagar, anular, caja): en una transacción y sin cobros dobles.
-- [ ] **Bitácora**: lo sensible o destructivo deja `logTenantAction` (o `logOps` en el panel).
-- [ ] Si cambió el contrato: migración + SQL de producción en `docs/prod-sql/` + `00-ORDEN.md`.
+## Testing
 
-## Revisión de interfaz (si cambia lo que se ve)
+Record commands actually executed and their results. Separate pre-existing failures and environment limitations.
 
-- [ ] [Lista de calidad](../packages/brand/docs/05-calidad/quality-checklist.md) revisada.
-- [ ] Capturas antes/después (sin datos personales).
-- [ ] Guía de ayuda actualizada si cambió un flujo.
+## Risks
+
+Describe unresolved risks, dependencies and follow-up work.
+
+## Checklist
+
+- [ ] The responsible documentation and indexes are updated; `pnpm docs:check` passes.
+- [ ] Relevant typecheck, lint and tests were executed and their results recorded.
+- [ ] Data model changes include the required migration and production SQL checks (when applicable).
+- [ ] Interface changes follow the [quality checklist](../packages/brand/docs/05-calidad/quality-checklist.md) (when applicable).
+- [ ] Review and QA are independent of implementation; no automatic merge is requested.

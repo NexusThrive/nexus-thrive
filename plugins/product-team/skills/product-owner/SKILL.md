@@ -20,7 +20,7 @@ description: "Procedimiento y lista de comprobación del rol Product Owner. Úsa
 
 ## Salidas
 
-- docs/product/funcionalidades/<slug>.md
+- docs/01-producto/funcionalidades/<slug>.md
 - prioridad y valor
 - condiciones de aceptación de negocio
 
@@ -43,4 +43,4 @@ description: "Procedimiento y lista de comprobación del rol Product Owner. Úsa
 
 ## Memoria
 
-Documenta decisiones de producto en docs/product; no toca backlog técnico ni estado de ejecución.
+Documenta decisiones de producto en docs/01-producto; no toca backlog técnico ni estado de ejecución.

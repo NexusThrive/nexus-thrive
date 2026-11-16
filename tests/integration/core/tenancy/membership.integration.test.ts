@@ -6,7 +6,7 @@ import { isActiveMember, resolveTenantMembership } from "@/lib/core/tenancy/memb
 import { isRouteEnabled } from "@/lib/core/tenancy/context";
 
 /**
- * SEC-02 (docs/internal/historico/nexus-architecture/security-audit.md): un negocio creado desde
+ * SEC-02 (docs/09-historico/seguridad-y-aislamiento-2026-10.md): un negocio creado desde
  * el panel nace sin miembros. Antes, el primero que abría `/{slug}` quedaba
  * como dueño. Ahora solo entra quien acepta la invitación OWNER con su correo
  * verificado.

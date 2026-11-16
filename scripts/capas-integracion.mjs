@@ -1,8 +1,8 @@
 // Escribe la «Superficie de integración (API · MCP · Webhooks)» en el README de
-// cada subcapa de docs/wiki/04-modulos/capas, entre <!-- integracion:inicio --> y
+// cada subcapa de docs/01-producto/funcionalidades/capas, entre <!-- integracion:inicio --> y
 // <!-- integracion:fin -->. Es idempotente: conserva las casillas ya marcadas.
 // Los datos viven en scripts/capas-integracion.data.mjs; las reglas, en
-// docs/wiki/07-integraciones/api-mcp-webhooks.md.
+// docs/04-integraciones/api-mcp-webhooks.md.
 //
 //   node scripts/capas-integracion.mjs            muestra qué cambiaría (no escribe)
 //   node scripts/capas-integracion.mjs --write    escribe los README
@@ -13,7 +13,7 @@ import { fileURLToPath } from "node:url";
 import { SUPERFICIE } from "./capas-integracion.data.mjs";
 
 const root = resolve(fileURLToPath(import.meta.url), "../..");
-const capasDir = join(root, "docs/wiki/04-modulos/capas");
+const capasDir = join(root, "docs/01-producto/funcionalidades/capas");
 const START = "<!-- integracion:inicio -->";
 const END = "<!-- integracion:fin -->";
 const code = (list) => (list.length ? list.map((x) => `\`${x}\``).join(", ") : "—");
@@ -32,7 +32,7 @@ function section(id, s, previous) {
     START,
     "## 🔌 Superficie de integración (API · MCP · Webhooks)",
     "",
-    "> **Regla:** todo lo que esta subcapa hace lo puede hacer también un sistema (API), un agente de IA (MCP) o un flujo de n8n (webhooks). Se define **una vez** en el registro de capacidades y de ahí salen la ruta REST, la herramienta MCP, el evento y la documentación. Reglas y estándares: [`integracion-api-mcp-webhooks.md`](../../../../07-integraciones/api-mcp-webhooks.md).",
+    "> **Regla:** todo lo que esta subcapa hace lo puede hacer también un sistema (API), un agente de IA (MCP) o un flujo de n8n (webhooks). Se define **una vez** en el registro de capacidades y de ahí salen la ruta REST, la herramienta MCP, el evento y la documentación. Reglas y estándares: [`integracion-api-mcp-webhooks.md`](../../../../../04-integraciones/api-mcp-webhooks.md).",
     "",
     "| Superficie | Detalle |",
     "| --- | --- |",

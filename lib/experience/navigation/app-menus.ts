@@ -5,7 +5,7 @@ import type { ModuleValue } from "@/lib/core/capabilities/modules";
 
 /**
  * Los menús «Informes» y «Configuración» de la barra de cada app, como en Odoo (ideas del árbol de menús de Odoo 17; ver
- * `docs/product/nexus-platform/comercio-general.md` §7.0). Cada app los tiene aunque hoy traiga pocas entradas: así el lugar queda
+ * `docs/01-producto/estrategia/comercio-general.md` §7.0). Cada app los tiene aunque hoy traiga pocas entradas: así el lugar queda
  * fijo y las pantallas se van sumando. Una entrada sin pantalla es `soon` y se ve apagada; nunca un enlace roto.
  *
  * Los permisos siguen a Odoo (`group_*_manager`): quien gerencia el negocio (`business.manage`) ve los dos menús; el resto de la gente

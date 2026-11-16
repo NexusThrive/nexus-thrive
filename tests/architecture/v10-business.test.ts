@@ -15,7 +15,7 @@ import { classify, loadJson, parseImports, resolveImport } from "../../scripts/c
 const ROOT = join(import.meta.dirname, "..", "..");
 const read = (rel: string) => readFileSync(join(ROOT, rel), "utf8");
 const exists = (rel: string) => existsSync(join(ROOT, rel));
-const layers = loadJson("docs/architecture/layers.json");
+const layers = loadJson("docs/02-arquitectura/controles/layers.json");
 
 /** módulo → { archivo nuevo ← ubicación anterior } (solo producción; las pruebas colocadas viajan con su módulo). */
 const MODULES: Record<string, Record<string, string>> = {

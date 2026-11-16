@@ -1,11 +1,30 @@
-# Documentación de Nexus
+# Documentación de NexusThrive · Thrive Business
 
-| Dónde | Qué contiene |
-|---|---|
-| [`wiki/`](wiki/Home.md) | **Manual vigente.** Fuente única de verdad para desarrolladores |
-| [`decisions/`](decisions/README.md) | Decisiones técnicas (ADR) |
-| [`internal/`](internal/auditoria-documentacion.md) | Auditorías ([documentación](internal/auditoria-documentacion.md), [validación de la wiki](internal/informe-validacion-wiki.md), [revisión de pendientes](internal/revision-documentos-pendientes.md)), informes de la entrega ([lanzamiento](internal/lanzamiento/README.md), [plan de PR](internal/plan-de-prs.md), [pila](internal/informe-pila-de-prs.md), [cambio de fechas](internal/informe-cambio-fechas-pr2.md)) y `historico/` (informes fechados) |
-| [`packages/brand/`](../packages/brand/README.md) | **Todo el diseño operativo**: marca, producto, sistema de diseño, patrones, calidad, auditorías, marketing y documentación de Storybook |
-| `architecture/`, `prod-sql/`, `n8n/`, `ci/`, `diagrams/`, `knowledge/`, `ingenieria/` | Archivos que leen el código o las herramientas (JSON, SQL, YAML, Mermaid); no se mueven |
+Este es el punto de entrada a la documentación del monolito modular Next.js. Cada tema tiene una fuente responsable; el histórico conserva la evidencia de decisiones y entregas anteriores.
 
-Raíz del repositorio: [`README.md`](../README.md), [`CHANGELOG.md`](../CHANGELOG.md), [`CONTRIBUTING.md`](../CONTRIBUTING.md), [`CLAUDE.md`](../CLAUDE.md), [`AGENTS.md`](../AGENTS.md).
+| Sección | Responsabilidad |
+| --- | --- |
+| [00 · Identidad](00-identidad/README.md) | Alcance y vocabulario |
+| [01 · Producto](01-producto/README.md) | Estrategia, funcionalidades, backlog y plan |
+| [02 · Arquitectura](02-arquitectura/README.md) | Monolito, dominios, datos y flujos |
+| [03 · Experiencia](03-experiencia/README.md) | Diseño operativo, marca y accesibilidad |
+| [04 · Integraciones](04-integraciones/README.md) | API, MCP, eventos y webhooks |
+| [05 · Decisiones](05-decisiones/README.md) | ADR originales y decisiones V10 |
+| [06 · Reglas](06-reglas/README.md) | Dependencias, autenticación y permisos |
+| [07 · Ingeniería](07-ingenieria/README.md) | Convenciones, pruebas y sprints |
+| [08 · Operaciones](08-operaciones/README.md) | Entornos, producción y recuperación |
+| [09 · Histórico](09-historico/README.md) | Auditorías y evidencia fechada |
+
+## Orden de lectura
+
+Empieza por identidad y producto; continúa con arquitectura, decisiones y reglas. Para hacer un cambio, consulta ingeniería y sus pruebas. Para ejecutar tareas de producción, utiliza operaciones.
+
+## Trabajo actual
+
+El [plan de producto](01-producto/plan.md) indica el hito, sprint e historias confirmados. Las [convenciones de sprint](07-ingenieria/sprints/README.md) explican dónde registrar planes y cierres. No se deduce un sprint activo de documentos antiguos.
+
+## Contribuir
+
+Consulta el [estándar documental](07-ingenieria/documentation-standard.md) antes de crear una página. Actualiza la fuente existente y su índice en el mismo PR; separa propuesta, implementación y verificación. Ejecuta `pnpm docs:check` y las comprobaciones pertinentes. Las [instrucciones para contribuir](../CONTRIBUTING.md) y [AGENTS.md](../AGENTS.md) permanecen en la raíz.
+
+La documentación se mantiene y consulta en este repositorio. No hay publicador ni una segunda fuente en GitHub Wiki.

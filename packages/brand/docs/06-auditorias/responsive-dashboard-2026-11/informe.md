@@ -20,7 +20,7 @@ Principio: [Mobile as a First-Class Experience](../../03-sistema/decisiones-nexu
 | Historias | `Organismos/CustomizableDashboard` (Default y ConGraficos), `Plantillas/TenantShell` (Desktop y WithModal) y `Páginas/Inicio/Panel completo` |
 | Viewports | 320 · 360 · 375 · 412 · 768 · 834 · 1024 · 1280 px (capturas y medidas) y una rejilla de 18 anchos entre 320 y 1440 px para los umbrales |
 | Medidas | Desbordamiento de página y de elementos, contenedores con scroll horizontal, recorte de texto, solapes entre controles, tamaño de cada control interactivo, tamaño mínimo de texto y de campos |
-| Reproducible | [`herramientas/`](herramientas/) (tres scripts y sus resultados en JSON); instrucciones en §10 |
+| Reproducible | [`herramientas/`](herramientas) (tres scripts y sus resultados en JSON); instrucciones en §10 |
 
 ## 3. Viewports de referencia (condición 1)
 
@@ -57,7 +57,7 @@ Las diferencias reales están **por debajo de 375 px**, no entre 375 y 412. Dise
 
 ## 4. Evidencia por viewport
 
-Capturas en [`capturas/`](capturas/). `Inicio` es el organismo `CustomizableDashboard`; `Shell` es la plantilla `TenantShell` con navegación.
+Capturas en [`capturas/`](capturas). `Inicio` es el organismo `CustomizableDashboard`; `Shell` es la plantilla `TenantShell` con navegación.
 
 | Viewport | Inicio | Shell | Desborda la página | Controles <44 px (shell) | Texto mínimo |
 |---|---|---|---|---|---|
@@ -181,4 +181,4 @@ node packages/brand/docs/06-auditorias/responsive-dashboard-2026-11/herramientas
 node packages/brand/docs/06-auditorias/responsive-dashboard-2026-11/herramientas/medir-reflow-320.mjs  # recorte de texto y solapes
 ```
 
-Las medidas guardadas de esta auditoría están en [`herramientas/`](herramientas/) (`medidas-viewports.json`, `medidas-umbrales.json`).
+Las medidas guardadas de esta auditoría están en [`herramientas/`](herramientas) (`medidas-viewports.json`, `medidas-umbrales.json`).

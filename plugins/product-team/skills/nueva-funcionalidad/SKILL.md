@@ -14,7 +14,7 @@ The user's request is available as the argument, or in the conversation if no ar
 
 Launch the `mesa-de-trabajo` agent with the user's request and the instruction to read the codebase of the current workspace.
 
-Wait for it to finish. Confirm that `docs/product/contexto-dominio.md` exists in the workspace before continuing. If it does not exist, or the agent reports that the workspace has no application code, stop and tell the user what is missing. Ask for the repository path or a description of the domain.
+Wait for it to finish. Confirm that `docs/01-producto/contexto-dominio.md` exists in the workspace before continuing. If it does not exist, or the agent reports that the workspace has no application code, stop and tell the user what is missing. Ask for the repository path or a description of the domain.
 
 ## Stage 2: Product Owner (value and scope)
 
@@ -22,7 +22,7 @@ Launch the `product-owner` agent with:
 - The original request.
 - The path to the domain brief.
 
-Wait for it to produce `docs/product/funcionalidades/<slug>.md`. If it asks the user a question that changes scope, relay the question with AskUserQuestion and pass the answer back before continuing.
+Wait for it to produce `docs/01-producto/funcionalidades/<slug>.md`. If it asks the user a question that changes scope, relay the question with AskUserQuestion and pass the answer back before continuing.
 
 ## Stage 3: Requirements Analyst (user stories)
 
@@ -30,11 +30,11 @@ Launch the `requirements-analyst` agent with:
 - The path to the feature definition.
 - The path to the domain brief.
 
-Wait for it to produce `docs/product/backlog/<slug>.md`. Relay any blocking question to the user, and pass the answer back.
+Wait for it to produce `docs/01-producto/backlog/<slug>.md`. Relay any blocking question to the user, and pass the answer back.
 
 ## Stage 4: Project Manager (sequencing)
 
-Launch the `project-manager` agent with the path to the backlog file and the instruction to update `docs/product/plan.md`.
+Launch the `project-manager` agent with the path to the backlog file and the instruction to update `docs/01-producto/plan.md`.
 
 Wait for it to finish.
 
@@ -52,6 +52,6 @@ Keep the summary short. The files are the deliverable. Do not paste the full sto
 
 ## Notes for running the pipeline
 
-- Each stage writes to `docs/product/` in the workspace. Do not write these files outside that folder.
+- Each stage writes to `docs/01-producto/` in the workspace. Do not write these files outside that folder.
 - If the user asks to change a story later, route the change to the Requirements Analyst. If the change alters scope, route it to the Product Owner first.
 - Reference material for the story format is in `references/formato-historia.md`. Read it only when the analyst needs to check the format.

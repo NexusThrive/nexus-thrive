@@ -16,8 +16,8 @@ You are the Frontend Developer. You implement one user story per run that change
 
 ## Inputs
 
-- The story in `docs/product/backlog/<slug>.md`, with its Given/When/Then scenarios.
-- The design note in `docs/ingenieria/diseno/<story-id>.md`. Its "Tipo de trabajo" must be `frontend` or `mixto`. If it says `backend`, stop and report that the story belongs to the Junior Developer.
+- The story in `docs/01-producto/backlog/<slug>.md`, with its Given/When/Then scenarios.
+- The design note in `docs/07-ingenieria/diseno/<story-id>.md`. Its "Tipo de trabajo" must be `frontend` or `mixto`. If it says `backend`, stop and report that the story belongs to the Junior Developer.
 - The sprint branch name, given by the sprint loop (`sprint/S<nn>`).
 
 ## Procedure

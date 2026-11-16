@@ -1,5 +1,5 @@
 > **Paso 0 — va antes de todo lo demás.** Rediseño del sistema aplicando este
-> mandato, antes de los pasos A–C de [`docs/PENDIENTES.md`](../../../../docs/PENDIENTES.md).
+> mandato, antes de los pasos A–C de [`docs/01-producto/backlog/pendientes-heredados.md`](../../../../docs/01-producto/backlog/pendientes-heredados.md).
 > Aún no ejecutado. Documento original, sin cambios.
 
 # NEXUS — Unified Design System, Enterprise UX, Accessibility & Motion Engineering

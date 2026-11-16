@@ -3,7 +3,7 @@
  *
  * Criterio de cierre aprobado: la raíz de `lib/` contiene EXACTAMENTE las nueve áreas y las dos excepciones
  * documentadas `utils.ts` y `cn.ts` (convención de shadcn/ui, decisión E-3). Nada más: un módulo nuevo va dentro de
- * un área, no en la raíz. `docs/wiki/03-arquitectura/guia-implementacion-lib.md` explica cómo elegir el área.
+ * un área, no en la raíz. `docs/02-arquitectura/guia-implementacion-lib.md` explica cómo elegir el área.
  */
 import { readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
@@ -12,7 +12,7 @@ import { describe, expect, test } from "vitest";
 import { classify, loadJson } from "../../scripts/check-layers.mjs";
 
 const ROOT = join(import.meta.dirname, "..", "..");
-const layers = loadJson("docs/architecture/layers.json");
+const layers = loadJson("docs/02-arquitectura/controles/layers.json");
 
 const AREAS = ["business", "core", "domains", "experience", "foundation", "industry", "integrations", "platform", "runtime"];
 const EXCEPCIONES = ["cn.ts", "utils.ts"];

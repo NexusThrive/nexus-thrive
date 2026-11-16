@@ -16,7 +16,7 @@ import { modulesForRoute as fromNav } from "@/lib/experience/navigation/tenant-n
 
 const ROOT = join(import.meta.dirname, "..", "..");
 const read = (rel: string) => readFileSync(join(ROOT, rel), "utf8");
-const layers = loadJson("docs/architecture/layers.json");
+const layers = loadJson("docs/02-arquitectura/controles/layers.json");
 const importsOf = (rel: string) => [...read(rel).matchAll(/^import\s+(type\s+)?[\s\S]*?from\s+["']([^"']+)["']/gm)].map((m) => ({ typeOnly: !!m[1], from: m[2] }));
 
 describe("tipos y reglas que dejaron de ser de experiencia", () => {
