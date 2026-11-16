@@ -43,6 +43,8 @@ model User {
 
 /// Invitación para unirse al equipo de un negocio (se acepta al iniciar
 /// sesión con ese correo).
+/// Delivery state and leases support internal retries independently of membership acceptance.
+/// The partial unique index preserves history while allowing only one unrevoked pending invite per email.
 model TenantInvite {
   id          String    @id @default(uuid())
   tenantId    String

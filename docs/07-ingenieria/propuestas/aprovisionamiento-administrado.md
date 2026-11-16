@@ -2,9 +2,9 @@
 
 ## Objetivo y estado
 
-Propuesta de **M01 — MVP privado administrado**, con **S01 — Alta, activación y acceso seguro**. No declara un sprint confirmado ni cambia el estado del plan heredado. La solicitud del 2026-11-16 autoriza preparar auditoría, ADR e implementación por historias; esta primera entrega documental antecede los cambios funcionales. No se desarrollan funciones comerciales ni navegación interna.
+**M01 — MVP privado administrado**, con **S01 — Alta, activación y acceso seguro**, aceptados por el usuario el 2026-11-16 después de la auditoría inicial. Las historias se implementan en ramas y PR dependientes, sin fusión automática. No se desarrollan funciones comerciales ni navegación interna; se retira únicamente la opción pública de crear otro negocio.
 
-Fuentes: [auditoría](../../02-arquitectura/propuestas/aprovisionamiento-administrado.md), [ADR arquitectura/0011 propuesto](../../05-decisiones/ADR-0011-arquitectura-aprovisionamiento-administrado.md), [plan de producto](../../01-producto/plan.md).
+Fuentes: [auditoría](../../02-arquitectura/propuestas/aprovisionamiento-administrado.md), [ADR arquitectura/0011 aceptado](../../05-decisiones/ADR-0011-arquitectura-aprovisionamiento-administrado.md), [plan de producto](../../01-producto/plan.md).
 
 No existe `docs/07-ingenieria/PAUSA` en la revisión inicial. Base: `main`, commit `593623e4`, árbol limpio antes de empezar. Sin merge automático. Engram `mem_session_summary` no está disponible; estos documentos conservan estado y siguientes pasos.
 
@@ -25,13 +25,13 @@ HU-02, intento 1: contrato emitido y migración generada con 15 operaciones excl
 | HU-07 | Entrega con Clerk/cuentas existentes, estado durable, recuperación de timeout, reenvío y renovación sin duplicados. Sin identidades duplicadas ni invitación preactivación. | `feature/HU-owner-invitation-delivery-07` | HU-06. |
 | HU-08 | Recorridos completos y compatibilidad, dashboard documentado por instancia, evidencia de entrega y pruebas desplegadas, QA/revisión independientes. | `chore/HU-managed-provisioning-verification-08` | HU-02 a HU-07. |
 
-Un PR en inglés por historia. No hay sprint/rama de integración confirmados: no crear ni pushear `sprint/S01`. Se pueden presentar dependencias como PR apilados apuntando a la historia anterior, con dependencia visible; HU-01 puede apuntar a `main` como documentación. Integración/promoción requieren revisión humana, sin aprobar el propio trabajo. Ningún despliegue parcial debe habilitar invitaciones prematuras. Máximo tres intentos por historia; registrar fallos y detener al tercero.
+Un PR en inglés por historia. Se confirmó el objetivo S01, pero no una rama de integración: no crear ni pushear `sprint/S01`. Se pueden presentar dependencias como PR apilados apuntando a la historia anterior, con dependencia visible; HU-01 puede apuntar a `main` como documentación. Integración/promoción requieren revisión humana, sin aprobar el propio trabajo. Ningún despliegue parcial debe habilitar invitaciones prematuras. Máximo tres intentos por historia; registrar fallos y detener al tercero.
 
 Antes de cada historia comprobar PAUSA y base. Antes de código Next.js leer guía instalada pertinente en `node_modules/next/dist/docs/`; para datos, referencias Prisma 8; para pruebas, `vitest.config.mts` y pruebas relevantes.
 
 ## Matriz de pruebas obligatorias
 
-Todas las pruebas nuevas siguientes están **pendientes**. Las existentes son reutilizables, no acreditan el flujo nuevo.
+La evidencia nueva se detalla en el cierre de implementación; esta matriz conserva los criterios acordados. Las comprobaciones de proveedores y navegador reales se distinguen de la integración con proveedores simulados.
 
 | Caso | Evidencia requerida | HU |
 | --- | --- | --- |
@@ -51,7 +51,7 @@ Todas las pruebas nuevas siguientes están **pendientes**. Las existentes son re
 | Entrega e identidad | Usuario nuevo/existente, mismo correo en dos tenants, timeout entre envío/persistencia y reintentos; revocar local no afecta otro negocio. | 07 |
 | Accesibilidad | Foco, teclado, labels/errores asociados, anuncios de carga/disponibilidad/éxito, cancelación segura y doble submit; patrones existentes. | 05, 08 |
 
-Reutilizar `tests/integration/core/tenancy/membership.integration.test.ts`, `tests/integration/platform/team/access.integration.test.ts`, `tests/integration/platform/admin/users.integration.test.ts`, unitarias de correo/roles/contexto y arquitectura de páginas/tenant-scope. La prueba de membresía actual **espera una invitación al crear** y cambiará expresamente. Fixtures comerciales que llaman `createAdminDb().createTenant` necesitan estado explícito; no cambiar reglas comerciales para acomodar tests.
+Reutilizar `tests/integration/core/tenancy/membership.integration.test.ts`, `tests/integration/platform/team/access.integration.test.ts`, `tests/integration/platform/admin/users.integration.test.ts`, unitarias de correo/roles/contexto y arquitectura de páginas/tenant-scope. La prueba de membresía anterior **espera una invitación al crear** mediante la fábrica heredada; conserva esa cobertura legacy. Las nuevas pruebas ejercitan el servicio administrado sin invitación al alta. Fixtures comerciales que llaman `createAdminDb().createTenant` necesitan estado explícito; no cambiar reglas comerciales para acomodar tests.
 
 ## Verificación por historia y despliegue
 
@@ -75,4 +75,47 @@ No sustituir pruebas nuevas por lectura de código, ni respuesta de proveedor po
 - PR documental: [#160](https://github.com/NexusThrive/nexus-thrive/pull/160), en borrador hacia `main`, sin fusión. Commit inicial `6abfdc00`. El conector GitHub devolvió 403 al crear el PR; se publicó con la CLI autenticada. QA/revisión arquitectónica: pendientes de revisor independiente.
 - Engram no disponible; objetivo, instrucciones, hallazgos, resultados, pendientes y archivos relevantes conservados en auditoría, ADR y este informe.
 
-Siguiente: revisar HU-01/ADR y ejecutar HU-02 en su rama/PR, seguido por política común y cierre de entradas. El ADR requiere revisión humana antes de integrar decisiones estructurales; escribirlo no lo acepta. Historias funcionales todavía no implementadas.
+Este es el cierre histórico de la primera entrega documental. Después, el usuario aceptó el ADR y autorizó todas las historias; la implementación y su evidencia siguen a continuación.
+
+## Implementación y revisión del conjunto
+
+Todas las historias de código están implementadas en la pila de ramas, sin fusión ni despliegue. HU-08 conserva evidencia y correcciones de revisión; no declara configuración externa realizada.
+
+| Historia | Estado del código | Evidencia principal |
+| --- | --- | --- |
+| HU-01 | Auditoría entregada; ADR aceptado posteriormente por el usuario | PR #160 y aceptación registrada en arquitectura/0011. |
+| HU-02 | Implementada; migración verificada en base aislada | 15 operaciones aditivas; cadena de 91 migraciones aplicada; SQL de actualización preserva datos y membresías anteriores. |
+| HU-03 | Implementada y verificada en integración | Política común en contexto/archivos/API y aceptación serializada; principal verificado, aislamiento y suspensión. |
+| HU-04 | Implementada y verificada de forma enfocada | Acciones públicas rechazadas; wizard retirado; callback y plantillas de producción sin retornos al onboarding. Registro con ticket y destinos forzados al callback. |
+| HU-05 | Implementada y verificada en integración | Alta autorizada, correo normalizado, Commerce interno, auditoría atómica, reintento y colisión de slug; modal compartido con tres campos. |
+| HU-06 | Implementada y verificada en integración | Preparación explícita, activación concurrente sin duplicados, renovación/revocación y reactivación sin nuevas invitaciones. |
+| HU-07 | Implementada y verificada con proveedores simulados | Lease, entrega concurrente única, fallo/reintento y reutilización de identidad existente; cron autenticado y registro de personal invitado compatibles. |
+| HU-08 | Verificación local y revisión estática completadas; validación externa pendiente | Resultados abajo; no sustituye QA de entorno desplegado. |
+
+Las entradas administrativas usan `createManagedBusiness`. La fábrica anterior `createAdminDb().createTenant` permanece para compatibilidad y fixtures; ya no es invocada por las acciones de alta ni hay una acción pública que la exponga. No se han cambiado módulos comerciales ni se han activado o migrado negocios reales.
+
+### Resultados reales
+
+- PostgreSQL 17 temporal independiente en `127.0.0.1:15439/nexus_managed_test`, sin utilizar credenciales ni datos de la base inventariada. Se creó solo para esta verificación.
+- `prisma contract emit`: código 0; hash de almacenamiento final `aa3535fad47d3ed4395c026ce67d9fbaaecae4118e20153ab85d2fec3036fdb4`.
+- `prisma db migrate` contra esa base: código 0, **91 migraciones aplicadas**, marker final igual al contrato. Registro local `/tmp/nexus-managed-test-migration.log`.
+- `vitest run --testTimeout=20000 --no-file-parallelism tests/integration/core/tenancy/managed-provisioning.integration.test.ts`: código 0, **13 pruebas aprobadas**, 2,71 s. Incluye acciones de servidor con personal real en la base de ensayo, concurrencia, correo no verificado/ajeno, OWNER sin personal Nexus, aislamiento, suspensión, fallo de correo, reintento, herencia y actualización SQL con datos previos. Clerk y correo están simulados; **no se enviaron mensajes reales**. Registro `/tmp/nexus-managed-focused-integration.log`.
+- Selección de unitarias y arquitectura (`access-policy`, `private-entrypoints`, correo de sesión, autorización de páginas, tenant-scope y acceso a datos): código 0, **826 pruebas aprobadas en 6 archivos**, 2,41 s. La cifra incluye casos parametrizados de rutas existentes; no se repitió la suite completa. Registro `/tmp/nexus-managed-focused-unit.log`.
+- `pnpm exec tsc --noEmit`: código 0 en el conjunto funcional. La primera pasada detectó dos usos de `Temporal.Now` incompatibles con las declaraciones locales; se corrigieron a `Temporal.Instant.fromEpochMilliseconds` antes de la pasada exitosa.
+- ESLint limitado a los archivos de implementación afectados: código 0, sin diagnósticos. Registro `/tmp/nexus-managed-focused-lint.log`.
+- `node scripts/check-layers.mjs`: código 0; 394 archivos, cero dependencias nuevas/ciclos de valores, tres ciclos de solo tipos dentro del tope existente.
+- `pnpm build` con la base temporal: código 0; compilación, TypeScript y generación de rutas completadas. Registro `/tmp/nexus-managed-build.log`. No se desplegó el resultado.
+- `pnpm docs:check`: código 0; cero errores nuevos y los diez enlaces preexistentes de skills de terceros. Un intento directo en sandbox falló al lanzar Git (`EPERM`); repetición autorizada exitosa.
+- No se ejecutaron de nuevo la suite completa, toda la integración ni `pnpm verify`, conforme a la petición de reducir repeticiones. Las comprobaciones enfocadas cubren las fronteras modificadas. No se ejecutó navegador contra Clerk real ni se acredita llegada a bandeja de correo.
+
+### Revisión independiente
+
+El subagente `provisioning_review`, distinto del implementador y con trabajo de solo lectura, revisó autorización, aislamiento, concurrencia, entrega y compatibilidad. Detectó tres puntos que se corrigieron: selección de reintentos antes de filtrar backoff/lease; permiso extra en reactivaciones heredadas; y gate del layout retirado que podía generar un retorno al wizard. Tras reexaminar las correcciones emitió **veredicto estático independiente favorable, sin bloqueos adicionales en el alcance inspeccionado**.
+
+Ese veredicto no es aprobación de QA desplegado ni certifica dashboard, ticket real, cron o entrega externa. La revisión no repitió las pruebas del implementador. Intentos: primera implementación de cada historia, con correcciones de revisión en HU-08; no se agotó el límite de tres intentos.
+
+### Activación operativa pendiente
+
+Antes de integrar/desplegar, seguir la [guía operativa](../../08-operaciones/devops.md#aprovisionamiento-privado-de-negocios): revisar y aplicar la migración en el entorno correspondiente; seleccionar Invite-only en Clerk; configurar remitente y origen; programar el cron; comprobar el recorrido real con un correo autorizado. Estos pasos requieren credenciales y estado externos y **no se ejecutaron automáticamente**. No se hace merge a `main` ni push a `sprint/*`.
+
+Engram sigue sin estar disponible. Este reporte conserva objetivo, aceptación, decisiones, archivos responsables, comandos, resultados, revisión independiente y pendientes para continuar sin depender del historial de conversación.

@@ -146,7 +146,7 @@ export default async function AccountPage({ params, searchParams }: { params: Pr
         <UrlSegmentedControl param="tab" ariaLabel="Secciones de la ficha" value={tab} defaultValue="general" options={TABS} />
       </div>
 
-      {provisioning && <ProvisioningControls state={provisioning} name={detail.name} canEdit={can("accounts.edit")} canActivate={can("accounts.suspend") && can("accounts.create")} canInvite={can("accounts.create")} canSuspend={can("accounts.suspend")} />}
+      {provisioning && <ProvisioningControls state={provisioning} name={detail.name} canEdit={can("accounts.edit")} canActivate={can("accounts.suspend") && (provisioning.activated || can("accounts.create"))} canInvite={can("accounts.create")} canSuspend={can("accounts.suspend")} />}
 
       {tab === "general" ? (
         <div className="grid grid-cols-1 items-start gap-3.5 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
@@ -235,7 +235,7 @@ export default async function AccountPage({ params, searchParams }: { params: Pr
                 tenantId={detail.id}
                 tenantName={detail.name}
                 active={detail.active}
-                canSuspend={can("accounts.suspend")}
+                canSuspend={can("accounts.suspend") && !provisioning}
                 canImpersonate={can("accounts.impersonate")}
                 hasUsers={detail.users.length > 0}
               />

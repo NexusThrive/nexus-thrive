@@ -18,6 +18,7 @@ const ROOT = join(process.cwd(), "app", "[tenant]");
 const EXEMPT: Record<string, string> = {
   "onboarding/page.tsx": "alias retirado: solo redirige al callback, sin leer datos del negocio",
   "(app)/payments/page.tsx": "solo redirige a Finanzas",
+  "onboarding/page.tsx": "alias retirado: solo redirige al callback, sin leer datos del negocio",
 };
 
 function files(dir: string, keep: (name: string) => boolean): string[] {

@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { clerkClient } from "@clerk/nextjs/server";
+import { or } from "@prisma/orm-postgres/orm-client";
 import { db } from "@/prisma/db";
 import { canOperateTenant } from "@/lib/core/tenancy/access-policy";
 import { lockTenant } from "@/lib/core/tenancy/locking";
@@ -94,8 +95,12 @@ export async function retryOwnerInvitation(tenantId: string, actor: Provisioning
 }
 
 export async function dispatchOwnerInvitations() {
-  const invites = await db.orm.public.TenantInvite.where({ role: "OWNER" }).where((i) => i.deliveryStatus.in(["PENDING", "FAILED", "SENDING"])).where((i) => i.acceptedAt.isNull()).where((i) => i.revokedAt.isNull()).where((i) => i.expiresAt.gt(now())).where((i) => i.deliveryAttempts.lt(MAX_ATTEMPTS)).orderBy((i) => i.createdAt.asc()).limit(20).all();
+  const invites = await db.orm.public.TenantInvite.where({ role: "OWNER" }).where((i) => i.deliveryStatus.in(["PENDING", "FAILED", "SENDING"])).where((i) => i.acceptedAt.isNull()).where((i) => i.revokedAt.isNull()).where((i) => i.expiresAt.gt(now())).where((i) => i.deliveryAttempts.lt(MAX_ATTEMPTS)).where((i) => or(i.deliveryNextAttemptAt.isNull(), i.deliveryNextAttemptAt.lte(now()))).where((i) => or(i.deliveryLeaseUntil.isNull(), i.deliveryLeaseUntil.lte(now()))).orderBy((i) => i.createdAt.asc()).limit(5).all();
   const results: string[] = [];
-  for (const invite of invites) results.push(await deliverOwnerInvitation(invite.tenantId));
+  const deadline = Date.now() + 40_000;
+  for (const invite of invites) {
+    if (Date.now() >= deadline) break;
+    results.push(await deliverOwnerInvitation(invite.tenantId));
+  }
   return { sent: results.filter((r) => r === "sent").length, failed: results.filter((r) => r === "failed").length, skipped: results.filter((r) => r === "skipped").length };
 }

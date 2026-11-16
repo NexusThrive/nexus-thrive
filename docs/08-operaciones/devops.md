@@ -148,6 +148,23 @@ Siguiente paso, en este orden:
 
 ## 8. Resumen de lo que falta para un flujo estable
 
+### Aprovisionamiento privado de negocios
+
+El ciclo aprobado está en [arquitectura/0011](../05-decisiones/ADR-0011-arquitectura-aprovisionamiento-administrado.md); implementación y evidencia en el [reporte](../07-ingenieria/propuestas/aprovisionamiento-administrado.md). Los cambios se presentan como PR apilados; no desplegar una combinación parcial que reintroduzca el alta pública o el aceptador antiguo.
+
+Antes del despliegue:
+
+1. Revisar backup, marker y esquema reales. Aplicar la migración `20261116T1819_managed_business_provisioning` desde el snapshot verificado `a9b88b71…`, o revisar el [SQL operativo equivalente](sql-produccion/2026-11-16-aprovisionamiento-administrado.sql) según el proceso de producción. No volver a aplicar todo el directorio SQL. Si hay invitaciones pendientes duplicadas, resolver los casos sin borrar historial antes de introducir unicidad.
+2. En **cada instancia** de Clerk, seleccionar **Access mode → Invite-only → Save**. Probar también Account Portal y registro de personal invitado. Esto es una intervención pendiente del operador; los cambios de código no modifican el dashboard.
+3. Configurar `NEXT_PUBLIC_APP_URL` con el origen HTTPS canónico, claves Clerk correspondientes al entorno, `RESEND_API_KEY` y `INBOX_EMAIL_FROM` con remitente verificado. La integración crea/reconcilia una invitación Clerk sin envío automático y reutiliza el proveedor de correo existente. Para una identidad ya existente envía acceso por login, sin crear otra identidad. Los nuevos registros se completan con un ticket válido; los roles del negocio nunca se toman de metadata pública de Clerk.
+4. Cambiar los fallbacks desplegados de login/registro a `/auth/callback`; las plantillas `.env.example` y `.env.produccion` ya reflejan ese destino. Los componentes fuerzan el callback para evitar un retorno antiguo al wizard.
+5. Programar `GET /api/cron/provisioning` con `Authorization: Bearer $CRON_SECRET` cada minuto en el servicio de cron elegido. Sin secreto responde 503; sin autorización responde 401. No se creó una programación real desde esta sesión. El alta/renovación ya agenda un intento después del commit mediante `after`; el cron recupera reintentos y procesos interrumpidos.
+6. Probar con un destinatario de ensayo autorizado: crear → marcar listo → activar → verificar entrega → aceptar con principal verificado → suspender/reactivar. Registrar instancia, operador y evidencias sin tickets ni secretos. Falta realizar esta validación externa antes de dar el servicio por desplegado.
+
+El dispatcher procesa solo entregas vencidas para reintento y leases liberados; tiene un presupuesto de 40 segundos entre trabajos y hasta seis intentos por ciclo. El lease se registra antes de llamar al proveedor. Ante timeout, reconcilia la invitación Clerk y reutiliza una clave de idempotencia de correo por invitación local. El proveedor tiene su propia ventana de deduplicación: no existe una transacción exactamente una vez entre PostgreSQL y HTTP. Un reintento manual abre otro ciclo de intentos sin crear invitación nueva; renovar una vencida sí crea sucesora y conserva la anterior revocada.
+
+«Aceptada por el proveedor» no acredita llegada a la bandeja. Fallos, falta de configuración o entrega incierta quedan visibles en la ficha administrativa. No revocar una cuenta Clerk para suspender un negocio ni una invitación remota vigente compartida para revocar una autorización local. Rollback a código anterior al aprovisionamiento requiere contención y revisión; conservar datos y esquema aditivo.
+
 | Falta | Esfuerzo | Efecto |
 |---|---|---|
 | Migrar producción desde el despliegue (paso en CI o en Vercel) | Horas | Nadie tiene que acordarse de migrar |

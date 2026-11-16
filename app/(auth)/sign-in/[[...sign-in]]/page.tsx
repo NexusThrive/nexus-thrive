@@ -10,6 +10,7 @@ export default function SignInPage() {
       path="/sign-in"
       routing="path"
       withSignUp={false}
+      forceRedirectUrl="/auth/callback"
       fallbackRedirectUrl="/auth/callback"
       appearance={clerkAppearance}
     />

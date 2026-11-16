@@ -55,7 +55,7 @@ export default function TenantForm({ onClose, initialOwnerEmail = "" }: { onClos
         <div>
           <label htmlFor="managed-email" className={labelClasses}>Correo del propietario</label>
           <Input id="managed-email" name="ownerEmail" type="email" required maxLength={254} value={ownerEmail} disabled={disabled} autoComplete="email" aria-invalid={Boolean(errors.ownerEmail)} aria-describedby="managed-email-hint" onChange={(e) => setOwnerEmail(e.target.value)} />
-          <p id="managed-email-hint" className="mt-1 text-sm text-muted-foreground">{errors.ownerEmail ?? "Solo este correo verificado podrá aceptar la invitación OWNER."}</p>
+          <p id="managed-email-hint" role={errors.ownerEmail ? "alert" : undefined} className="mt-1 text-sm text-muted-foreground">{errors.ownerEmail ?? "Solo este correo verificado podrá aceptar la invitación OWNER."}</p>
         </div>
         {state.message && <p role={success ? "status" : "alert"} className={success ? "text-success" : "text-destructive"}>{state.message}</p>}
         <div className="flex justify-end gap-2">
