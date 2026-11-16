@@ -17,6 +17,7 @@ Registro central de decisiones del monolito. Las series de arquitectura e ingeni
 | [arquitectura/0007](ADR-0007-arquitectura-soluciones-sobre-plataforma.md) | Soluciones especializadas sobre una plataforma de motores compartidos | Aceptada · 2026-11-06 · responsable: santy401 (dueño del producto). Se adoptan también las recomendaciones D-1 a D-11 de la guía (§17). | 2026-11-06 | santy401 |
 | [arquitectura/0008](ADR-0008-arquitectura-payments-y-treasury.md) | Payments y Treasury: obligaciones, aplicaciones, cuentas y liquidaciones | Aceptada · 2026-11-06 · responsable: santy401. Concreta D-8, D-9 y D-10 de la [guía de producto](../01-producto/estrategia/README.md) §17. | 2026-11-06 | santy401 |
 | [arquitectura/0010](ADR-0010-arquitectura-whatsapp-por-negocio.md) | WhatsApp Business propio de cada negocio | Aceptada · 2026-11-07 · responsable: santy401. Concreta el requisito de la [guía de producto](../01-producto/estrategia/README.md) §11. | 2026-11-07 | santy401 |
+| [arquitectura/0011](ADR-0011-arquitectura-aprovisionamiento-administrado.md) | Aprovisionamiento privado de negocios administrados | Propuesta; pendiente de revisión humana | 2026-11-16 | Dueño del producto y revisión de arquitectura pendientes |
 | [ingenieria/0001](ADR-0001-ingenieria-nucleo-local-python.md) | Núcleo local en Python 3.12 | reemplazada por 0013 | 2026-10-25 | No consta explícitamente |
 | [ingenieria/0002](ADR-0002-ingenieria-fuente-unica-de-verdad.md) | Fuente única de verdad | aceptada | 2026-10-25 | No consta explícitamente |
 | [ingenieria/0003](ADR-0003-ingenieria-persistencia-local-primero.md) | Persistencia local primero | reemplazada por 0013 | 2026-10-25 | No consta explícitamente |
@@ -33,7 +34,7 @@ Registro central de decisiones del monolito. Las series de arquitectura e ingeni
 
 ## Identidad, numeración y estados
 
-Los números 0001–0008 y 0010 coinciden entre series; la identidad completa es **serie/número**. Se conservan números, fechas, responsables y decisiones originales. Próximos números por encima del máximo: **arquitectura/0011** e **ingenieria/0014**. Arquitectura/0009 se cita en el ADR 0007, pero su archivo no está versionado: no se inventa ni se reutiliza ese hueco.
+Los números 0001–0008 y 0010 coinciden entre series; la identidad completa es **serie/número**. Se conservan números, fechas, responsables y decisiones originales. Próximos números por encima del máximo: **arquitectura/0012** e **ingenieria/0014**. Arquitectura/0009 se cita en el ADR 0007, pero su archivo no está versionado: no se inventa ni se reutiliza ese hueco.
 
 Las [decisiones D-V10](V10-decisiones.md) conservan su propio identificador. El estado de cada ADR original prevalece sobre antiguos resúmenes. Los ADR 0012 y 0013 de ingeniería siguen siendo propuestas, aunque describan herramientas usadas; la migración no los acepta.
 
