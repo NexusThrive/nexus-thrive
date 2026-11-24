@@ -1,0 +1,32 @@
+/* Marco del Operations Center con el lenguaje de la landing: tinta negra con el resplandor oro que nace arriba a la izquierda (como el
+   fondo del hero), la barra lateral y la superior en tono «ink» y el contenido en el panel que flota encima. Solo en PC: en el celular
+   se ve la barra de siempre y la barra inferior.
+   `--shell-panel` se resuelve aquí, con el tema de la página: la barra lateral (que vive en un ámbito `.dark`) lo usa para que el ítem
+   activo siga uniéndose al panel aunque este sea claro. */
+@media (min-width: 768px) {
+  .ink.ink {
+    --shell-panel: var(--card);
+    --shell-panel-fg: var(--foreground);
+    background:
+      radial-gradient(48% 60% at 0% 0%, color-mix(in srgb, var(--nx-gold-500) 14%, transparent), transparent 70%),
+      radial-gradient(40% 50% at 100% 100%, color-mix(in srgb, var(--nx-gold-500) 6%, transparent), transparent 70%),
+      var(--nx-ink);
+  }
+  .panel {
+    border: 1px solid color-mix(in srgb, var(--nx-white) 8%, transparent);
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, var(--nx-white) 10%, transparent),
+      var(--nx-shadow-lg);
+  }
+}
+
+/* Contenido del panel: hasta 1440 px; una vista a todo el ancho (`data-bleed`, como Clientes o el Inicio) ocupa el panel entero
+   y pone su propio margen. Doble clase para ganarle al ancho de `tenant-shell.module.css` sin depender del orden de carga. */
+.view.view {
+  max-width: 1440px;
+}
+.view.view:has([data-bleed]) {
+  max-width: none;
+  padding-inline: 0;
+  padding-top: 0;
+}

@@ -12,7 +12,8 @@ import {
 import type { ActivityItem, ActivityKind } from "@/lib/platform/admin/db";
 import { cn } from "@/lib/utils";
 
-const KIND_META: Record<
+/** Icono y tono de cada tipo de movimiento (también lo usa la tabla de actividad del Inicio). */
+export const KIND_META: Record<
   ActivityKind,
   { icon: LucideIcon; className: string }
 > = {

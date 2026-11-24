@@ -9,7 +9,8 @@ import type { ExecutiveKpis as ExecutiveKpisData } from "@/lib/platform/admin/db
  * KPIs ejecutivos del CEO con datos reales de la base (ver `lib/platform/admin/db.ts`):
  * volumen de pagos con su variación, altas de negocios con tendencia diaria,
  * onboarding y actividad real. Cada KPI y el aviso de alertas son bloques
- * independientes del inicio (se mueven y cambian de tamaño por separado).
+ * independientes del inicio (se mueven y cambian de tamaño por separado), en
+ * una fila de cuatro.
  */
 export function executiveKpiWidgets(metrics: ExecutiveKpisData): { id: string; label: string; span?: 3 | 12; half?: boolean; node: ReactNode }[] {
   const { revenue, newTenants, onboarding, realActivity, alerts } = metrics;
