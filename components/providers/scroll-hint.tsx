@@ -18,8 +18,16 @@ export function ScrollHint({ label = "Ir al final" }: { label?: string }) {
   useEffect(() => {
     const el = marker.current?.parentElement;
     if (!el) return;
-    const update = () => setMore(el.scrollHeight - el.clientHeight - el.scrollTop > NEAR_END);
-    update();
+    // Una medición por cuadro como mucho: leer el alto en cada evento de desplazamiento forzaba un layout mientras el panel se mueve.
+    let frame = 0;
+    const measure = () => {
+      frame = 0;
+      setMore(el.scrollHeight - el.clientHeight - el.scrollTop > NEAR_END);
+    };
+    const update = () => {
+      if (!frame) frame = requestAnimationFrame(measure);
+    };
+    measure();
     el.addEventListener("scroll", update, { passive: true });
     window.addEventListener("resize", update);
     // El contenido cambia de alto (carga, filtros, secciones que se abren): se vuelve a medir.
@@ -30,6 +38,7 @@ export function ScrollHint({ label = "Ir al final" }: { label?: string }) {
       el.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
       observer?.disconnect();
+      cancelAnimationFrame(frame);
     };
   }, []);
 

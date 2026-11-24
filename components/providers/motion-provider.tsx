@@ -47,7 +47,18 @@ export function MotionProvider() {
 
     const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
+    // El brillo y el imán se calculan una vez por cuadro con el último evento: medir en cada `pointermove` (más de 100 por segundo)
+    // forzaba un layout por evento, sobre todo con las tarjetas de KPI (`.nx-spot`) que lo escriben en estilo.
+    let lastMove: PointerEvent | null = null;
+    let moveFrame = 0;
     function onMove(event: PointerEvent) {
+      lastMove = event;
+      if (!moveFrame) moveFrame = requestAnimationFrame(applyMove);
+    }
+    function applyMove() {
+      moveFrame = 0;
+      const event = lastMove;
+      if (!event) return;
       const target = event.target as Element | null;
       const spot = target?.closest<HTMLElement>(".nx-spot");
       if (spot) {
@@ -85,6 +96,7 @@ export function MotionProvider() {
       document.removeEventListener("pointerup", onUp);
       document.removeEventListener("pointercancel", onUp);
       document.removeEventListener("pointermove", onMove);
+      cancelAnimationFrame(moveFrame);
       document.removeEventListener("pointerout", onOut);
     };
   }, []);

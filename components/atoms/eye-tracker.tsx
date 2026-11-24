@@ -488,21 +488,35 @@ export function EyeTracker({
        as you arrive at its edge. Here the card is the whole page
        unless something marks a closer `data-eyt-frame`. */
     const frame = el.closest<HTMLElement>(within ?? "[data-eyt-frame]") ?? document.documentElement;
-    const aim = (e: PointerEvent) => {
-      const f = frame.getBoundingClientRect();
-      if (e.clientX < f.left || e.clientX > f.right || e.clientY < f.top || e.clientY > f.bottom) {
+    /* El puntero solo se anota y se apunta en el cuadro siguiente con las cajas en caché (se vuelven a medir solo tras desplazar o
+       redimensionar). Medir en cada evento, justo después de que `draw` escribió los ojos, forzaba un layout por evento (el ratón
+       dispara más de 100 por segundo). */
+    let pointer: { x: number; y: number } | null = null;
+    let boxes: { f: DOMRect; r: DOMRect } | null = null;
+    let measure = 0;
+    const stale = () => { boxes = null; };
+    const measureNow = () => {
+      measure = 0;
+      if (!pointer) return;
+      const { x, y } = pointer;
+      boxes ??= { f: frame.getBoundingClientRect(), r: el.getBoundingClientRect() };
+      const { f, r } = boxes;
+      if (x < f.left || x > f.right || y < f.top || y > f.bottom) {
         t.tx = 0;
         t.ty = 0;
         return;
       }
-      const r = el.getBoundingClientRect();
-      const dx = e.clientX - (r.left + r.width / 2);
-      const dy = e.clientY - (r.top + r.height / 2);
+      const dx = x - (r.left + r.width / 2);
+      const dy = y - (r.top + r.height / 2);
       const d = Math.hypot(dx, dy) || 1;
       const reach = Math.max(60, Math.min(f.width, f.height) * 0.28);
       const far = Math.min(0.85, Math.tanh(d / reach) * (clamp(knobs.current.follow, 0, 100) / 100) * 1.5);
       t.tx = (dx / d) * far;
       t.ty = (dy / d) * far;
+    };
+    const aim = (e: PointerEvent) => {
+      pointer = { x: e.clientX, y: e.clientY };
+      if (!measure) measure = requestAnimationFrame(measureNow);
     };
     const rest = () => { t.tx = 0; t.ty = 0; };
 
@@ -536,11 +550,16 @@ export function EyeTracker({
     }
 
     window.addEventListener("pointermove", aim, { passive: true });
+    window.addEventListener("scroll", stale, { capture: true, passive: true });
+    window.addEventListener("resize", stale);
     document.documentElement.addEventListener("pointerleave", rest);
     return () => {
       cancelAnimationFrame(raf);
+      cancelAnimationFrame(measure);
       unwatch();
       window.removeEventListener("pointermove", aim);
+      window.removeEventListener("scroll", stale, { capture: true });
+      window.removeEventListener("resize", stale);
       document.documentElement.removeEventListener("pointerleave", rest);
     };
   }, [still, idle, within, front]);
