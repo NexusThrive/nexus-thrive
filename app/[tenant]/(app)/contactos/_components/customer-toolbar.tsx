@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Archive, ArchiveRestore, FolderMinus, FolderPlus, Users, CalendarClock, ChevronLeft, ChevronRight, Download, LayoutGrid, List, Map, MoreVertical, Plus, Settings, Trash2, X } from "lucide-react";
+import { Archive, ArchiveRestore, FolderMinus, FolderPlus, Users, CalendarClock, ChevronLeft, ChevronRight, LayoutGrid, List, Map, MoreVertical, Plus, Settings, Trash2, X } from "lucide-react";
 import CustomerSearchBar from "./customer-search-bar";
 import { AssignGroupDialog, ManageGroupsSheet, type GroupOption } from "./customer-group-dialogs";
 import type { FavoriteItem } from "@/components/organisms/advanced-search/advanced-search";
@@ -92,9 +92,6 @@ export default function CustomerToolbar({
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" sideOffset={8}>
-              <DropdownMenuItem asChild>
-                <Link href={`/${tenantSlug}/data`}>Importar y exportar</Link>
-              </DropdownMenuItem>
               <DropdownMenuItem onSelect={() => setManageOpen(true)}>
                 <Users aria-hidden="true" className="size-4" /> Mis grupos…
               </DropdownMenuItem>
@@ -126,11 +123,6 @@ export default function CustomerToolbar({
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" sideOffset={8} className="w-52">
-                <DropdownMenuItem asChild>
-                  <Link href={`/${tenantSlug}/data`}>
-                    <Download aria-hidden="true" className="size-4" /> Exportar
-                  </Link>
-                </DropdownMenuItem>
                 <DropdownMenuItem onSelect={() => setGroupDialog("add")}>
                   <FolderPlus aria-hidden="true" className="size-4" /> Agregar a un grupo…
                 </DropdownMenuItem>

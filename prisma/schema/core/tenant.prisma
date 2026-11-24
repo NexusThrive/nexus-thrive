@@ -103,6 +103,9 @@ enum Vertical {
 /// - `settings`: Ajustes operativos del rubro (aforo del museo, franjas, horarios…).
 /// - `registrationEnabled`: Gimnasio: el enlace público de registro de clientes acepta altas nuevas.
 /// - `logoId`: Logotipo del negocio para el registro público (Attachment `TENANT_LOGO`).
+/// Managed provisioning preserves legacy access by default. ownerEmail records intent, not membership.
+/// activatedAt records first activation; active controls current access independently of readiness.
+/// provisioningKey and provisioningRequestHash bind creation retries to the original request.
 model Tenant {
   id           String   @id @default(uuid())
   name         String
@@ -112,6 +115,11 @@ model Tenant {
   active       Boolean  @default(true)
 
   onboardingCompleted Boolean @default(false)
+  managedProvisioning Boolean @default(false)
+  ownerEmail String?
+  activatedAt DateTime?
+  provisioningKey String? @unique
+  provisioningRequestHash String?
   tenantType TenantType @default(COMPANY)
   legalName String?
   taxId String?

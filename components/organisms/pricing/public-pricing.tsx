@@ -38,8 +38,8 @@ export function PublicPricing({ config }: { config: PricingConfig }) {
       </label>
       <PlanPicker config={config} vertical={vertical} value={selection} onChange={setSelection} />
       <div>
-        <Link href="/sign-up" className={buttonVariants({ size: "lg" })}>
-          Crear mi negocio
+        <Link href="/sign-in" className={buttonVariants({ size: "lg" })}>
+          Acceso por invitación
         </Link>
       </div>
     </div>

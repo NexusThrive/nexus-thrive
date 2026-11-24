@@ -2,7 +2,11 @@
 
 ## Estado confirmado
 
-No hay un hito ni un sprint vigente confirmado en el plan heredado: registra cero historias. Esto no significa que el producto carezca de implementación; significa que no hay un plan de ejecución verificable registrado aquí. Los estados de entrega se documentan con su evidencia, sin deducirlos de la fecha de una página.
+El plan heredado no registraba historias vigentes. El 2026-11-16 el usuario aceptó **M01 — MVP privado administrado**, **S01 — Alta, activación y acceso seguro** y las historias HU-01 a HU-08 del [plan y reporte de aprovisionamiento](../07-ingenieria/propuestas/aprovisionamiento-administrado.md). La aceptación autoriza implementación y PR; no acredita configuración externa ni fusión. Los estados de entrega se documentan con evidencia.
+
+Posteriormente solicitó auditar los errores de pantallas: **HU-09 — Reconciliación del esquema local**, continuación correctiva de M01/S01 registrada en el mismo informe, con respaldo y preservación de datos. No amplía la funcionalidad comercial ni autoriza cambios en Supabase, que dejó pendiente.
+
+Durante esa auditoría solicitó **HU-10 — Ocultar herramientas internas en la interfaz del negocio**: Funciones, Importar y exportar e Integraciones, con sus accesos secundarios. Se registra como historia separada en el mismo informe y en su propia rama/PR.
 
 ## Orden de trabajo
 
@@ -16,4 +20,6 @@ Una funcionalidad distingue: **Implementada y verificada**, **Implementada sin v
 
 ## Dependencias, bloqueos y riesgos
 
-No hay dependencias de historias formalizadas ni bloqueos confirmados en el plan heredado. Los pendientes y decisiones abiertas conservan su clasificación; no se declaran resueltos por esta reorganización.
+La solicitud tiene [auditoría y riesgos](../02-arquitectura/propuestas/aprovisionamiento-administrado.md), [ADR aceptado](../05-decisiones/ADR-0011-arquitectura-aprovisionamiento-administrado.md) y [desglose y evidencia M01/S01/HU-01 a HU-08](../07-ingenieria/propuestas/aprovisionamiento-administrado.md). Mantener dependencias y estados en ese informe, sin confundir pruebas simuladas con validación desplegada.
+
+Las dependencias del nuevo trabajo están formalizadas en ese reporte. Los pendientes heredados conservan su clasificación; esta implementación no los declara resueltos.

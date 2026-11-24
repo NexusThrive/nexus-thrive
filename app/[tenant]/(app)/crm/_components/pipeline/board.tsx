@@ -880,9 +880,6 @@ export function Board({
                   <Plus aria-hidden="true" className="size-4" strokeWidth={2.2} />
                   Nueva oportunidad
                 </button>
-                <Link href={`/${slug}/data`} className={cn(buttonVariants({ variant: "outline" }), "h-12 rounded-full border-border/60 px-6")}>
-                  Importar contactos
-                </Link>
               </div>
               <ul className="grid w-full gap-3 text-left sm:grid-cols-3">
                 {[

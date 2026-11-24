@@ -41,10 +41,10 @@ export function AuthLayout({ children }: { children: ReactNode }) {
             </section>
 
             <div className={styles.tile}>
-              <Link href={signIn ? "/sign-up" : "/sign-in"} className="group flex min-w-0 flex-1 items-center gap-4 rounded-2xl outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
+              <Link href="/sign-in" className="group flex min-w-0 flex-1 items-center gap-4 rounded-2xl outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
                 <span className="min-w-0 flex-1">
-                  <span className="block font-display text-sm font-semibold text-foreground">{signIn ? "¿Primera vez en Nexus?" : "¿Ya tienes una cuenta?"}</span>
-                  <span className="block text-ui text-muted-foreground">{signIn ? "Crea el espacio de tu negocio. 15 días gratis, sin tarjeta." : "Inicia sesión y sigue donde lo dejaste."}</span>
+                  <span className="block font-display text-sm font-semibold text-foreground">{signIn ? "Acceso por invitación" : "¿Ya tienes una cuenta?"}</span>
+                  <span className="block text-ui text-muted-foreground">{signIn ? "NexusThrive prepara tu negocio y te invita cuando está listo." : "Inicia sesión y sigue donde lo dejaste."}</span>
                 </span>
                 <span className="grid size-11 shrink-0 place-items-center rounded-full bg-accent text-ink transition-transform group-hover:translate-x-0.5">
                   <ArrowRight aria-hidden="true" className="size-5" />

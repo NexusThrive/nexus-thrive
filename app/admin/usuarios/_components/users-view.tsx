@@ -6,22 +6,21 @@ import { Plus, Search } from "lucide-react";
 import { Badge } from "@/components/atoms/badge";
 import { buttonVariants } from "@/components/atoms/button-variants";
 import { inputClasses } from "@/components/atoms/input";
-import { Select } from "@/components/atoms/select";
 import { EmptyState } from "@/components/molecules/empty-state";
 import { Field } from "@/components/molecules/field";
 import { PageHeader } from "@/components/molecules/page-header";
 import { useToast } from "@/components/molecules/toast";
 import { FormDialog } from "@/components/organisms/form-sheet";
-import { createUserOrganizationAction, setUserLimitAction } from "@/app/admin/usuarios/actions";
+import { setUserLimitAction } from "@/app/admin/usuarios/actions";
+import TenantForm from "@/app/admin/_components/tenant-form";
 import type { PlatformUser } from "@/lib/platform/admin/users-db";
 
 type Dialog = { kind: "limit" | "create"; user: PlatformUser } | null;
 
-export default function UsersView({ users, total, q, canEdit, canCreate, verticals }: { users: PlatformUser[]; total: number; q: string; canEdit: boolean; canCreate: boolean; verticals: { value: string; label: string }[] }) {
+export default function UsersView({ users, total, q, canEdit, canCreate }: { users: PlatformUser[]; total: number; q: string; canEdit: boolean; canCreate: boolean; verticals: { value: string; label: string }[] }) {
   const router = useRouter();
   const { toast } = useToast();
   const [dialog, setDialog] = useState<Dialog>(null);
-  const [vertical, setVertical] = useState("general");
   const close = (open: boolean) => { if (!open) setDialog(null); };
   const done = (message?: string) => { if (message) toast(message, "success"); router.refresh(); };
   return (
@@ -77,16 +76,7 @@ export default function UsersView({ users, total, q, canEdit, canCreate, vertica
         )}
       </FormDialog>
 
-      <FormDialog open={dialog?.kind === "create"} onOpenChange={close} title={`Crear un negocio para ${dialog?.user.email ?? ""}`} description="Nace con las funciones de su rubro y con una invitación de dueño: la persona lo reclama al entrar con ese correo." submitLabel="Crear negocio" pendingLabel="Creando…"
-        onSubmit={async (d) => { const r = await createUserOrganizationAction(dialog!.user.email, String(d.get("name") ?? ""), vertical); return r.ok ? { ok: true, message: r.message } : { ok: false, message: r.message, fieldErrors: { name: r.message } }; }}
-        onSuccess={({ message }) => { setDialog(null); done(message); }}>
-        {({ fieldErrors }) => (
-          <div className="grid gap-3">
-            <Field label="Nombre del negocio" required error={fieldErrors.name}>{(c) => <input {...c} name="name" autoComplete="off" className={inputClasses} />}</Field>
-            <Field label="Rubro" required>{(c) => <Select {...c} value={vertical} onChange={(e) => setVertical(e.target.value)}>{verticals.map((v) => <option key={v.value} value={v.value}>{v.label}</option>)}</Select>}</Field>
-          </div>
-        )}
-      </FormDialog>
+      {dialog?.kind === "create" && <TenantForm initialOwnerEmail={dialog.user.email} onClose={() => { setDialog(null); router.refresh(); }} />}
     </div>
   );
 }

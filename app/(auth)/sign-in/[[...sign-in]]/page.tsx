@@ -9,7 +9,8 @@ export default function SignInPage() {
     <SignIn
       path="/sign-in"
       routing="path"
-      signUpUrl="/sign-up"
+      withSignUp={false}
+      forceRedirectUrl="/auth/callback"
       fallbackRedirectUrl="/auth/callback"
       appearance={clerkAppearance}
     />

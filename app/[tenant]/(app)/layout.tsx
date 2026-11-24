@@ -1,9 +1,9 @@
 import { Suspense } from "react";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { rememberBusinessAction } from "./_actions/business";
 import { activeTenantWithModules, businessesOfMember, memberTheme } from "@/lib/core/tenancy/membership";
 import { sortModules, isModule } from "@/lib/core/capabilities/modules";
-import { getVerticalTerms, hasMemberAccess } from "@/lib/core/sectors/terms";
+import { getVerticalTerms } from "@/lib/core/sectors/terms";
 import { TenantShell } from "@/components/templates/tenant-shell";
 import { VerticalTermsProvider } from "./vertical-terms-context";
 import TenantNotifications from "./_components/tenant-notifications";
@@ -18,17 +18,7 @@ import { auth } from "@clerk/nextjs/server";
 import { memberByClerkUser } from "@/lib/core/tenancy/context";
 import { SessionScope } from "@/components/providers/session-scope";
 
-/**
- * Ruta `(app)`: shell del negocio + gate de onboarding.
- *
- * Todas las rutas del negocio que NO son el wizard pasan por aquí. Si el
- * tenant aún no completó el onboarding, redirige a `/{tenant}/onboarding`.
- *
- * La ruta `/onboarding` vive FUERA de este grupo (hermana de `(app)`), por
- * lo que el gate no puede redirigir el wizard hacia sí mismo: no hay loop.
- * El layout padre `[tenant]` ya garantizó sesión, tenant activo y membresía
- * antes de renderizar hijos.
- */
+/** Access is resolved on the server; retired onboarding is never a destination. */
 export default async function AppLayout({
   children,
   params,
@@ -42,13 +32,6 @@ export default async function AppLayout({
 
   if (!tenantRecord) {
     notFound();
-  }
-
-  if (!tenantRecord.onboardingCompleted) {
-    // Reanuda el tenant pendiente en el wizard adaptativo (top-level
-    // `/onboarding`; el proxy lo deja pasar en subdominios de tenant).
-    // `/{tenant}/onboarding` redirige aquí mismo (hay un solo wizard).
-    redirect(`/onboarding?tenant=${tenantRecord.slug}`);
   }
 
   // Nav espejo de TenantModule: solo se muestra lo que está ACTIVO.
@@ -117,7 +100,7 @@ export default async function AppLayout({
       >
         <ThemeSync tenantSlug={tenantRecord.slug} saved={savedTheme} />
         {children}
-        <AuriAssistant tenantSlug={tenantRecord.slug} businessName={tenantRecord.name} activeModules={activeModules} showFunctions={!hasMemberAccess(tenantRecord.vertical)} />
+        <AuriAssistant tenantSlug={tenantRecord.slug} businessName={tenantRecord.name} activeModules={activeModules} showFunctions={false} />
       </TenantShell>
       </CurrentUserProvider>
     </VerticalTermsProvider>

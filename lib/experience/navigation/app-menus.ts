@@ -42,7 +42,7 @@ export const APP_MENUS: Partial<Record<CapabilityCategory, Def>> = {
   "Facturación": {
     informes: [{ items: [link("emitidas", "Facturas emitidas", "/finanzas/facturacion"), link("electronica", "Factura electrónica", "/finanzas/facturacion-electronica", "einvoicing"), link("cartera", "Cartera", "/finanzas/cartera", "receivables"), soon("pendientes", "Pendientes de facturar")] }],
     configuracion: [
-      { items: [SETTINGS, link("series", "Series de comprobantes", "/finanzas/impuestos", "taxes"), link("impuestos", "Impuestos", "/finanzas/impuestos", "taxes"), link("proveedor", "Proveedor tecnológico", "/integrations")] },
+      { items: [SETTINGS, link("series", "Series de comprobantes", "/finanzas/impuestos", "taxes"), link("impuestos", "Impuestos", "/finanzas/impuestos", "taxes")] },
       { items: [link("medios", "Medios de pago", "/pos/medios-de-pago", "pos"), soon("terminos", "Términos de pago")] },
     ],
   },

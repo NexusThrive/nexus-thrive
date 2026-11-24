@@ -1,0 +1,58 @@
+{
+  "observedAt": "2026-11-16T17:53:42.340Z",
+  "source": "configured DATABASE_URL; read-only snapshot; environment not independently identified",
+  "detailedSnapshotSha256": "e7b494ba45efc42f2bb8117242cb2dd023f11ce4fb4ee3cf015c2e49f9006a91",
+  "totalTenants": 79,
+  "cohorts": [
+    {
+      "vertical": "gym",
+      "active": true,
+      "onboardingCompleted": true,
+      "hasMembers": true,
+      "tenants": 13,
+      "members": 14,
+      "activeOwners": 13,
+      "pendingInvites": 0
+    },
+    {
+      "vertical": "construction",
+      "active": true,
+      "onboardingCompleted": false,
+      "hasMembers": false,
+      "tenants": 47,
+      "members": 0,
+      "activeOwners": 0,
+      "pendingInvites": 0
+    },
+    {
+      "vertical": "construction",
+      "active": true,
+      "onboardingCompleted": true,
+      "hasMembers": true,
+      "tenants": 1,
+      "members": 1,
+      "activeOwners": 1,
+      "pendingInvites": 0
+    },
+    {
+      "vertical": "gym",
+      "active": true,
+      "onboardingCompleted": false,
+      "hasMembers": false,
+      "tenants": 16,
+      "members": 0,
+      "activeOwners": 0,
+      "pendingInvites": 0
+    },
+    {
+      "vertical": "general",
+      "active": true,
+      "onboardingCompleted": true,
+      "hasMembers": true,
+      "tenants": 2,
+      "members": 2,
+      "activeOwners": 2,
+      "pendingInvites": 0
+    }
+  ]
+}

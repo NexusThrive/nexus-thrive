@@ -1,4 +1,6 @@
 import { db } from "@/prisma/db";
+import { canOperateTenant } from "./access-policy";
+import { lockTenant } from "./locking";
 import { loadPricingConfig } from "@/lib/core/entitlements/settings";
 import type { BusinessRole } from "@/lib/core/auth/roles";
 
@@ -47,15 +49,21 @@ export async function seatLimit(tenantId: string): Promise<{ limit: number | nul
  * Invita a una persona al negocio con un rol. Reemplaza cualquier invitación pendiente al mismo correo y la deja vigente por los días configurados.
  */
 export async function createInvite(tenantId: string, v: { email: string; name: string | null; role: BusinessRole }, invitedById: string) {
-  const expires = Temporal.Instant.fromEpochMilliseconds(Date.now() + INVITE_DAYS * 86_400_000);
-  // Reemplaza una invitación pendiente al mismo correo.
-  await db.orm.public.TenantInvite.where({ tenantId, email: v.email }).where((i) => i.acceptedAt.isNull()).where((i) => i.revokedAt.isNull()).update({ revokedAt: now() });
-  return (await db.orm.public.TenantInvite.create({ tenantId, email: v.email, name: v.name, role: v.role, invitedById, expiresAt: expires })).id;
+  return db.transaction(async (tx) => {
+    const tenant = await lockTenant(tx, tenantId);
+    if (!tenant || !canOperateTenant(tenant)) throw new Error("El negocio no está habilitado.");
+    const email = v.email.trim().toLowerCase();
+    await tx.orm.public.TenantInvite.where({ tenantId, email }).where((i) => i.acceptedAt.isNull()).where((i) => i.revokedAt.isNull()).update({ revokedAt: now() });
+    return (await tx.orm.public.TenantInvite.create({ tenantId, email, name: v.name, role: v.role, invitedById, expiresAt: Temporal.Instant.fromEpochMilliseconds(Date.now() + INVITE_DAYS * 86_400_000) })).id;
+  });
 }
 
-/** Revoca una invitación pendiente. */
+/** Serialize revocation with acceptance and lifecycle changes. */
 export async function revokeInvite(tenantId: string, id: string) {
-  await db.orm.public.TenantInvite.where({ tenantId, id }).update({ revokedAt: now() });
+  return db.transaction(async (tx) => {
+    await lockTenant(tx, tenantId);
+    await tx.orm.public.TenantInvite.where({ tenantId, id }).where((i) => i.acceptedAt.isNull()).where((i) => i.revokedAt.isNull()).update({ revokedAt: now(), deliveryStatus: "CANCELLED" });
+  });
 }
 
 /**
@@ -69,13 +77,29 @@ export async function acceptInvitesFor(clerkUserId: string, email: string, name:
   if (onlyTenantId) q = q.where({ tenantId: onlyTenantId });
   const invites = await q.all();
   const slugs: string[] = [];
-  for (const inv of invites) {
-    const existing = await db.orm.public.User.where({ tenantId: inv.tenantId, clerkUserId }).first();
-    if (existing) await db.orm.public.User.where({ tenantId: inv.tenantId, id: existing.id }).update({ active: true, removedAt: null, role: inv.role });
-    else await db.orm.public.User.create({ tenantId: inv.tenantId, clerkUserId, email: mail, name: inv.name ?? name, role: inv.role });
-    await db.orm.public.TenantInvite.where({ tenantId: inv.tenantId, id: inv.id }).update({ acceptedAt: now() });
-    const t = await db.orm.public.Tenant.where({ id: inv.tenantId }).select("slug").first();
-    if (t) slugs.push(t.slug);
+  for (const candidate of invites) {
+    const tenantId = candidate.tenantId;
+    const slug = await db.transaction(async (tx) => {
+      const tenant = await lockTenant(tx, tenantId);
+      if (!tenant || !canOperateTenant(tenant)) return null;
+      const inv = await tx.orm.public.TenantInvite.where({ tenantId, id: candidate.id, email: mail }).first();
+      if (!inv || inv.acceptedAt || inv.revokedAt || inv.expiresAt.epochMilliseconds <= Date.now()) return null;
+      if (tenant.managedProvisioning && inv.role === "OWNER" && tenant.ownerEmail !== mail) return null;
+      const existing = await tx.orm.public.User.where({ tenantId, clerkUserId }).first();
+      const emailOwner = await tx.orm.public.User.where({ tenantId, email: mail }).first();
+      if (emailOwner && emailOwner.clerkUserId !== clerkUserId) return null;
+      if (existing) {
+        // An invitation must not silently elevate an existing membership.
+        if (existing.role !== inv.role) return null;
+        await tx.orm.public.User.where({ tenantId, id: existing.id }).update({ active: true, removedAt: null });
+      } else {
+        await tx.orm.public.User.create({ tenantId, clerkUserId, email: mail, name: inv.name ?? name, role: inv.role });
+      }
+      await tx.orm.public.TenantInvite.where({ tenantId, id: inv.id }).update({ acceptedAt: now() });
+      await tx.orm.public.AuditLog.create({ actorId: clerkUserId, actorEmail: mail, action: "ACCEPT_TENANT_INVITE", targetTenantId: tenantId, metadata: { inviteId: inv.id, role: inv.role } });
+      return tenant.slug;
+    });
+    if (slug) slugs.push(slug);
   }
   return slugs;
 }

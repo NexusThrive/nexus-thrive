@@ -23303,6 +23303,13 @@
                   "kind": "scalar"
                 }
               },
+              "activatedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
               "active": {
                 "nullable": false,
                 "type": {
@@ -23444,6 +23451,13 @@
                   "kind": "scalar"
                 }
               },
+              "managedProvisioning": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
               "maxCustomers": {
                 "nullable": true,
                 "type": {
@@ -23469,6 +23483,13 @@
                 "nullable": false,
                 "type": {
                   "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "ownerEmail": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
@@ -23511,6 +23532,20 @@
                 "nullable": true,
                 "type": {
                   "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "provisioningKey": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "provisioningRequestHash": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
                   "kind": "scalar"
                 }
               },
@@ -25545,6 +25580,9 @@
                 "accountingEnabled": {
                   "column": "accountingEnabled"
                 },
+                "activatedAt": {
+                  "column": "activatedAt"
+                },
                 "active": {
                   "column": "active"
                 },
@@ -25602,6 +25640,9 @@
                 "longitude": {
                   "column": "longitude"
                 },
+                "managedProvisioning": {
+                  "column": "managedProvisioning"
+                },
                 "maxCustomers": {
                   "column": "maxCustomers"
                 },
@@ -25613,6 +25654,9 @@
                 },
                 "onboardingCompleted": {
                   "column": "onboardingCompleted"
+                },
+                "ownerEmail": {
+                  "column": "ownerEmail"
                 },
                 "paymentMethods": {
                   "column": "paymentMethods"
@@ -25628,6 +25672,12 @@
                 },
                 "planSelectedAt": {
                   "column": "planSelectedAt"
+                },
+                "provisioningKey": {
+                  "column": "provisioningKey"
+                },
+                "provisioningRequestHash": {
+                  "column": "provisioningRequestHash"
                 },
                 "registrationEnabled": {
                   "column": "registrationEnabled"
@@ -25834,6 +25884,62 @@
                   "kind": "scalar"
                 }
               },
+              "deliveredAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "deliveryAttempts": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "deliveryError": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "deliveryLeaseToken": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "deliveryLeaseUntil": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "deliveryNextAttemptAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "deliveryProviderId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "deliveryStatus": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "email": {
                 "nullable": false,
                 "type": {
@@ -25922,6 +26028,30 @@
                 },
                 "createdAt": {
                   "column": "createdAt"
+                },
+                "deliveredAt": {
+                  "column": "deliveredAt"
+                },
+                "deliveryAttempts": {
+                  "column": "deliveryAttempts"
+                },
+                "deliveryError": {
+                  "column": "deliveryError"
+                },
+                "deliveryLeaseToken": {
+                  "column": "deliveryLeaseToken"
+                },
+                "deliveryLeaseUntil": {
+                  "column": "deliveryLeaseUntil"
+                },
+                "deliveryNextAttemptAt": {
+                  "column": "deliveryNextAttemptAt"
+                },
+                "deliveryProviderId": {
+                  "column": "deliveryProviderId"
+                },
+                "deliveryStatus": {
+                  "column": "deliveryStatus"
                 },
                 "email": {
                   "column": "email"
@@ -46741,6 +46871,11 @@
                   "nativeType": "bool",
                   "nullable": false
                 },
+                "activatedAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
                 "active": {
                   "codecId": "pg/bool@1",
                   "default": {
@@ -46864,6 +46999,15 @@
                   "nativeType": "float8",
                   "nullable": true
                 },
+                "managedProvisioning": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
                 "maxCustomers": {
                   "codecId": "pg/int4@1",
                   "nativeType": "int4",
@@ -46887,6 +47031,11 @@
                   },
                   "nativeType": "bool",
                   "nullable": false
+                },
+                "ownerEmail": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
                 },
                 "paymentMethods": {
                   "codecId": "pg/text@1",
@@ -46932,6 +47081,16 @@
                 "planSelectedAt": {
                   "codecId": "pg/timestamptz-temporal@1",
                   "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "provisioningKey": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "provisioningRequestHash": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
                   "nullable": true
                 },
                 "registrationEnabled": {
@@ -47040,6 +47199,11 @@
                 {
                   "columns": [
                     "customDomain"
+                  ]
+                },
+                {
+                  "columns": [
+                    "provisioningKey"
                   ]
                 }
               ]
@@ -47170,6 +47334,54 @@
                   "nativeType": "timestamptz",
                   "nullable": false
                 },
+                "deliveredAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "deliveryAttempts": {
+                  "codecId": "pg/int4@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "nativeType": "int4",
+                  "nullable": false
+                },
+                "deliveryError": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "deliveryLeaseToken": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "deliveryLeaseUntil": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "deliveryNextAttemptAt": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true
+                },
+                "deliveryProviderId": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "deliveryStatus": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "NONE"
+                  },
+                  "nativeType": "text",
+                  "nullable": false
+                },
                 "email": {
                   "codecId": "pg/text@1",
                   "nativeType": "text",
@@ -47252,6 +47464,16 @@
                   "name": "TenantInvite_tenantId_idx_c93ed4f1",
                   "prefix": "TenantInvite_tenantId_idx",
                   "unique": false
+                },
+                {
+                  "columns": [
+                    "tenantId",
+                    "email"
+                  ],
+                  "name": "tenant_invite_pending_ea0c48f6",
+                  "prefix": "tenant_invite_pending",
+                  "unique": true,
+                  "where": "\"acceptedAt\" IS NULL AND \"revokedAt\" IS NULL"
                 }
               ],
               "primaryKey": {
@@ -49214,7 +49436,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "a9b88b713550292f7a53606a717fc3f12e1ba425706df226c51113aaf3443f67"
+    "storageHash": "aa3535fad47d3ed4395c026ce67d9fbaaecae4118e20153ab85d2fec3036fdb4"
   },
   "execution": {
     "executionHash": "239610e0d094105e1efe107ff85a1f0dd408a141aefd98be4dcc7f53d5b1b10b",

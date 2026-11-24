@@ -43,6 +43,8 @@ model User {
 
 /// Invitación para unirse al equipo de un negocio (se acepta al iniciar
 /// sesión con ese correo).
+/// Delivery state and leases support internal retries independently of membership acceptance.
+/// The partial unique index preserves history while allowing only one unrevoked pending invite per email.
 model TenantInvite {
   id          String    @id @default(uuid())
   tenantId    String
@@ -55,9 +57,18 @@ model TenantInvite {
   revokedAt   DateTime?
   expiresAt   DateTime
   createdAt   DateTime  @default(now())
+  deliveryStatus String @default("NONE")
+  deliveryAttempts Int @default(0)
+  deliveryLeaseToken String?
+  deliveryLeaseUntil DateTime?
+  deliveryNextAttemptAt DateTime?
+  deliveryProviderId String?
+  deliveryError String?
+  deliveredAt DateTime?
 
   @@index([tenantId])
   @@index([email])
+  @@index([tenantId, email], unique: true, where: "\"acceptedAt\" IS NULL AND \"revokedAt\" IS NULL", name: "tenant_invite_pending")
   @@rls
 }
 

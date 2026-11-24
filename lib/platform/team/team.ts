@@ -247,6 +247,12 @@ export async function getStaffInvite(token: string): Promise<StaffInviteRow | nu
  * marca la invitación como usada. Si la ficha ya está vinculada a otra cuenta,
  * no se pisa (eso lo decide el equipo con "Desvincular cuenta").
  */
+/** Validate time-sensitive registration access outside the React render function. */
+export async function getValidStaffInvite(token: string): Promise<StaffInviteRow | null> {
+  const invite = await getStaffInvite(token);
+  return invite && !invite.usedAt && Date.parse(invite.expiresAt) > Date.now() ? invite : null;
+}
+
 export async function redeemStaffInvite(
   token: string,
   clerkUserId: string,

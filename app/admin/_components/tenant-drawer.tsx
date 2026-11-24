@@ -141,7 +141,7 @@ export default function TenantDrawer({
                 ) : null}
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <TenantStatusBadge active={detail.active} />
+                    <TenantStatusBadge active={detail.active} preparing={Boolean(detail.managedProvisioning && !detail.activatedAt)} />
                     {detail.suspendedReason && !detail.active ? (
                       <span className="text-xs text-destructive">
                         Motivo: {detail.suspendedReason}

@@ -6,6 +6,7 @@ import { createTenantDb } from "@/lib/core/tenancy/db";
 import type { BusinessRole } from "@/lib/core/auth/roles";
 import { can } from "@/lib/core/auth/permissions";
 import { modulesForRoute } from "@/lib/core/capabilities/route-modules";
+import { canOperateTenant } from "./access-policy";
 
 /**
  * Contexto de tenant resuelto para una server action: usuario autenticado,
@@ -35,10 +36,13 @@ export type TenantContext = {
 type TenantRecord = NonNullable<Awaited<ReturnType<typeof loadActiveTenant>>>;
 
 /**
- * El negocio con ese slug, solo si está activo (suspendido = `null`). Memoizada por petición (`cache()`): el layout del negocio,
- * el contexto de la página y las acciones lo piden con el mismo slug y antes eran tres viajes a la base por cada entrada.
+ * El negocio con ese slug, solo si está activo y puede operar (suspendido = `null`). Memoizada por petición (`cache()`): el
+ * layout del negocio, el contexto de la página y las acciones lo piden con el mismo slug y antes eran tres viajes a la base.
  */
-export const loadActiveTenant = cache((slug: string) => db.orm.public.Tenant.where({ slug, active: true }).first());
+export const loadActiveTenant = cache(async (slug: string) => {
+  const tenant = await db.orm.public.Tenant.where({ slug, active: true }).first();
+  return tenant && canOperateTenant(tenant) ? tenant : null;
+});
 
 /**
  * La membresía de la sesión en el negocio, memoizada por petición: el contexto de la página y el layout de la app la leían

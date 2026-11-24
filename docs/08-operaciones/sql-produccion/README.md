@@ -1,5 +1,8 @@
 # SQL de producción
 
+- [Aprovisionamiento administrado (2026-11-16)](2026-11-16-aprovisionamiento-administrado.sql).
+- [Recuperación del esquema local (2026-11-16)](2026-11-16-reconciliacion-local.sql): artefacto específico de una base local desalineada, **no ejecutar en producción ni reaplicar sin diagnóstico**. Conserva elementos heredados y cuatro FK sin validación histórica; [evidencia y pendientes](../../07-ingenieria/propuestas/aprovisionamiento-administrado.md#hu-09--auditoría-de-errores-y-reconciliación-local--2026-11-16).
+
 ## Responsabilidad y ejecución
 
 Este directorio conserva los SQL de producción sin cambiar sus sentencias ni sus nombres. **El orden alfabético o por fecha de este índice no es un orden de ejecución.** Las migraciones del esquema se gestionan en migrations/; su fuente y comprobaciones están en [Prisma](../../02-arquitectura/modelo-de-datos/prisma-estructura.md).

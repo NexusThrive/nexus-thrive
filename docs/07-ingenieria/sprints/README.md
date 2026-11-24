@@ -2,7 +2,7 @@
 
 ## Responsabilidad
 
-Registrar planes y cierres con evidencia. No hay un sprint activo confirmado en el [plan de producto](../../01-producto/plan.md); no se crean carpetas vacías ni reportes ficticios.
+Registrar planes y cierres con evidencia. El [plan de producto](../../01-producto/plan.md) registra M01/S01 aceptado por el usuario el 2026-11-16. Su fuente responsable ya creada es el [plan y reporte de aprovisionamiento administrado](../propuestas/aprovisionamiento-administrado.md); se conserva esa ruta para no duplicar estado ni romper el PR de auditoría. No se crean carpetas vacías ni cierres ficticios.
 
 Cada sprint real usa `S<nn>/plan.md` para objetivo, historias HU, dependencias, riesgos y criterio de cierre; `S<nn>/reporte.md` registra estado, intentos, ramas, PR, comandos, resultados y veredictos independientes. Las notas opcionales explican incidentes o desviaciones.
 

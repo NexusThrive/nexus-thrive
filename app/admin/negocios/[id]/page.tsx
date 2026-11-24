@@ -29,6 +29,8 @@ import { ResumenTab, UsuariosTab } from "../../_components/tenant-drawer";
 import AccountForm from "./_components/account-form";
 import ContactsPanel from "./_components/contacts-panel";
 import ModuleToggles from "./_components/module-toggles";
+import ProvisioningControls from "./_components/provisioning-controls";
+import { managedProvisioningStatus } from "@/lib/platform/admin/managed-lifecycle";
 import ServiceControls from "./_components/service-controls";
 import { DeleteBusinessControl } from "./_components/delete-business-control";
 
@@ -70,6 +72,7 @@ export default async function AccountPage({ params, searchParams }: { params: Pr
     consumptionFor(id),
   ]);
   if (!detail || !extras) notFound();
+  const provisioning = await managedProvisioningStatus(id);
 
   const { icon: VerticalIcon } = getVerticalIcon(detail.vertical);
   const plan = planOf(pricing, extras.plan as PlanKey);
@@ -77,8 +80,8 @@ export default async function AccountPage({ params, searchParams }: { params: Pr
   const moduleRows = detail.modules.map((m) => moduleStatusRow(pricing, detail.vertical, m.moduleName, extras.contractedModules, m.active));
   const stageLabel = ACCOUNT_STAGES.find((s) => s.value === extras.stage)?.label ?? extras.stage;
   const alerts = [
-    !detail.active && { icon: AlertTriangle, tone: "danger" as const, text: `Servicio suspendido${detail.suspendedReason ? `: ${detail.suspendedReason}` : ""}` },
-    !detail.onboardingCompleted && { icon: Wrench, tone: "warning" as const, text: `Onboarding sin terminar (${detail.onboardingProgress} %)` },
+    !detail.active && (!provisioning || provisioning.activated) && { icon: AlertTriangle, tone: "danger" as const, text: `Servicio suspendido${detail.suspendedReason ? `: ${detail.suspendedReason}` : ""}` },
+    !detail.onboardingCompleted && { icon: Wrench, tone: "warning" as const, text: `Preparación pendiente (${detail.onboardingProgress} %)` },
     detail.active && !extras.managerId && { icon: UserX, tone: "warning" as const, text: "Sin responsable de cuenta" },
   ].filter(Boolean) as { icon: typeof AlertTriangle; tone: "danger" | "warning"; text: string }[];
 
@@ -99,7 +102,7 @@ export default async function AccountPage({ params, searchParams }: { params: Pr
             {detail.city ? ` · ${detail.city}` : ""}
           </p>
           <div className="mt-2.5 flex flex-wrap gap-1.5">
-            <Badge tone={detail.active ? "success" : "danger"}>{detail.active ? "Servicio activo" : "Suspendido"}</Badge>
+            <Badge tone={detail.active ? "success" : "danger"}>{detail.active ? "Servicio activo" : provisioning && !provisioning.activated ? "En preparación" : "Suspendido"}</Badge>
             <Badge tone="neutral">Cuenta: {stageLabel.toLowerCase()}</Badge>
             {health ? (
               <span className="inline-flex items-center gap-0.5">
@@ -142,6 +145,8 @@ export default async function AccountPage({ params, searchParams }: { params: Pr
       <div className="overflow-x-auto [scrollbar-width:none]">
         <UrlSegmentedControl param="tab" ariaLabel="Secciones de la ficha" value={tab} defaultValue="general" options={TABS} />
       </div>
+
+      {provisioning && <ProvisioningControls state={provisioning} name={detail.name} canEdit={can("accounts.edit")} canActivate={can("accounts.suspend") && (provisioning.activated || can("accounts.create"))} canInvite={can("accounts.create")} canSuspend={can("accounts.suspend")} />}
 
       {tab === "general" ? (
         <div className="grid grid-cols-1 items-start gap-3.5 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
@@ -230,7 +235,7 @@ export default async function AccountPage({ params, searchParams }: { params: Pr
                 tenantId={detail.id}
                 tenantName={detail.name}
                 active={detail.active}
-                canSuspend={can("accounts.suspend")}
+                canSuspend={can("accounts.suspend") && !provisioning}
                 canImpersonate={can("accounts.impersonate")}
                 hasUsers={detail.users.length > 0}
               />

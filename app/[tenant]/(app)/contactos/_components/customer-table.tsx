@@ -510,7 +510,6 @@ export default function CustomerTable({
           icon={query || filtered ? <Search /> : isArchivedView ? <Archive /> : <Users />}
           preview={!query && !filtered && !isArchivedView ? CUSTOMER_PREVIEW : undefined}
           action={filtered && clearHref ? <Link href={clearHref} className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-11 rounded-full border border-border/60 px-5")}>Quitar filtros</Link> : !query && !isArchivedView ? <Link href={`/${tenantSlug}/contactos/nuevo`} className={cn(buttonVariants({ variant: "accent", size: "sm" }), "h-11 rounded-full px-6 text-sm font-semibold")}><Plus aria-hidden="true" className="size-4" /> Nuevo cliente</Link> : undefined}
-          secondaryAction={!query && !filtered && !isArchivedView ? <Link href={`/${tenantSlug}/data`} className={cn(buttonVariants({ variant: "outline", size: "sm" }), "h-11 rounded-full border border-border/60 px-5")}>Importar desde Excel</Link> : undefined}
           highlights={
             !query && !filtered && !isArchivedView
               ? [

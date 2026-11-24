@@ -148,6 +148,40 @@ Siguiente paso, en este orden:
 
 ## 8. Resumen de lo que falta para un flujo estable
 
+### Aprovisionamiento privado de negocios
+
+El ciclo aprobado está en [arquitectura/0011](../05-decisiones/ADR-0011-arquitectura-aprovisionamiento-administrado.md); implementación y evidencia en el [reporte](../07-ingenieria/propuestas/aprovisionamiento-administrado.md). Los cambios se presentan como PR apilados; no desplegar una combinación parcial que reintroduzca el alta pública o el aceptador antiguo.
+
+Antes del despliegue:
+
+1. Revisar backup, marker y esquema reales. Aplicar la migración `20261116T1819_managed_business_provisioning` desde el snapshot verificado `a9b88b71…`, o revisar el [SQL operativo equivalente](sql-produccion/2026-11-16-aprovisionamiento-administrado.sql) según el proceso de producción. No volver a aplicar todo el directorio SQL. Si hay invitaciones pendientes duplicadas, resolver los casos sin borrar historial antes de introducir unicidad.
+2. En **cada instancia** de Clerk, seleccionar **Access mode → Invite-only → Save**. Probar también Account Portal y registro de personal invitado. Esto es una intervención pendiente del operador; los cambios de código no modifican el dashboard.
+3. Configurar `NEXT_PUBLIC_APP_URL` con el origen HTTPS canónico, claves Clerk correspondientes al entorno, `RESEND_API_KEY` y `INBOX_EMAIL_FROM` con remitente verificado. La integración crea/reconcilia una invitación Clerk sin envío automático y reutiliza el proveedor de correo existente. Para una identidad ya existente envía acceso por login, sin crear otra identidad. Los nuevos registros se completan con un ticket válido; los roles del negocio nunca se toman de metadata pública de Clerk.
+4. Cambiar los fallbacks desplegados de login/registro a `/auth/callback`; las plantillas `.env.example` y `.env.produccion` ya reflejan ese destino. Los componentes fuerzan el callback para evitar un retorno antiguo al wizard.
+5. Programar `GET /api/cron/provisioning` con `Authorization: Bearer $CRON_SECRET` cada minuto en el servicio de cron elegido. Sin secreto responde 503; sin autorización responde 401. No se creó una programación real desde esta sesión. El alta/renovación ya agenda un intento después del commit mediante `after`; el cron recupera reintentos y procesos interrumpidos.
+6. Probar con un destinatario de ensayo autorizado: crear → marcar listo → activar → verificar entrega → aceptar con principal verificado → suspender/reactivar. Registrar instancia, operador y evidencias sin tickets ni secretos. Falta realizar esta validación externa antes de dar el servicio por desplegado.
+
+El dispatcher procesa solo entregas vencidas para reintento y leases liberados; tiene un presupuesto de 40 segundos entre trabajos y hasta seis intentos por ciclo. El lease se registra antes de llamar al proveedor. Ante timeout, reconcilia la invitación Clerk y reutiliza una clave de idempotencia de correo por invitación local. El proveedor tiene su propia ventana de deduplicación: no existe una transacción exactamente una vez entre PostgreSQL y HTTP. Un reintento manual abre otro ciclo de intentos sin crear invitación nueva; renovar una vencida sí crea sucesora y conserva la anterior revocada.
+
+### Activar correo y cron
+
+El modal «Nuevo negocio» no envía un código ni correo. Desde la ficha administrativa se marca la preparación lista y se pulsa **Activar y emitir invitación**. La invitación es un enlace de acceso; los códigos de autenticación posteriores los gestiona Clerk.
+
+Para el correo de invitación, verificar el dominio remitente en Resend y crear una API key de envío. Configurar `RESEND_API_KEY`, `INBOX_EMAIL_FROM` (por ejemplo, `NexusThrive <acceso@dominio-verificado>`), `NEXT_PUBLIC_APP_URL` con el origen accesible y las claves de Clerk del mismo entorno. En local se guardan en `.env` y se reinicia el servidor; en Vercel se guardan en las variables del entorno correspondiente y se vuelve a desplegar. No pegar secretos en documentación o chat. [Dominio verificado de Resend](https://resend.com/docs/dashboard/domains/introduction), [API keys](https://resend.com/docs/dashboard/api-keys/introduction).
+
+Para ejecutar cada minuto mediante n8n:
+
+1. Crear un secreto aleatorio, por ejemplo con `openssl rand -hex 32`, y guardarlo como `CRON_SECRET` en el entorno de la aplicación. Reiniciar o desplegar de nuevo para que lo lea.
+2. Crear un workflow con **Schedule Trigger → Minutes → 1** conectado a **HTTP Request → GET** hacia `https://app.nexusthrive.com.co/api/cron/provisioning`, o el origen real donde esté desplegado este código y la base correspondiente ya esté preparada.
+3. En HTTP Request usar una credencial **Header Auth**: nombre `Authorization`, valor `Bearer <el mismo CRON_SECRET>`. Guardarlo en credenciales de n8n, no en el cuerpo del workflow ni en Git.
+4. Guardar y **publicar** el workflow. Una respuesta 200 con `sent`, `failed` y `skipped` confirma la ejecución del dispatcher; 401 indica secreto incorrecto y 503 que falta configurarlo. Los contadores no certifican recepción en la bandeja.
+
+Los nodos y la necesidad de publicar están documentados por [n8n Schedule Trigger](https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.scheduletrigger/) y [HTTP Request](https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.httprequest/), consultados el 2026-11-16. No activar el workflow antes de disponer del endpoint en el despliegue elegido; una URL de producción no ejecuta el código de una rama local sin desplegar.
+
+Alternativamente, Vercel permite declarar `crons` en `vercel.json` y envía automáticamente `Authorization: Bearer <CRON_SECRET>` al desplegar en producción. La frecuencia de un minuto requiere Pro/Enterprise; Hobby permite ejecución diaria, por lo que no se añade una frecuencia incompatible sin conocer el plan. [Configuración y despliegue](https://vercel.com/docs/schedules/cron-jobs/quickstart), [autorización](https://vercel.com/docs/schedules/cron-jobs/manage-cron-jobs), [límites por plan](https://vercel.com/docs/schedules/cron-jobs/usage-and-pricing).
+
+«Aceptada por el proveedor» no acredita llegada a la bandeja. Fallos, falta de configuración o entrega incierta quedan visibles en la ficha administrativa. No revocar una cuenta Clerk para suspender un negocio ni una invitación remota vigente compartida para revocar una autorización local. Rollback a código anterior al aprovisionamiento requiere contención y revisión; conservar datos y esquema aditivo.
+
 | Falta | Esfuerzo | Efecto |
 |---|---|---|
 | Migrar producción desde el despliegue (paso en CI o en Vercel) | Horas | Nadie tiene que acordarse de migrar |

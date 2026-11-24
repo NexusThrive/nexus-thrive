@@ -1,0 +1,629 @@
+[
+  {
+    "id": "column.public.Tenant.activatedAt",
+    "label": "Add column \"activatedAt\" to \"Tenant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "activatedAt",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"activatedAt\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "activatedAt"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"activatedAt\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" ADD COLUMN \"activatedAt\" timestamptz"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"activatedAt\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "activatedAt"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Tenant.managedProvisioning",
+    "label": "Add column \"managedProvisioning\" to \"Tenant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "managedProvisioning",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"managedProvisioning\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "managedProvisioning"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"managedProvisioning\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" ADD COLUMN \"managedProvisioning\" bool DEFAULT false NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"managedProvisioning\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "managedProvisioning"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Tenant.ownerEmail",
+    "label": "Add column \"ownerEmail\" to \"Tenant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "ownerEmail",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"ownerEmail\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "ownerEmail"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"ownerEmail\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" ADD COLUMN \"ownerEmail\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"ownerEmail\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "ownerEmail"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Tenant.provisioningKey",
+    "label": "Add column \"provisioningKey\" to \"Tenant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "provisioningKey",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"provisioningKey\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "provisioningKey"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"provisioningKey\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" ADD COLUMN \"provisioningKey\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"provisioningKey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "provisioningKey"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Tenant.provisioningRequestHash",
+    "label": "Add column \"provisioningRequestHash\" to \"Tenant\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "provisioningRequestHash",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"provisioningRequestHash\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "provisioningRequestHash"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"provisioningRequestHash\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" ADD COLUMN \"provisioningRequestHash\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"provisioningRequestHash\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Tenant",
+          "provisioningRequestHash"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.TenantInvite.deliveredAt",
+    "label": "Add column \"deliveredAt\" to \"TenantInvite\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "deliveredAt",
+        "table": "TenantInvite"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"deliveredAt\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "TenantInvite",
+          "deliveredAt"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"deliveredAt\"",
+        "sql": "ALTER TABLE \"public\".\"TenantInvite\" ADD COLUMN \"deliveredAt\" timestamptz"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"deliveredAt\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "TenantInvite",
+          "deliveredAt"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.TenantInvite.deliveryAttempts",
+    "label": "Add column \"deliveryAttempts\" to \"TenantInvite\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "deliveryAttempts",
+        "table": "TenantInvite"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"deliveryAttempts\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "TenantInvite",
+          "deliveryAttempts"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"deliveryAttempts\"",
+        "sql": "ALTER TABLE \"public\".\"TenantInvite\" ADD COLUMN \"deliveryAttempts\" int4 DEFAULT 0 NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"deliveryAttempts\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "TenantInvite",
+          "deliveryAttempts"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.TenantInvite.deliveryError",
+    "label": "Add column \"deliveryError\" to \"TenantInvite\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "deliveryError",
+        "table": "TenantInvite"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"deliveryError\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "TenantInvite",
+          "deliveryError"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"deliveryError\"",
+        "sql": "ALTER TABLE \"public\".\"TenantInvite\" ADD COLUMN \"deliveryError\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"deliveryError\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "TenantInvite",
+          "deliveryError"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.TenantInvite.deliveryLeaseToken",
+    "label": "Add column \"deliveryLeaseToken\" to \"TenantInvite\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "deliveryLeaseToken",
+        "table": "TenantInvite"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"deliveryLeaseToken\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "TenantInvite",
+          "deliveryLeaseToken"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"deliveryLeaseToken\"",
+        "sql": "ALTER TABLE \"public\".\"TenantInvite\" ADD COLUMN \"deliveryLeaseToken\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"deliveryLeaseToken\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "TenantInvite",
+          "deliveryLeaseToken"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.TenantInvite.deliveryLeaseUntil",
+    "label": "Add column \"deliveryLeaseUntil\" to \"TenantInvite\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "deliveryLeaseUntil",
+        "table": "TenantInvite"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"deliveryLeaseUntil\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "TenantInvite",
+          "deliveryLeaseUntil"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"deliveryLeaseUntil\"",
+        "sql": "ALTER TABLE \"public\".\"TenantInvite\" ADD COLUMN \"deliveryLeaseUntil\" timestamptz"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"deliveryLeaseUntil\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "TenantInvite",
+          "deliveryLeaseUntil"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.TenantInvite.deliveryNextAttemptAt",
+    "label": "Add column \"deliveryNextAttemptAt\" to \"TenantInvite\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "deliveryNextAttemptAt",
+        "table": "TenantInvite"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"deliveryNextAttemptAt\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "TenantInvite",
+          "deliveryNextAttemptAt"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"deliveryNextAttemptAt\"",
+        "sql": "ALTER TABLE \"public\".\"TenantInvite\" ADD COLUMN \"deliveryNextAttemptAt\" timestamptz"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"deliveryNextAttemptAt\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "TenantInvite",
+          "deliveryNextAttemptAt"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.TenantInvite.deliveryProviderId",
+    "label": "Add column \"deliveryProviderId\" to \"TenantInvite\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "deliveryProviderId",
+        "table": "TenantInvite"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"deliveryProviderId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "TenantInvite",
+          "deliveryProviderId"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"deliveryProviderId\"",
+        "sql": "ALTER TABLE \"public\".\"TenantInvite\" ADD COLUMN \"deliveryProviderId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"deliveryProviderId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "TenantInvite",
+          "deliveryProviderId"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.TenantInvite.deliveryStatus",
+    "label": "Add column \"deliveryStatus\" to \"TenantInvite\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "deliveryStatus",
+        "table": "TenantInvite"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"deliveryStatus\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "TenantInvite",
+          "deliveryStatus"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"deliveryStatus\"",
+        "sql": "ALTER TABLE \"public\".\"TenantInvite\" ADD COLUMN \"deliveryStatus\" text DEFAULT 'NONE' NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"deliveryStatus\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "TenantInvite",
+          "deliveryStatus"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.Tenant.Tenant_provisioningKey_key",
+    "label": "Add unique constraint on \"Tenant\" (provisioningKey)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "Tenant_provisioningKey_key",
+        "table": "Tenant"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Tenant_provisioningKey_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Tenant_provisioningKey_key",
+          "public",
+          "\"public\".\"Tenant\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"Tenant_provisioningKey_key\"",
+        "sql": "ALTER TABLE \"public\".\"Tenant\" ADD CONSTRAINT \"Tenant_provisioningKey_key\" UNIQUE (\"provisioningKey\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"Tenant_provisioningKey_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Tenant_provisioningKey_key",
+          "public",
+          "\"public\".\"Tenant\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.TenantInvite.tenant_invite_pending_ea0c48f6",
+    "label": "Create index \"tenant_invite_pending_ea0c48f6\" on \"TenantInvite\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "tenant_invite_pending_ea0c48f6",
+        "table": "TenantInvite"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"tenant_invite_pending_ea0c48f6\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"tenant_invite_pending_ea0c48f6\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"tenant_invite_pending_ea0c48f6\"",
+        "sql": "CREATE UNIQUE INDEX \"tenant_invite_pending_ea0c48f6\" ON \"public\".\"TenantInvite\" (\"tenantId\", \"email\") WHERE (\"acceptedAt\" IS NULL AND \"revokedAt\" IS NULL)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"tenant_invite_pending_ea0c48f6\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"tenant_invite_pending_ea0c48f6\""
+        ]
+      }
+    ]
+  }
+]
