@@ -24,9 +24,12 @@ function KpiRowSkeleton({ count = 4 }: { count?: number }) {
   return (
     <div className="grid grid-cols-2 gap-3.5 xl:grid-cols-4">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="grid gap-3 rounded-(--radius-widget) border border-border/60 bg-card p-4">
-          <Skeleton className="h-3 w-24" />
-          <Skeleton className="h-7 w-32" />
+        <div key={i} className="grid gap-3 rounded-3xl border border-border/60 bg-surface-muted p-5 sm:p-6">
+          <div className="flex items-start justify-between gap-3">
+            <Skeleton className="h-3 w-24" />
+            <Skeleton className="size-10 rounded-full" />
+          </div>
+          <Skeleton className="h-8 w-32" />
           <Skeleton className="h-3 w-20" />
         </div>
       ))}

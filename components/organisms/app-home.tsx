@@ -7,12 +7,13 @@ import { useEffect, useState, ViewTransition, type CSSProperties, type ReactNode
 import { useIntroSignal } from "@/lib/experience/assistant/intro-signal";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowUpRight, ChevronRight, FileText, Target, UserPlus, Users, Wallet, type LucideIcon } from "lucide-react";
+import { ChevronRight, Target, UserPlus, Users, Wallet } from "lucide-react";
 import { Skeleton } from "@/components/atoms/skeleton";
 import { EyeTracker } from "@/components/atoms/eye-tracker";
 import { askAuri } from "@/lib/experience/assistant/ask-auri";
 import { AvatarStack } from "@/components/molecules/avatar-stack";
 import { DeltaPill, HatchBars, LineArea, QuickTile, Widget, WidgetHead, WidgetValue, widgetRow } from "@/components/widgets/widget";
+import { KpiCard } from "@/components/widgets/kpi-card";
 import { HomeQuickSearch } from "@/components/organisms/home-quick-search";
 import { useQuickCreate } from "@/components/organisms/quick-create-host";
 import { useShell } from "@/components/providers/shell-context";
@@ -184,11 +185,12 @@ export function AppHome({ trial = null, summary: input, parts, userName = null, 
   // Cifras clave: solo las que tienen dato (cada una enlaza a su módulo).
   const kpis: ReactNode[] = [];
   if (month) {
-    kpis.push(<Kpi key="ventas" id="home-kpi-ventas" label="Ventas del mes" description="Ventas totales de este mes" value={formatCurrency(month.sales)} href={hrefOfGroup("Ventas y cobros", "/finanzas")} icon={FileText} delta={month.salesChange} hint="Sin mes anterior para comparar" />);
-    if (month.overdue) kpis.push(<Kpi key="vencido" id="home-kpi-vencido" label="Vencido" description="Facturas vencidas sin pagar" value={formatCurrency(month.overdue.total)} href={hrefFor("/finanzas/cartera")} icon={Wallet} hint={month.overdue.count > 0 ? `${month.overdue.count} ${month.overdue.count === 1 ? "factura vencida" : "facturas vencidas"}` : "Nada vencido"} danger={month.overdue.count > 0} />);
+    // Ventas es la pieza principal del bento (tinta con rayas); las demás, tarjetas claras con su icono.
+    kpis.push(<KpiCard key="ventas" index={0} inverse label="Ventas del mes" value={month.sales} format="cop" href={hrefOfGroup("Ventas y cobros", "/finanzas")} delta={month.salesChange != null ? <DeltaPill value={month.salesChange} inverse /> : undefined} hint={month.salesChange != null ? "frente al mes anterior" : "Sin mes anterior para comparar"} />);
+    if (month.overdue) kpis.push(<KpiCard key="vencido" index={kpis.length} label="Vencido" value={month.overdue.total} format="cop" href={hrefFor("/finanzas/cartera")} icon={Wallet} alert={month.overdue.count > 0} hint={month.overdue.count > 0 ? `${month.overdue.count} ${month.overdue.count === 1 ? "factura vencida" : "facturas vencidas"}` : "Nada vencido"} />);
   }
-  if (customers) kpis.push(<Kpi key="clientes" id="home-kpi-clientes" label="Clientes" description="Clientes del negocio" value={String(customers.total)} href={hrefFor("/contactos")} icon={Users} hint={customers.today > 0 ? `${customers.today} ${customers.today === 1 ? "nuevo" : "nuevos"} hoy` : "Ninguno nuevo hoy"} />);
-  if (summary?.balance30) kpis.push(<Kpi key="balance" id="home-kpi-balance" label="Balance" description="Ingresos menos gastos" value={formatCurrency(summary.balance30.balance)} href={hrefOfGroup("Finanzas y contabilidad", "/finanzas")} icon={Target} hint="Últimos 30 días" />);
+  if (customers) kpis.push(<KpiCard key="clientes" index={kpis.length} label="Clientes" value={customers.total} href={hrefFor("/contactos")} icon={Users} hint={customers.today > 0 ? `${customers.today} ${customers.today === 1 ? "nuevo" : "nuevos"} hoy` : "Ninguno nuevo hoy"} />);
+  if (summary?.balance30) kpis.push(<KpiCard key="balance" index={kpis.length} label="Balance" value={summary.balance30.balance} format="cop" href={hrefOfGroup("Finanzas y contabilidad", "/finanzas")} icon={Target} hint="Últimos 30 días" />);
 
   // «Para hoy»: lo que pide atención, cada cosa con su salida.
   type Task = { key: string; dot: string; title: string; note: string; cta: string; href: string | null };
@@ -280,7 +282,7 @@ export function AppHome({ trial = null, summary: input, parts, userName = null, 
         {pendingMoney ? (
           <div className="grid gap-4 min-[640px]:grid-cols-2 min-[1100px]:grid-cols-4" role="status" aria-busy="true" aria-label="Cargando las cifras del mes">
             {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-[148px] rounded-(--radius-widget)" />
+              <Skeleton key={i} className="h-[180px] rounded-3xl sm:h-[220px]" />
             ))}
           </div>
         ) : kpis.length ? (
@@ -472,31 +474,6 @@ export function AppHome({ trial = null, summary: input, parts, userName = null, 
         ) : null}
       </div>
     </div>
-  );
-}
-
-/** Cifra clave: título con su botón circular al módulo, descripción, valor grande con su píldora de variación y pie de comparación. */
-function Kpi({ id, label, description, value, href, icon: Icon, delta, hint, danger = false }: { id: string; label: string; description: string; value: string; href: string; icon: LucideIcon; delta?: number | null; hint: string; danger?: boolean }) {
-  return (
-    <Widget aria-labelledby={id} className="gap-3">
-      <div className="flex items-start justify-between gap-3">
-        <div className="grid min-w-0 gap-0.5">
-          <h2 id={id} className="inline-flex min-w-0 items-center gap-2 text-ui font-semibold">
-            <Icon aria-hidden="true" className="size-4 text-muted-foreground" strokeWidth={1.7} />
-            <span className="truncate">{label}</span>
-          </h2>
-          <p className="truncate text-xs text-muted-foreground">{description}</p>
-        </div>
-        <Link href={href} aria-label={`Abrir ${label}`} className="grid size-9 shrink-0 place-items-center rounded-full bg-surface-muted outline-none transition-colors hover:bg-accent-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
-          <ArrowUpRight aria-hidden="true" className="size-4" strokeWidth={1.8} />
-        </Link>
-      </div>
-      <WidgetValue>{value}</WidgetValue>
-      <div className="flex flex-wrap items-center gap-2">
-        <DeltaPill value={delta} />
-        <p className={cn("text-xs text-muted-foreground", delta == null && danger && "text-danger")}>{delta != null ? "frente al mes anterior" : hint}</p>
-      </div>
-    </Widget>
   );
 }
 

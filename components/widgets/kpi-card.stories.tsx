@@ -80,3 +80,23 @@ export const SinVariacion: Story = {
     action: { label: "Ver gastos" },
   },
 };
+
+/** Bento: la pieza principal (`inverse`, una por pantalla) a la izquierda y las demás alrededor, como en el inicio del Operations Center. */
+export const Bento: Story = {
+  render: () => (
+    <div className="grid max-w-5xl grid-cols-1 gap-4 md:grid-cols-6">
+      <div className="md:col-span-3 md:row-span-2">
+        <KpiCard index={0} inverse label="Pagos de los negocios" value={128400000} format="cop" delta={<Delta value={24} />} hint="Cobros confirmados en los últimos 30 días frente al periodo anterior." />
+      </div>
+      <div className="md:col-span-3">
+        <KpiCard index={1} label="Nuevos negocios" value={18} icon={Users} hint="esta semana · 42 en 30 días" trend={[10, 20, 40, 30, 60, 50, 80, 70, 90, 100, 110]} />
+      </div>
+      <div className="md:col-span-1">
+        <KpiCard index={2} label="Alertas" value={3} alert />
+      </div>
+      <div className="md:col-span-2">
+        <KpiCard index={3} label="Balance" value={3833000} format="cop" icon={Wallet} delta={<Delta value={13} />} />
+      </div>
+    </div>
+  ),
+};
