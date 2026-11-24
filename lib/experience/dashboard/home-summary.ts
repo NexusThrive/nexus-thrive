@@ -1,8 +1,7 @@
-import { msOf } from "@/lib/core/events/instant";
 import { can } from "@/lib/core/auth/permissions";
 import type { ModuleValue } from "@/lib/core/capabilities/modules";
 import { createTenantDb } from "@/lib/core/tenancy/db";
-import { receivables } from "@/lib/domains/finance/receivables/receivables-db";
+import { overdueReceivables } from "@/lib/domains/finance/receivables/receivables-db";
 import { bookingsBetween, customersByIds } from "@/lib/business/scheduling/bookings-db";
 import { addDaysKey, bogotaParts, bogotaToMs } from "@/lib/business/scheduling/calendar";
 import { unreadConversationsCount } from "@/lib/integrations/channels/conversations-db";
@@ -14,8 +13,9 @@ import { percentChange } from "./index";
 
 /**
  * Lo que Inicio muestra a los lados del cajón de apps. Sale de las MISMAS fuentes que las tarjetas de Resumen (sin consultas nuevas para
- * las cifras): `finance.getMetrics` (mes en curso y mes anterior, Bogotá), `finance.getSeries(7)` para la línea de la semana,
- * `receivables` (cartera) y `memberships.getMetrics`. Lo nuevo son las citas de hoy y dos conteos para las insignias.
+ * las cifras): `finance.getMetrics` (mes en curso y mes anterior, Bogotá, sin el desglose por método), `finance.getSeries(30)` para las
+ * líneas de 30 días y de la semana (sus últimos 7), lo vencido de la cartera (`overdueReceivables`) y las membresías por vencer.
+ * Lo nuevo son las citas de hoy y dos conteos para las insignias.
  * El dinero solo llega a quien lo maneja (misma regla de Resumen): sin permiso, `month` es `null` y no hay montos.
  */
 export type HomeSummary = {
@@ -82,13 +82,15 @@ export function loadHomeSummaryParts(tenantId: string, modules: readonly ModuleV
   const startOfToday = Temporal.Instant.from(`${day}T05:00:00Z`);
   const money$ = seesMoney && has("finance");
 
-  // Todas las consultas arrancan a la vez; cada bloque espera solo las suyas.
-  const metricsP = Promise.resolve(money$ ? tenantDb.finance.getMetrics() : null);
-  const prevMetricsP = Promise.resolve(money$ ? tenantDb.finance.getMetrics(prev) : null);
-  const weekP = Promise.resolve(money$ ? tenantDb.finance.getSeries(7, false) : null);
+  // Todas las consultas arrancan a la vez; cada bloque espera solo las suyas. Cada una pide solo lo que el Inicio muestra (sumas y
+  // conteos en la base, columnas mínimas): en producción el pool es de pocas conexiones y un negocio con muchos datos hacía fila con
+  // decenas de consultas que traían filas completas para contarlas aquí.
+  const metricsP = Promise.resolve(money$ ? tenantDb.finance.getMetrics({ byMethod: false }) : null);
+  const prevMetricsP = Promise.resolve(money$ ? tenantDb.finance.getMetrics({ ...prev, byMethod: false }) : null);
+  // Una sola serie de 30 días: la semana son sus últimos 7 (antes se pedía aparte y traía las mismas filas otra vez).
   const month30P = Promise.resolve(money$ ? tenantDb.finance.getSeries(30, false) : null);
-  const carteraP = Promise.resolve(has("receivables") ? receivables(tenantId) : null);
-  const membershipP = Promise.resolve(has("memberships") ? createMembershipsDb(tenantId).getMetrics() : null);
+  const overdueP = Promise.resolve(has("receivables") ? overdueReceivables(tenantId) : null);
+  const expiringP = Promise.resolve(has("memberships") ? createMembershipsDb(tenantId).expiringCount() : null);
   const bookingsP = Promise.resolve(has("bookings") ? bookingsBetween(tenantId, bogotaToMs(day, "00:00"), bogotaToMs(addDaysKey(day, 1), "00:00")) : null);
   const unreadP = Promise.resolve(has("whatsapp") ? unreadConversationsCount(tenantId) : 0);
   const toVerifyP = Promise.resolve(has("payments") || has("online_payments") ? intentsToVerify(tenantId) : 0);
@@ -98,28 +100,23 @@ export function loadHomeSummaryParts(tenantId: string, modules: readonly ModuleV
   const customersTotalP = Promise.resolve(has("crm") ? db.orm.public.Customer.where({ tenantId, active: true }).aggregate((a) => ({ n: a.count() })) : { n: 0 });
   const teamP = Promise.resolve(db.orm.public.User.where({ tenantId, active: true }).orderBy((u) => u.createdAt.asc()).limit(50).select("id", "name", "email").all());
   const activityP = Promise.resolve(money$ ? tenantDb.finance.getRecentActivity(6) : []);
-  const fiscalDocsP = Promise.resolve(seesMoney && has("einvoicing") ? db.orm.public.FiscalDocument.where({ tenantId }).select("status", "createdAt").orderBy((d) => d.createdAt.desc()).limit(2000).all() : null);
+  const fiscalP = Promise.resolve(seesMoney && has("einvoicing") ? fiscalCounts(tenantId, startOfToday) : null);
 
-  const overdueOf = (cartera: Awaited<typeof carteraP>) => {
-    const rows = cartera?.rows.filter((r) => r.daysOverdue > 0) ?? [];
-    return cartera ? { total: Math.round(rows.reduce((sum, r) => sum + r.balance, 0) * 100) / 100, count: rows.length } : null;
-  };
-
-  const money = Promise.all([metricsP, prevMetricsP, weekP, month30P, carteraP]).then(([metrics, prevMetrics, week, month30, cartera]) => ({
+  const money = Promise.all([metricsP, prevMetricsP, month30P, overdueP]).then(([metrics, prevMetrics, month30, overdue]) => ({
     month: metrics
       ? {
           sales: metrics.income,
           salesChange: prevMetrics ? percentChange(metrics.income, prevMetrics.income) : null,
-          weekTrend: week?.days.map((d) => d.income) ?? [],
+          weekTrend: month30?.days.slice(-7).map((d) => d.income) ?? [],
           monthTrend: month30?.days.map((d) => d.income),
-          overdue: seesMoney ? overdueOf(cartera) : null,
+          overdue: seesMoney ? overdue : null,
           balance: metrics.balance,
         }
       : null,
     balance30: month30 ? { balance: month30.current.balance, income: month30.current.income, expenses: month30.current.expenses } : null,
   }));
 
-  const today = Promise.all([bookingsP, carteraP, membershipP, crmP, fiscalDocsP]).then(async ([bookings, cartera, membership, crm, fiscalDocs]) => {
+  const today = Promise.all([bookingsP, overdueP, expiringP, crmP, fiscalP]).then(async ([bookings, overdue, expiring, crm, fiscal]) => {
     // Hoy: la próxima cita que aún no pasa (o la primera del día) y cuántas más hay programadas.
     let todayBlock: HomeSummary["today"] = null;
     if (bookings) {
@@ -132,20 +129,13 @@ export function loadHomeSummaryParts(tenantId: string, modules: readonly ModuleV
         more: Math.max(0, upcoming.length - 1),
       };
     }
-    const overdue = overdueOf(cartera);
     return {
       today: todayBlock,
-      fiscal: fiscalDocs
-        ? {
-            queued: fiscalDocs.filter((d) => d.status === "PENDING_PROVIDER" || d.status === "SUBMITTED").length,
-            rejected: fiscalDocs.filter((d) => d.status === "REJECTED").length,
-            today: fiscalDocs.filter((d) => (msOf(d.createdAt) ?? 0) >= startOfToday.epochMilliseconds).length,
-          }
-        : null,
+      fiscal,
       attention: {
         overdueCount: overdue?.count ?? 0,
         overdueTotal: seesMoney && overdue ? overdue.total : null,
-        expiringCount: membership ? membership.expiringCount : null,
+        expiringCount: expiring,
         expiringDays: EXPIRING_WINDOW_DAYS,
       },
       crm: crm ? { today: crm.today.slice(0, 3).map((t) => ({ id: t.id, label: t.label, time: hourFmt.format(new Date(t.at)), opportunityId: t.opportunityId })), overdue: crm.overdue, withoutActivity: crm.withoutActivity } : null,
@@ -201,4 +191,19 @@ export async function loadHomeSummary(tenantId: string, modules: readonly Module
 async function intentsToVerify(tenantId: string): Promise<number> {
   const r = await db.orm.public.PaymentIntent.where({ tenantId, status: "VERIFYING" }).aggregate((a) => ({ n: a.count() }));
   return Number(r.n ?? 0);
+}
+
+/** Factura electrónica del Inicio: en espera del proveedor, rechazadas y las de hoy, contadas en la base (antes se traían hasta 2000 documentos). */
+async function fiscalCounts(tenantId: string, since: Temporal.Instant): Promise<{ queued: number; rejected: number; today: number }> {
+  const [byStatus, today] = await Promise.all([
+    db.orm.public.FiscalDocument.where({ tenantId })
+      .where((d) => d.status.in(["PENDING_PROVIDER", "SUBMITTED", "REJECTED"]))
+      .groupBy("status")
+      .aggregate((a) => ({ n: a.count() })),
+    db.orm.public.FiscalDocument.where({ tenantId })
+      .where((d) => d.createdAt.gte(since))
+      .aggregate((a) => ({ n: a.count() })),
+  ]);
+  const n = (status: string) => Number(byStatus.find((r) => r.status === status)?.n ?? 0);
+  return { queued: n("PENDING_PROVIDER") + n("SUBMITTED"), rejected: n("REJECTED"), today: Number(today.n ?? 0) };
 }

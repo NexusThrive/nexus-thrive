@@ -837,7 +837,7 @@ export function createTenantDb(tenantId: string) {
        * Métricas del mes (horario Bogotá): ingresos aprobados, gastos,
        * balance neto y desglose por método de pago. Todo en el servidor.
        */
-      getMetrics: async (options?: { month?: number; year?: number }) => {
+      getMetrics: async (options?: { month?: number; year?: number; /** `false`: sin el desglose por método (una consulta por método; el Inicio no lo usa). */ byMethod?: boolean }) => {
         const { month, year } = resolveMonthYear(
           options?.month,
           options?.year,
@@ -867,7 +867,7 @@ export function createTenantDb(tenantId: string) {
         const income = toNumber(incomeAgg.total);
         const expenses = toNumber(expenseAgg.total);
 
-        const byMethodAggs = await Promise.all(
+        const byMethodAggs = options?.byMethod === false ? [] : await Promise.all(
           PAYMENT_METHOD_VALUES.map(async (method) => {
             const result = await db.orm.public.Payment
               .where({ tenantId })

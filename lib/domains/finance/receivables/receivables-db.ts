@@ -49,6 +49,27 @@ export async function receivables(tenantId: string, today = todayCO()): Promise<
   );
 }
 
+/**
+ * Solo lo vencido de la cartera por cobrar (total y cuántas), para el Inicio: filtra en la base lo que ya pasó su vencimiento y trae
+ * únicamente los montos. `receivables` carga cada cuenta completa para la pantalla de Cartera; con miles de documentos era lo que
+ * más tardaba en el Inicio. Mismo criterio de mora que `daysOverdue` (vence antes de hoy) y de saldo (`balanceOf` > 0).
+ */
+export async function overdueReceivables(tenantId: string, today = todayCO()): Promise<{ total: number; count: number }> {
+  const before = Temporal.Instant.from(`${today.slice(0, 10)}T00:00:00Z`);
+  const [docs, obligations] = await Promise.all([
+    db.orm.public.Invoice.where({ tenantId, kind: "BILL", status: "ISSUED" })
+      .where((d) => d.dueDate.lt(before))
+      .select("total", "paidTotal")
+      .all(),
+    db.orm.public.Obligation.where({ tenantId, status: "OPEN" })
+      .where((o) => o.dueDate.lt(before))
+      .select("amount", "paidTotal")
+      .all(),
+  ]);
+  const balances = [...docs.map((d) => balanceOf(toNumber(d.total), toNumber(d.paidTotal))), ...obligations.map((o) => balanceOf(toNumber(o.amount), toNumber(o.paidTotal)))].filter((b) => b > 0);
+  return { total: Math.round(balances.reduce((sum, b) => sum + b, 0) * 100) / 100, count: balances.length };
+}
+
 /** Cartera por pagar: facturas de proveedores registradas con su saldo y antigüedad a la fecha. */
 export async function payables(tenantId: string, today = todayCO()): Promise<Cartera> {
   const docs = await db.orm.public.SupplierInvoice.where({ tenantId, status: "REGISTERED" }).all();

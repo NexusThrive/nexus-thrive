@@ -215,6 +215,16 @@ export function createMembershipsDb(tenantId: string) {
      * / expired según `endDate` vs. ahora) y proyección de renovaciones =
      * suma de precios de las membresías que vencen en el mes (Bogotá).
      */
+    /** Solo cuántas membresías vencen en la ventana de aviso (el Inicio): una consulta en lugar de las cuatro de `getMetrics`. */
+    expiringCount: async (): Promise<number> => {
+      const now = Temporal.Instant.fromEpochMilliseconds(Date.now());
+      const windowEnd = plusDays(now, EXPIRING_WINDOW_DAYS);
+      const agg = await db.orm.public.Membership.where({ tenantId })
+        .where((membership) => and(membership.endDate.gt(now), membership.endDate.lte(windowEnd)))
+        .aggregate((aggregate) => ({ total: aggregate.count() }));
+      return Number(agg.total ?? 0);
+    },
+
     getMetrics: async (options?: {
       month?: number;
       year?: number;
