@@ -29,8 +29,8 @@ function NavItem({ width }: { width: string }) {
  */
 export function TenantShellSkeleton({ children, label = "Cargando tu negocio" }: { children?: ReactNode; label?: string }) {
   return (
-    <div className={shell.root} aria-busy="true">
-      <aside className={styles.side} aria-hidden="true">
+    <div className={cn(shell.root, shell.ink)} aria-busy="true">
+      <aside className={cn(styles.side, "dark")} aria-hidden="true">
         <div className={styles.biz}>
           <Skeleton className={cn("size-9 shrink-0 rounded-lg", "bg-surface-muted")} />
           <div className={cn("grid flex-1 gap-1.5", styles.label)}>
@@ -49,7 +49,7 @@ export function TenantShellSkeleton({ children, label = "Cargando tu negocio" }:
       </aside>
 
       <div className={shell.main}>
-        <header className={styles.top} aria-hidden="true">
+        <header className={cn(styles.top, "dark")} aria-hidden="true">
           <Skeleton className={cn("size-9 rounded-lg", styles.topMark, onFrame)} />
           <Skeleton className={cn("h-4 w-24", styles.topTitle, onFrame)} />
           <Skeleton className={cn("h-11 w-full rounded-full", styles.topSearch, "bg-card")} />

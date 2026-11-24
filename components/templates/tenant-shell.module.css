@@ -144,3 +144,61 @@
 :global(html[data-kiosk]) .view > nav:first-child {
   display: none;
 }
+
+/* Marco en tinta (como el Operations Center, en blanco y negro): fondo negro con un brillo blanco muy tenue arriba a la izquierda y
+   los hilos (`ThreadsBackground`) por detrás; la barra lateral y la superior van en tono «ink» y el contenido en el panel que flota
+   encima. Solo en PC: en el celular se ve la barra de siempre. `--shell-panel` se resuelve aquí, con el tema de la página: la barra
+   lateral (ámbito `.dark`) lo usa para que el ítem activo se una al panel aunque este sea claro. */
+.threads {
+  display: none;
+}
+@media (min-width: 768px) {
+  .ink.ink {
+    --shell-panel: var(--card);
+    --shell-panel-fg: var(--foreground);
+    background:
+      radial-gradient(48% 60% at 0% 0%, color-mix(in srgb, var(--nx-white) 7%, transparent), transparent 70%),
+      var(--nx-ink);
+  }
+  .ink.ink:is(:global(html[data-kiosk]) *) {
+    background: var(--background);
+  }
+  /* Los hilos van fijos detrás de todo; `main` se posiciona para pintarse encima (va después en el DOM). */
+  .threads {
+    display: block;
+    position: fixed;
+    inset: 0;
+  }
+  :global(html[data-kiosk]) .threads {
+    display: none;
+  }
+  .ink .main {
+    position: relative;
+  }
+  /* Vidrio líquido: el panel es translúcido (la tarjeta al 72 %) para que se vean los hilos animados detrás, con un bisel de 6 px
+     más claro y un brillo que entra por la esquina superior izquierda y otro más tenue abajo a la derecha. Sin `backdrop-filter`:
+     sobre los hilos animados obligaba a re-difuminar el panel entero en cada cuadro. Los bloques del contenido (`bg-card`) quedan
+     como tarjetas opacas sobre el vidrio. */
+  .ink .panel {
+    border: 6px solid transparent;
+    background:
+      linear-gradient(color-mix(in srgb, var(--card) 72%, transparent), color-mix(in srgb, var(--card) 72%, transparent)) padding-box,
+      linear-gradient(
+          135deg,
+          color-mix(in srgb, var(--nx-white) 34%, transparent),
+          color-mix(in srgb, var(--nx-white) 6%, transparent) 32%,
+          color-mix(in srgb, var(--nx-white) 4%, transparent) 68%,
+          color-mix(in srgb, var(--nx-white) 18%, transparent)
+        )
+        border-box;
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--nx-white) 10%, transparent),
+      0 24px 60px -24px color-mix(in srgb, var(--nx-ink) 80%, transparent),
+      var(--nx-shadow-lg);
+  }
+  :global(html[data-kiosk]) .ink .panel {
+    border: 0;
+    background: none;
+    box-shadow: none;
+  }
+}

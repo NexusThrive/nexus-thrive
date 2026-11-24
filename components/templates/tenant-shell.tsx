@@ -7,6 +7,7 @@ import { ToastProvider } from "@/components/molecules/toast";
 import { WorkspaceLauncher } from "@/components/organisms/workspace-launcher";
 import { AppStage } from "@/components/organisms/app-stage";
 import { AppSidebar } from "@/components/organisms/app-sidebar";
+import { ThreadsBackground } from "@/components/atoms/threads-background";
 import { AppTopbar } from "@/components/organisms/app-topbar";
 import { CommandPalette } from "@/components/organisms/command-palette";
 import { NavbarSearch } from "@/components/organisms/navbar-search";
@@ -68,11 +69,13 @@ export function TenantShell({
     >
       <ToastProvider>
         <QuickCreateProvider>
-        <div className={styles.root}>
-          <AppSidebar variant="workspace" />
+        <div className={`${styles.root} ${styles.ink}`}>
+          <ThreadsBackground className={styles.threads} />
+          <AppSidebar variant="workspace" tone="ink" />
           <div className={styles.main}>
             <AppTopbar
               variant="workspace"
+              tone="ink"
               roleLabel={role ? roleLabel(role, hasMemberAccess(vertical)) : undefined}
               desktopActions={topbarActions}
               notifications={topbarNotifications}

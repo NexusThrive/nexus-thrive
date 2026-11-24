@@ -56,7 +56,8 @@
     display: grid;
     grid-template-columns: minmax(max-content, 1fr) minmax(0, 440px) minmax(max-content, 1fr);
     padding: env(safe-area-inset-top, 0px) 16px 0;
-    background: var(--surface-muted);
+    /* Sobre la tinta del marco, como la barra real («ink»). */
+    background: transparent;
   }
   .topTitle,
   .topSearch {
@@ -80,7 +81,7 @@
     gap: 4px;
     width: var(--sw);
     padding: calc(12px + env(safe-area-inset-top, 0px)) 12px calc(var(--corner) + 12px + env(safe-area-inset-bottom, 0px));
-    background: var(--surface-muted);
+    background: transparent;
   }
   .biz {
     display: flex;
@@ -90,7 +91,7 @@
     margin-bottom: calc(var(--corner) + 8px);
     padding: 0 8px;
     border-radius: var(--radius-xl);
-    background: var(--card);
+    background: color-mix(in srgb, var(--nx-white) 6%, transparent);
   }
   .item {
     display: flex;
