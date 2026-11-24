@@ -59,7 +59,7 @@ function writeClosed(next: Record<string, boolean>) {
  * Blanca en claro e Ink en oscuro. El fondo del ítem activo se desliza entre
  * enlaces con un corte oro a la izquierda; contraer la barra se recuerda.
  */
-export function AppSidebar({ variant }: { /** `workspace`: la barra del negocio (gris claro, sin líneas, con el bloque del negocio arriba y sin navbar de marca). */ variant?: "workspace" }) {
+export function AppSidebar({ variant, tone }: { /** `workspace`: la barra del negocio (gris claro, sin líneas, con el bloque del negocio arriba y sin navbar de marca). */ variant?: "workspace"; /** `ink`: marco en tinta con vidrio líquido, como la landing (Operations Center). */ tone?: "ink" }) {
   const { groups, activeKey, hrefFor, onNavigate, brandName, brandSub } = useShell();
   const workspace = variant === "workspace";
   const { rail, setPreference } = usePreferences();
@@ -142,7 +142,8 @@ export function AppSidebar({ variant }: { /** `workspace`: la barra del negocio 
       ref={sideRef}
       data-tour="nav"
       data-variant={variant}
-      className={styles.side}
+      data-tone={tone}
+      className={tone === "ink" ? `${styles.side} dark` : styles.side}
       aria-label="Navegación principal"
       data-peek={peek ? "" : undefined}
       onPointerEnter={(event) => {

@@ -122,3 +122,18 @@
     transition-delay: 160ms;
   }
 }
+
+/* Tono «ink» (Operations Center): la barra de PC se apoya en la tinta del marco con el lenguaje de la landing. */
+.ink [data-tour="search"] button {
+  border: 1px solid color-mix(in srgb, var(--nx-white) 14%, transparent);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--nx-white) 9%, transparent), color-mix(in srgb, var(--nx-white) 2%, transparent) 45%, color-mix(in srgb, var(--nx-white) 6%, transparent));
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--nx-white) 24%, transparent);
+}
+.ink [data-tour="search"] button:hover {
+  border-color: color-mix(in srgb, var(--nx-white) 24%, transparent);
+}
+.ink [data-tour="search"] kbd {
+  background: color-mix(in srgb, var(--nx-white) 8%, transparent);
+  font-family: var(--font-mono);
+}

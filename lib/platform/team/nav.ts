@@ -25,6 +25,13 @@ import {
 import type { NavGroup } from "@/lib/core/capabilities/nav-types";
 import type { PermissionKey } from "./permissions";
 
+type OpsGroup = {
+  label: string;
+  /** Fijo al pie de la barra lateral (como «Sistema» en el negocio). */
+  pinned?: boolean;
+  items: OpsItem[];
+};
+
 type OpsItem = {
   key: string;
   label: string;
@@ -39,10 +46,10 @@ type OpsItem = {
 /**
  * Navegación del NEXUS Operations Center, agrupada por la responsabilidad del
  * equipo: lo que pide atención hoy, las cuentas de los clientes, el trabajo
- * comercial, lo que se vende y la plataforma. Cada integrante ve solo lo que
+ * comercial, lo que se vende y, fija al pie, la plataforma. Cada integrante ve solo lo que
  * su rol permite; lo que aún no existe no se muestra.
  */
-export const OPS_NAV: { label: string; items: OpsItem[] }[] = [
+export const OPS_NAV: OpsGroup[] = [
   {
     label: "Hoy",
     items: [
@@ -80,6 +87,7 @@ export const OPS_NAV: { label: string; items: OpsItem[] }[] = [
   },
   {
     label: "Plataforma",
+    pinned: true,
     items: [
       { key: "equipo", label: "Equipo y permisos", href: "/admin/equipo", icon: UsersRound, permission: "team.invite", ready: true },
       { key: "auditoria", label: "Auditoría", href: "/admin/auditoria", icon: ScrollText, permission: "audit.view", ready: true },
@@ -91,6 +99,7 @@ export const OPS_NAV: { label: string; items: OpsItem[] }[] = [
 export function opsNavFor(permissions: readonly string[]): NavGroup[] {
   return OPS_NAV.map((g) => ({
     label: g.label,
+    pinned: g.pinned,
     items: g.items
       .filter((i) => i.ready && (!i.permission || [i.permission].flat().some((p) => permissions.includes(p))))
       .map(({ key, label, href, icon }) => ({ key, label, href, icon })),

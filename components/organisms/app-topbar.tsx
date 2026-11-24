@@ -149,11 +149,11 @@ type TopbarProps = { actions?: ReactNode; /** Notificaciones (las muestra la bar
  * pantalla, el buscador (Ctrl K), «Crear», avisos, tema, el selector de negocio y la cuenta, sobre el gris de la barra lateral y sin celda de
  * marca (el negocio y la N viven en la barra lateral). En móvil sigue la barra de siempre. Sin variante, la barra de siempre (Operations Center).
  */
-export function AppTopbar({ variant, desktopActions, roleLabel, ...props }: TopbarProps & { variant?: "workspace"; /** Botones de la barra de PC (con la barra lateral no hace falta el lanzador que lleva `actions` en móvil). */ desktopActions?: ReactNode; /** Rol de la persona, bajo su nombre (barra del negocio). */ roleLabel?: string }) {
+export function AppTopbar({ variant, tone, desktopActions, roleLabel, searchPlaceholder, ...props }: TopbarProps & { variant?: "workspace"; /** `ink`: barra de PC sobre la tinta del marco, como la landing (Operations Center). */ tone?: "ink"; /** Botones de la barra de PC (con la barra lateral no hace falta el lanzador que lleva `actions` en móvil). */ desktopActions?: ReactNode; /** Rol de la persona, bajo su nombre (barra del negocio). */ roleLabel?: string; /** Texto del botón de búsqueda de PC cuando no se pasa `search` (Operations Center). */ searchPlaceholder?: string }) {
   if (variant !== "workspace") return <LegacyTopbar {...props} />;
   return (
     <>
-      <WorkspaceBar {...props} actions={desktopActions} roleLabel={roleLabel} />
+      <WorkspaceBar {...props} tone={tone} actions={desktopActions} roleLabel={roleLabel} searchPlaceholder={searchPlaceholder} />
       <div className="md:hidden">
         <LegacyTopbar {...props} />
       </div>
@@ -215,8 +215,9 @@ function CreateMenu({ icon = false }: { /** Botón de icono (barra del negocio) 
  * «Crear», mensajes y agenda (solo si esas funciones están encendidas), avisos y la cuenta con su nombre y rol. Fija, a la derecha de la barra lateral
  * (`--sw`). Sin cambio de tema (el blanco es el único) ni de negocio (por ahora cada cuenta usa uno solo).
  */
-function WorkspaceBar({ actions, notifications, search, roleLabel }: TopbarProps & { roleLabel?: string }) {
+function WorkspaceBar({ actions, notifications, search, roleLabel, tone, searchPlaceholder = "Buscar clientes, cobros…" }: TopbarProps & { roleLabel?: string; tone?: "ink"; searchPlaceholder?: string }) {
   const { title, openSearch, groups, hrefFor } = useShell();
+  const ink = tone === "ink";
   const crumbs = useTopbarCrumbs();
   const name = useCurrentUserName();
   const items = groups.flatMap((group) => group.items);
@@ -224,8 +225,15 @@ function WorkspaceBar({ actions, notifications, search, roleLabel }: TopbarProps
   const agenda = items.find((item) => item.href === "/bookings");
   const iconLink = "size-11 rounded-full border-transparent bg-card";
   return (
-    <header data-app-topbar="" data-workspace="" className="fixed right-0 top-0 z-(--z-topbar) hidden items-center gap-3 bg-surface-muted pt-[env(safe-area-inset-top,0px)] md:grid md:px-4 lg:px-6" style={{ left: "var(--sw)", height: "calc(var(--topbar-height) + env(safe-area-inset-top, 0px))", gridTemplateColumns: "minmax(max-content, 1fr) minmax(0, 440px) minmax(max-content, 1fr)" }}>
-      {crumbs?.length ? <Breadcrumbs items={[...crumbs]} className="mb-0 min-w-0 text-sm [&_ol]:flex-nowrap" /> : <h2 className="truncate text-ui font-semibold text-foreground">{title}</h2>}
+    <header data-app-topbar="" data-workspace="" data-tone={tone} className={cn("fixed right-0 top-0 z-(--z-topbar) hidden items-center gap-3 pt-[env(safe-area-inset-top,0px)] md:grid md:px-4 lg:px-6", ink ? cn("dark bg-transparent", styles.ink) : "bg-surface-muted")} style={{ left: "var(--sw)", height: "calc(var(--topbar-height) + env(safe-area-inset-top, 0px))", gridTemplateColumns: "minmax(max-content, 1fr) minmax(0, 440px) minmax(max-content, 1fr)" }}>
+      {crumbs?.length ? (
+        <Breadcrumbs items={[...crumbs]} className="mb-0 min-w-0 text-sm [&_ol]:flex-nowrap" />
+      ) : ink ? (
+        // En tinta la sección ya se lee en la barra lateral y en el encabezado de la página: la columna queda libre.
+        <span aria-hidden="true" />
+      ) : (
+        <h2 className="truncate text-ui font-semibold text-foreground">{title}</h2>
+      )}
       <div data-tour="search" className="min-w-0" suppressHydrationWarning>
         <div className="w-full">
           {search ?? (
@@ -235,7 +243,7 @@ function WorkspaceBar({ actions, notifications, search, roleLabel }: TopbarProps
               className="group flex h-11 w-full items-center gap-2.5 rounded-full bg-card pl-4 pr-2.5 text-ui text-muted-foreground transition-colors duration-200 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
             >
               <Search aria-hidden="true" className="size-[18px] shrink-0" />
-              <span className="truncate">Buscar clientes, cobros…</span>
+              <span className="truncate">{searchPlaceholder}</span>
               <Kbd className="ml-auto h-6 shrink-0 rounded-full border-0 bg-surface-muted px-2.5 text-2xs">Ctrl K</Kbd>
             </button>
           )}

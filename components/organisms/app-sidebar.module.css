@@ -667,3 +667,78 @@
     outline-offset: 2px;
   }
 }
+
+/* Tono «ink» (Operations Center): el lenguaje de la landing. La barra es transparente sobre la tinta del marco (el `.dark` del
+   elemento le da los tokens oscuros), el bloque de marca es vidrio líquido, los grupos se titulan como los antetítulos de la landing
+   (mono en versalitas) y el ítem activo toma el color del panel (`--shell-panel`, resuelto en el marco con
+   el tema de la página) para seguir uniéndose a él. */
+@media (min-width: 768px) {
+  .side[data-variant="workspace"][data-tone="ink"] {
+    --sidebar-bg: transparent;
+    --sidebar-fg: var(--foreground);
+    --sidebar-fg-muted: var(--foreground-muted);
+    --sidebar-border: color-mix(in srgb, var(--nx-white) 10%, transparent);
+    --sidebar-hover: color-mix(in srgb, var(--nx-white) 7%, transparent);
+    --sidebar-active: var(--shell-panel, var(--card));
+  }
+  .side[data-tone="ink"] .biz {
+    position: relative;
+    isolation: isolate;
+    border: 1px solid color-mix(in srgb, var(--nx-white) 14%, transparent);
+    background:
+      radial-gradient(70% 120% at 6% 0%, color-mix(in srgb, var(--nx-white) 14%, transparent), transparent 65%),
+      linear-gradient(135deg, color-mix(in srgb, var(--nx-white) 8%, transparent), color-mix(in srgb, var(--nx-white) 2%, transparent) 45%, color-mix(in srgb, var(--nx-white) 6%, transparent));
+    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--nx-white) 28%, transparent);
+  }
+  .side[data-tone="ink"] .groupLabel {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    padding: 18px 12px 8px;
+    font: 500 10.5px var(--font-mono);
+    letter-spacing: 0.14em;
+  }
+  /* Vistazo del riel: la barra ensancha encima del panel; sin fondo propio se veía el contenido a través. Vidrio de tinta, como la landing. */
+  .side[data-tone="ink"][data-peek] {
+    --sidebar-active: color-mix(in srgb, var(--nx-white) 12%, transparent);
+    background:
+      linear-gradient(135deg, color-mix(in srgb, var(--nx-white) 8%, transparent), color-mix(in srgb, var(--nx-white) 2%, transparent) 45%, color-mix(in srgb, var(--nx-white) 5%, transparent)),
+      color-mix(in srgb, var(--nx-ink) 78%, transparent);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    backdrop-filter: blur(18px) saturate(160%);
+    border-right: 1px solid color-mix(in srgb, var(--nx-white) 14%, transparent);
+    box-shadow:
+      inset -1px 0 0 color-mix(in srgb, var(--nx-white) 6%, transparent),
+      var(--nx-shadow-lg);
+  }
+  /* En el vistazo el ítem activo no se une al panel (la barra está encima): píldora de vidrio completa, sin curvas de unión. */
+  .side[data-tone="ink"][data-peek] .indicator {
+    border-radius: var(--radius-lg);
+  }
+  .side[data-tone="ink"][data-peek] .indicator::before,
+  .side[data-tone="ink"][data-peek] .indicator::after {
+    display: none;
+  }
+  .side[data-tone="ink"][data-peek] .link[aria-current="page"] {
+    color: var(--foreground);
+  }
+  .side[data-tone="ink"] .sep {
+    display: none;
+  }
+  .side[data-tone="ink"] .indicator::before,
+  .side[data-tone="ink"] .indicator::after {
+    --card: var(--shell-panel, var(--card));
+  }
+  .side[data-tone="ink"] .link[aria-current="page"] {
+    color: var(--shell-panel-fg, var(--foreground));
+  }
+  .side[data-tone="ink"] .foot {
+    border-top: 1px solid var(--sidebar-border);
+  }
+}
+@media (min-width: 1024px) {
+  :global(html:not([data-rail])) .side[data-tone="ink"] .groupLabel,
+  .side[data-tone="ink"][data-peek] .groupLabel {
+    display: flex;
+  }
+}
