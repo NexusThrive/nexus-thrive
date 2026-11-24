@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
 import { rememberBusinessAction } from "./_actions/business";
 import { activeTenantWithModules, businessesOfMember, memberTheme } from "@/lib/core/tenancy/membership";
@@ -14,7 +15,7 @@ import ThemeSync from "./_components/theme-sync";
 import { AuriAssistant } from "@/components/organisms/auri-assistant";
 import { CurrentUserProvider } from "@/components/providers/current-user";
 import { auth } from "@clerk/nextjs/server";
-import { createTenantDb } from "@/lib/core/tenancy/db";
+import { memberByClerkUser } from "@/lib/core/tenancy/context";
 import { SessionScope } from "@/components/providers/session-scope";
 
 /**
@@ -64,15 +65,17 @@ export default async function AppLayout({
   const authP = auth();
   const memberP = authP.then(async ({ userId }) => {
     if (!userId) return [null, [], null] satisfies [null, never[], null];
-    return await Promise.all([memberTheme(tenantRecord.id, userId), businessesOfMember(userId), createTenantDb(tenantRecord.id).users.findByClerkUserId(userId)]);
+    // La membresía sale de la memoria de la petición: el contexto de la página la pide igual (`memberByClerkUser`).
+    return await Promise.all([memberTheme(tenantRecord.id, userId), businessesOfMember(userId), memberByClerkUser(tenantRecord.id, userId)]);
   });
-  const [{ userId }, [savedTheme, businesses, me], trial, firstSteps] = await Promise.all([
+  // Primeros pasos: el círculo de la barra superior (desaparece cuando están todos hechos). Son tres consultas que no cambian
+  // nada de lo demás: llegan en streaming y no retienen el armazón (antes toda la app esperaba por ellas).
+  const firstSteps = loadFirstSteps({ tenantId: tenantRecord.id, slug: tenantRecord.slug, activeModules, customerWord: terms.customer.toLowerCase() });
+  const [{ userId }, [savedTheme, businesses, me], trial] = await Promise.all([
     authP,
     memberP,
     // Prueba de autoservicio o acceso temporal: sus días restantes van en la barra superior.
     loadTrialIndicator(tenantRecord.id),
-    // Primeros pasos: el círculo de la barra superior (desaparece cuando están todos hechos).
-    loadFirstSteps({ tenantId: tenantRecord.id, slug: tenantRecord.slug, activeModules, customerWord: terms.customer.toLowerCase() }),
   ]);
 
   return (
@@ -94,7 +97,9 @@ export default async function AppLayout({
         }
         topbarActions={
           <>
-            <FirstStepsIndicator steps={firstSteps} />
+            <Suspense fallback={null}>
+              <FirstSteps steps={firstSteps} />
+            </Suspense>
             {trial ? (
               <span className="max-md:hidden">
                 <TrialIndicator
@@ -117,4 +122,9 @@ export default async function AppLayout({
       </CurrentUserProvider>
     </VerticalTermsProvider>
   );
+}
+
+/** El círculo de primeros pasos cuando llegan sus datos (va dentro de un `Suspense`: no retiene el resto de la barra). */
+async function FirstSteps({ steps }: { steps: ReturnType<typeof loadFirstSteps> }) {
+  return <FirstStepsIndicator steps={await steps} />;
 }

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { requirePageContext } from "@/lib/core/tenancy/context";
-import { tenantWithModules } from "@/lib/core/tenancy/membership";
+import { activeTenantWithModules } from "@/lib/core/tenancy/membership";
 import { isModule, sortModules } from "@/lib/core/capabilities/modules";
 import { loadTrialIndicator } from "@/lib/experience/onboarding/trial";
 import { loadHomeSummaryParts } from "@/lib/experience/dashboard/home-summary";
@@ -17,7 +17,8 @@ export default async function AppHomePage({ params }: { params: Promise<{ tenant
   const ctx = await requirePageContext(tenant);
   // Sin `currentUser()` de Clerk: es una llamada HTTP a sus servidores en cada render solo para sacar un id que la sesión ya trae.
   // `ctx` ya trae el rol y el nombre del equipo (como el saludo del layout): no hace falta leer al usuario otra vez.
-  const [tenantRecord, trial] = await Promise.all([tenantWithModules(ctx.tenantId), loadTrialIndicator(ctx.tenantId)]);
+  // Las dos ya las pidió el layout de la app en esta misma petición: salen de la memoria (`cache()`), sin otro viaje a la base.
+  const [tenantRecord, trial] = await Promise.all([activeTenantWithModules(tenant), loadTrialIndicator(ctx.tenantId)]);
   const modules = sortModules((tenantRecord?.modules ?? []).filter((m) => m.active).map((m) => m.moduleName).filter(isModule));
   // Sin esperar: Inicio se pinta ya (con lo último que se vio) y cada bloque llega cuando termina, sin esperar a los demás.
   // El rol decide si se ven montos (misma regla de Resumen).

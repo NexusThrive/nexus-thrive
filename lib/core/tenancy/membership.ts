@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { db } from "@/prisma/db";
 import { acceptInvitesFor } from "@/lib/core/tenancy/team-db";
 
@@ -91,24 +92,24 @@ export async function businessesOfMember(clerkUserId: string): Promise<{ slug: s
     .sort((a, b) => a.name.localeCompare(b.name, "es"));
 }
 
-/** Registro completo del negocio por id, con sus módulos (Configuración). */
-export async function tenantWithModules(tenantId: string) {
-  return db.orm.public.Tenant.where({ id: tenantId })
+/** Registro completo del negocio por id, con sus módulos (Configuración). Memoizada por petición. */
+export const tenantWithModules = cache((tenantId: string) =>
+  db.orm.public.Tenant.where({ id: tenantId })
     .include("modules", (module) => module.select("moduleName", "active"))
-    .first();
-}
+    .first(),
+);
 
 /** Datos del negocio que van en sus documentos (cuenta de cobro, recibo). */
 export async function tenantLetterhead(tenantId: string) {
   return db.orm.public.Tenant.where({ id: tenantId }).select("name", "legalName", "taxId", "address", "city", "whatsappNumber").first();
 }
 
-/** Negocio activo por slug, con sus módulos (shell de la app). */
-export async function activeTenantWithModules(slug: string) {
-  return db.orm.public.Tenant.where({ slug, active: true })
+/** Negocio activo por slug, con sus módulos (shell de la app). Memoizada por petición: la usan el layout de la app y el Inicio. */
+export const activeTenantWithModules = cache((slug: string) =>
+  db.orm.public.Tenant.where({ slug, active: true })
     .include("modules", (module) => module.select("moduleName", "active"))
-    .first();
-}
+    .first(),
+);
 
 /** Tema guardado de la persona en ese negocio (`null` si no eligió). */
 export async function memberTheme(tenantId: string, clerkUserId: string): Promise<"dark" | "light" | null> {

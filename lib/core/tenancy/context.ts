@@ -34,10 +34,17 @@ export type TenantContext = {
 
 type TenantRecord = NonNullable<Awaited<ReturnType<typeof loadActiveTenant>>>;
 
-/** El negocio con ese slug, solo si está activo (suspendido = `null`). */
-export function loadActiveTenant(slug: string) {
-  return db.orm.public.Tenant.where({ slug, active: true }).first();
-}
+/**
+ * El negocio con ese slug, solo si está activo (suspendido = `null`). Memoizada por petición (`cache()`): el layout del negocio,
+ * el contexto de la página y las acciones lo piden con el mismo slug y antes eran tres viajes a la base por cada entrada.
+ */
+export const loadActiveTenant = cache((slug: string) => db.orm.public.Tenant.where({ slug, active: true }).first());
+
+/**
+ * La membresía de la sesión en el negocio, memoizada por petición: el contexto de la página y el layout de la app la leían
+ * cada uno por su lado.
+ */
+export const memberByClerkUser = cache((tenantId: string, clerkUserId: string) => createTenantDb(tenantId).users.findByClerkUserId(clerkUserId));
 
 /**
  * Verifica sesión de Clerk + tenant activo + membresía del usuario.
@@ -58,21 +65,17 @@ export async function requireTenantContext(
   if (!tenantSlug || tenantSlug.trim() === "") {
     return null;
   }
-  const { userId } = await auth();
-  if (!userId) {
-    return null;
-  }
-  const tenantRecord = await loadActiveTenant(tenantSlug);
-  if (!tenantRecord) {
+  // Sesión y negocio a la vez, y después membresía y módulo a la vez: dos viajes a la base en lugar de tres seguidos. Cada página y
+  // cada acción pasa por aquí, así que es lo primero que se espera al cambiar de sección. Las reglas no cambian: sin sesión, sin
+  // negocio activo, sin membresía activa o con el módulo apagado no se entra.
+  const [{ userId }, tenantRecord] = await Promise.all([auth(), loadActiveTenant(tenantSlug)]);
+  if (!userId || !tenantRecord) {
     return null;
   }
   const tenantDb = createTenantDb(tenantRecord.id);
-  const member = await tenantDb.users.findByClerkUserId(userId);
+  const [member, routeOk] = await Promise.all([memberByClerkUser(tenantRecord.id, userId), route ? isRouteEnabled(tenantRecord.id, route) : true]);
   // Retirado del equipo: conserva su historial pero ya no opera.
-  if (!member || !member.active) {
-    return null;
-  }
-  if (route && !(await isRouteEnabled(tenantRecord.id, route))) {
+  if (!member || !member.active || !routeOk) {
     return null;
   }
   return {
@@ -102,8 +105,8 @@ export const requirePageContext = cache(async (tenantSlug: string, route?: strin
   return ctx;
 });
 
-/** ¿El negocio tiene activo algún módulo que habilite la ruta? */
-export async function isRouteEnabled(tenantId: string, route: string): Promise<boolean> {
+/** ¿El negocio tiene activo algún módulo que habilite la ruta? Memoizada por petición. */
+export const isRouteEnabled = cache(async (tenantId: string, route: string): Promise<boolean> => {
   const modules = modulesForRoute(route);
   if (!modules) return true;
   const row = await db.orm.public.TenantModule.where({ tenantId, active: true })
@@ -111,7 +114,7 @@ export async function isRouteEnabled(tenantId: string, route: string): Promise<b
     .select("id")
     .first();
   return row !== null;
-}
+});
 
 /**
  * D7 — Gobernanza del presupuesto: solo OWNER y SUPERADMIN pueden bloquear/
