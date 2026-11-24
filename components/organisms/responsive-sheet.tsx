@@ -93,8 +93,8 @@ function ghostOut(content: HTMLElement, scrim: HTMLElement | null) {
  *   panel lateral derecho (`drawer`, 440 px; `size="lg"` 560 px) para fichas,
  *   registros con varias secciones y detalle que conserva el contexto.
  *
- * En PC el modal viaja desde el control que lo abrió y vuelve a él en 600 ms
- * por sentido (GSAP, `armModalMorph`); no aplica a móvil, `drawer`, `alert`,
+ * En PC el modal viaja en diagonal desde el control que lo abrió, crece desde él sin cortes y vuelve a él
+ * (600 ms al abrir, 450 ms al cerrar; GSAP, `armModalMorph`); no aplica a móvil, `drawer`, `alert`,
  * `size="full"` ni movimiento reducido (ver packages/brand/docs/04-patrones/movimiento.md §4).
  *
  * Radix Dialog aporta el foco atrapado, Escape, el fondo que cierra, la

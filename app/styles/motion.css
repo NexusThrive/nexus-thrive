@@ -201,6 +201,14 @@ html[data-motion="off"]::view-transition-new(*) {
   animation-delay: calc(var(--i, 0) * 50ms);
 }
 
+/* --- Barras del minigráfico de los KPI: crecen desde abajo al aparecer, escalonadas (`KpiTrendBody`). --- */
+@keyframes nx-bar-grow {
+  from {
+    transform: scaleY(0.08);
+    opacity: 0;
+  }
+}
+
 @keyframes nx-pulse {
   50% {
     opacity: 0.25;
@@ -374,7 +382,7 @@ html[data-motion="off"] .nx-flash {
 /* --- Paneles anclados que viajan desde su botón (lib/experience/motion/popover-morph.ts) ---
    Con `data-morph` el viaje lo dibuja GSAP (un solo dueño): se apaga la animación
    de entrada y la de salida solo sostiene el panel para que Radix no lo desmonte
-   antes de que termine la reversa (480 ms + margen). */
+   antes de que termine la reversa (370 ms + margen). */
 @keyframes nx-popover-hold {
   from {
     opacity: 1;

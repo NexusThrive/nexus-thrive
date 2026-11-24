@@ -1,12 +1,13 @@
 import { gsap } from "gsap";
+import { MORPH_EASE as EASE } from "./morph-curves";
 import { motionOff } from "./reduced";
 
 /**
- * Viaje del modal centrado de escritorio (el efecto de `Pretty Modal Demo.zip`).
- *
- * La superficie **es** el control que la abrió (mismo tamaño, posición, radio y
- * color), crece hasta su sitio y, al cerrar, vuelve exactamente a él. Apertura
- * y cierre: `MORPH_SECONDS` cada uno.
+ * Viaje del modal centrado de escritorio, con la continuidad del Auri de la landing (`AuriAsk`): la superficie nace del control que
+ * la abrió (mismo tamaño, posición, radio y color) y viaja en diagonal hasta el centro mientras se despliega. Nada se corta: el
+ * control y la tarjeta se funden entre sí (como el texto de la píldora de Auri, que se desvanece mientras ella cambia de forma),
+ * posición y tamaño crecen juntos con la misma curva, y el contenido entra mientras la tarjeta todavía llega. Al cerrar hace lo mismo al
+ * revés, un poco más rápido.
  *
  * Anima `width`, `height`, `border-radius` y `background-color`, que el
  * contrato de movimiento reserva a `transform/opacity/filter/clip-path`. Es la
@@ -18,15 +19,13 @@ import { motionOff } from "./reduced";
  * desmontar (`modal-out-hold`).
  */
 
-/** Duración del viaje en cada sentido. Debe coincidir con `modal-out-hold` del CSS. */
-export const MORPH_SECONDS = 0.6;
+/** Duración del cierre. Debe coincidir con `modal-out-hold` del CSS (más 20 ms de margen). */
+export const MORPH_SECONDS = 0.45;
 
-/** Base del ZIP: abre en 0,75 s y cierra en 0,55 s (más 0,12 s de espera). */
-const ZIP_OPEN = 0.75;
-const ZIP_CLOSE = 0.55;
-const ZIP_CLOSE_DELAY = 0.12;
+/** Duración de la apertura (el contenido termina de entrar un poco después). */
+export const MORPH_OPEN_SECONDS = 0.6;
 
-const CLEAR = "xPercent,yPercent,x,y,width,height,borderRadius,backgroundColor,overflow,opacity";
+const CLEAR = "xPercent,yPercent,x,y,width,height,borderRadius,backgroundColor,overflow,opacity,willChange";
 
 /* Último control pulsado: de ahí «nace» el modal. Se registra desde que se
    carga el módulo porque el panel se monta después del clic. */
@@ -145,20 +144,18 @@ export function armModalMorph(node: HTMLElement): () => void {
     borderRadius: from.radius,
     backgroundColor: solid(from.bg, to.bg),
     overflow: "hidden",
-    opacity: 1,
+    // Nace transparente sobre el control y se funde con él: si tapara el botón de golpe, su texto desaparecería en un corte.
+    opacity: 0,
+    // El navegador prepara la capa antes del primer fotograma: sin esto el arranque daba un tirón.
+    willChange: "transform, width, height, opacity",
   });
   // `overflow: hidden` en el contenido mientras la tarjeta cambia de alto: el cuerpo con
   // scroll se comprime y mostraba una barra de desplazamiento aunque no la necesite.
-  gsap.set(items, { opacity: 0, y: 14, width: (i: number) => widths[i], flexShrink: 0, overflow: "hidden" });
-  gsap.set(originEl, { opacity: 0 });
-
+  gsap.set(items, { opacity: 0, y: 8, width: (i: number) => widths[i], flexShrink: 0, overflow: "hidden" });
   // Fuerza un frame con el estado inicial antes de arrancar.
   void node.offsetWidth;
 
-  const contentDuration = 0.5 * (MORPH_SECONDS / ZIP_OPEN);
-  const contentStagger = 0.06 * (MORPH_SECONDS / ZIP_OPEN);
-  const contentDelay = 0.22 * (MORPH_SECONDS / ZIP_OPEN);
-
+  const k = MORPH_OPEN_SECONDS;
   const open = gsap.timeline({
     paused: true,
     onComplete: () => {
@@ -167,27 +164,16 @@ export function armModalMorph(node: HTMLElement): () => void {
     },
   });
   open
-    .to(
-      node,
-      {
-        x: 0,
-        width: to.w,
-        height: to.h,
-        borderRadius: to.radius,
-        backgroundColor: to.bg,
-        opacity: 1,
-        duration: MORPH_SECONDS,
-        ease: "expo.out",
-      },
-      0,
-    )
-    // El eje Y usa otra curva: el recorrido describe un arco suave, no una recta.
-    .to(node, { y: 0, duration: MORPH_SECONDS * 1.1, ease: "power4.out" }, 0)
-    .to(
-      items,
-      { opacity: 1, y: 0, duration: contentDuration, stagger: contentStagger, ease: "power3.out" },
-      contentDelay,
-    );
+    // La tarjeta aparece encima del botón con su mismo color: solo se nota que el texto se desvanece. Ya opaca, el botón se
+    // oculta debajo (sin que se vea) y la tarjeta queda sola durante todo el viaje.
+    .to(node, { opacity: 1, duration: 0.18 * k, ease: EASE.out }, 0)
+    .set(originEl, { opacity: 0 }, 0.18 * k)
+    // Viaje en diagonal y crecimiento proporcional desde el botón: posición, tamaño y radio con la misma curva, así la forma
+    // nunca se deforma (ni se abre primero a los lados) y todo llega a la vez.
+    .to(node, { x: 0, y: 0, width: to.w, height: to.h, borderRadius: to.radius, duration: k, ease: EASE.glide }, 0)
+    .to(node, { backgroundColor: to.bg, duration: 0.6 * k, ease: EASE.io }, 0.1 * k)
+    // El contenido entra mientras la tarjeta todavía llega: nunca se ve vacía.
+    .to(items, { opacity: 1, y: 0, duration: 0.55 * k, stagger: 0.035 * k, ease: EASE.out }, 0.4 * k);
 
   /**
    * Reversa: del estado actual al control. Sirve al panel y a la copia de
@@ -239,13 +225,14 @@ export function armModalMorph(node: HTMLElement): () => void {
       borderRadius: current.radius,
       backgroundColor: current.bg,
       overflow: "hidden",
+      willChange: "transform, width, height, opacity",
     });
 
-    // El contenido se va primero y luego viaja la tarjeta, como el ZIP; todo
-    // cabe en MORPH_SECONDS para que Radix no desmonte a mitad de vuelo.
-    const scale = MORPH_SECONDS / (ZIP_CLOSE + ZIP_CLOSE_DELAY);
-    const delay = ZIP_CLOSE_DELAY * scale;
-    const travel = MORPH_SECONDS - delay;
+    // El mismo viaje al revés, un poco más rápido y dentro de `MORPH_SECONDS` para que Radix no desmonte a mitad de vuelo. La
+    // tarjeta hace todo el recorrido opaca y llega convertida en el botón (su tamaño, radio y color); solo entonces el botón vuelve
+    // debajo y la tarjeta se disuelve encima: lo único que cambia es que aparece su texto. El botón nunca surge de la nada.
+    const T = MORPH_SECONDS;
+    const travel = 0.76 * T;
 
     const exit = gsap.timeline({
       onComplete: () => {
@@ -257,37 +244,11 @@ export function armModalMorph(node: HTMLElement): () => void {
       },
     });
     exit
-      .to(content, {
-        opacity: 0,
-        y: 8,
-        duration: 0.16 * scale,
-        stagger: { each: 0.02 * scale, from: "end" },
-        ease: "power2.in",
-      }, 0)
-      .to(
-        el,
-        {
-          x: from.cx - vw / 2,
-          width: from.w,
-          height: from.h,
-          borderRadius: from.radius,
-          backgroundColor: solid(from.bg, current.bg),
-          duration: travel,
-          ease: "expo.inOut",
-        },
-        delay,
-      )
-      .to(el, { y: from.cy - vh / 2, duration: travel * 0.95, ease: "power3.inOut" }, delay)
-      // Fundido cruzado al llegar: la tarjeta se disuelve y el contenido del
-      // botón (texto, icono) aparece con un fade, sin quedarse el color del modal.
-      // Desde el 35 % del viaje la tarjeta ya se disuelve: llega al botón casi transparente, no como un recuadro vacío.
-      .to(el, { opacity: 0, duration: travel * 0.65, ease: "power1.in" }, delay + travel * 0.35)
-      .fromTo(
-        originNow,
-        { opacity: 0 },
-        { opacity: 1, duration: travel * 0.4, ease: "power1.out", immediateRender: false },
-        delay + travel * 0.5,
-      );
+      .to(content, { opacity: 0, y: 4, duration: 0.32 * T, stagger: { each: 0.015 * T, from: "end" }, ease: EASE.io }, 0)
+      .to(el, { x: from.cx - vw / 2, y: from.cy - vh / 2, width: from.w, height: from.h, borderRadius: from.radius, duration: travel, ease: EASE.io }, 0)
+      .to(el, { backgroundColor: solid(from.bg, current.bg), duration: 0.55 * T, ease: EASE.io }, 0.2 * T)
+      .set(originNow, { opacity: 1 }, travel)
+      .to(el, { opacity: 0, duration: T - travel, ease: EASE.io }, travel);
   };
   players.set(node, playExit);
 

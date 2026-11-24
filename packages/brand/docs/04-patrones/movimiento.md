@@ -56,25 +56,31 @@ No se usan Motion for React, AutoAnimate, Vaul ni React Grid Layout (§9).
 | `--motion-overlay-out` | 200 ms | Modal y panel salen |
 | `--d4` | 600 ms | Entradas de bloques y cifras |
 
-El **viaje del modal de escritorio** (§4) usa **600 ms** en la apertura y otros
-**600 ms** en el cierre (`MORPH_SECONDS` en `lib/motion/modal-morph.ts`); el
-`modal-out-hold` del CSS lo sostiene 620 ms (20 ms de margen). El resto de
-tokens no cambia.
+El **viaje del modal de escritorio** (§4) usa **600 ms** en la apertura
+(`MORPH_OPEN_SECONDS`) y **450 ms** en el cierre (`MORPH_SECONDS`, ambos en
+`lib/experience/motion/modal-morph.ts`); el `modal-out-hold` del CSS lo sostiene
+470 ms (20 ms de margen). El resto de tokens no cambia.
 
 Curvas: `--nx-ease-out` (entradas), `--nx-ease-in` (salidas),
 `--nx-ease-in-out` (barridos), `--nx-ease-spring` (indicadores que se
-deslizan). El viaje del modal usa `expo.out` en la tarjeta, `power4.out` en el
-eje Y al abrir, y `expo.inOut` / `power3.inOut` al cerrar.
+deslizan). El viaje del modal va en diagonal recta y crece proporcional: posición, tamaño
+y radio comparten una sola curva para que la forma nunca se deforme. Al abrir,
+`cubic-bezier(0.4, 0, 0.1, 1)` (arranque suave, frenada larga, sin rebote); al
+cerrar, `cubic-bezier(0.65, 0, 0.35, 1)`.
 
 ## 4. Modales que nacen del botón («view transition» propia)
 
 **Qué se ve (PC, modal flotante):** al pulsar «Crear», «Editar»…
-el modal sale del propio botón: arranca con su tamaño, posición, radio y color,
-crece hasta su sitio en 600 ms y el contenido aparece escalonado al final.
+el modal sale del propio botón: arranca con su tamaño, posición, radio y color
+y viaja en diagonal recta hasta el centro mientras crece proporcional, en
+600 ms y sin cortes, con la continuidad del Auri de la landing: la tarjeta
+aparece encima del botón con su color (solo se nota que el texto se desvanece)
+y el contenido entra mientras todavía llega.
 **Al cerrar hace exactamente lo mismo en reversa:** el contenido se va primero,
-la tarjeta se encoge de vuelta al mismo botón (otros 600 ms) con el contenido
-de ancho fijo (el texto no se reacomoda) y, al llegar, se disuelve mientras el
-contenido del botón aparece con un fundido; si el botón se movió, vuelve a donde está ahora.
+la tarjeta viaja opaca de vuelta al mismo botón (450 ms, un poco más rápido) con el contenido
+de ancho fijo (el texto no se reacomoda), llega convertida en el botón (su
+tamaño, radio y color) y solo entonces se disuelve sobre él, así que lo único
+que aparece es su texto: el botón nunca surge de la nada; si el botón se movió, vuelve a donde está ahora.
 
 **Panel lateral:** NO hace viaje. Siempre entra deslizándose (`translateX`)
 desde el borde derecho, de donde sale, y al cerrar se desliza de vuelta por el
@@ -92,8 +98,8 @@ inferior sube y baja y se cierra arrastrándola.
 3. `data-morph` apaga la entrada y la salida CSS (un dueño). La apertura es una
    línea de tiempo GSAP; el cierre se dispara al observar `data-state="closed"`
    y arranca desde el estado actual, también si se cierra a mitad de apertura.
-   El CSS (`modal-out-hold`, 620 ms) solo sostiene el nodo para que Radix no
-   desmonte antes de que termine la reversa (600 ms) y, al acabar, el nodo se
+   El CSS (`modal-out-hold`, 470 ms) solo sostiene el nodo para que Radix no
+   desmonte antes de que termine la reversa (450 ms) y, al acabar, el nodo se
    oculta en el sitio para que no reaparezca en el centro.
 4. El foco, el atrapado de Tab, Escape, el scroll y la devolución del foco los
    sigue gestionando Radix: el viaje es solo visual y **no bloquea nada**.
@@ -123,8 +129,13 @@ y fallback sin la API.
 
 Todo `DropdownMenu` (el menú de tres puntos del inicio, «Crear» de la navbar, el selector de
 negocio, los menús de fila…), el panel de la campana y la lista de un `Select` hacen el mismo
-viaje que los modales: el panel **es** el control (tamaño, posición, radio y color), crece hasta su
-sitio y, al cerrar, vuelve a él (`lib/motion/popover-morph.ts`, 480 ms; 300 ms en el `Select`).
+viaje que los modales, con la misma continuidad sin cortes (`lib/experience/motion/popover-morph.ts`,
+curvas compartidas en `morph-curves.ts`): el panel aparece encima del control con su color (solo se
+nota que el texto se desvanece), crece proporcional con una sola curva (`cubic-bezier(0.4, 0, 0.1, 1)`)
+y el contenido entra mientras todavía llega, en 460 ms. Al cerrar (80 % de la apertura, 370 ms) hace
+todo el recorrido opaco, llega convertido en el control (tamaño, radio compensado bajo la escala y
+color) y solo entonces se disuelve sobre él. Si el control no tiene fondo (un icono, «⋯»), el panel
+se disuelve en la segunda mitad del viaje mientras el icono aparece.
 
 - **Qué se mueve:** `transform` (escala desde la esquina y traslación) y, por eso, no recoloca el
   panel (Radix lo recalcularía si cambiara `width`/`height`); el contenido entra cuando la escala ya
