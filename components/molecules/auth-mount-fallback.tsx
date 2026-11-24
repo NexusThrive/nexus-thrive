@@ -21,8 +21,12 @@ import { Skeleton } from "@/components/atoms/skeleton";
  * dejar el hueco con solo el selector Iniciar sesión / Crear cuenta.
  */
 
-/** Un campo, un botón social o el botón principal de Clerk: el formulario está a la vista. */
-const FORM_SELECTOR = ".cl-formButtonPrimary, .cl-formFieldInput, .cl-socialButtonsBlockButton, .cl-otpCodeFieldInput";
+/**
+ * Cualquier control de Clerk a la vista: el formulario está montado, sea cual sea el paso (correo,
+ * contraseña, código, elegir otro método, restablecer). Mirar solo unas pocas clases dejaba el
+ * esqueleto encima de pasos que no las traen.
+ */
+const FORM_SELECTOR = ".cl-rootBox :is(input, button, a[href])";
 
 /** Tiempo de espera antes de avisar (el script normal tarda menos de 2 s). */
 const TIMEOUT_MS = 6000;
@@ -102,7 +106,8 @@ export function AuthMountFallback({ children }: { children: React.ReactNode }) {
 
   // La primera carga pinta el esqueleto de inmediato (también en el HTML del servidor);
   // la espera de 350 ms solo aplica al cambiar de modo, cuando el formulario ya estuvo.
-  const showSkeleton = !ready && (!wasReady || waited);
+  // Si pasó la red de seguridad (`late`) el formulario ya es visible: el esqueleto nunca se queda encima.
+  const showSkeleton = !ready && !(late && !wasReady) && (!wasReady || waited);
 
   return (
     <div ref={host} className="relative min-h-[360px]">
@@ -116,7 +121,7 @@ export function AuthMountFallback({ children }: { children: React.ReactNode }) {
       <div
         role={showSkeleton ? "status" : undefined}
         aria-hidden={showSkeleton ? undefined : true}
-                className="absolute inset-0 grid content-start gap-[18px] bg-transparent transition-opacity duration-300 ease-out data-[hidden]:pointer-events-none data-[hidden]:opacity-0 data-[hidden]:duration-200"
+        className="pointer-events-none absolute inset-0 grid content-start gap-[18px] bg-transparent transition-opacity duration-300 ease-out data-[hidden]:pointer-events-none data-[hidden]:opacity-0 data-[hidden]:duration-200"
         data-hidden={showSkeleton ? undefined : ""}
       >
         {/* Solo la forma del formulario (título, botón social, campo y botón), sin texto: un lector de pantalla recibe el estado por la etiqueta. */}
