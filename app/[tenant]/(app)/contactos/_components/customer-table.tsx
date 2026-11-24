@@ -524,7 +524,8 @@ export default function CustomerTable({
       ) : (
         <>
           {/* ---------- Tabla (desktop) ---------- */}
-          <div ref={boxRef} className="hidden overflow-x-auto sm:block">
+          {/* Tabla en tarjeta, con el diseño de las tablas del Inicio del panel: radio 24, borde suave y su margen a los lados. */}
+          <div ref={boxRef} className="mx-5 mb-5 hidden overflow-x-auto rounded-3xl border border-border bg-card sm:block md:mx-6">
             <table className="table-fixed text-left text-sm" style={{ width: tableMinWidth }}>
               <caption className="sr-only">
                 {terms.customers} de {tenantSlug}
@@ -589,7 +590,7 @@ export default function CustomerTable({
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border/50 border-b border-border/50">
+              <tbody className="divide-y divide-border/50">
                 {groups ? renderGroups(groups, 0) : rows.map((row) => renderRow(row))}
               </tbody>
             </table>
@@ -597,9 +598,9 @@ export default function CustomerTable({
 
           {/* ---------- Tarjetas (mobile) ---------- */}
           {isArchivedView ? (
-            <ul className="space-y-3 sm:hidden">
+            <ul className="space-y-3 px-4 sm:hidden">
               {rows.map((row) => (
-                <li key={row.id} className="rounded-lg border border-border bg-card p-4">
+                <li key={row.id} className="rounded-2xl border border-border bg-card p-4">
                   <div className="flex items-start gap-3">
                     {selectable ? (
                       <input
